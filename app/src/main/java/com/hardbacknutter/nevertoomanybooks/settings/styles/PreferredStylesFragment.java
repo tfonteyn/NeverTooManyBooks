@@ -140,8 +140,8 @@ public class PreferredStylesFragment
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
                 if (data.isModified()) {
                     //noinspection DataFlowIssue
-                    data.getUuid().ifPresent(uuid -> vm.onStyleEdited(getContext(), uuid,
-                                                                      data.getTemplateUuid()));
+                    data.getStyleUuid().ifPresent(uuid -> vm.onStyleEdited(getContext(), uuid,
+                                                                           data.getTemplateUuid()));
 
                     // always update ALL rows as the order might have changed
                     adapter.notifyDataSetChanged();

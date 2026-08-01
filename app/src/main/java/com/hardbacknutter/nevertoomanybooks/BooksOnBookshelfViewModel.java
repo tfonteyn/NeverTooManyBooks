@@ -88,7 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleOutput;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesOutput;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
@@ -1450,11 +1450,11 @@ public class BooksOnBookshelfViewModel
      * @param data    returned from the view/edit contract
      */
     void onEditStyleFinished(@NonNull final Context context,
-                             @NonNull final EditStyleContract.Output data) {
+                             @NonNull final EditStyleOutput data) {
         // We get here from the StylePickerDialogFragment (i.e. the style menu)
         // when the user choose to EDIT a style.
-        if (data.getUuid().isPresent()) {
-            onStyleChanged(context, data.getUuid().get());
+        if (data.getStyleUuid().isPresent()) {
+            onStyleChanged(context, data.getStyleUuid().get());
 
             // ALWAYS rebuild here, even when the style was not modified
             // as we're handling this as a style-change.

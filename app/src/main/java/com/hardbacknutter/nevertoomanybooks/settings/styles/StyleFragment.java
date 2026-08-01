@@ -53,13 +53,13 @@ public class StyleFragment
                     //noinspection DataFlowIssue
                     final StyleViewModel.Saved dbResult = vm.insertOrUpdateStyle(getContext());
                     if (dbResult.isSuccess()) {
-                        final Intent resultIntent = EditStyleContract
-                                .createResult(vm.getTemplateUuid(),
-                                              dbResult.isModified(),
-                                              vm.getStyle().getUuid());
+                        final EditStyleOutput args = new EditStyleOutput(
+                                vm.getTemplateUuid(), dbResult.isModified(),
+                                vm.getStyle().getUuid());
 
                         //noinspection DataFlowIssue
-                        getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                        getActivity().setResult(Activity.RESULT_OK,
+                                                new Intent().putExtras(args.toBundle()));
                         getActivity().finish();
                     }
                 }
