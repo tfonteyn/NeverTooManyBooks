@@ -25,12 +25,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -54,28 +54,6 @@ public class EditTocEntryLauncher
               EditTocEntryDialogFragment::new,
               EditTocEntryBottomSheet::new);
         this.resultListener = resultListener;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param tocEntry   the modified entry
-     * @param position   the position in the list we're editing
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final TocEntry tocEntry,
-                          final int position) {
-
-        final Bundle result = new Bundle(2);
-        result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
-        result.putInt(BKEY_POSITION, position);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
@@ -106,6 +84,29 @@ public class EditTocEntryLauncher
         resultListener.onResult(
                 Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
                 result.getInt(BKEY_POSITION));
+    }
+
+    public static class Output
+            implements LauncherOutput {
+        @NonNull
+        private final TocEntry tocEntry;
+        private final int position;
+
+        public Output(@NonNull final TocEntry tocEntry,
+                      final int position) {
+            this.tocEntry = tocEntry;
+            this.position = position;
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(2);
+            args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
+            args.putInt(BKEY_POSITION, position);
+
+            return args;
+        }
     }
 
     @FunctionalInterface

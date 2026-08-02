@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,6 +106,14 @@ class PartialDatePickerDelegate
     private Toolbar toolbar;
     private final boolean limitedHeight;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link PartialDatePickerLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
                               @NonNull final PartialDatePickerInput args) {
         this.owner = owner;
@@ -294,11 +301,8 @@ class PartialDatePickerDelegate
             return true;
         }
 
-        final PartialDatePickerLauncher.Output output = new PartialDatePickerLauncher.Output(
-                previousSelection,
-                currentSelection,
-                vm.getExtras());
-        PartialDatePickerLauncher.setResult(owner, requestKey, output);
+        new PartialDatePickerLauncher.Output(previousSelection, currentSelection, vm.getExtras())
+                .send(owner, requestKey);
         return true;
     }
 

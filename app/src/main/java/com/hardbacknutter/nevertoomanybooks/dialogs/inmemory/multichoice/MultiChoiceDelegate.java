@@ -71,6 +71,14 @@ class MultiChoiceDelegate
 
     private ChecklistRecyclerAdapter<Long> adapter;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link MultiChoiceLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     MultiChoiceDelegate(@NonNull final DialogFragment owner,
                         @NonNull final MultiChoiceInput args) {
         this.owner = owner;
@@ -185,7 +193,9 @@ class MultiChoiceDelegate
             return true;
         }
 
-        MultiChoiceLauncher.setResult(owner, requestKey, vm.getOutput());
+        new MultiChoiceLauncher.Output(vm.getPreviousSelection(), vm.getCurrentSelection(),
+                                       vm.getExtras())
+                .send(owner, requestKey);
         return true;
     }
 }

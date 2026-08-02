@@ -291,7 +291,7 @@ public final class CoverBrowserViewModel
     }
 
     @Nullable
-    String getSelectedFileAbsPath() {
+    String getSelectedFileAbsolutePath() {
         return selectedFileAbsolutePath;
     }
 
@@ -426,6 +426,7 @@ public final class CoverBrowserViewModel
     boolean isSearchEditionsTaskRunning() {
         return searchEditionsTask.isActive();
     }
+
 
     static final class Factory
             implements ViewModelProvider.Factory {

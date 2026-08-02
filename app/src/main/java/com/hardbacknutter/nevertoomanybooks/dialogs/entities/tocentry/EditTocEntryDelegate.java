@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tocentry;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +61,14 @@ class EditTocEntryDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditTocEntryLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args all arguments
+     */
     EditTocEntryDelegate(@NonNull final DialogFragment owner,
                          @NonNull final EditTocEntryInput args) {
         this.owner = owner;
@@ -196,7 +203,8 @@ class EditTocEntryDelegate
 
         vm.copyChanges();
 
-        EditTocEntryLauncher.setResult(owner, requestKey, vm.getOriginal(), vm.getEditPosition());
+        new EditTocEntryLauncher.Output(vm.getOriginal(), vm.getEditPosition())
+                .send(owner, requestKey);
         return true;
     }
 

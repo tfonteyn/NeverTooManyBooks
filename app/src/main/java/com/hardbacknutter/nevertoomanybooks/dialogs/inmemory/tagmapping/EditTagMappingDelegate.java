@@ -59,6 +59,14 @@ class EditTagMappingDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditTagMappingLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditTagMappingDelegate(@NonNull final DialogFragment owner,
                            @NonNull final EditTagMappingInput args) {
         this.owner = owner;
@@ -151,7 +159,9 @@ class EditTagMappingDelegate
             return true;
         }
 
-        EditTagMappingLauncher.setResult(owner, requestKey, vm.getOutput());
+        new EditTagMappingLauncher.Output(vm.getOriginal(), vm.getCurrentValue(),
+                                          vm.getExtras())
+                .send(owner, requestKey);
         return true;
     }
 

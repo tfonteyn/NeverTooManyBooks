@@ -77,6 +77,14 @@ class EditSeriesDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditSeriesDelegate(@NonNull final DialogFragment owner,
                        @NonNull final EditParcelableInput<Series> args) {
         this.owner = owner;
@@ -188,7 +196,8 @@ class EditSeriesDelegate
             final Optional<Series> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
+                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                        .send(owner, requestKey);
                 return true;
             }
 
@@ -199,8 +208,8 @@ class EditSeriesDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            EditInPlaceParcelableLauncher.setResult(owner, requestKey,
-                                                                    vm.getOriginal());
+                            new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                                    .send(owner, requestKey);
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());

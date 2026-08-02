@@ -120,6 +120,14 @@ class CoverBrowserDelegate
         }
     };
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link CoverBrowserLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     CoverBrowserDelegate(@NonNull final DialogFragment owner,
                          @NonNull final CoverBrowserInput args) {
         this.owner = owner;
@@ -257,11 +265,12 @@ class CoverBrowserDelegate
     private boolean saveChanges() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger().d(TAG, "saveChanges",
-                                        "filePath=" + vm.getSelectedFileAbsPath());
+                                        "filePath=" + vm.getSelectedFileAbsolutePath());
         }
 
-        if (vm.getSelectedFileAbsPath() != null) {
-            CoverBrowserLauncher.setResult(owner, requestKey, vm.getSelectedFileAbsPath());
+        if (vm.getSelectedFileAbsolutePath() != null) {
+            new CoverBrowserLauncher.Output(vm.getSelectedFileAbsolutePath())
+                    .send(owner, requestKey);
             return true;
         }
         return false;

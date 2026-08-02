@@ -100,6 +100,10 @@ public class EditTocEntryViewModel
         return bookTitle;
     }
 
+    boolean isAnthology() {
+        return isAnthology;
+    }
+
     @NonNull
     TocEntry getOriginal() {
         return original;
@@ -107,10 +111,6 @@ public class EditTocEntryViewModel
 
     int getEditPosition() {
         return editPosition;
-    }
-
-    boolean isAnthology() {
-        return isAnthology;
     }
 
     @NonNull
@@ -154,4 +154,5 @@ public class EditTocEntryViewModel
             original.setPrimaryAuthor(Author.from(currentAuthorName));
         }
     }
+
 }

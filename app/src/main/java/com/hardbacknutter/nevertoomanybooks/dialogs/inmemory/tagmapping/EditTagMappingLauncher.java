@@ -26,11 +26,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
 public class EditTagMappingLauncher
@@ -51,22 +51,6 @@ public class EditTagMappingLauncher
               EditTagMappingDialogFragment::new,
               EditTagMappingBottomSheet::new);
         this.resultListener = resultListener;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param output     result
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final Output output) {
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     /**
@@ -107,7 +91,8 @@ public class EditTagMappingLauncher
                       @Nullable Bundle extras);
     }
 
-    static class Output {
+    static class Output
+            implements LauncherOutput {
         private static final String TAG = "Output";
         private static final String BKEY_ORIGINAL = TAG + ":original";
         private static final String BKEY_EDIT = TAG + ":edit";
@@ -148,7 +133,7 @@ public class EditTagMappingLauncher
         }
 
         @NonNull
-        Bundle toBundle() {
+        public Bundle toBundle() {
             final Bundle result = new Bundle(3);
             result.putParcelable(BKEY_ORIGINAL, original);
             result.putParcelable(BKEY_EDIT, edited);

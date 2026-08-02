@@ -26,12 +26,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * IMPORTANT: The <strong>input</strong> current-value/selection is a {@code String}.
@@ -55,22 +55,6 @@ public class PartialDatePickerLauncher
               PartialDatePickerDialogFragment::new,
               PartialDatePickerBottomSheet::new);
         this.resultListener = resultListener;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param output     result
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final Output output) {
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     /**
@@ -118,7 +102,8 @@ public class PartialDatePickerLauncher
                       @Nullable Bundle extras);
     }
 
-    static class Output {
+    static class Output
+            implements LauncherOutput {
         private static final String TAG = "Output";
         private static final String BKEY_ORIGINAL = TAG + ":original";
         private static final String BKEY_EDIT = TAG + ":edit";
@@ -159,7 +144,7 @@ public class PartialDatePickerLauncher
         }
 
         @NonNull
-        Bundle toBundle() {
+        public Bundle toBundle() {
             final Bundle result = new Bundle(3);
             result.putParcelable(BKEY_ORIGINAL, original);
             result.putParcelable(BKEY_EDIT, edited);

@@ -24,7 +24,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +66,14 @@ class EditLenderDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditLenderLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     @SuppressLint("MissingPermission")
     EditLenderDelegate(@NonNull final DialogFragment owner,
                        @NonNull final EditLenderInput args) {
@@ -174,8 +181,8 @@ class EditLenderDelegate
         }
 
         if (vm.saveChanges()) {
-            //noinspection DataFlowIssue
-            EditLenderLauncher.setResult(owner, requestKey, vm.getBookId(), vm.getCurrentEdit());
+            new EditLenderLauncher.Output(vm.getBookId(), vm.getCurrentEdit())
+                    .send(owner, requestKey);
             return true;
         }
         return false;

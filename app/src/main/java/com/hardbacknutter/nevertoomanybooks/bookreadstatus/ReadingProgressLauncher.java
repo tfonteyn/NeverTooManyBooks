@@ -26,12 +26,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 class ReadingProgressLauncher
         extends DialogLauncher {
@@ -57,42 +57,6 @@ class ReadingProgressLauncher
     }
 
     /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param read       Read/Unread status
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings({"StaticMethodOnlyUsedInOneClass", "SameParameterValue"})
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          final boolean read) {
-        final Bundle result = new Bundle(1);
-        result.putBoolean(DBKey.READ__BOOL, read);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment        the calling DialogFragment
-     * @param requestKey      to use
-     * @param readingProgress data
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @Nullable final ReadingProgress readingProgress) {
-        final Bundle result = new Bundle(1);
-        result.putParcelable(DBKey.READ_PROGRESS, readingProgress);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-    }
-
-    /**
      * Launch the dialog.
      *
      * @param context         preferably the {@code Activity}
@@ -109,14 +73,77 @@ class ReadingProgressLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        if (result.containsKey(DBKey.READ__BOOL)) {
-            onReadListener.onRead(result.getBoolean(DBKey.READ__BOOL));
+        final Output output = Output.fromBundle(result);
+        final Boolean read = output.getRead();
+        if (read != null) {
+            onReadListener.onRead(read);
         } else {
-            //noinspection deprecation
             onReadingProgressListener.onReadingProgress(
-                    Objects.requireNonNull(result.getParcelable(DBKey.READ_PROGRESS),
-                                           DBKey.READ_PROGRESS));
+                    Objects.requireNonNull(output.getReadingProgress()));
+        }
+    }
 
+    public static class Output
+            implements LauncherOutput {
+        @Nullable
+        private final ReadingProgress readingProgress;
+        @Nullable
+        private final Boolean read;
+
+        /**
+         * Constructor.
+         * @param read Read/Unread status
+         */
+        Output(final boolean read) {
+            this(null, read);
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param readingProgress data
+         */
+        Output(@Nullable final ReadingProgress readingProgress) {
+            this(readingProgress, null);
+        }
+
+        private Output(@Nullable final ReadingProgress readingProgress,
+                       @Nullable final Boolean read) {
+            this.readingProgress = readingProgress;
+            this.read = read;
+        }
+
+        @NonNull
+        static Output fromBundle(@NonNull final Bundle args) {
+            @SuppressWarnings("deprecation")
+            final ReadingProgress progress = args.getParcelable(DBKey.READ_PROGRESS);
+            final boolean read = args.getBoolean(DBKey.READ__BOOL);
+
+            return new Output(progress, read);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(2);
+            if (read != null) {
+                args.putBoolean(DBKey.READ__BOOL, read);
+            }
+            if (readingProgress != null) {
+                args.putParcelable(DBKey.READ_PROGRESS, readingProgress);
+            }
+
+            return args;
+        }
+
+        @Nullable
+        public ReadingProgress getReadingProgress() {
+            return readingProgress;
+        }
+
+        @Nullable
+        public Boolean getRead() {
+            return read;
         }
     }
 

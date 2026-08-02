@@ -28,16 +28,15 @@ import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class EditLenderLauncher
@@ -67,27 +66,6 @@ public class EditLenderLauncher
         permissionRequester = new PermissionRequester(activity, contractOwner);
         final String msg = activity.getString(R.string.info_read_contacts_permission);
         permissionRequester.addPermission(Manifest.permission.READ_CONTACTS, false, msg, msg);
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param bookId     the id of the updated book
-     * @param loanee     the name of the loanee, or {@code ""} for a returned book
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @IntRange(from = 1) final long bookId,
-                          @NonNull final String loanee) {
-        final Bundle result = new Bundle(2);
-        result.putLong(DBKey.FK_BOOK, bookId);
-        result.putString(DBKey.LOANEE_NAME, loanee);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
@@ -126,12 +104,62 @@ public class EditLenderLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final long value = result.getLong(DBKey.FK_BOOK);
-        if (value <= 0) {
+        final Output output = Output.fromBundle(result);
+        if (output.getBookId() <= 0) {
+            // Sanity check, we should not get a new book here (id==0)
             throw new IllegalArgumentException(DBKey.FK_BOOK);
         }
-        resultListener.onResult(value, Objects.requireNonNull(
-                result.getString(DBKey.LOANEE_NAME), DBKey.LOANEE_NAME));
+        resultListener.onResult(output.getBookId(), output.getLoanee());
+    }
+
+    public static class Output
+            implements LauncherOutput {
+        @IntRange(from = 1)
+        private final long bookId;
+        @Nullable
+        private final String loanee;
+
+        /**
+         * Constructor.
+         *
+         * @param bookId the id of the lent book
+         * @param loanee the name of the loanee,
+         *               or {@code null} / {@code ""} for a returned book
+         */
+        public Output(final long bookId,
+                      @Nullable final String loanee) {
+            this.bookId = bookId;
+            this.loanee = loanee;
+        }
+
+        @NonNull
+        public static Output fromBundle(final Bundle result) {
+            final long bookId = result.getLong(DBKey.FK_BOOK);
+            final String loanee = result.getString(DBKey.LOANEE_NAME);
+
+            return new Output(bookId, loanee);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(2);
+            args.putLong(DBKey.FK_BOOK, bookId);
+            if (loanee != null) {
+                args.putString(DBKey.LOANEE_NAME, loanee);
+            }
+
+            return args;
+        }
+
+        public long getBookId() {
+            return bookId;
+        }
+
+        @Nullable
+        public String getLoanee() {
+            return loanee;
+        }
     }
 
     @FunctionalInterface
@@ -139,10 +167,11 @@ public class EditLenderLauncher
         /**
          * Callback handler.
          *
-         * @param bookId the id of the updated book
-         * @param loanee the name of the loanee, or {@code ""} for a returned book
+         * @param bookId the id of the lent book
+         * @param loanee the name of the loanee,
+         *               or {@code null} / {@code ""} for a returned book
          */
         void onResult(@IntRange(from = 1) long bookId,
-                      @NonNull String loanee);
+                      @Nullable String loanee);
     }
 }

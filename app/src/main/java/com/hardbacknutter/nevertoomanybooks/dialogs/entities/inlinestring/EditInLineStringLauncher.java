@@ -27,12 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.OnEditListener;
 
 /**
@@ -65,23 +65,6 @@ public class EditInLineStringLauncher
         super(requestKey, dialogSupplier, bottomSheetSupplier);
     }
 
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param output     result
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final Output output) {
-
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
-    }
-
     public void setOnEditListener(@NonNull final OnEditListener<String> listener) {
         this.onEditListener = listener;
     }
@@ -110,7 +93,8 @@ public class EditInLineStringLauncher
         onEditListener.onEdit(output.getOriginal(), output.getEdited());
     }
 
-    static class Output {
+    static class Output
+            implements LauncherOutput {
 
         private static final String TAG = "Output";
         private static final String BKEY_ORIGINAL = TAG + ":original";
@@ -144,7 +128,7 @@ public class EditInLineStringLauncher
         }
 
         @NonNull
-        Bundle toBundle() {
+        public Bundle toBundle() {
             final Bundle result = new Bundle(2);
             result.putString(BKEY_ORIGINAL, original);
             result.putString(BKEY_EDIT, edited);

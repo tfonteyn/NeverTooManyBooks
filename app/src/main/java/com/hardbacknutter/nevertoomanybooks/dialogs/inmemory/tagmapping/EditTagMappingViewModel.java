@@ -34,7 +34,7 @@ public class EditTagMappingViewModel
 
     @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
-    private TagMapping previousValue;
+    private TagMapping original;
     @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private TagMapping currentValue;
@@ -52,16 +52,16 @@ public class EditTagMappingViewModel
         if (!initDone) {
             initDone = true;
 
-            previousValue = args.getTagMapping();
+            original = args.getTagMapping();
             // take a copy without copying the id
-            currentValue = new TagMapping(previousValue);
+            currentValue = new TagMapping(original);
 
             extras = args.getExtras();
         }
     }
 
     boolean isModified() {
-        return !currentValue.equals(previousValue);
+        return !currentValue.equals(original);
     }
 
     /**
@@ -75,7 +75,12 @@ public class EditTagMappingViewModel
     }
 
     @NonNull
-    EditTagMappingLauncher.Output getOutput() {
-        return new EditTagMappingLauncher.Output(previousValue, currentValue, extras);
+    TagMapping getOriginal() {
+        return original;
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 }

@@ -187,4 +187,5 @@ public class EditLenderViewModel
     boolean saveChanges() {
         return dao.setLoanee(bookId, currentEdit);
     }
+
 }

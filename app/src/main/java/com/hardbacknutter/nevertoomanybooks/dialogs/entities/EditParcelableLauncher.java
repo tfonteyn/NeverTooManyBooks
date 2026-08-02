@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * Launcher to add or edit a Parcelable object.
@@ -65,28 +66,6 @@ public final class EditParcelableLauncher<T extends Parcelable>
                                   @NonNull final Supplier<DialogFragment> dialogSupplier,
                                   @NonNull final Supplier<DialogFragment> bottomSheetSupplier) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
-    }
-
-    /**
-     * Set the result.
-     *
-     * @param <T>        type of the item
-     * @param fragment   the fragment returning a result
-     * @param requestKey as received in the constructor
-     * @param output     result
-     *
-     * @throws IllegalArgumentException for an invalid EditAction
-     */
-    public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
-                                                        @NonNull final String requestKey,
-                                                        @NonNull final Output<T> output) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (output.getAction() != EditAction.Add && output.getAction() != EditAction.Edit) {
-                throw new IllegalArgumentException("action must be Add or Edit");
-            }
-        }
-
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     /**
@@ -174,7 +153,8 @@ public final class EditParcelableLauncher<T extends Parcelable>
         }
     }
 
-    public static class Output<T extends Parcelable> {
+    public static class Output<T extends Parcelable>
+            implements LauncherOutput {
         private static final String TAG = "Output";
         private static final String BKEY_ORIGINAL = TAG + ":original";
         private static final String BKEY_EDIT = TAG + ":edit";
@@ -215,7 +195,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
         }
 
         @NonNull
-        Bundle toBundle() {
+        public Bundle toBundle() {
             final Bundle result = new Bundle(3);
             result.putParcelable(EditAction.BKEY, action);
             result.putParcelable(BKEY_ORIGINAL, original);
@@ -237,6 +217,18 @@ public final class EditParcelableLauncher<T extends Parcelable>
         @NonNull
         T getEdited() {
             return edited;
+        }
+
+        @Override
+        public void send(@NonNull final Fragment fragment,
+                         @NonNull final String requestKey) {
+
+            if (BuildConfig.DEBUG /* always */) {
+                if (action != EditAction.Add && action != EditAction.Edit) {
+                    throw new IllegalArgumentException("action must be Add or Edit");
+                }
+            }
+            LauncherOutput.super.send(fragment, requestKey);
         }
     }
 }

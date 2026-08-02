@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.stylepicker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +60,14 @@ class StylePickerDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link StylePickerLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     StylePickerDelegate(@NonNull final DialogFragment owner,
                         @NonNull final StylePickerInput args) {
         this.owner = owner;
@@ -169,9 +176,8 @@ class StylePickerDelegate
     }
 
     private boolean saveChanges() {
-        final Style selectedStyle = vm.getSelectedStyle();
-
-        StylePickerLauncher.setResult(owner, requestKey, selectedStyle);
+        new StylePickerLauncher.Output(vm.getSelectedStyle().getUuid())
+                .send(owner, requestKey);
         return true;
     }
 

@@ -28,11 +28,11 @@ import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 
 public class ExtMenuLauncher
@@ -70,27 +70,6 @@ public class ExtMenuLauncher
      */
     public void setGroupDividerEnabled(final boolean groupDividerEnabled) {
         this.groupDividerEnabled = groupDividerEnabled;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param menuOwner  as was passed into {@link #launch}
-     * @param menuItemId The menu item that was invoked.
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          final int menuOwner,
-                          @IdRes final int menuItemId) {
-        final Bundle result = new Bundle(2);
-        result.putInt(RESULT_MENU_OWNER, menuOwner);
-        result.putInt(RESULT_MENU_ITEM, menuItemId);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
@@ -136,7 +115,55 @@ public class ExtMenuLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onMenuItemClick(result.getInt(RESULT_MENU_OWNER),
-                                       result.getInt(RESULT_MENU_ITEM));
+        final Output output = Output.fromBundle(result);
+        resultListener.onMenuItemClick(output.getMenuOwner(), output.getMenuItemId());
+    }
+
+    public static class Output
+            implements LauncherOutput {
+
+        private final int menuOwner;
+        @IdRes
+        private final int menuItemId;
+
+        /**
+         * Constructor.
+         *
+         * @param menuOwner  as was passed into {@link #launch}
+         * @param menuItemId The menu item that was invoked.
+         */
+        public Output(final int menuOwner,
+                      @IdRes final int menuItemId) {
+            this.menuOwner = menuOwner;
+            this.menuItemId = menuItemId;
+        }
+
+        @NonNull
+        static Output fromBundle(@NonNull final Bundle args) {
+            final int menuOwner = args.getInt(RESULT_MENU_OWNER);
+            @IdRes
+            final int menuItemId = args.getInt(RESULT_MENU_ITEM);
+
+            return new Output(menuOwner, menuItemId);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(2);
+            args.putInt(RESULT_MENU_OWNER, menuOwner);
+            args.putInt(RESULT_MENU_ITEM, menuItemId);
+
+            return args;
+        }
+
+        int getMenuOwner() {
+            return menuOwner;
+        }
+
+        @IdRes
+        int getMenuItemId() {
+            return menuItemId;
+        }
     }
 }

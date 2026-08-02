@@ -64,6 +64,14 @@ class AutoCompletePickerDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link AutoCompletePickerLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     AutoCompletePickerDelegate(@NonNull final DialogFragment owner,
                                @NonNull final AutoCompletePickerInput args) {
         this.owner = owner;
@@ -165,7 +173,9 @@ class AutoCompletePickerDelegate
             return true;
         }
 
-        AutoCompletePickerLauncher.setResult(owner, requestKey, vm.getOutput());
+        new AutoCompletePickerLauncher.Output(vm.getOriginal(), vm.getCurrentValue(),
+                                              vm.getExtras())
+                .send(owner, requestKey);
         return true;
     }
 

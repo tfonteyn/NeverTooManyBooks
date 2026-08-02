@@ -25,12 +25,13 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 public class CoverBrowserLauncher
         extends DialogLauncher {
@@ -40,7 +41,6 @@ public class CoverBrowserLauncher
     /** <strong>IMPORTANT:</strong> always append the cIdx value. */
     private static final String RK_COVER_BROWSER = TAG + ":rk:";
 
-    private static final String COVER_FILE_SPEC = "fileSpec";
     @NonNull
     private final ResultListener resultListener;
 
@@ -61,31 +61,6 @@ public class CoverBrowserLauncher
     }
 
     /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param fileSpec   for the selected file
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final String fileSpec) {
-        final Bundle result = new Bundle(1);
-        result.putString(COVER_FILE_SPEC, fileSpec);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-    }
-
-    @Override
-    public void onFragmentResult(@NonNull final String requestKey,
-                                 @NonNull final Bundle result) {
-        resultListener.onResult(
-                Objects.requireNonNull(result.getString(COVER_FILE_SPEC), COVER_FILE_SPEC));
-    }
-
-    /**
      * Launch the dialog.
      *
      * @param context        preferably the {@code Activity}
@@ -102,6 +77,38 @@ public class CoverBrowserLauncher
         final CoverBrowserInput input = new CoverBrowserInput(
                 getRequestKey(), bookTitle, productCodeStr, cIdx, null);
         showDialog(context, input.toBundle());
+    }
+
+    @Override
+    public void onFragmentResult(@NonNull final String requestKey,
+                                 @NonNull final Bundle result) {
+        final String fileSpec = Output.fromBundle(result);
+        resultListener.onResult(Objects.requireNonNull(fileSpec, Output.COVER_FILE_SPEC));
+    }
+
+    public static class Output
+            implements LauncherOutput {
+        static final String COVER_FILE_SPEC = "fileSpec";
+
+        @NonNull
+        private final String fileSpec;
+
+        Output(@NonNull final String fileSpec) {
+            this.fileSpec = fileSpec;
+        }
+
+        @Nullable
+        static String fromBundle(@NonNull final Bundle args) {
+            return args.getString(COVER_FILE_SPEC);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(1);
+            args.putString(COVER_FILE_SPEC, fileSpec);
+            return args;
+        }
     }
 
     @FunctionalInterface

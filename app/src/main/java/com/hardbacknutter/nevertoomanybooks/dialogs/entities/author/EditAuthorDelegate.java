@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities.author;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.covers.browser.CoverBrowserLauncher;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -93,6 +93,14 @@ class EditAuthorDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditAuthorDelegate(@NonNull final DialogFragment owner,
                        @NonNull final EditParcelableInput<Author> args) {
         this.owner = owner;
@@ -291,7 +299,8 @@ class EditAuthorDelegate
             final Optional<Author> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
+                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                        .send(owner, requestKey);
                 return true;
             }
 
@@ -302,8 +311,8 @@ class EditAuthorDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            EditInPlaceParcelableLauncher.setResult(owner, requestKey,
-                                                                    vm.getOriginal());
+                            new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                                    .send(owner, requestKey);
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());

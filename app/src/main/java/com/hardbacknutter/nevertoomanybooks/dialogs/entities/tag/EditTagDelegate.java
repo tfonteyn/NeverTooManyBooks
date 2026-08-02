@@ -79,6 +79,14 @@ class EditTagDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditTagDelegate(@NonNull final DialogFragment owner,
                     @NonNull final EditParcelableInput<Tag> args) {
         this.owner = owner;
@@ -183,7 +191,8 @@ class EditTagDelegate
             final Optional<Tag> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
+                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                        .send(owner, requestKey);
                 return true;
             }
 
@@ -194,8 +203,8 @@ class EditTagDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            EditInPlaceParcelableLauncher.setResult(owner, requestKey,
-                                                                    vm.getOriginal());
+                            new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                                    .send(owner, requestKey);
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());

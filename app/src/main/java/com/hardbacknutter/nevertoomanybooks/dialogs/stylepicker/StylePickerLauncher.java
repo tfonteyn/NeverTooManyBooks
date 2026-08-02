@@ -24,14 +24,15 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 public class StylePickerLauncher
         extends DialogLauncher {
@@ -49,24 +50,6 @@ public class StylePickerLauncher
               StylePickerDialogFragment::new,
               StylePickerBottomSheet::new);
         this.resultListener = resultListener;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param style      the selected style
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final Style style) {
-        final Bundle result = new Bundle(1);
-        result.putString(DBKey.FK_STYLE, style.getUuid());
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
@@ -89,9 +72,39 @@ public class StylePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(Objects.requireNonNull(result.getString(DBKey.FK_STYLE),
-                                                       DBKey.FK_STYLE));
+        final String styleUuid = Output.fromBundle(result);
+        resultListener.onResult(Objects.requireNonNull(styleUuid, DBKey.FK_STYLE));
     }
+
+    public static class Output
+            implements LauncherOutput {
+
+        @NonNull
+        private final String styleUuid;
+
+        /**
+         * Constructor.
+         *
+         * @param styleUuid the selected style
+         */
+        Output(@NonNull final String styleUuid) {
+            this.styleUuid = styleUuid;
+        }
+
+        @Nullable
+        static String fromBundle(@NonNull final Bundle args) {
+            return args.getString(DBKey.FK_STYLE);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(1);
+            args.putString(DBKey.FK_STYLE, styleUuid);
+            return args;
+        }
+    }
+
 
     @FunctionalInterface
     public interface ResultListener {

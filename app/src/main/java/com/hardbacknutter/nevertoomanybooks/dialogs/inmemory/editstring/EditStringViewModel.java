@@ -31,7 +31,7 @@ public class EditStringViewModel
         extends ViewModel {
 
     @Nullable
-    private String previousValue;
+    private String original;
     @NonNull
     private String currentValue = "";
     @Nullable
@@ -48,8 +48,8 @@ public class EditStringViewModel
         if (!initDone) {
             initDone = true;
 
-            previousValue = args.getEdit();
-            currentValue = previousValue != null ? previousValue : "";
+            original = args.getEdit();
+            currentValue = original != null ? original : "";
 
             extras = args.getExtras();
         }
@@ -61,7 +61,7 @@ public class EditStringViewModel
      * @return flag
      */
     boolean isModified() {
-        return !currentValue.equals(previousValue);
+        return !currentValue.equals(original);
     }
 
     @NonNull
@@ -73,8 +73,13 @@ public class EditStringViewModel
         this.currentValue = currentValue;
     }
 
-    @NonNull
-    EditStringLauncher.Output getOutput() {
-        return new EditStringLauncher.Output(previousValue, currentValue, extras);
+    @Nullable
+    String getOriginal() {
+        return original;
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 }

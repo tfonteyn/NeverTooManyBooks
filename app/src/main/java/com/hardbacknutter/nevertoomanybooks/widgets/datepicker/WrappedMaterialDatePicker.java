@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * Crazy wrapper around a {@link MaterialDatePicker}
@@ -51,9 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
  */
 public final class WrappedMaterialDatePicker<S>
         implements MaterialPickerOnPositiveButtonClickListener<S> {
-
-    /** Used instead of null, so our static method works. */
-    public static final long NO_SELECTION = -1L;
 
     /** The wrapped picker. */
     @NonNull
@@ -95,18 +93,19 @@ public final class WrappedMaterialDatePicker<S>
     @Override
     public void onPositiveButtonClick(@Nullable final S selection) {
         if (selection == null) {
-            Launcher.setResult(picker, requestKey, fieldIds, NO_SELECTION);
+            new Launcher.Output(fieldIds, Launcher.Output.NO_SELECTION)
+                    .send(picker, requestKey);
 
         } else if (selection instanceof Long) {
             final long date = (Long) selection;
-            Launcher.setResult(picker, requestKey, fieldIds, date);
+            new Launcher.Output(fieldIds, date).send(picker, requestKey);
 
         } else if (selection instanceof Pair) {
             //noinspection unchecked
             final Pair<Long, Long> range = (Pair<Long, Long>) selection;
-            final long start = range.first != null ? range.first : NO_SELECTION;
-            final long end = range.second != null ? range.second : NO_SELECTION;
-            Launcher.setResult(picker, requestKey, fieldIds, start, end);
+            final long start = range.first != null ? range.first : Launcher.Output.NO_SELECTION;
+            final long end = range.second != null ? range.second : Launcher.Output.NO_SELECTION;
+            new Launcher.Output(fieldIds, start, end).send(picker, requestKey);
 
         } else {
             throw new IllegalArgumentException(selection.toString());
@@ -115,9 +114,6 @@ public final class WrappedMaterialDatePicker<S>
 
     public static class Launcher
             implements FragmentResultListener {
-
-        private static final String FIELD_ID = "fieldId";
-        private static final String SELECTIONS = "selections";
 
         @NonNull
         private final String requestKey;
@@ -131,28 +127,6 @@ public final class WrappedMaterialDatePicker<S>
                         @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
             this.resultListener = resultListener;
-        }
-
-        /**
-         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-         *
-         * @param fragment   the calling DialogFragment
-         * @param requestKey to use
-         * @param fieldIds   one or two field resource ids this dialog was bound to
-         * @param selections one or two values with the selected date(s);
-         *                   either/both can be {@code null}
-         *
-         * @see #onFragmentResult(String, Bundle)
-         */
-        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final int[] fieldIds,
-                              @Nullable final long... selections) {
-            final Bundle result = new Bundle(2);
-            result.putIntArray(FIELD_ID, fieldIds);
-            result.putLongArray(SELECTIONS, selections);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fm,
@@ -281,9 +255,66 @@ public final class WrappedMaterialDatePicker<S>
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            resultListener.onResult(
-                    Objects.requireNonNull(result.getIntArray(FIELD_ID), FIELD_ID),
-                    Objects.requireNonNull(result.getLongArray(SELECTIONS), SELECTIONS));
+            final Output output = Output.fromBundle(result);
+            resultListener.onResult(output.getFieldIds(), output.getSelections());
+        }
+
+        public static class Output
+                implements LauncherOutput {
+
+            public static final long NO_SELECTION = -1L;
+
+            private static final String FIELD_ID = "fieldId";
+            private static final String SELECTIONS = "selections";
+
+            @NonNull
+            private final int[] fieldIds;
+            @NonNull
+            private final long[] selections;
+
+            /**
+             * Constructor.
+             *
+             * @param fieldIds   one or two field resource ids this dialog was bound to
+             * @param selections one or two values with the selected date(s);
+             *                   First one cannot be {@code null}
+             *                   Second one can be {@code null} or absent
+             */
+            Output(@NonNull final int[] fieldIds,
+                   @NonNull final long... selections) {
+                this.fieldIds = fieldIds;
+                this.selections = selections;
+            }
+
+            @NonNull
+            static Output fromBundle(@NonNull final Bundle args) {
+                final int[] fieldIds = Objects.requireNonNull(args.getIntArray(FIELD_ID),
+                                                              FIELD_ID);
+                final long[] selections = Objects.requireNonNull(args.getLongArray(SELECTIONS),
+                                                                 SELECTIONS);
+
+                return new Output(fieldIds, selections);
+            }
+
+            @NonNull
+            @Override
+            public Bundle toBundle() {
+                final Bundle args = new Bundle(2);
+                args.putIntArray(FIELD_ID, fieldIds);
+                args.putLongArray(SELECTIONS, selections);
+
+                return args;
+            }
+
+            @NonNull
+            int[] getFieldIds() {
+                return fieldIds;
+            }
+
+            @NonNull
+            long[] getSelections() {
+                return selections;
+            }
         }
 
         @FunctionalInterface

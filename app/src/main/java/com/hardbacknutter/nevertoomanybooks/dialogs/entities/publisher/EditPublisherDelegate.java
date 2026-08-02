@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +76,14 @@ class EditPublisherDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditPublisherDelegate(@NonNull final DialogFragment owner,
                           @NonNull final EditParcelableInput<Publisher> args) {
         this.owner = owner;
@@ -181,7 +187,8 @@ class EditPublisherDelegate
             final Optional<Publisher> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
+                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                        .send(owner, requestKey);
                 return true;
             }
 
@@ -192,8 +199,8 @@ class EditPublisherDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            EditInPlaceParcelableLauncher.setResult(owner, requestKey,
-                                                                    vm.getOriginal());
+                            new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                                    .send(owner, requestKey);
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());

@@ -28,12 +28,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * Launcher to edit-in-place a Parcelable object.
@@ -44,15 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
  */
 public final class EditInPlaceParcelableLauncher<T extends Parcelable>
         extends DialogLauncher {
-
-    private static final String TAG = "EditInPlacePL";
-
-    // Input value: the item we're going to edit
-    // uses the shared key: EditParcelableLauncher.BKEY_ITEM
-    // as we're using the SAME viewmodel.
-
-    /** Output value: the (same) item with the edits. */
-    private static final String MODIFIED = TAG + ":m";
 
     private static final String ERROR_NULL_LISTENER = "onEditInPlaceListener";
 
@@ -66,26 +57,11 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
      * @param dialogSupplier      a supplier for a new plain DialogFragment
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
      */
-    public EditInPlaceParcelableLauncher(@NonNull final String requestKey,
-                                         @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                         @NonNull final Supplier<DialogFragment> bottomSheetSupplier) {
+    public EditInPlaceParcelableLauncher(
+            @NonNull final String requestKey,
+            @NonNull final Supplier<DialogFragment> dialogSupplier,
+            @NonNull final Supplier<DialogFragment> bottomSheetSupplier) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
-    }
-
-    /**
-     * Set the result.
-     *
-     * @param <T>        type of the item
-     * @param fragment   the fragment returning a result
-     * @param requestKey as received in the constructor
-     * @param modified   the modified item
-     */
-    public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
-                                                        @NonNull final String requestKey,
-                                                        @NonNull final T modified) {
-        final Bundle result = new Bundle(1);
-        result.putParcelable(MODIFIED, modified);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
@@ -119,7 +95,36 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(listener, ERROR_NULL_LISTENER);
-        //noinspection deprecation
-        listener.onEdit(Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+
+        final T data = Output.fromBundle(result);
+        listener.onEdit(Objects.requireNonNull(data, Output.MODIFIED));
     }
+
+    public static class Output<T extends Parcelable>
+            implements LauncherOutput {
+
+        private static final String MODIFIED = "modified";
+
+        @NonNull
+        private final T data;
+
+        public Output(@NonNull final T data) {
+            this.data = data;
+        }
+
+        @Nullable
+        static <T extends Parcelable> T fromBundle(@NonNull final Bundle args) {
+            //noinspection deprecation,unchecked
+            return (T) args.getParcelable(MODIFIED);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(1);
+            args.putParcelable(MODIFIED, data);
+            return args;
+        }
+    }
+
 }

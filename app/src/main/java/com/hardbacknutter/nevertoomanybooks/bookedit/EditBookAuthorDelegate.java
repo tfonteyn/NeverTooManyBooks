@@ -103,6 +103,14 @@ class EditBookAuthorDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditParcelableLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditBookAuthorDelegate(@NonNull final DialogFragment owner,
                            @NonNull final EditParcelableInput<Author> args) {
         this.owner = owner;
@@ -341,9 +349,8 @@ class EditBookAuthorDelegate
             return false;
         }
 
-        final EditParcelableLauncher.Output<Author> output =
-                new EditParcelableLauncher.Output<>(action, authorVm.getOriginal(), currentEdit);
-        EditParcelableLauncher.setResult(owner, requestKey, output);
+        new EditParcelableLauncher.Output<>(action, authorVm.getOriginal(), currentEdit)
+                .send(owner, requestKey);
         return true;
     }
 

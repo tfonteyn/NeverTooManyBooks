@@ -25,9 +25,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersLauncher
@@ -35,8 +35,6 @@ public class BookshelfFiltersLauncher
 
     private static final String TAG = "BookshelfFilters";
     private static final String RK_FILTERS = TAG + ":rk:filters";
-
-    private static final String BKEY_MODIFIED = TAG + ":m";
 
     @NonNull
     private final ResultListener resultListener;
@@ -51,24 +49,6 @@ public class BookshelfFiltersLauncher
               BookshelfFiltersDialogFragment::new,
               BookshelfFiltersBottomSheet::new);
         this.resultListener = resultListener;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param modified   flag to indicate whether the filters have changed
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          final boolean modified) {
-        final Bundle result = new Bundle(1);
-        result.putBoolean(BKEY_MODIFIED, modified);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
@@ -87,7 +67,31 @@ public class BookshelfFiltersLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(result.getBoolean(BKEY_MODIFIED));
+        resultListener.onResult(Output.fromBundle(result));
+    }
+
+    public static class Output
+            implements LauncherOutput {
+
+        private static final String BKEY_MODIFIED = "modified";
+
+        private final boolean modified;
+
+        public Output(final boolean modified) {
+            this.modified = modified;
+        }
+
+        static boolean fromBundle(@NonNull final Bundle args) {
+            return args.getBoolean(BKEY_MODIFIED);
+        }
+
+        @NonNull
+        @Override
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(1);
+            args.putBoolean(BKEY_MODIFIED, modified);
+            return args;
+        }
     }
 
     @FunctionalInterface

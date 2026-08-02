@@ -80,6 +80,14 @@ class EditIdentifierDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditIdentifierDelegate(@NonNull final DialogFragment owner,
                            @NonNull final EditParcelableInput<Identifier> args) {
         this.owner = owner;
@@ -211,7 +219,8 @@ class EditIdentifierDelegate
             final Optional<Identifier> existingEntity = vm.saveIfUnique();
             if (existingEntity.isEmpty()) {
                 // Success
-                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
+                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                        .send(owner, requestKey);
                 return true;
             }
             // Note that the EntityType of the existingEntity will

@@ -62,6 +62,14 @@ class EditStringDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link EditStringLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     EditStringDelegate(@NonNull final DialogFragment owner,
                        @NonNull final EditStringInput args) {
         this.owner = owner;
@@ -172,7 +180,8 @@ class EditStringDelegate
             return true;
         }
 
-        EditStringLauncher.setResult(owner, requestKey, vm.getOutput());
+        new EditStringLauncher.Output(vm.getOriginal(), vm.getCurrentValue(), vm.getExtras())
+                .send(owner, requestKey);
         return true;
     }
 

@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.tocentry.EditTocEntryLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -629,14 +630,17 @@ public class EditBookTocFragment
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok),
-                                 (d, which) -> Launcher.setResult(this, requestKey,
-                                                                  bookContentType, tocEntries));
+                                 (d, which) -> Launcher.Output
+                                         .createOutput(bookContentType, tocEntries)
+                                         .send(this, requestKey));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
             if (hasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.action_retry),
-                                 (d, which) -> Launcher.searchNextEdition(this, requestKey));
+                                 (d, which) -> Launcher.Output
+                                         .nextEdition()
+                                         .send(this, requestKey));
             }
 
             return dialog;
@@ -744,35 +748,6 @@ public class EditBookTocFragment
             }
 
             /**
-             * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-             *
-             * @param fragment        the calling DialogFragment
-             * @param requestKey      to use
-             * @param bookContentType the type
-             * @param tocEntries      the list of entries
-             *
-             * @see #onFragmentResult(String, Bundle)
-             */
-            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-            static void setResult(@NonNull final Fragment fragment,
-                                  @NonNull final String requestKey,
-                                  @NonNull final Book.ContentType bookContentType,
-                                  @NonNull final List<TocEntry> tocEntries) {
-                final Bundle result = new Bundle(2);
-                result.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
-                result.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(tocEntries));
-                fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-            }
-
-            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-            static void searchNextEdition(@NonNull final Fragment fragment,
-                                          @NonNull final String requestKey) {
-                final Bundle result = new Bundle(1);
-                result.putBoolean(SEARCH_NEXT_EDITION, true);
-                fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-            }
-
-            /**
              * Launch the dialog.
              *
              * @param context          preferably the {@code Activity}
@@ -791,20 +766,95 @@ public class EditBookTocFragment
                 showDialog(context, input.toBundle());
             }
 
-            @SuppressWarnings("deprecation")
             @Override
             public void onFragmentResult(@NonNull final String requestKey,
                                          @NonNull final Bundle result) {
-                if (result.getBoolean(SEARCH_NEXT_EDITION)) {
+                final Output output = Output.fromBundle(result);
+
+                if (output.isFetchNextEditions()) {
                     onSearchNextListener.searchNextEdition();
                 } else {
-                    final Book.ContentType contentType = result
-                            .getParcelable(DBKey.CONTENT_TYPE);
-                    final ArrayList<TocEntry> tocList = result
-                            .getParcelableArrayList(Book.BKEY_TOC_LIST);
-                    resultListener.onResult(
-                            Objects.requireNonNull(contentType, DBKey.CONTENT_TYPE),
-                            Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST));
+                    resultListener.onResult(output.getBookContentType(), output.getTocEntries());
+                }
+            }
+
+            static final class Output
+                    implements LauncherOutput {
+                @Nullable
+                private final Book.ContentType bookContentType;
+                @Nullable
+                private final List<TocEntry> tocEntries;
+
+                /** when {@code true}, type/tocEntries will be {@code null}. */
+                private final boolean fetchNextEditions;
+
+                private Output(@Nullable final Book.ContentType bookContentType,
+                               @Nullable final List<TocEntry> tocEntries) {
+                    this(bookContentType, tocEntries, false);
+                }
+
+                private Output() {
+                    this(null, null, true);
+                }
+
+                private Output(@Nullable final Book.ContentType bookContentType,
+                               @Nullable final List<TocEntry> tocEntries,
+                               final boolean fetchNextEditions) {
+                    this.bookContentType = bookContentType;
+                    this.tocEntries = tocEntries;
+                    this.fetchNextEditions = fetchNextEditions;
+                }
+
+                @SuppressWarnings("deprecation")
+                @NonNull
+                static Output fromBundle(@NonNull final Bundle args) {
+                    final Book.ContentType contentType =
+                            args.getParcelable(DBKey.CONTENT_TYPE);
+                    final ArrayList<TocEntry> tocList =
+                            args.getParcelableArrayList(Book.BKEY_TOC_LIST);
+                    final boolean fetchNextEditions = args.getBoolean(SEARCH_NEXT_EDITION);
+                    return new Output(contentType, tocList, fetchNextEditions);
+                }
+
+                @NonNull
+                static Output nextEdition() {
+                    return new Output();
+                }
+
+                @NonNull
+                static Output createOutput(@Nullable final Book.ContentType bookContentType,
+                                           @Nullable final List<TocEntry> tocEntries) {
+                    return new Output(bookContentType, tocEntries);
+                }
+
+                @NonNull
+                @Override
+                public Bundle toBundle() {
+                    final Bundle args = new Bundle(2);
+                    if (bookContentType != null) {
+                        args.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
+                    }
+                    if (tocEntries != null) {
+                        args.putParcelableArrayList(Book.BKEY_TOC_LIST,
+                                                    new ArrayList<>(tocEntries));
+                    }
+                    args.putBoolean(SEARCH_NEXT_EDITION, fetchNextEditions);
+
+                    return args;
+                }
+
+                boolean isFetchNextEditions() {
+                    return fetchNextEditions;
+                }
+
+                @NonNull
+                Book.ContentType getBookContentType() {
+                    return Objects.requireNonNull(bookContentType);
+                }
+
+                @NonNull
+                List<TocEntry> getTocEntries() {
+                    return Objects.requireNonNull(tocEntries);
                 }
             }
 

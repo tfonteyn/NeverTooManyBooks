@@ -26,7 +26,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.fragment.app.Fragment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
@@ -62,22 +62,6 @@ public final class MultiChoiceLauncher<T extends Entity>
               MultiChoiceDialogFragment::new,
               MultiChoiceBottomSheet::new);
         this.resultListener = resultListener;
-    }
-
-    /**
-     * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-     *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param output     result
-     *
-     * @see #onFragmentResult(String, Bundle)
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final Output output) {
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     /**
@@ -127,7 +111,8 @@ public final class MultiChoiceLauncher<T extends Entity>
                       @Nullable Bundle extras);
     }
 
-    static class Output {
+    static class Output
+            implements LauncherOutput {
 
         private static final String TAG = "Output";
         private static final String BKEY_ORIGINAL = TAG + ":original";
@@ -175,7 +160,7 @@ public final class MultiChoiceLauncher<T extends Entity>
         }
 
         @NonNull
-        Bundle toBundle() {
+        public Bundle toBundle() {
             final Bundle result = new Bundle(3);
             result.putLongArray(BKEY_ORIGINAL,
                                 original.stream().mapToLong(o -> o).toArray());

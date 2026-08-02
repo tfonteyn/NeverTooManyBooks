@@ -88,7 +88,13 @@ public class MultiChoiceViewModel
     }
 
     @NonNull
-    MultiChoiceLauncher.Output getOutput() {
-        return new MultiChoiceLauncher.Output(previousSelection, currentSelection, extras);
+    Set<Long> getPreviousSelection() {
+        return previousSelection;
     }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
+    }
+
 }

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -68,6 +67,14 @@ class ReadingProgressDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link ReadingProgressLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     ReadingProgressDelegate(@NonNull final DialogFragment owner,
                             @NonNull final ReadingProgressInput args) {
         this.owner = owner;
@@ -249,7 +256,7 @@ class ReadingProgressDelegate
             final int id = button.getId();
             if (id == R.id.btn_neutral) {
                 // Finished reading
-                ReadingProgressLauncher.setResult(owner, requestKey, true);
+                new ReadingProgressLauncher.Output(true).send(owner, requestKey);
                 owner.dismiss();
                 return true;
             } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
@@ -264,7 +271,7 @@ class ReadingProgressDelegate
 
     private boolean saveChanges() {
         viewToModel();
-        ReadingProgressLauncher.setResult(owner, requestKey, vm.getReadingProgress());
+        new ReadingProgressLauncher.Output(vm.getReadingProgress()).send(owner, requestKey);
         return true;
     }
 

@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -87,6 +86,14 @@ class BookshelfFiltersDelegate
     @Nullable
     private Toolbar toolbar;
 
+    /**
+     * Constructor.
+     * <p>
+     * Class output: {@link BookshelfFiltersLauncher.Output}.
+     *
+     * @param owner hosting Fragment
+     * @param args  all arguments
+     */
     BookshelfFiltersDelegate(@NonNull final DialogFragment owner,
                              @NonNull final BookshelfFiltersInput args) {
         this.owner = owner;
@@ -216,7 +223,7 @@ class BookshelfFiltersDelegate
 
     private boolean saveChanges() {
         if (vm.saveChanges(vb.getRoot().getContext())) {
-            BookshelfFiltersLauncher.setResult(owner, requestKey, vm.isModified());
+            new BookshelfFiltersLauncher.Output(vm.isModified()).send(owner, requestKey);
             return true;
         }
         return false;

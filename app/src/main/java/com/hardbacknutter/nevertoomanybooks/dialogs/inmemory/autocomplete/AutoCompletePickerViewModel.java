@@ -31,7 +31,7 @@ public class AutoCompletePickerViewModel
         extends ViewModel {
 
     @Nullable
-    private String previousValue;
+    private String original;
     @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private String currentValue;
@@ -49,15 +49,15 @@ public class AutoCompletePickerViewModel
         if (!initDone) {
             initDone = true;
 
-            previousValue = args.getCurrentSelection();
-            currentValue = previousValue != null ? previousValue : "";
+            original = args.getCurrentSelection();
+            currentValue = original != null ? original : "";
 
             extras = args.getExtras();
         }
     }
 
     boolean isModified() {
-        return !currentValue.equals(previousValue);
+        return !currentValue.equals(original);
     }
 
     @NonNull
@@ -69,8 +69,13 @@ public class AutoCompletePickerViewModel
         this.currentValue = currentValue;
     }
 
-    @NonNull
-    AutoCompletePickerLauncher.Output getOutput() {
-        return new AutoCompletePickerLauncher.Output(previousValue, currentValue, extras);
+    @Nullable
+    String getOriginal() {
+        return original;
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 }
