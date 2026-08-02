@@ -38,9 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.CatastropheDialog;
-import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -280,11 +279,11 @@ public class StartupActivity
                         case 2 /* R.string.option_storage_edit_settings */:
                         default: {
                             // take user to the settings screen
+                            final SettingsInput args = new SettingsInput(
+                                    CoverVolume.PK_VOLUME_INDEX, true);
                             final Intent intent = FragmentHostActivityLauncher
                                     .createIntent(this, SettingsFragment.class)
-                                    .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                              CoverVolume.PK_VOLUME_INDEX)
-                                    .putExtra(SettingsViewModel.BKEY_MISSING_STORAGE_VOLUME, true);
+                                    .putExtras(args.toBundle());
 
                             startActivity(intent);
                             // and quit this Activity!,

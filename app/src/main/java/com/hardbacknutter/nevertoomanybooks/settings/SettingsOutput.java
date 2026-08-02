@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 

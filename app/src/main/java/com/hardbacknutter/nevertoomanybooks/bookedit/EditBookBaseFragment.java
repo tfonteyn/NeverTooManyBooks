@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 
 public abstract class EditBookBaseFragment
@@ -69,7 +70,7 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
     private static final String BKEY_DATE_PICKER_FIELD_KEY = TAG + ":pd:fieldKey";
 
-    private ActivityResultLauncher<String> editSettingsLauncher;
+    private ActivityResultLauncher<SettingsInput> editSettingsLauncher;
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
 
     /** The view model. */
@@ -307,6 +308,7 @@ public abstract class EditBookBaseFragment
      * @param endTitleId   title of the picker if the start-date is not in use
      * @param endFieldKey   to set up for the end-date
      */
+    @SuppressWarnings("SameParameterValue")
     private void addDateRangePicker(@StringRes final int titleId,
                                     final int startTitleId,
                                     @NonNull final String startFieldKey,

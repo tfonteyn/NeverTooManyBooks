@@ -43,11 +43,6 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 public abstract class BaseSettingsFragment
         extends BaseFragment {
 
-    private static final String TAG = "BaseSettingsFragment";
-
-    /** Allows auto-scrolling on opening the preference screen to the desired key. */
-    public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-
     /** Default handler. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -120,19 +115,22 @@ public abstract class BaseSettingsFragment
     }
 
     /**
-     * Check the Fragment arguments for the {@link #BKEY_AUTO_SCROLL_TO_KEY}
-     * and scroll the display if applicable.
+     * Check the Fragment arguments and scroll the display if applicable.
      */
     @SuppressWarnings("WeakerAccess")
     protected void scrollToKey() {
-        final Bundle args = getArguments();
-        if (args != null) {
-            final String autoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
-            if (autoScrollToKey != null) {
-                settingsManager.scrollToKey(autoScrollToKey);
-                // we're only scrolling ONCE
-                args.remove(BKEY_AUTO_SCROLL_TO_KEY);
-            }
+        final Bundle rawArgs = getArguments();
+        if (rawArgs == null) {
+            return;
         }
+        final SettingsInput args = SettingsInput.fromBundle(rawArgs);
+        final String autoScrollToKey = args.getAutoScrollKey();
+        if (autoScrollToKey == null) {
+            return;
+        }
+
+        settingsManager.scrollToKey(autoScrollToKey);
+        // we're only scrolling ONCE
+        args.setAutoScrollKey(null);
     }
 }

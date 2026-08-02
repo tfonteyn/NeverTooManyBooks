@@ -43,7 +43,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;

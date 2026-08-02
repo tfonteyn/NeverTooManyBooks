@@ -32,7 +32,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
 
 public class TagAdminContract
         extends ActivityResultContract<Void, Optional<SettingsOutput>> {

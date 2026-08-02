@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntent
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractOutput;
@@ -133,6 +133,7 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookInput;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
 import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
@@ -234,7 +235,7 @@ public class BooksOnBookshelf
     private RowGroupMenuHelper rowGroupMenuHelper;
 
     /** Edit the app settings. */
-    private ActivityResultLauncher<String> editSettingsLauncher;
+    private ActivityResultLauncher<SettingsInput> editSettingsLauncher;
     /** Do an import. */
     private ActivityResultLauncher<Void> importLauncher;
     /** Make a backup. */

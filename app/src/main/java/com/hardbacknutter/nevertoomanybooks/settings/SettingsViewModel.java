@@ -52,12 +52,6 @@ import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 public class SettingsViewModel
         extends ViewModel {
 
-    private static final String TAG = "SettingsViewModel";
-
-    /** Passed in by the startup routines, indicating the storage device was not found. */
-    public static final String BKEY_MISSING_STORAGE_VOLUME = TAG + ":msv";
-
-
     private final StorageMoverTask storageMoverTask = new StorageMoverTask();
     private boolean forceActivityRecreation;
 
@@ -73,7 +67,7 @@ public class SettingsViewModel
      */
     private int storedVolumeIndex;
     /**
-     * Set using {@link #BKEY_MISSING_STORAGE_VOLUME} in the startup routines
+     * Set using {@link SettingsInput} in the startup routines
      * to indicate the storage volume as configured was not found at startup.
      */
     private boolean missingStorageVolume;
@@ -98,7 +92,8 @@ public class SettingsViewModel
             storedTitleOrderBy = ReorderHelper.isSortReordered();
 
             if (args != null) {
-                missingStorageVolume = args.getBoolean(BKEY_MISSING_STORAGE_VOLUME);
+                final SettingsInput settingsInput = SettingsInput.fromBundle(args);
+                missingStorageVolume = settingsInput.isStorageVolumeMissing();
             }
         }
 

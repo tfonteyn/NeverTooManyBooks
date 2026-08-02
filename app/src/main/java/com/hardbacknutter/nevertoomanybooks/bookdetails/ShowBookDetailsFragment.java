@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
@@ -142,7 +143,7 @@ public class ShowBookDetailsFragment
     @Nullable
     private BookChangedListener bookChangedListener;
 
-    private ActivityResultLauncher<String> editSettingsLauncher;
+    private ActivityResultLauncher<SettingsInput> editSettingsLauncher;
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
