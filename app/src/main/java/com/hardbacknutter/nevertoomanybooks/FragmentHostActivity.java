@@ -50,9 +50,12 @@ public class FragmentHostActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Bundle rawArgs = Objects.requireNonNull(getIntent().getExtras());
+        final FragmentHostActivityLauncher.Input args =
+                FragmentHostActivityLauncher.Input.fromBundle(rawArgs);
+
         @LayoutRes
-        final int activityResId = getIntent().getIntExtra(
-                FragmentHostActivityLauncher.BKEY_ACTIVITY, 0);
+        final int activityResId = args.getActivityLayoutId();
         setContentView(activityResId);
 
         final CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_container);
@@ -72,19 +75,17 @@ public class FragmentHostActivity
 
         initToolbar(toolbar);
 
-        final String classname = Objects.requireNonNull(
-                getIntent().getStringExtra(FragmentHostActivityLauncher.BKEY_FRAGMENT_CLASS),
-                "fragment class");
-
+        final String fragmentClassName = args.getFragmentClassName();
         final Class<? extends Fragment> fragmentClass;
         try {
             //noinspection unchecked
-            fragmentClass = (Class<? extends Fragment>) getClassLoader().loadClass(classname);
+            fragmentClass = (Class<? extends Fragment>) getClassLoader()
+                    .loadClass(fragmentClassName);
         } catch (@NonNull final ClassNotFoundException e) {
-            throw new IllegalArgumentException(classname);
+            throw new IllegalArgumentException(fragmentClassName);
         }
 
-        addFirstFragment(R.id.content_frame, fragmentClass, classname);
+        addFirstFragment(R.id.content_frame, fragmentClass, fragmentClassName);
     }
 
     private void initToolbar(@Nullable final Toolbar toolbar) {
