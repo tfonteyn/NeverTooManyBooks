@@ -114,8 +114,8 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
 
         @Nullable
         static <T extends Parcelable> T fromBundle(@NonNull final Bundle args) {
-            //noinspection deprecation,unchecked
-            return (T) args.getParcelable(MODIFIED);
+            //noinspection deprecation
+            return args.getParcelable(MODIFIED);
         }
 
         @NonNull

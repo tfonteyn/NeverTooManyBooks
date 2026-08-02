@@ -137,12 +137,12 @@ class ReadingProgressLauncher
         }
 
         @Nullable
-        public ReadingProgress getReadingProgress() {
+        ReadingProgress getReadingProgress() {
             return readingProgress;
         }
 
         @Nullable
-        public Boolean getRead() {
+        Boolean getRead() {
             return read;
         }
     }

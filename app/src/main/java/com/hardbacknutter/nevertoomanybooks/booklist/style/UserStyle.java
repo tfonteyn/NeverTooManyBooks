@@ -72,8 +72,8 @@ public class UserStyle
      *
      * @see #clone(Context)
      */
-    protected UserStyle(@NonNull final Context context,
-                        @NonNull final Style style) {
+    UserStyle(@NonNull final Context context,
+              @NonNull final Style style) {
         super(UUID.randomUUID().toString(), 0);
         this.name = style.getLabel(context);
 

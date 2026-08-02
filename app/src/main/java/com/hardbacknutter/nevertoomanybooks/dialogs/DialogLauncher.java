@@ -121,7 +121,7 @@ public abstract class DialogLauncher
     }
 
     @NonNull
-    public String getRequestKey() {
+    protected String getRequestKey() {
         return requestKey;
     }
 

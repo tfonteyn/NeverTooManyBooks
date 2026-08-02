@@ -33,12 +33,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class EditBookInput {
-    final long bookId;
+    private final long bookId;
     @Nullable
-    final Book book;
+    private final Book book;
 
     @NonNull
-    final String styleUuid;
+    private final String styleUuid;
 
     /**
      * Add/Edit a <strong>new</strong> book, typically data as retrieved after an

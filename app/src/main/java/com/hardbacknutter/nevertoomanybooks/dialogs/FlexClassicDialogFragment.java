@@ -105,7 +105,7 @@ public abstract class FlexClassicDialogFragment
      *
      * @param delegate to use
      */
-    public void setDelegate(@NonNull final FlexDialogDelegate delegate) {
+    protected void setDelegate(@NonNull final FlexDialogDelegate delegate) {
         this.delegate = delegate;
 
         final Boolean forceFullscreen = this.delegate.isForceFullscreen();

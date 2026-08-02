@@ -69,7 +69,7 @@ public final class FragmentHostActivityLauncher {
         @NonNull
         private final String fragmentClassName;
 
-        public Input(@LayoutRes final int activityLayoutId,
+        Input(@LayoutRes final int activityLayoutId,
                      @NonNull final String fragmentClassName) {
             this.activityLayoutId = activityLayoutId;
             this.fragmentClassName = fragmentClassName;
@@ -86,7 +86,7 @@ public final class FragmentHostActivityLauncher {
         }
 
         @NonNull
-        public Bundle toBundle() {
+        Bundle toBundle() {
             final Bundle args = new Bundle(2);
             args.putInt(BKEY_ACTIVITY, activityLayoutId);
             args.putString(BKEY_FRAGMENT_CLASS, fragmentClassName);

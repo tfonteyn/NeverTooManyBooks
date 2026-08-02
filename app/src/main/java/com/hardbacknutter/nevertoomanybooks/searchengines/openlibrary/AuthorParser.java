@@ -88,8 +88,8 @@ class AuthorParser {
      * @param context      Current context
      * @param searchEngine the engine
      */
-    public AuthorParser(@NonNull final Context context,
-                        @NonNull final OpenLibrarySearchEngine searchEngine) {
+    AuthorParser(@NonNull final Context context,
+                 @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         this.locale = searchEngine.getLocale(context);
     }

@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-public class EditTocEntryInput {
+class EditTocEntryInput {
 
     private static final String TAG = "EditTocEntryInput";
     private static final String BKEY_ANTHOLOGY = TAG + ":anthology";

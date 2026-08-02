@@ -70,7 +70,7 @@ public class FlexBottomSheetDialogFragment
      *
      * @param delegate to use
      */
-    public void setDelegate(@NonNull final FlexDialogDelegate delegate) {
+    protected void setDelegate(@NonNull final FlexDialogDelegate delegate) {
         this.delegate = delegate;
     }
 

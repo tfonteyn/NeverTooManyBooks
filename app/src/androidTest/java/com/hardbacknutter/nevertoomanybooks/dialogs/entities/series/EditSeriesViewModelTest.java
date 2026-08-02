@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.series;
 
-import android.os.Parcelable;
-
 import java.util.Locale;
 import java.util.Optional;
 

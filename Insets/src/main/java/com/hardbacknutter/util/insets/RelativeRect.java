@@ -30,7 +30,7 @@ import androidx.core.graphics.Insets;
 
 import java.util.Set;
 
-public class RelativeRect {
+class RelativeRect {
 
     private static final String TAG = "RelativeRect";
 
@@ -40,7 +40,7 @@ public class RelativeRect {
     public final int bottom;
 
     @NonNull
-    public final Set<Side> sides;
+    private final Set<Side> sides;
 
     RelativeRect(final int start,
                  final int top,

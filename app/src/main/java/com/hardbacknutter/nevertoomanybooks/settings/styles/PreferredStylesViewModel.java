@@ -20,13 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +35,6 @@ import java.util.stream.IntStream;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 @SuppressWarnings("WeakerAccess")
 public class PreferredStylesViewModel

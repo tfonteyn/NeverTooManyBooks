@@ -77,7 +77,7 @@ public class ImportResults
     private static final String TAG = "ImportResults";
 
     /** Bundle key to pass this object around. */
-    public static final String BKEY = TAG;
+    private static final String BKEY = TAG;
 
     /**
      * Keeps track of failed import lines in a text file.

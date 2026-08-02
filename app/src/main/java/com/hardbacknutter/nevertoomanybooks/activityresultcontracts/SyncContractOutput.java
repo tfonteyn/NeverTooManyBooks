@@ -62,9 +62,11 @@ public enum SyncContractOutput
     @NonNull
     public static EnumSet<SyncContractOutput> fromBundle(@Nullable final Bundle args) {
         if (args != null) {
+            // retrieve as a list
             @SuppressWarnings("deprecation")
             final List<SyncContractOutput> list = args.getParcelableArrayList(BKEY_RESULT);
             if (list != null) {
+                // and transform back to an EnumSet
                 return EnumSet.copyOf(list);
             }
         }
@@ -72,15 +74,12 @@ public enum SyncContractOutput
     }
 
     @NonNull
-    public static Bundle toBundle(@NonNull final EnumSet<SyncContractOutput> output) {
-        final Bundle args = new Bundle(1);
-        args.putParcelableArrayList(BKEY_RESULT, new ArrayList<>(output));
-        return args;
-    }
-
-    @NonNull
     public Bundle toBundle() {
-        return toBundle(EnumSet.of(this));
+        final Bundle args = new Bundle(1);
+        // We can put a set, transform it to a list
+        final ArrayList<SyncContractOutput> list = new ArrayList<>(EnumSet.of(this));
+        args.putParcelableArrayList(BKEY_RESULT, list);
+        return args;
     }
 
     @Override

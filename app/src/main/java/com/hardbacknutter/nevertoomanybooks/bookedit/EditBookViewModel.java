@@ -160,7 +160,7 @@ public class EditBookViewModel
     private List<MenuHandler<DataHolder>> menuHandlers;
     /**
      * The Book we're editing (creating/updating).
-     * It will never be {@code null} after being loaded in {@link #init(Context, Bundle)}.
+     * It will never be {@code null} after being loaded in {@link #init(Context, EditBookInput)}.
      */
     private Book book;
     /**

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import androidx.activity.result.contract.ActivityResultContract;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 

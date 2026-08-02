@@ -133,7 +133,7 @@ public class EditLenderLauncher
         }
 
         @NonNull
-        public static Output fromBundle(final Bundle result) {
+        static Output fromBundle(final Bundle result) {
             final long bookId = result.getLong(DBKey.FK_BOOK);
             final String loanee = result.getString(DBKey.LOANEE_NAME);
 
@@ -152,12 +152,12 @@ public class EditLenderLauncher
             return args;
         }
 
-        public long getBookId() {
+        long getBookId() {
             return bookId;
         }
 
         @Nullable
-        public String getLoanee() {
+        String getLoanee() {
             return loanee;
         }
     }
