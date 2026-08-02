@@ -1181,8 +1181,9 @@ public class BooksOnBookshelfViewModel
     /**
      * Should be called when a loanee of a book was changed.
      *
-     * @param bookId Book to update
-     * @param loanee new loanee or {@code null} for a returned book
+     * @param bookId the id of the lent book
+     * @param loanee the name of the loanee,
+     *               or {@code null} / {@code ""} for a returned book
      */
     public void onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
                                     @Nullable final String loanee) {

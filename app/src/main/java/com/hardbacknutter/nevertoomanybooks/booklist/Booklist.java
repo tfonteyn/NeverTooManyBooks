@@ -674,8 +674,9 @@ public class Booklist
      * Allows updating the current list-table without requiring a whole new build
      * with the 'loanee' of a book. Will update all nodes for the given book.
      *
-     * @param bookId to update
-     * @param loanee loanee to set
+     * @param bookId the id of the lent book
+     * @param loanee the name of the loanee,
+     *               or {@code null} / {@code ""} for a returned book
      *
      * @return <strong>all</strong> nodes which were changed.
      */
