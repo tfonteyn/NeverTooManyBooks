@@ -676,7 +676,7 @@ public class SeriesDaoImpl
                         .dotAs(DBKey.PUBLICATION_FREQUENCY.TYPE,
                                DBKey.PUBLICATION_FREQUENCY.CADENCE,
                                DBKey.PUBLICATION_FREQUENCY.IS_ORDINAL)
-                + _FROM_ + TBL_SERIES.ref()
+                + _FROM_ + TBL_SERIES.as()
                 + TBL_SERIES.leftOuterJoin(TBL_SERIES_PUBLICATION_FREQUENCY);
 
         /** Find a {@link Series} by its id. */
@@ -719,7 +719,7 @@ public class SeriesDaoImpl
         /** All {@link Book}s (id only) for a given {@link Series}. */
         static final String FIND_BOOK_IDS_BY_SERIES_ID =
                 SELECT_ + TBL_BOOK_SERIES.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_SERIES.ref()
+                + _FROM_ + TBL_BOOK_SERIES.as()
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?";
 
         /** Get a list of {@link Series} names for use in a dropdown selection. */

@@ -585,7 +585,7 @@ public class PublisherDaoImpl
         /** All {@link Book}s (id only!) for a given {@link Publisher}. */
         static final String FIND_BOOK_IDS_BY_PUBLISHER_ID =
                 SELECT_ + TBL_BOOK_PUBLISHER.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_PUBLISHER.ref()
+                + _FROM_ + TBL_BOOK_PUBLISHER.as()
                 + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER) + "=?";
 
         /** Get a list of {@link Publisher} names for use in a dropdown selection. */

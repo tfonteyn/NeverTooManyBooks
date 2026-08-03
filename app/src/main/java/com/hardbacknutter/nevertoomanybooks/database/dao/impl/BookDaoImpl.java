@@ -681,7 +681,7 @@ public class BookDaoImpl
                                                            DBKey.CALIBRE.BOOK_MAIN_FORMAT,
                                                            DBKey.FK_CALIBRE_LIBRARY)
 
-                           + _FROM_ + TBL_BOOKS.ref()
+                           + _FROM_ + TBL_BOOKS.as()
                            + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
                            + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
                            + (whereClause != null && whereClause.length() > 0
@@ -787,7 +787,7 @@ public class BookDaoImpl
                                           DBKey.CALIBRE.BOOK_MAIN_FORMAT,
                                           DBKey.FK_CALIBRE_LIBRARY)
 
-                           + _FROM_ + TBL_BOOKS.ref()
+                           + _FROM_ + TBL_BOOKS.as()
                            + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
                            + _WHERE_ + whereClause
                            + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.PK_ID)
@@ -830,7 +830,7 @@ public class BookDaoImpl
                                           DBKey.STRIP_INFO.WANTED,
                                           DBKey.STRIP_INFO.AMOUNT,
                                           DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC)
-                           + _FROM_ + TBL_BOOKS.ref()
+                           + _FROM_ + TBL_BOOKS.as()
                            + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION)
                            + _WHERE_ + whereClause
                            + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.PK_ID)

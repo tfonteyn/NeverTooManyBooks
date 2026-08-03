@@ -819,7 +819,7 @@ public class BookshelfDaoImpl
                 SELECT_COUNT_FROM_ + TBL_BOOKSHELF.getName();
 
         static final String COUNT_BOOKS =
-                SELECT_COUNT_FROM_ + TBL_BOOK_BOOKSHELF.ref()
+                SELECT_COUNT_FROM_ + TBL_BOOK_BOOKSHELF.as()
                 + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
         /** A list of all {@link Bookshelf}s, unordered. Joined with the styles table. */
@@ -873,7 +873,7 @@ public class BookshelfDaoImpl
         /** All {@link Book}s (id only!) for a given {@link Bookshelf}. */
         static final String FIND_BOOK_IDS_BY_BOOKSHELF_ID =
                 SELECT_ + TBL_BOOK_BOOKSHELF.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_BOOKSHELF.ref()
+                + _FROM_ + TBL_BOOK_BOOKSHELF.as()
                 + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
         static final String DELETE_NODE_STATE_BY_BOOKSHELF_ID =

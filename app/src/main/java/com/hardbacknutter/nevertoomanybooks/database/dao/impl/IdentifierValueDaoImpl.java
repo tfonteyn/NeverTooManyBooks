@@ -192,7 +192,7 @@ public class IdentifierValueDaoImpl
             @NonNull final String fk) {
 
             COUNT_FK =
-                    SELECT_COUNT_FROM_ + linkTable.ref()
+                    SELECT_COUNT_FROM_ + linkTable.as()
                     + _WHERE_ + linkTable.dot(DBKey.FK_IDENTIFIER) + "=?";
 
             FIND_FK_BY_IDENTIFIER_KEY_AND_SID =

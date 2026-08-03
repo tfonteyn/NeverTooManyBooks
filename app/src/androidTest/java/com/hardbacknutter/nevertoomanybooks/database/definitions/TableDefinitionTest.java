@@ -41,13 +41,13 @@ class TableDefinitionTest {
             + " ON (b._id=bbsh.book)";
 
     @Test
-    void ref() {
-        assertEquals("bookshelf AS bsh", TBL_BOOKSHELF.ref());
+    void as() {
+        assertEquals("bookshelf AS bsh", TBL_BOOKSHELF.as());
     }
 
     @Test
-    void joinAndRef() {
-        assertEquals(BS_J_BBS, TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF));
+    void joinAndAs() {
+        assertEquals(BS_J_BBS, TBL_BOOKSHELF.as() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF));
     }
 
     @Test

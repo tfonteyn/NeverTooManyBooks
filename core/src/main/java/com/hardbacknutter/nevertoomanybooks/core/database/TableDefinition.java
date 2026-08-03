@@ -456,7 +456,7 @@ public class TableDefinition {
     }
 
     /**
-     * Return an aliased table name.
+     * Return an aliased table name. Uses the predefined alias for this table.
      * <p>
      * format: [table-name] AS [table-alias]
      * <p>
@@ -465,9 +465,27 @@ public class TableDefinition {
      * @return SQL Fragment
      */
     @NonNull
-    public String ref() {
+    public String as() {
         return name + _AS_ + alias;
     }
+
+    /**
+     * Return an aliased table name. Uses the given alias name, overriding the default.
+     * This is useful for secondary references in a single SQL statement.
+     * <p>
+     * format: [table-name] AS [alias]
+     * <p>
+     * e.g. 'books AS b2'.
+     *
+     * @param alias to use
+     *
+     * @return SQL Fragment
+     */
+    @NonNull
+    public String as(@NonNull final String alias) {
+        return name + _AS_ + alias;
+    }
+
 
     /**
      * Staring with the current table, join with the given list of tables one by one.
@@ -480,13 +498,13 @@ public class TableDefinition {
     public String startJoin(@NonNull final TableDefinition... tables) {
         // optimization
         if (tables.length == 1) {
-            return ref() + join(tables[0]);
+            return as() + join(tables[0]);
         }
 
         final List<TableDefinition> list = new ArrayList<>(Arrays.asList(tables));
         list.add(0, this);
 
-        final StringBuilder sb = new StringBuilder(ref());
+        final StringBuilder sb = new StringBuilder(as());
         for (int i = 0; i < list.size() - 1; i++) {
             sb.append(list.get(i).join(list.get(i + 1)));
         }
@@ -504,7 +522,7 @@ public class TableDefinition {
      */
     @NonNull
     public String join(@NonNull final TableDefinition to) {
-        return " JOIN " + to.ref() + _ON_ + fkMatch(to);
+        return " JOIN " + to.as() + _ON_ + fkMatch(to);
     }
 
     /**
@@ -518,7 +536,7 @@ public class TableDefinition {
      */
     @NonNull
     public String leftOuterJoin(@NonNull final TableDefinition to) {
-        return " LEFT OUTER JOIN " + to.ref() + _ON_ + fkMatch(to);
+        return " LEFT OUTER JOIN " + to.as() + _ON_ + fkMatch(to);
     }
 
     /**

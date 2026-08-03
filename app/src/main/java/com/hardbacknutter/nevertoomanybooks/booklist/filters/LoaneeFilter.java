@@ -37,7 +37,7 @@ public class LoaneeFilter
         implements Filter {
 
     private static final String LOAN_FILTER =
-            "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+            "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.as()
             + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + "='%1$s'"
             + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')';
 

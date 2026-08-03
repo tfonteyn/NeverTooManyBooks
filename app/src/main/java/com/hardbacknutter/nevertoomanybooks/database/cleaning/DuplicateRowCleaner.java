@@ -409,7 +409,7 @@ class DuplicateRowCleaner {
         db.execSQL(
                 CREATE_TEMP_TABLE_ + tblRemove + _AS_
                 + SELECT_ + keepIdColumn + ',' + removeIdColumn
-                + _FROM_ + table.ref() + _JOIN_ + tblKeep + ' ' + TBL_KEEP + _ON_ + columns
+                + _FROM_ + table.as() + _JOIN_ + tblKeep + ' ' + TBL_KEEP + _ON_ + columns
                 + _WHERE_ + table.dot(DBKey.PK_ID) + "<>" + keepIdColumn
         );
 
@@ -451,7 +451,7 @@ class DuplicateRowCleaner {
                 INSERT_OR_IGNORE_INTO_ + table.getName()
                 + '(' + keyColumn + ',' + insOthers + ") "
                 + SELECT_ + keepIdColumn + ',' + selOthers
-                + _FROM_ + table.ref()
+                + _FROM_ + table.as()
                 + _JOIN_ + tblRemove + ' ' + TBL_REMOVE
                 + _ON_ + table.dot(keyColumn) + '=' + removeIdColumn
                 + _WHERE_ + NOT_EXISTS_

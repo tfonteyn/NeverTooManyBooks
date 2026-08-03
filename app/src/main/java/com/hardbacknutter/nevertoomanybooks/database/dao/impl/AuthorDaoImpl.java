@@ -280,7 +280,7 @@ public class AuthorDaoImpl
         // UNION instead of on the toc only; and SqLite rejects () around the sub selects.
         if (withTocEntries) {
             sql += Sql.FIND_TOC_ENTRIES_BY_AUTHOR_ID
-                   + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
+                   + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.as()
                                 + " ON (" + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK)
                                 + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + ')'
                               : "")
@@ -1032,7 +1032,7 @@ public class AuthorDaoImpl
         static final String SELECT_ALL =
                 SELECT_ + TBL_AUTHORS.dot("*")
                 + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.FK_AUTHOR_REAL_AUTHOR)
-                + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR);
+                + _FROM_ + TBL_AUTHORS.as() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR);
 
         /** Get an {@link Author} by its id. */
         static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
@@ -1073,7 +1073,7 @@ public class AuthorDaoImpl
         /** All {@link Book}s (id only!) for a given {@link Author}. */
         static final String FIND_BOOK_IDS_BY_AUTHOR_ID =
                 SELECT_ + TBL_BOOK_AUTHOR.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_AUTHOR.ref()
+                + _FROM_ + TBL_BOOK_AUTHOR.as()
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
 
 
@@ -1122,14 +1122,14 @@ public class AuthorDaoImpl
         /** Get a list of {@link Author} "given family" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
                 SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
-                + _FROM_ + TBL_AUTHORS.ref()
+                + _FROM_ + TBL_AUTHORS.as()
                 + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
 
         /** Get a list of {@link Author} "family, given" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
                 SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
-                + _FROM_ + TBL_AUTHORS.ref()
+                + _FROM_ + TBL_AUTHORS.as()
                 + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
 

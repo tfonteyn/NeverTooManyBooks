@@ -195,7 +195,7 @@ public class DBCleaner {
         final List<Long> all = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
                 SELECT_ + TBL_AUTHORS.dot(DBKey.PK_ID)
-                + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR)
+                + _FROM_ + TBL_AUTHORS.as() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR)
                 + _WHERE_ + TBL_PSEUDONYM_AUTHOR.dot(DBKey.FK_AUTHOR_REAL_AUTHOR) + ">0",
                 null)) {
             while (cursor.moveToNext()) {

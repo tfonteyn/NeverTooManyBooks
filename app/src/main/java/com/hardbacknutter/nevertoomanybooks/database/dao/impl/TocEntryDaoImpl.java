@@ -572,7 +572,7 @@ public class TocEntryDaoImpl
          * is present.
          */
         static final String COUNT_BOOKS =
-                SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.ref()
+                SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.as()
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
 
         /**
@@ -656,7 +656,7 @@ public class TocEntryDaoImpl
         /** All Book id's for a given {@link TocEntry}. */
         static final String FIND_BOOK_IDS_BY_TOC_ENTRY_ID =
                 SELECT_ + TBL_BOOK_TOC_ENTRIES.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref()
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.as()
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
 
         /** All Books as {@link BookLite} for a given {@link TocEntry}. */

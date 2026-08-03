@@ -185,7 +185,7 @@ public class Booklist
         this.nodeDao = nodeDao;
 
         sqlSelectBooklistNodes = SELECT_ + BooklistNode.getColumns(listTable)
-                                 + _FROM_ + listTable.ref()
+                                 + _FROM_ + listTable.as()
                                  + _WHERE_ + listTable.dot("%1s") + "=?";
 
         baseCursorSql = SELECT_
@@ -196,7 +196,7 @@ public class Booklist
                                    .collect(Collectors.joining(","))
                         + ',' + (listTable.dot(DBKey.PK_ID)
                                  + _AS_ + DBKey.BL_NODE.ROW_ID)
-                        + _FROM_ + listTable.ref()
+                        + _FROM_ + listTable.as()
                         + _WHERE_ + listTable.dot(DBKey.BL_NODE.VISIBLE) + "=1";
         // the WHERE will be completed depending on offset/sek cursor,
         // and order/limit/offset set accordingly.
@@ -786,7 +786,7 @@ public class Booklist
             sqlGetNextBookWithoutCover =
                     SELECT_ + BooklistNode.getColumns(listTable)
                     + ',' + listTable.dot(DBKey.BOOK_UUID)
-                    + _FROM_ + listTable.ref()
+                    + _FROM_ + listTable.as()
                     + _WHERE_ + listTable.dot(DBKey.BL_NODE.GROUP) + "=?"
                     + _AND_ + listTable.dot(DBKey.PK_ID) + ">?";
         }

@@ -467,29 +467,29 @@ public class IdentifierDaoImpl
          * ALL rows.
          */
         static final String SELECT_ALL_ORDERED_BY_KEY =
-                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.as()
                 + _ORDER_BY_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY);
 
         /**
          * All rows for a given {@link Identifier.EntityType}.
          */
         static final String SELECT_ALL_BY_ENTITY_ORDERED_BY_KEY =
-                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.as()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?"
                 + _ORDER_BY_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY);
 
         static final String FIND_BY_ID =
-                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.as()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.PK_ID) + "=?";
 
         static final String FIND_BY_KEY_AND_ENTITY_TYPE =
-                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.as()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
                 + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?";
 
         static final String FIND_ID_BY_KEY_AND_ENTITY_TYPE =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID)
-                + _FROM_ + TBL_IDENTIFIERS.ref()
+                + _FROM_ + TBL_IDENTIFIERS.as()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
                 + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?";
     }

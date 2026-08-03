@@ -744,7 +744,7 @@ class BooklistBuilder {
             extraJoins.remove(TBL_BOOK_BOOKSHELF.getName());
         } else {
             // Otherwise, we start with the BOOKS table.
-            sb.append(TBL_BOOKS.ref());
+            sb.append(TBL_BOOKS.as());
         }
 
         // We always want the primary author id in the cursor.
@@ -820,7 +820,7 @@ class BooklistBuilder {
 
         final String subQuery =
                 SELECT_ + TBL_BOOK_AUTHOR.dotAs(DBKey.FK_AUTHOR)
-                + _FROM_ + TBL_BOOK_AUTHOR.ref()
+                + _FROM_ + TBL_BOOK_AUTHOR.as()
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + '=' + baOuter + '.' + DBKey.FK_BOOK
                 + _ORDER_BY_
                 // Note the explicit ASC... the internet says its "safer" to add it for that
@@ -837,7 +837,7 @@ class BooklistBuilder {
         return WITH_ + TBL_WITH_AUTHOR.getName() + _AS_ + '('
                + SELECT_ + baOuter + '.' + DBKey.FK_BOOK
                + ',' + '(' + subQuery + ')' + _AS_ + DBKey.FK_AUTHOR
-               + _FROM_ + TBL_BOOK_AUTHOR.getName() + _AS_ + baOuter
+               + _FROM_ + TBL_BOOK_AUTHOR.as(baOuter)
                + _GROUP_BY_ + baOuter + '.' + DBKey.FK_BOOK
                // don't forget we're appending the bulk insert SQL, so add the SPACE
                + ") ";
@@ -949,7 +949,7 @@ class BooklistBuilder {
 
         // This is using a non-enforced reference, build the JOIN manually.
         final String join =
-                " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.getName() + _AS_ + tableAlias
+                " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.as(tableAlias)
                 + _ON_
                 + TBL_BOOKS.dot(bookTableColumn) + '=' + tableAlias + '.' + DBKey.LANG_MAPPING.ISO3
                 + _AND_
@@ -1258,7 +1258,7 @@ class BooklistBuilder {
                 + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
                 + " WHEN NEW." + DBKey.BL_NODE.LEVEL + '=' + (level + 1)
                 + " AND NOT EXISTS("
-                + "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause + ')'
+                + "SELECT 1 FROM " + triggerHelperTable.as() + _WHERE_ + whereClause + ')'
                 + _BEGIN_
                 + INSERT_INTO_ + listTable.getName()
                 + ' ' + listColumns + _VALUES_ + listValues + ';'
@@ -1358,8 +1358,6 @@ class BooklistBuilder {
 
         final int parentLevel = level - 1;
 
-        final String listTableName = listTable.getName();
-
         // Paranoia...
         db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
 
@@ -1370,13 +1368,14 @@ class BooklistBuilder {
                 + SELECT_
                 + taParent + '.' + DBKey.PK_ID + _AS_ + caParentId
                 + ',' + operation + _AS_ + caSum
-                + _FROM_ + listTable.ref()
-                + _JOIN_ + listTableName + _AS_ + taParent
+                + _FROM_ + listTable.as()
+                // self-join
+                + _JOIN_ + listTable.as(taParent)
                 + _ON_ + taParent + '.' + DBKey.BL_NODE.LEVEL + '=' + parentLevel
                 + _AND_ + taParent + '.' + DBKey.PK_ID + '='
                 + '('
                 + SELECT_ + taCandidate + '.' + DBKey.PK_ID
-                + _FROM_ + listTableName + _AS_ + taCandidate
+                + _FROM_ + listTable.as(taCandidate)
                 + _WHERE_ + taCandidate + '.' + DBKey.BL_NODE.LEVEL + '=' + parentLevel
                 + _AND_ + taCandidate + '.' + DBKey.PK_ID + '<' + listTable.dot(DBKey.PK_ID)
                 + _ORDER_BY_ + taCandidate + '.' + DBKey.PK_ID + _DESC + _LIMIT_1
@@ -1392,23 +1391,23 @@ class BooklistBuilder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // SQLite 3.33.0 can go faster but requires Android 14
             // as using a FROM in an UPDATE is 14+ only
-            s = UPDATE_ + listTableName
+            s = UPDATE_ + listTable.getName()
                 + _SET_ + DBKey.FK_BOOK + '=' + taSums + '.' + caSum
                 + _FROM_ + taSums
                 + _WHERE_ + listTable.dot(DBKey.PK_ID) + '=' + taSums + '.' + caParentId;
         } else {
             // Android 13- cannot handle a FROM in an UPDATE
-            s = UPDATE_ + listTableName
+            s = UPDATE_ + listTable.getName()
                 + _SET_ + DBKey.FK_BOOK + '='
                 + '('
                 + SELECT_ + caSum + _FROM_ + taSums
-                + _WHERE_ + taSums + '.' + caParentId + '=' + listTableName + '.' + DBKey.PK_ID
+                + _WHERE_ + taSums + '.' + caParentId + '=' + listTable.getName() + '.' + DBKey.PK_ID
                 + ')'
                 + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + parentLevel
                 + _AND_ + EXISTS_
                 + '('
                 + SELECT_ + '1' + _FROM_ + taSums
-                + _WHERE_ + taSums + '.' + caParentId + '=' + listTableName + '.' + DBKey.PK_ID
+                + _WHERE_ + taSums + '.' + caParentId + '=' + listTable.getName() + '.' + DBKey.PK_ID
                 + ')';
         }
 

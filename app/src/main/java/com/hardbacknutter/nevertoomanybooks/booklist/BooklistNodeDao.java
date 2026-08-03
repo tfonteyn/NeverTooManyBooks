@@ -597,8 +597,8 @@ public class BooklistNodeDao {
         final String sqlTemplate =
                 Sql.UPDATE_ + listTable.getName() + Sql._SET_ + "%s=1"
                 + Sql._WHERE_ + DBKey.PK_ID + " IN ("
-                + Sql.SELECT_ + listTable.dot(DBKey.PK_ID) + Sql._FROM_ + listTable.ref()
-                + "," + TBL_BOOK_LIST_NODE_STATE.ref()
+                + Sql.SELECT_ + listTable.dot(DBKey.PK_ID) + Sql._FROM_ + listTable.as()
+                + "," + TBL_BOOK_LIST_NODE_STATE.as()
                 + Sql._WHERE_
                 + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.FK_BOOKSHELF) + "=?"
                 + Sql._AND_
