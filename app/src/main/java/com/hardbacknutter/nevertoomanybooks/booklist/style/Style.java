@@ -410,17 +410,6 @@ public interface Style {
     boolean useReadProgress();
 
     /**
-     * Convenience method for use in the Preferences screen.
-     * Get the summary text for the in-use group names as a CSV String.
-     *
-     * @param context Current context
-     *
-     * @return summary text
-     */
-    @NonNull
-    String getGroupsSummaryText(@NonNull Context context);
-
-    /**
      * Should a summation of the number of books on each level be done/shown.
      *
      * @return flag

@@ -629,15 +629,6 @@ public abstract class BaseStyle
         setGroupList(list);
     }
 
-    @Override
-    @NonNull
-    public String getGroupsSummaryText(@NonNull final Context context) {
-        return groups.values()
-                     .stream()
-                     .map(element -> element.getLabel(context))
-                     .collect(Collectors.joining(", "));
-    }
-
     /**
      * Wrapper that gets the primary-author-role from the {@link BooklistGroup#AUTHOR} group
      * (if we have it); or else the default {@link AuthorRole#UNKNOWN}.
