@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
@@ -138,6 +139,11 @@ public interface Style {
      * i.e. the level which will be visible but not expanded.
      * i.o.w. the top-level where items above will be expanded/visible,
      * and items below will be hidden.
+     * <p>
+     * Reminder: during building/displaying the book list, this
+     * setting will only be applied immediately if the {@link RebuildBooklist}
+     * is set to {@link RebuildBooklist#Preferred}.
+     * Otherwise, it's up to the user to apply it using the menu option.
      *
      * @return level
      */
