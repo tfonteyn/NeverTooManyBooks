@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -128,6 +127,7 @@ class BooklistBuilder {
     private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
     private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
     private static final String END = "END";
+    private static final String EXISTS_ = "EXISTS ";
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
     private static final String UPDATE_ = "UPDATE ";
@@ -136,9 +136,11 @@ class BooklistBuilder {
     private static final String _AND_ = " AND ";
     private static final String _AS_ = " AS ";
     private static final String _BEGIN_ = " BEGIN ";
+    private static final String _DESC = " DESC";
     private static final String _FROM_ = " FROM ";
     private static final String _GROUP_BY_ = " GROUP BY ";
     private static final String _IS_ = " IS ";
+    private static final String _JOIN_ = " JOIN ";
     private static final String _LIMIT_1 = " LIMIT 1";
     private static final String _ON_ = " ON ";
     private static final String _ORDER_BY_ = " ORDER BY ";
@@ -400,6 +402,10 @@ class BooklistBuilder {
         addDomainExpression(new DomainExpression(DOM_BL_NODE_LEVEL,
                                                  String.valueOf(style.getGroupCount() + 1),
                                                  Sort.Asc));
+
+        // Speed up the counting of books in a group.
+        // See {@link #createBookCounts(SynchronizedDb, int, String)}
+        listTable.addIndex(DBKey.BL_NODE.LEVEL, true, DOM_BL_NODE_LEVEL, DOM_PK_ID);
 
         // The BooklistGroup for a book is always {@link BooklistGroup#BOOK} (duh)
         // The group levels will have {@code null} in this column.
@@ -1316,22 +1322,13 @@ class BooklistBuilder {
         // the first level above the books == number of groups
         final int groupCount = style.getGroupCount();
 
-        final List<String> keyColumns = style
-                .getGroupList().stream()
-                .map(BooklistGroup::getGroupKey)
-                .map(GroupKey::getKeyDomainExpression)
-                .map(DomainExpression::getDomain)
-                .map(Domain::getName)
-                .collect(Collectors.toList());
-
         // count the number of books for each lowest-level group
         // and store the result on that group
-        createBookCounts(db, keyColumns, groupCount + 1, COUNT_ROWS);
+        createBookCounts(db, groupCount + 1, COUNT_ROWS);
 
         // for each group, sum the book-counts, and store them in the next group up.
         for (int level = groupCount; level > 1; level--) {
-            createBookCounts(db, keyColumns.subList(0, level - 1), level,
-                             "SUM(" + DBKey.FK_BOOK + ')');
+            createBookCounts(db, level, "SUM(" + listTable.dot(DBKey.FK_BOOK) + ')');
         }
     }
 
@@ -1340,13 +1337,11 @@ class BooklistBuilder {
      * The lowest level should use operation {@code COUNT(*)}
      * and the levels above {@code SUM(book)}.
      *
-     * @param db         Database Access
-     * @param keyColumns for the given level
-     * @param level      to process
-     * @param operation  {@code COUNT(*)} or {@code SUM(book)}
+     * @param db        Database Access
+     * @param level     to process
+     * @param operation {@code COUNT(*)} or {@code SUM(book)}
      */
     private void createBookCounts(@NonNull final SynchronizedDb db,
-                                  @NonNull final List<String> keyColumns,
                                   final int level,
                                   @NonNull final String operation) {
         // table alias
@@ -1354,45 +1349,71 @@ class BooklistBuilder {
         // Column alias.
         final String caSum = "cnt";
 
+        // table alias
+        final String taParent = "p";
+        // table alias
+        final String taCandidate = "p2";
+        // Column alias.
+        final String caParentId = "parent_id";
+
+        final int parentLevel = level - 1;
+
+        final String listTableName = listTable.getName();
+
         // Paranoia...
         db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
-        // Temp table to hold the count/sums before we run the update
-        final String selectKeys = String.join(",", keyColumns);
-        db.execSQL(CREATE_TEMP_TABLE_ + taSums + _AS_
-                   + SELECT_ + selectKeys + ',' + operation + _AS_ + caSum
-                   + _FROM_ + listTable.getName()
-                   + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + level
-                   + _GROUP_BY_ + selectKeys);
-        db.execSQL(CREATE_INDEX_ + "idx_" + taSums + _ON_ + taSums + '(' + selectKeys + ')');
 
-        // Run the actual update on the list table.
-        final String whereKeys = createKeyEquality(keyColumns, taSums);
+        // Temp table to hold the count/sums before we run the update
+        // It's linking each child to its exact parent_id
+        final String createSql =
+                CREATE_TEMP_TABLE_ + taSums + _AS_
+                + SELECT_
+                + taParent + '.' + DBKey.PK_ID + _AS_ + caParentId
+                + ',' + operation + _AS_ + caSum
+                + _FROM_ + listTable.ref()
+                + _JOIN_ + listTableName + _AS_ + taParent
+                + _ON_ + taParent + '.' + DBKey.BL_NODE.LEVEL + '=' + parentLevel
+                + _AND_ + taParent + '.' + DBKey.PK_ID + '='
+                + '('
+                + SELECT_ + taCandidate + '.' + DBKey.PK_ID
+                + _FROM_ + listTableName + _AS_ + taCandidate
+                + _WHERE_ + taCandidate + '.' + DBKey.BL_NODE.LEVEL + '=' + parentLevel
+                + _AND_ + taCandidate + '.' + DBKey.PK_ID + '<' + listTable.dot(DBKey.PK_ID)
+                + _ORDER_BY_ + taCandidate + '.' + DBKey.PK_ID + _DESC + _LIMIT_1
+                + ')'
+                + _WHERE_ + listTable.dot(DBKey.BL_NODE.LEVEL) + '=' + level
+                + _GROUP_BY_ + taParent + '.' + DBKey.PK_ID;
+
+        db.execSQL(createSql);
+        db.execSQL(CREATE_INDEX_ + "idx_" + taSums + _ON_ + taSums + '(' + caParentId + ')');
+
+        // Update the list table parent rows directly using parent_id
         final String s;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // SQLite 3.33.0 can go faster but requires Android 14
-            s = UPDATE_ + listTable.getName()
+            // as using a FROM in an UPDATE is 14+ only
+            s = UPDATE_ + listTableName
                 + _SET_ + DBKey.FK_BOOK + '=' + taSums + '.' + caSum
                 + _FROM_ + taSums
-                + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + (level - 1) + _AND_ + whereKeys;
+                + _WHERE_ + listTable.dot(DBKey.PK_ID) + '=' + taSums + '.' + caParentId;
         } else {
-            s = UPDATE_ + listTable.getName() + _SET_ + DBKey.FK_BOOK + '='
-                + '(' + SELECT_ + caSum + _FROM_ + taSums + _WHERE_ + whereKeys + ')'
-                + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + (level - 1)
-                + _AND_
-                + "EXISTS (" + SELECT_ + '1' + _FROM_ + taSums + _WHERE_ + whereKeys + ')';
+            // Android 13- cannot handle a FROM in an UPDATE
+            s = UPDATE_ + listTableName
+                + _SET_ + DBKey.FK_BOOK + '='
+                + '('
+                + SELECT_ + caSum + _FROM_ + taSums
+                + _WHERE_ + taSums + '.' + caParentId + '=' + listTableName + '.' + DBKey.PK_ID
+                + ')'
+                + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + parentLevel
+                + _AND_ + EXISTS_
+                + '('
+                + SELECT_ + '1' + _FROM_ + taSums
+                + _WHERE_ + taSums + '.' + caParentId + '=' + listTableName + '.' + DBKey.PK_ID
+                + ')';
         }
+
         db.execSQL(s);
         // No longer needed
         db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
-    }
-
-    @NonNull
-    private String createKeyEquality(@NonNull final List<String> keyColumns,
-                                     @SuppressWarnings("SameParameterValue")
-                                     @NonNull final String table) {
-        // Using 'IS' allows comparing with null values
-        return keyColumns.stream()
-                         .map(k -> listTable.getName() + '.' + k + _IS_ + table + "." + k)
-                         .collect(Collectors.joining(_AND_));
     }
 }
