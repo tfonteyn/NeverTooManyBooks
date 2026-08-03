@@ -2,10 +2,10 @@ NEW:
 
 - kb.nl supports ISSN searches
 - performance increase when swiping between books
-- Settings dialogs themselves now follow user-settings for dialog/bottomsheet
+- Settings dialogs now follow user-settings for dialog/bottomsheet
 
 FIXES:
-- editing the bookshelves WHILE editing a book will now work
-  correctly rename/delete shelves on the book
+- editing the bookshelves WHILE editing a book will now correctly
+  rename/delete shelves on the book
 - popup menu/submenu on screen positioning fixed
 - tablets (10") display dialogs properly sized instead of too large / too small.
