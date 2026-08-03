@@ -186,4 +186,16 @@ public class ShowBookPagerInput {
     List<Long> getBookIdList() {
         return bookIdList;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ShowBookPagerInput{"
+               + "bookId=" + bookId
+               + ", bookshelf=" + bookshelf
+               + ", position=" + position
+               + ", navTableName='" + navTableName + '\''
+               + ", bookIdList=" + bookIdList
+               + '}';
+    }
 }

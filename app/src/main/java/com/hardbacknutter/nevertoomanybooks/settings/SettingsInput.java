@@ -89,4 +89,13 @@ public class SettingsInput {
     boolean isStorageVolumeMissing() {
         return storageVolumeMissing != null && storageVolumeMissing;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SettingsInput{"
+               + "autoScrollKey='" + autoScrollKey + '\''
+               + ", storageVolumeMissing=" + storageVolumeMissing
+               + '}';
+    }
 }

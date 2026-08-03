@@ -84,4 +84,14 @@ class StylePickerInput {
     boolean isShowAllStyles() {
         return showAllStyles;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "StylePickerInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", uuid='" + uuid + '\''
+               + ", showAllStyles=" + showAllStyles
+               + '}';
+    }
 }

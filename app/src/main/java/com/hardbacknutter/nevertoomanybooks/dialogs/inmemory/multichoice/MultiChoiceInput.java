@@ -202,4 +202,18 @@ class MultiChoiceInput {
     Bundle getExtras() {
         return extras;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "MultiChoiceInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", dialogTitle='" + dialogTitle + '\''
+               + ", dialogMessage='" + dialogMessage + '\''
+               + ", labels=" + Arrays.toString(labels)
+               + ", ids=" + Arrays.toString(ids)
+               + ", selectedIds=" + Arrays.toString(selectedIds)
+               + ", extras=" + extras
+               + '}';
+    }
 }

@@ -99,4 +99,14 @@ public class SearchBookUpdatesInput {
     String getScreenSubtitle() {
         return screenSubtitle;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SearchBookUpdatesInput{"
+               + "bookIdList=" + bookIdList
+               + ", screenTitle='" + screenTitle + '\''
+               + ", screenSubtitle='" + screenSubtitle + '\''
+               + '}';
+    }
 }

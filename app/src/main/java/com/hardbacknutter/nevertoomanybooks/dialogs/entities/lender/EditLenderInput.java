@@ -80,4 +80,14 @@ class EditLenderInput {
     String getBookTitle() {
         return bookTitle;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditLenderInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", bookId=" + bookId
+               + ", bookTitle='" + bookTitle + '\''
+               + '}';
+    }
 }

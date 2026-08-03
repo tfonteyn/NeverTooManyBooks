@@ -110,4 +110,16 @@ class EditTocEntryInput {
     boolean isAnthology() {
         return isAnthology;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditTocEntryInput{"
+               + "tocEntry=" + tocEntry
+               + ", position=" + position
+               + ", isAnthology=" + isAnthology
+               + ", requestKey='" + requestKey + '\''
+               + ", bookTitle='" + bookTitle + '\''
+               + '}';
+    }
 }

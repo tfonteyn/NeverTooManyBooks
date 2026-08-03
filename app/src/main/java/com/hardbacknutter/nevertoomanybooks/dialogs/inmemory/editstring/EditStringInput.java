@@ -137,4 +137,17 @@ class EditStringInput {
     Bundle getExtras() {
         return extras;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditStringInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", dialogTitle='" + dialogTitle + '\''
+               + ", dialogMessage='" + dialogMessage + '\''
+               + ", inputType=" + inputType
+               + ", edit='" + edit + '\''
+               + ", extras=" + extras
+               + '}';
+    }
 }

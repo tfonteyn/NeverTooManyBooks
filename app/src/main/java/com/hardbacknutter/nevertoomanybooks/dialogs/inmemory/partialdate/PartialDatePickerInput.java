@@ -138,4 +138,16 @@ class PartialDatePickerInput {
     Bundle getExtras() {
         return extras;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PartialDatePickerInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", dialogTitle='" + dialogTitle + '\''
+               + ", dialogMessage='" + dialogMessage + '\''
+               + ", selectedDate='" + selectedDate + '\''
+               + ", extras=" + extras
+               + '}';
+    }
 }

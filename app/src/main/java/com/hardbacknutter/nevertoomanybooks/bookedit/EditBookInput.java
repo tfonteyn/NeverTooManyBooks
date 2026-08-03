@@ -114,4 +114,14 @@ public class EditBookInput {
     public String getStyleUuid() {
         return styleUuid;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditBookInput{"
+               + "bookId=" + bookId
+               + ", book=" + book
+               + ", styleUuid='" + styleUuid + '\''
+               + '}';
+    }
 }

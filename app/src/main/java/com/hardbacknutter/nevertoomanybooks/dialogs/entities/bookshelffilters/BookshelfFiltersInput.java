@@ -72,4 +72,13 @@ class BookshelfFiltersInput {
     Bookshelf getBookshelf() {
         return bookshelf;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BookshelfFiltersInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", bookshelf=" + bookshelf
+               + '}';
+    }
 }

@@ -109,6 +109,16 @@ public class SearchBookInput {
         return styleUuid;
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "SearchBookInput{"
+               + "by=" + by
+               + ", styleUuid='" + styleUuid + '\''
+               + ", scanMode=" + scanMode
+               + '}';
+    }
+
     public enum By {
         ProductCode,
         Scan,

@@ -122,4 +122,16 @@ class ExtMenuInput {
     List<ExtMenuItem> getItems() {
         return items;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ExtMenuInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", menuTitle=" + menuTitle
+               + ", message=" + message
+               + ", menuOwner=" + menuOwner
+               + ", items=" + items
+               + '}';
+    }
 }

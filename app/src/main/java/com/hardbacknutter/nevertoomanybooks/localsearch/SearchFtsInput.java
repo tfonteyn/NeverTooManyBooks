@@ -76,4 +76,13 @@ public final class SearchFtsInput {
     public LocalSearchCriteria getCriteria() {
         return criteria != null ? criteria : new LocalSearchCriteria();
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SearchFtsInput{"
+               + "bookshelf=" + bookshelf
+               + ", criteria=" + criteria
+               + '}';
+    }
 }

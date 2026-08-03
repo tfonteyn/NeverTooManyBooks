@@ -117,6 +117,16 @@ public final class EditStyleInput {
         return setAsPreferred;
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditStyleInput{"
+               + "action=" + action
+               + ", styleUuid='" + styleUuid + '\''
+               + ", setAsPreferred=" + setAsPreferred
+               + '}';
+    }
+
     @IntDef({ACTION_EDIT_DEFAULTS, ACTION_CLONE, ACTION_EDIT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EditAction {

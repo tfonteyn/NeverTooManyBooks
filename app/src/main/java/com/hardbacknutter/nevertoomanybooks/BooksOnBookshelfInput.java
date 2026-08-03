@@ -177,4 +177,16 @@ public class BooksOnBookshelfInput {
     LocalSearchCriteria getCriteria() {
         return criteria != null ? criteria : new LocalSearchCriteria();
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BooksOnBookshelfInput{"
+               + "proposeBackup=" + proposeBackup
+               + ", bookshelfId=" + bookshelfId
+               + ", bookIdList=" + bookIdList
+               + ", rebuildBooklist=" + rebuildBooklist
+               + ", criteria=" + criteria
+               + '}';
+    }
 }

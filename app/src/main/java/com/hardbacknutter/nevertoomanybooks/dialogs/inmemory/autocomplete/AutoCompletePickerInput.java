@@ -149,4 +149,17 @@ class AutoCompletePickerInput {
     Bundle getExtras() {
         return extras;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "AutoCompletePickerInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", dialogTitle='" + dialogTitle + '\''
+               + ", dialogMessage='" + dialogMessage + '\''
+               + ", allItems=" + allItems
+               + ", currentSelection='" + currentSelection + '\''
+               + ", extras=" + extras
+               + '}';
+    }
 }

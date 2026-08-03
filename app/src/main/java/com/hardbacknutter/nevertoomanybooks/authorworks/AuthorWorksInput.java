@@ -75,4 +75,13 @@ public class AuthorWorksInput {
     Bookshelf getBookshelf() {
         return bookshelf;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "AuthorWorksInput{"
+               + "authorId=" + authorId
+               + ", bookshelf=" + bookshelf
+               + '}';
+    }
 }

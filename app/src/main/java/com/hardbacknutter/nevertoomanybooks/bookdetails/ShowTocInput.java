@@ -81,4 +81,14 @@ class ShowTocInput {
     Bookshelf getBookshelf() {
         return bookshelf;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ShowTocInput{"
+               + "bookId=" + bookId
+               + ", embedded=" + embedded
+               + ", bookshelf=" + bookshelf
+               + '}';
+    }
 }

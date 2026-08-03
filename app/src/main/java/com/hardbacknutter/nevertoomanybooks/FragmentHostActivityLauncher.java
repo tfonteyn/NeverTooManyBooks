@@ -60,7 +60,7 @@ public final class FragmentHostActivityLauncher {
 
     public static class Input {
 
-        private static final String TAG = "Input";
+        private static final String TAG = "FragmentHostActivityInput";
         private static final String BKEY_ACTIVITY = TAG + ":a";
         private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
@@ -101,6 +101,15 @@ public final class FragmentHostActivityLauncher {
         @NonNull
         String getFragmentClassName() {
             return fragmentClassName;
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "FragmentHostActivityInput{"
+                   + "activityLayoutId=" + activityLayoutId
+                   + ", fragmentClassName='" + fragmentClassName + '\''
+                   + '}';
         }
     }
 }

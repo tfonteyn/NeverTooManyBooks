@@ -93,4 +93,14 @@ class EditTagMappingInput {
     Bundle getExtras() {
         return extras;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditTagMappingInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", tagMapping=" + tagMapping
+               + ", extras=" + extras
+               + '}';
+    }
 }

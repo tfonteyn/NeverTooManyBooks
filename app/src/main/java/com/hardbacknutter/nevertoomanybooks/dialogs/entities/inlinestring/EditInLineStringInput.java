@@ -72,4 +72,13 @@ class EditInLineStringInput {
     String getText() {
         return text;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditInLineStringInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", text='" + text + '\''
+               + '}';
+    }
 }

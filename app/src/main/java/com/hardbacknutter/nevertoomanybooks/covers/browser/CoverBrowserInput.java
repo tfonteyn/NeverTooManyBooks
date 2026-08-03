@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
  */
 final class CoverBrowserInput {
 
-    private static final String TAG = "Input";
+    private static final String TAG = "CoverBrowserInput";
 
     /** 0..n image index. */
     private static final String BKEY_C_IDX = TAG + ":cIdx";
@@ -125,5 +125,17 @@ final class CoverBrowserInput {
     @Nullable
     List<Site> getSites() {
         return sites;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "CoverBrowserInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", bookTitle='" + bookTitle + '\''
+               + ", productCodeStr='" + productCodeStr + '\''
+               + ", cIdx=" + cIdx
+               + ", sites=" + sites
+               + '}';
     }
 }

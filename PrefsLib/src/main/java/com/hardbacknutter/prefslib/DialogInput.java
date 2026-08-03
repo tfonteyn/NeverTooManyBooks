@@ -71,4 +71,13 @@ public class DialogInput {
     public String getDialogMessage() {
         return dialogMessage;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "DialogInput{"
+               + "key='" + key + '\''
+               + ", dialogMessage='" + dialogMessage + '\''
+               + '}';
+    }
 }

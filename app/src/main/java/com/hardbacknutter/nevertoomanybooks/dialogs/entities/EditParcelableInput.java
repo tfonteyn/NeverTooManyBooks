@@ -110,4 +110,15 @@ public class EditParcelableInput<T extends Parcelable> {
     public String getBookIssn() {
         return bookIssn;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditParcelableInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", action=" + action
+               + ", item=" + item
+               + ", bookIssn='" + bookIssn + '\''
+               + '}';
+    }
 }

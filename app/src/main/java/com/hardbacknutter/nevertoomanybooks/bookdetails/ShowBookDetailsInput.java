@@ -89,4 +89,14 @@ public final class ShowBookDetailsInput {
     boolean isEmbedded() {
         return embedded;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ShowBookDetailsInput{"
+               + "bookId=" + bookId
+               + ", bookshelf=" + bookshelf
+               + ", embedded=" + embedded
+               + '}';
+    }
 }

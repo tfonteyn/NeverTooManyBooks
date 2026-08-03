@@ -71,4 +71,13 @@ class ReadingProgressInput {
     ReadingProgress getReadingProgress() {
         return readingProgress;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ReadingProgressInput{"
+               + "requestKey='" + requestKey + '\''
+               + ", readingProgress=" + readingProgress
+               + '}';
+    }
 }
