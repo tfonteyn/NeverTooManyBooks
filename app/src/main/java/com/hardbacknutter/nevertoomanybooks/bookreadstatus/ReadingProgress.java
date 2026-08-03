@@ -321,4 +321,15 @@ public final class ReadingProgress
                                      getTotalPages());
         }
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ReadingProgress{"
+               + "percentage=" + percentage
+               + ", currentPage=" + currentPage
+               + ", totalPages=" + totalPages
+               + ", asPercentage=" + asPercentage
+               + '}';
+    }
 }
