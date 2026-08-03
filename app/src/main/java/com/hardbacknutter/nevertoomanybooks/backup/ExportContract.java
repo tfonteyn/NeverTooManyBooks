@@ -17,46 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
-
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesFragment;
 
-public class EditBookshelvesContract
-        extends ActivityResultContract<Long, Optional<EditBookshelvesOutput>> {
+public class ExportContract
+        extends ActivityResultContract<Void, Boolean> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Long id) {
-        return FragmentHostActivityLauncher
-                .createIntent(context, EditBookshelvesFragment.class)
-                .putExtra(DBKey.FK_BOOKSHELF, (long) id);
+                               @Nullable final Void aVoid) {
+        return FragmentHostActivityLauncher.createIntent(context, ExportFragment.class);
     }
 
-    @NonNull
     @Override
-    public Optional<EditBookshelvesOutput> parseResult(final int resultCode,
-                                                       @Nullable final Intent intent) {
-        if (intent == null || resultCode != Activity.RESULT_OK) {
-            return Optional.empty();
-        }
+    @NonNull
+    public Boolean parseResult(final int resultCode,
+                               @Nullable final Intent intent) {
 
-        final Bundle result = Objects.requireNonNull(intent.getExtras());
-        return Optional.of(EditBookshelvesOutput.fromBundle(result));
+        return intent != null && resultCode == Activity.RESULT_OK;
     }
-
 }

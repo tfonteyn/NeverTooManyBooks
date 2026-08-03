@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.EnumSet;
 
-abstract class SyncContractBase
+public abstract class SyncContractBase
         extends ActivityResultContract<Void, EnumSet<SyncContractOutput>> {
 
     @Override

@@ -83,10 +83,10 @@ public class ShowBookPagerInput {
      * @param bookIdList The list of book ids to display.
      *                   Used by the pager.
      */
-    public ShowBookPagerInput(@IntRange(from = 1) final long bookId,
-                              @NonNull final Bookshelf bookshelf,
-                              @IntRange(from = 0) final int position,
-                              @NonNull final List<Long> bookIdList) {
+    ShowBookPagerInput(@IntRange(from = 1) final long bookId,
+                       @NonNull final Bookshelf bookshelf,
+                       @IntRange(from = 0) final int position,
+                       @NonNull final List<Long> bookIdList) {
         this(bookId, bookshelf, position, bookIdList, null);
     }
 
@@ -147,7 +147,7 @@ public class ShowBookPagerInput {
     }
 
     @NonNull
-    public Bundle toBundle() {
+    Bundle toBundle() {
         final Bundle args = new Bundle();
         // book-details page
         args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);

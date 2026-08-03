@@ -53,7 +53,7 @@ public final class SearchFtsInput {
     }
 
     @NonNull
-    public Bundle toBundle() {
+    Bundle toBundle() {
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
         if (criteria != null && !criteria.isEmpty()) {

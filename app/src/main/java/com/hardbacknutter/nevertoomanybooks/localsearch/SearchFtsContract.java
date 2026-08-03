@@ -17,54 +17,40 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.localsearch;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity;
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.R;
 
-public class AuthorWorksContract
-        extends ActivityResultContract<AuthorWorksInput, Optional<EditBookOutput>> {
+public class SearchFtsContract
+        extends ActivityResultContract<SearchFtsInput, Optional<LocalSearchCriteria>> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final AuthorWorksInput args) {
+                               @NonNull final SearchFtsInput args) {
         return FragmentHostActivityLauncher
-                .createIntent(context,
-                              AuthorWorksFragment.class,
-                              R.layout.activity_author_works,
-                              AuthorWorksActivity.class)
+                .createIntent(context, SearchFtsFragment.class)
                 .putExtras(args.toBundle());
     }
 
     @Override
     @NonNull
-    public Optional<EditBookOutput> parseResult(final int resultCode,
-                                                @Nullable final Intent intent) {
+    public Optional<LocalSearchCriteria> parseResult(final int resultCode,
+                                                     @Nullable final Intent intent) {
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
-
-        // We're cascading the result from a potential book-edit.
-        // i.e. if the user, from the AuthorWorks screen opened/edited a book,
-        // then back to AuthorWorks screen, then back... and we get here
-        final Bundle result = Objects.requireNonNull(intent.getExtras());
-        return Optional.of(EditBookOutput.fromBundle(result));
+        return Optional.ofNullable(LocalSearchCriteria.fromBundle(intent.getExtras()));
     }
 }

@@ -39,7 +39,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;

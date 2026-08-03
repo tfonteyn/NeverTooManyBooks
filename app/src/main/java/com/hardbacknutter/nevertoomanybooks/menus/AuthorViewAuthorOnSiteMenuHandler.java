@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
@@ -34,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
  * <p>
  * We hide the entire submenu if there are none.
  * <p>
- * Used by {@link com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment}.
+ * Used by {@link AuthorWorksFragment}.
  *
  * @see ViewAuthorOnSiteMenuHandler
  */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,47 +17,39 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 
-public class EditBookContract
-        extends ActivityResultContract<EditBookInput, Optional<EditBookOutput>> {
+public class ImportContract
+        extends ActivityResultContract<Void, Optional<ImportResults>> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final EditBookInput args) {
-        return FragmentHostActivityLauncher
-                .createIntent(context, EditBookFragment.class, R.layout.activity_edit_book)
-                .putExtras(args.toBundle());
+                               @Nullable final Void aVoid) {
+        return FragmentHostActivityLauncher.createIntent(context, ImportFragment.class);
     }
 
     @Override
     @NonNull
-    public Optional<EditBookOutput> parseResult(final int resultCode,
-                                                @Nullable final Intent intent) {
+    public Optional<ImportResults> parseResult(final int resultCode,
+                                               @Nullable final Intent intent) {
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
-        final Bundle result = Objects.requireNonNull(intent.getExtras());
-        return Optional.of(EditBookOutput.fromBundle(result));
+        return ImportResults.fromBundle(intent.getExtras());
     }
 }

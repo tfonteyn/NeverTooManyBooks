@@ -37,9 +37,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -51,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 // 2024-05-05: Tried using a SideSheetDialog on phone screens, but they are just that: a "Dialog"
 // and not a DialogFragment. No life cycle entry points.
 // This limits their use with a delegate (like we do for BottomSheet)
-// to allow flexibility. Especially the integrated DisplayBookLauncher becomes hard to use.
+// to allow flexibility. Especially the integrated ShowBookLauncher becomes hard to use.
 public class ShowTocFragment
         extends BaseFragment {
 
@@ -69,7 +68,7 @@ public class ShowTocFragment
     private BookChangedListener bookChangedListener;
 
     /** Display a Book. From there the user could edit it... so we must propagate the result. */
-    private DisplayBookLauncher displayBookLauncher;
+    private ShowBookLauncher showBookLauncher;
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
 
@@ -109,7 +108,7 @@ public class ShowTocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        displayBookLauncher = new DisplayBookLauncher(this, o -> o.ifPresent(data -> {
+        showBookLauncher = new ShowBookLauncher(this, o -> o.ifPresent(data -> {
             if (data.isModified()) {
                 // Needed when running inside the ViewPager to update the activity result data
                 // Ignored if running im embedded mode, but keeping this future-proof
@@ -187,9 +186,9 @@ public class ShowTocFragment
                 // If there's only one book, there is no point doing this
                 // as we're already on that book.
                 if (tocEntry.getBookCount() > 1) {
-                    displayBookLauncher.launch(this,
-                                               vm.getWorks(), position,
-                                               aVm.getBookshelf(), false);
+                    showBookLauncher.launch(this,
+                                            vm.getWorks(), position,
+                                            aVm.getBookshelf(), false);
                 }
             }
         });

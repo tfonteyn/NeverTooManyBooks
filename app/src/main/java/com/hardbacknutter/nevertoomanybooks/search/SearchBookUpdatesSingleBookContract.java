@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,43 +28,41 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookInput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-public class AddBookBySearchContract
-        extends ActivityResultContract<SearchBookInput, Optional<EditBookOutput>> {
+/**
+ * Update a single Book. The input is the Book itself.
+ */
+public class SearchBookUpdatesSingleBookContract
+        extends ActivityResultContract<Book, Optional<EditBookOutput>> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final SearchBookInput args) {
+                               @NonNull final Book book) {
 
-        switch (args.getBy()) {
-            case ProductCode:
-            case Scan:
-            case ScanBatch:
-                return FragmentHostActivityLauncher
-                        .createIntent(context, SearchBookByIsbnFragment.class)
-                        .putExtras(args.toBundle());
+        final List<Long> bookIdList = new ArrayList<>();
+        bookIdList.add(book.getId());
 
-            case ExternalId:
-                return FragmentHostActivityLauncher
-                        .createIntent(context, SearchBookByExternalIdFragment.class)
-                        .putExtras(args.toBundle());
-
-            case Text:
-                return FragmentHostActivityLauncher
-                        .createIntent(context, SearchBookByTextFragment.class)
-                        .putExtras(args.toBundle());
-            default:
-                throw new IllegalArgumentException(args.getBy().name());
+        String subTitle = null;
+        final Author author = book.getPrimaryAuthor();
+        if (author != null) {
+            subTitle = author.getLabel(context);
         }
+        final SearchBookUpdatesInput args =
+                new SearchBookUpdatesInput(bookIdList, book.getTitle(), subTitle);
+
+        return FragmentHostActivityLauncher
+                .createIntent(context, SearchBookUpdatesFragment.class)
+                .putExtras(args.toBundle());
     }
 
     @Override

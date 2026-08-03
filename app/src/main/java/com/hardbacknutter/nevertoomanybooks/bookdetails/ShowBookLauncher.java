@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Intent;
 
@@ -38,7 +38,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfInput;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * or to open a NEW {@link BooksOnBookshelf} instance
  * to display a book or list of books based on a list of {@link AuthorWork}s.
  */
-public class DisplayBookLauncher {
+public class ShowBookLauncher {
 
     @NonNull
     private final ActivityResultLauncher<ShowBookPagerInput> launcher;
@@ -60,8 +60,8 @@ public class DisplayBookLauncher {
      * @param contractOwner  the component which handles the {@link ActivityResultContract}
      * @param resultCallback with the activity result
      */
-    public DisplayBookLauncher(@NonNull final ActivityResultCaller contractOwner,
-                               @NonNull final ActivityResultCallback<Optional<EditBookOutput>>
+    public ShowBookLauncher(@NonNull final ActivityResultCaller contractOwner,
+                            @NonNull final ActivityResultCallback<Optional<EditBookOutput>>
                                        resultCallback) {
         this.launcher = contractOwner.registerForActivityResult(new ShowBookPagerContract(),
                                                                 resultCallback);

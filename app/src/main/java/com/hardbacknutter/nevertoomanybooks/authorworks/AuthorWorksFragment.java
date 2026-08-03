@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.authorworks;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -49,8 +49,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookLauncher;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -103,7 +105,7 @@ public class AuthorWorksFragment
                 }
             };
     /** Display a Book. */
-    private DisplayBookLauncher displayBookLauncher;
+    private ShowBookLauncher showBookLauncher;
     private ExtMenuLauncher menuLauncher;
     /** The Adapter. */
     private AuthorWorksAdapter adapter;
@@ -138,7 +140,7 @@ public class AuthorWorksFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        displayBookLauncher = new DisplayBookLauncher(this, o ->
+        showBookLauncher = new ShowBookLauncher(this, o ->
                 o.ifPresent(data -> vm.setDataModified(data)));
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -212,7 +214,7 @@ public class AuthorWorksFragment
                     if (position == RecyclerView.NO_POSITION) {
                         return;
                     }
-                    displayBookLauncher.launch(
+                    showBookLauncher.launch(
                             this,
                             vm.getWorks(), position,
                             vm.getBookshelf(), vm.isAllBookshelves());

@@ -18,12 +18,13 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.settings.bookshelves;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 public class EditBookshelvesOutput
@@ -40,8 +41,8 @@ public class EditBookshelvesOutput
      * @param selectedBookshelfId id, or {@code 0} for none
      * @param modified            was anything at all modified
      */
-    public EditBookshelvesOutput(final long selectedBookshelfId,
-                                 final boolean modified) {
+    EditBookshelvesOutput(final long selectedBookshelfId,
+                          final boolean modified) {
         this.selectedBookshelfId = selectedBookshelfId;
         this.modified = modified;
     }

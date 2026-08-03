@@ -166,7 +166,7 @@
              AuthorWorks.
              -->
         <activity
-            android:name=".AuthorWorksActivity"
+            android:name=".authorworks.AuthorWorksActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             />

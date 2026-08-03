@@ -70,7 +70,7 @@ public final class FragmentHostActivityLauncher {
         private final String fragmentClassName;
 
         Input(@LayoutRes final int activityLayoutId,
-                     @NonNull final String fragmentClassName) {
+              @NonNull final String fragmentClassName) {
             this.activityLayoutId = activityLayoutId;
             this.fragmentClassName = fragmentClassName;
         }

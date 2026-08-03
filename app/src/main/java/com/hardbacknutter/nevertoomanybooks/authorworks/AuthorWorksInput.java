@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.authorworks;
 
 import android.os.Bundle;
 
@@ -36,6 +36,12 @@ public class AuthorWorksInput {
     @NonNull
     private final Bookshelf bookshelf;
 
+    /**
+     * Constructor.
+     *
+     * @param authorId  the Author to display
+     * @param bookshelf the current Bookshelf
+     */
     public AuthorWorksInput(@IntRange(from = 1) final long authorId,
                             @NonNull final Bookshelf bookshelf) {
         this.authorId = authorId;

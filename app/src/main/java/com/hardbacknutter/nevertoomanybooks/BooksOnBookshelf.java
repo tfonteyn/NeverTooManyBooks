@@ -67,22 +67,23 @@ import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.fastscroller.OnFastScrollStateChangeListener;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
+import com.hardbacknutter.nevertoomanybooks.search.AddBookBySearchContract;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesListContract;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookContract;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportContract;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsContract;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerContract;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncContract;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncContractOutput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
@@ -466,11 +467,11 @@ public class BooksOnBookshelf
                         data -> vm.onBookEditFinished(data)));
 
         updateBookLauncher = registerForActivityResult(
-                new UpdateSingleBookContract(), o -> o.ifPresent(
+                new SearchBookUpdatesSingleBookContract(), o -> o.ifPresent(
                         data -> vm.onBookEditFinished(data)));
 
         updateBookListLauncher = registerForActivityResult(
-                new UpdateBooklistContract(),
+                new SearchBookUpdatesListContract(),
                 o -> o.ifPresent(
                         data -> vm.onBookEditFinished(data)));
 

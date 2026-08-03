@@ -17,47 +17,63 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 
-public class SettingsContract
-        extends ActivityResultContract<SettingsInput, Optional<SettingsOutput>> {
+public class AddBookBySearchContract
+        extends ActivityResultContract<SearchBookInput, Optional<EditBookOutput>> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final SettingsInput args) {
-        final Intent intent = FragmentHostActivityLauncher
-                .createIntent(context, SettingsFragment.class);
-        if (args != null) {
-            intent.putExtras(args.toBundle());
+                               @NonNull final SearchBookInput args) {
+
+        switch (args.getBy()) {
+            case ProductCode:
+            case Scan:
+            case ScanBatch:
+                return FragmentHostActivityLauncher
+                        .createIntent(context, SearchBookByIsbnFragment.class)
+                        .putExtras(args.toBundle());
+
+            case ExternalId:
+                return FragmentHostActivityLauncher
+                        .createIntent(context, SearchBookByExternalIdFragment.class)
+                        .putExtras(args.toBundle());
+
+            case Text:
+                return FragmentHostActivityLauncher
+                        .createIntent(context, SearchBookByTextFragment.class)
+                        .putExtras(args.toBundle());
+            default:
+                throw new IllegalArgumentException(args.getBy().name());
         }
-        return intent;
     }
 
     @Override
     @NonNull
-    public Optional<SettingsOutput> parseResult(final int resultCode,
+    public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
-        return SettingsOutput.fromBundle(intent.getExtras());
+        final Bundle result = Objects.requireNonNull(intent.getExtras());
+        return Optional.of(EditBookOutput.fromBundle(result));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,24 +17,44 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
+import java.util.Optional;
 
-public class CalibreSyncContract
-        extends SyncContractBase {
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
+
+public class SettingsContract
+        extends ActivityResultContract<SettingsInput, Optional<SettingsOutput>> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final Void aVoid) {
-        return FragmentHostActivityLauncher.createIntent(context, CalibreSyncFragment.class);
+                               @Nullable final SettingsInput args) {
+        final Intent intent = FragmentHostActivityLauncher
+                .createIntent(context, SettingsFragment.class);
+        if (args != null) {
+            intent.putExtras(args.toBundle());
+        }
+        return intent;
+    }
+
+    @Override
+    @NonNull
+    public Optional<SettingsOutput> parseResult(final int resultCode,
+                                                @Nullable final Intent intent) {
+
+        if (intent == null || resultCode != Activity.RESULT_OK) {
+            return Optional.empty();
+        }
+
+        return SettingsOutput.fromBundle(intent.getExtras());
     }
 }

@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -62,14 +60,14 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -221,7 +219,7 @@ public class ShowBookDetailsFragment
                 }));
 
         updateBookLauncher = registerForActivityResult(
-                new UpdateSingleBookContract(), o -> o.ifPresent(data -> {
+                new SearchBookUpdatesSingleBookContract(), o -> o.ifPresent(data -> {
                     if (data.isModified()) {
                         onBookEditFinished((String) null);
                     }

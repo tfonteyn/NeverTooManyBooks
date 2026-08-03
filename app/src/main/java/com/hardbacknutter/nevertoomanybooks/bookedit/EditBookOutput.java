@@ -17,12 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 //ENHANCE: embed a list of {book-id,modified} pairs instead of the single 'modified' flag
@@ -72,7 +73,7 @@ public final class EditBookOutput
     }
 
     @NonNull
-    static EditBookOutput fromBundle(@NonNull final Bundle args) {
+    public static EditBookOutput fromBundle(@NonNull final Bundle args) {
         final boolean modified = args.getBoolean(BKEY_MODIFIED, false);
         final long repositionToBookId = args.getLong(DBKey.FK_BOOK, 0);
         final long lastBookIdProcessed = args.getLong(BKEY_LAST_BOOK_ID_PROCESSED, 0);

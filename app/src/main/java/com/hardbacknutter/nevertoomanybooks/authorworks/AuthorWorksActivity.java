@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.authorworks;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 
 /**
  * Needs MANIFEST setup to set launchMode="singleTask".

@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.os.Bundle;
 import android.os.Parcel;
@@ -30,6 +30,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 
 /**
  * Bundle encoding is always an {@link EnumSet}.
@@ -60,7 +62,7 @@ public enum SyncContractOutput
     private static final String BKEY_RESULT = TAG + ":result";
 
     @NonNull
-    public static EnumSet<SyncContractOutput> fromBundle(@Nullable final Bundle args) {
+    static EnumSet<SyncContractOutput> fromBundle(@Nullable final Bundle args) {
         if (args != null) {
             // retrieve as a list
             @SuppressWarnings("deprecation")

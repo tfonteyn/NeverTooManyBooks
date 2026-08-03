@@ -47,8 +47,8 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesOutput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesOutput;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
@@ -352,7 +352,7 @@ public class BooksOnBookshelfViewModel
                 }
 
                 // check for an explicit bookshelf set
-                // 2025-06-02: currently this is only used by {@link DisplayBookLauncher}
+                // 2025-06-02: currently this is only used by {@link ShowBookLauncher}
                 // when we want to show a list of books retrieved from a TocEntry.
                 // (reminder: this comment might not be updated lately and hence incorrect)
                 bookshelf = args.getBookshelfId()
