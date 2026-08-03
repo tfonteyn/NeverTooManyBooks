@@ -108,7 +108,7 @@ public class SyncReaderFragment
     @NonNull
     public static Fragment create(@NonNull final SyncServer syncServer) {
         final Fragment fragment = new SyncReaderFragment();
-        final SyncServer.Input args = new SyncServer.Input(syncServer);
+        final SyncServerInput args = new SyncServerInput(syncServer);
         fragment.setArguments(args.toBundle());
         return fragment;
     }
@@ -119,7 +119,7 @@ public class SyncReaderFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
-        vm.init(requireContext(), SyncServer.Input.fromBundle(requireArguments()));
+        vm.init(requireContext(), SyncServerInput.fromBundle(requireArguments()));
     }
 
     @Nullable

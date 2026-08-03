@@ -483,37 +483,4 @@ public enum SyncServer
                + '}';
     }
 
-    public static class Input {
-
-        private static final String BKEY_SERVER = TAG + ":server";
-
-        @NonNull
-        private final SyncServer syncServer;
-
-        public Input(@NonNull final SyncServer syncServer) {
-            this.syncServer = syncServer;
-        }
-
-        @NonNull
-        public static Input fromBundle(@NonNull final Bundle args) {
-            @SuppressWarnings("deprecation")
-            final SyncServer syncServer = Objects.requireNonNull(
-                    args.getParcelable(BKEY_SERVER), BKEY_SERVER);
-
-            return new Input(syncServer);
-        }
-
-        @NonNull
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(1);
-            args.putParcelable(BKEY_SERVER, syncServer);
-
-            return args;
-        }
-
-        @NonNull
-        SyncServer getSyncServer() {
-            return syncServer;
-        }
-    }
 }

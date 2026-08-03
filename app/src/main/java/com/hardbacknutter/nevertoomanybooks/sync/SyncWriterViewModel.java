@@ -48,7 +48,7 @@ public class SyncWriterViewModel
      *
      * @param args    all arguments
      */
-    public void init(@NonNull final SyncServer.Input args) {
+    public void init(@NonNull final SyncServerInput args) {
         if (syncWriterHelper == null) {
             syncWriterHelper = new SyncWriterHelper(args.getSyncServer());
         }

@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServerInput;
 import com.hardbacknutter.prefslib.SettingsDataStore;
 import com.hardbacknutter.prefslib.SettingsManager;
 import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
@@ -52,7 +53,7 @@ public class StripInfoBookshelfMappingFragment
         final Fragment fragment = new StripInfoBookshelfMappingFragment();
         // 2026-03-24: We're not using this for now, but want to keep the same
         // logic as used by the Calibre bookshelf mapper.
-        final SyncServer.Input args = new SyncServer.Input(SyncServer.StripInfo);
+        final SyncServerInput args = new SyncServerInput(SyncServer.StripInfo);
         fragment.setArguments(args.toBundle());
         return fragment;
     }

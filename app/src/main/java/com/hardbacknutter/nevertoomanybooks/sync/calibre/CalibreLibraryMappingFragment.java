@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServerInput;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
@@ -78,7 +79,7 @@ public class CalibreLibraryMappingFragment
     @NonNull
     public static Fragment create() {
         final Fragment fragment = new CalibreLibraryMappingFragment();
-        final SyncServer.Input args = new SyncServer.Input(SyncServer.CalibreCS);
+        final SyncServerInput args = new SyncServerInput(SyncServer.CalibreCS);
         fragment.setArguments(args.toBundle());
         return fragment;
     }
@@ -89,7 +90,7 @@ public class CalibreLibraryMappingFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        vm.init(requireContext(), SyncServer.Input.fromBundle(requireArguments()));
+        vm.init(requireContext(), SyncServerInput.fromBundle(requireArguments()));
     }
 
     @Nullable

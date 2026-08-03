@@ -46,7 +46,7 @@ public class SyncReaderViewModel
      * @param args    all arguments
      */
     public void init(@NonNull final Context context,
-                     @NonNull final SyncServer.Input args) {
+                     @NonNull final SyncServerInput args) {
         if (syncReaderHelper == null) {
             syncReaderHelper = new SyncReaderHelper(context, args.getSyncServer());
         }
