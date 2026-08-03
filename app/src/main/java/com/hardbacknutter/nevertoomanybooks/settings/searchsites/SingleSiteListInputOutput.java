@@ -75,4 +75,12 @@ class SingleSiteListInputOutput
 
         return args;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SingleSiteListInputOutput{"
+               + "siteList=" + siteList
+               + '}';
+    }
 }

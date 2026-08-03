@@ -53,7 +53,14 @@ public class EditAuthorViewModel
     /** The Author we're editing. */
     private Author original;
 
-    /** Current edit. */
+    /**
+     * Current edit.
+     * <p>
+     * Reminder: the current edit will be merged into the {@link #original}
+     * and it is the {@link #getOriginal()} which will be returned as the output.
+     *
+     * @see #saveIfUnique(Context)
+     */
     private Author currentEdit;
     /**
      * Current edit. We don't use the real-author directly to avoid unneeded validation

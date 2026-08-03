@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class EditLenderLauncher
@@ -104,62 +103,12 @@ public class EditLenderLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final Output output = Output.fromBundle(result);
+        final EditLenderOutput output = EditLenderOutput.fromBundle(result);
         if (output.getBookId() <= 0) {
             // Sanity check, we should not get a new book here (id==0)
             throw new IllegalArgumentException(DBKey.FK_BOOK);
         }
         resultListener.onResult(output.getBookId(), output.getLoanee());
-    }
-
-    public static class Output
-            implements LauncherOutput {
-        @IntRange(from = 1)
-        private final long bookId;
-        @Nullable
-        private final String loanee;
-
-        /**
-         * Constructor.
-         *
-         * @param bookId the id of the lent book
-         * @param loanee the name of the loanee,
-         *               or {@code null} / {@code ""} for a returned book
-         */
-        public Output(final long bookId,
-                      @Nullable final String loanee) {
-            this.bookId = bookId;
-            this.loanee = loanee;
-        }
-
-        @NonNull
-        static Output fromBundle(final Bundle result) {
-            final long bookId = result.getLong(DBKey.FK_BOOK);
-            final String loanee = result.getString(DBKey.LOANEE_NAME);
-
-            return new Output(bookId, loanee);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(2);
-            args.putLong(DBKey.FK_BOOK, bookId);
-            if (loanee != null) {
-                args.putString(DBKey.LOANEE_NAME, loanee);
-            }
-
-            return args;
-        }
-
-        long getBookId() {
-            return bookId;
-        }
-
-        @Nullable
-        String getLoanee() {
-            return loanee;
-        }
     }
 
     @FunctionalInterface

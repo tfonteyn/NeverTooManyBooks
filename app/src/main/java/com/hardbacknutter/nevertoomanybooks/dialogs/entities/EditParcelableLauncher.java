@@ -28,14 +28,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * Launcher to add or edit a Parcelable object.
@@ -137,7 +134,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
 
-        final Output<T> output = Output.fromBundle(result);
+        final EditParcelableOutput<T> output = EditParcelableOutput.fromBundle(result);
         switch (output.getAction()) {
             case Add:
                 Objects.requireNonNull(onAddListener, ERROR_NULL_ON_ADD_LISTENER);
@@ -150,85 +147,6 @@ public final class EditParcelableLauncher<T extends Parcelable>
             default:
                 throw new IllegalStateException(
                         "EditInPlace must use EditInPlaceParcelableLauncher");
-        }
-    }
-
-    public static class Output<T extends Parcelable>
-            implements LauncherOutput {
-        private static final String TAG = "Output";
-        private static final String BKEY_ORIGINAL = TAG + ":original";
-        private static final String BKEY_EDIT = TAG + ":edit";
-
-        @NonNull
-        private final EditAction action;
-        @NonNull
-        private final T original;
-        @NonNull
-        private final T edited;
-
-        /**
-         * Constructor.
-         *
-         * @param action   EditAction
-         * @param original the previous value
-         * @param edited   the new value
-         */
-        public Output(@NonNull final EditAction action,
-                      @NonNull final T original,
-                      @NonNull final T edited) {
-            this.action = action;
-            this.original = original;
-            this.edited = edited;
-        }
-
-        @SuppressWarnings("deprecation")
-        @NonNull
-        static <T extends Parcelable> Output<T> fromBundle(@NonNull final Bundle args) {
-            final EditAction action = Objects.requireNonNull(
-                    args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-            final T previousValue = Objects.requireNonNull(
-                    args.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
-            final T currentValue = Objects.requireNonNull(
-                    args.getParcelable(BKEY_EDIT), BKEY_EDIT);
-
-            return new Output<>(action, previousValue, currentValue);
-        }
-
-        @NonNull
-        public Bundle toBundle() {
-            final Bundle result = new Bundle(3);
-            result.putParcelable(EditAction.BKEY, action);
-            result.putParcelable(BKEY_ORIGINAL, original);
-            result.putParcelable(BKEY_EDIT, edited);
-
-            return result;
-        }
-
-        @NonNull
-        EditAction getAction() {
-            return action;
-        }
-
-        @NonNull
-        T getOriginal() {
-            return original;
-        }
-
-        @NonNull
-        T getEdited() {
-            return edited;
-        }
-
-        @Override
-        public void send(@NonNull final Fragment fragment,
-                         @NonNull final String requestKey) {
-
-            if (BuildConfig.DEBUG /* always */) {
-                if (action != EditAction.Add && action != EditAction.Edit) {
-                    throw new IllegalArgumentException("action must be Add or Edit");
-                }
-            }
-            LauncherOutput.super.send(fragment, requestKey);
         }
     }
 }

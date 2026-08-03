@@ -24,7 +24,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 
 import java.util.Objects;
@@ -32,7 +31,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 public class StylePickerLauncher
         extends DialogLauncher {
@@ -72,37 +70,8 @@ public class StylePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final String styleUuid = Output.fromBundle(result);
+        final String styleUuid = StylePickerOutput.fromBundle(result);
         resultListener.onResult(Objects.requireNonNull(styleUuid, DBKey.FK_STYLE));
-    }
-
-    public static class Output
-            implements LauncherOutput {
-
-        @NonNull
-        private final String styleUuid;
-
-        /**
-         * Constructor.
-         *
-         * @param styleUuid the selected style
-         */
-        Output(@NonNull final String styleUuid) {
-            this.styleUuid = styleUuid;
-        }
-
-        @Nullable
-        static String fromBundle(@NonNull final Bundle args) {
-            return args.getString(DBKey.FK_STYLE);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(1);
-            args.putString(DBKey.FK_STYLE, styleUuid);
-            return args;
-        }
     }
 
 

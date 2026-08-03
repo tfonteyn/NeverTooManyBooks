@@ -70,7 +70,7 @@ class ReadingProgressDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link ReadingProgressLauncher.Output}.
+     * Class output: {@link ReadingProgressOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -256,7 +256,7 @@ class ReadingProgressDelegate
             final int id = button.getId();
             if (id == R.id.btn_neutral) {
                 // Finished reading
-                new ReadingProgressLauncher.Output(true).send(owner, requestKey);
+                new ReadingProgressOutput(true).send(owner, requestKey);
                 owner.dismiss();
                 return true;
             } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
@@ -271,7 +271,7 @@ class ReadingProgressDelegate
 
     private boolean saveChanges() {
         viewToModel();
-        new ReadingProgressLauncher.Output(vm.getReadingProgress()).send(owner, requestKey);
+        new ReadingProgressOutput(vm.getReadingProgress()).send(owner, requestKey);
         return true;
     }
 

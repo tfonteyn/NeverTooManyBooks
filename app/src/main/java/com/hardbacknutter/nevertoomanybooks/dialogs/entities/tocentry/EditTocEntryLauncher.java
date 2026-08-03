@@ -26,20 +26,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class EditTocEntryLauncher
         extends DialogLauncher {
-
-    private static final String TAG = "EditTocEntryLauncher";
-    private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
-    private static final String BKEY_POSITION = TAG + ":pos";
 
     @NonNull
     private final ResultListener resultListener;
@@ -80,33 +73,8 @@ public class EditTocEntryLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        //noinspection deprecation
-        resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
-                result.getInt(BKEY_POSITION));
-    }
-
-    public static class Output
-            implements LauncherOutput {
-        @NonNull
-        private final TocEntry tocEntry;
-        private final int position;
-
-        public Output(@NonNull final TocEntry tocEntry,
-                      final int position) {
-            this.tocEntry = tocEntry;
-            this.position = position;
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(2);
-            args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
-            args.putInt(BKEY_POSITION, position);
-
-            return args;
-        }
+        final EditTocEntryOutput output = EditTocEntryOutput.fromBundle(result);
+        resultListener.onResult(output.getTocEntry(), output.getPosition());
     }
 
     @FunctionalInterface

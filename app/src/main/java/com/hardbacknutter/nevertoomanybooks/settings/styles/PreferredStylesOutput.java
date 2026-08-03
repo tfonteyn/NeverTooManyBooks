@@ -87,4 +87,13 @@ public final class PreferredStylesOutput
     public boolean isModified() {
         return modified;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PreferredStylesOutput{"
+               + "styleUuid='" + styleUuid + '\''
+               + ", modified=" + modified
+               + '}';
+    }
 }

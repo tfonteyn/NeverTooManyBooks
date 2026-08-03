@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -80,7 +81,7 @@ class EditSeriesDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     * Class output: {@link EditInPlaceParcelableOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -196,7 +197,7 @@ class EditSeriesDelegate
             final Optional<Series> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                new EditInPlaceParcelableOutput<>(vm.getOriginal())
                         .send(owner, requestKey);
                 return true;
             }
@@ -208,7 +209,7 @@ class EditSeriesDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                            new EditInPlaceParcelableOutput<>(vm.getOriginal())
                                     .send(owner, requestKey);
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full

@@ -108,4 +108,14 @@ public final class EditStyleOutput
         }
         return Optional.of(styleUuid);
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditStyleOutput{"
+               + "templateUuid='" + templateUuid + '\''
+               + ", modified=" + modified
+               + ", styleUuid='" + styleUuid + '\''
+               + '}';
+    }
 }

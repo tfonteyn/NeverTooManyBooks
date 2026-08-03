@@ -63,7 +63,7 @@ class StylePickerDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link StylePickerLauncher.Output}.
+     * Class output: {@link StylePickerOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -176,7 +176,7 @@ class StylePickerDelegate
     }
 
     private boolean saveChanges() {
-        new StylePickerLauncher.Output(vm.getSelectedStyle().getUuid())
+        new StylePickerOutput(vm.getSelectedStyle().getUuid())
                 .send(owner, requestKey);
         return true;
     }

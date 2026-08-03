@@ -65,7 +65,7 @@ class EditStringDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditStringLauncher.Output}.
+     * Class output: {@link EditStringOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -180,7 +180,7 @@ class EditStringDelegate
             return true;
         }
 
-        new EditStringLauncher.Output(vm.getOriginal(), vm.getCurrentValue(), vm.getExtras())
+        new EditStringOutput(vm.getOriginal(), vm.getCurrentValue(), vm.getExtras())
                 .send(owner, requestKey);
         return true;
     }

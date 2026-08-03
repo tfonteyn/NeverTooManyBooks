@@ -67,7 +67,7 @@ class AutoCompletePickerDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link AutoCompletePickerLauncher.Output}.
+     * Class output: {@link AutoCompletePickerOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -173,8 +173,8 @@ class AutoCompletePickerDelegate
             return true;
         }
 
-        new AutoCompletePickerLauncher.Output(vm.getOriginal(), vm.getCurrentValue(),
-                                              vm.getExtras())
+        new AutoCompletePickerOutput(vm.getOriginal(), vm.getCurrentValue(),
+                                     vm.getExtras())
                 .send(owner, requestKey);
         return true;
     }

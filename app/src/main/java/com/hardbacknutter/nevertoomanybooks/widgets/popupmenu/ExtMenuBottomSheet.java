@@ -67,7 +67,7 @@ public class ExtMenuBottomSheet
                 public void onMenuItemClick(@NonNull final ExtMenuItem menuItem) {
                     ExtMenuBottomSheet.this.dismiss();
 
-                    new ExtMenuLauncher.Output(menuOwner, menuItem.getItemId())
+                    new ExtMenuOutput(menuOwner, menuItem.getItemId())
                             .send(ExtMenuBottomSheet.this, requestKey);
                 }
             };

@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditIdentifierCont
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorFragment;
@@ -83,7 +84,7 @@ class EditIdentifierDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditInPlaceParcelableLauncher.Output}.
+     * Class output: {@link EditInPlaceParcelableOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -219,7 +220,7 @@ class EditIdentifierDelegate
             final Optional<Identifier> existingEntity = vm.saveIfUnique();
             if (existingEntity.isEmpty()) {
                 // Success
-                new EditInPlaceParcelableLauncher.Output<>(vm.getOriginal())
+                new EditInPlaceParcelableOutput<>(vm.getOriginal())
                         .send(owner, requestKey);
                 return true;
             }

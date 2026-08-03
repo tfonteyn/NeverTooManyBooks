@@ -75,4 +75,13 @@ public final class SettingsOutput
     public boolean isForceRebuildBooklist() {
         return forceRebuildBooklist;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SettingsOutput{"
+               + "recreateActivity=" + recreateActivity
+               + ", forceRebuildBooklist=" + forceRebuildBooklist
+               + '}';
+    }
 }

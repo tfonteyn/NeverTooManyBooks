@@ -89,7 +89,7 @@ class BookshelfFiltersDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link BookshelfFiltersLauncher.Output}.
+     * Class output: {@link BookshelfFiltersOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -223,7 +223,7 @@ class BookshelfFiltersDelegate
 
     private boolean saveChanges() {
         if (vm.saveChanges(vb.getRoot().getContext())) {
-            new BookshelfFiltersLauncher.Output(vm.isModified()).send(owner, requestKey);
+            new BookshelfFiltersOutput(vm.isModified()).send(owner, requestKey);
             return true;
         }
         return false;

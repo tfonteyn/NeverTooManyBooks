@@ -24,14 +24,12 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 class ReadingProgressLauncher
         extends DialogLauncher {
@@ -66,84 +64,21 @@ class ReadingProgressLauncher
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final ReadingProgress readingProgress) {
 
-        final ReadingProgressInput input = new ReadingProgressInput(getRequestKey(), readingProgress);
+        final ReadingProgressInput input = new ReadingProgressInput(getRequestKey(),
+                                                                    readingProgress);
         showDialog(context, input.tobundle());
     }
 
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final Output output = Output.fromBundle(result);
+        final ReadingProgressOutput output = ReadingProgressOutput.fromBundle(result);
         final Boolean read = output.getRead();
         if (read != null) {
             onReadListener.onRead(read);
         } else {
             onReadingProgressListener.onReadingProgress(
                     Objects.requireNonNull(output.getReadingProgress()));
-        }
-    }
-
-    public static class Output
-            implements LauncherOutput {
-        @Nullable
-        private final ReadingProgress readingProgress;
-        @Nullable
-        private final Boolean read;
-
-        /**
-         * Constructor.
-         * @param read Read/Unread status
-         */
-        Output(final boolean read) {
-            this(null, read);
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param readingProgress data
-         */
-        Output(@Nullable final ReadingProgress readingProgress) {
-            this(readingProgress, null);
-        }
-
-        private Output(@Nullable final ReadingProgress readingProgress,
-                       @Nullable final Boolean read) {
-            this.readingProgress = readingProgress;
-            this.read = read;
-        }
-
-        @NonNull
-        static Output fromBundle(@NonNull final Bundle args) {
-            @SuppressWarnings("deprecation")
-            final ReadingProgress progress = args.getParcelable(DBKey.READ_PROGRESS);
-            final boolean read = args.getBoolean(DBKey.READ__BOOL);
-
-            return new Output(progress, read);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(2);
-            if (read != null) {
-                args.putBoolean(DBKey.READ__BOOL, read);
-            }
-            if (readingProgress != null) {
-                args.putParcelable(DBKey.READ_PROGRESS, readingProgress);
-            }
-
-            return args;
-        }
-
-        @Nullable
-        ReadingProgress getReadingProgress() {
-            return readingProgress;
-        }
-
-        @Nullable
-        Boolean getRead() {
-            return read;
         }
     }
 

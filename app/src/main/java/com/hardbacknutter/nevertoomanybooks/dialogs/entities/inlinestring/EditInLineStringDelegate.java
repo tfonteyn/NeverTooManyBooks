@@ -70,7 +70,7 @@ class EditInLineStringDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditInLineStringLauncher.Output}.
+     * Class output: {@link EditInLineStringOutput}.
      *
      * @param owner         hosting DialogFragment
      * @param args          all arguments
@@ -194,7 +194,7 @@ class EditInLineStringDelegate
 
         final String storedText = onSave(context, vm.getOriginal(), vm.getCurrentEdit());
 
-        new EditInLineStringLauncher.Output(vm.getOriginal(), storedText)
+        new EditInLineStringOutput(vm.getOriginal(), storedText)
                 .send(owner, requestKey);
         return true;
     }

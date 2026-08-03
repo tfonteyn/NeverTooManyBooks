@@ -69,7 +69,7 @@ class EditLenderDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditLenderLauncher.Output}.
+     * Class output: {@link EditLenderOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -181,7 +181,7 @@ class EditLenderDelegate
         }
 
         if (vm.saveChanges()) {
-            new EditLenderLauncher.Output(vm.getBookId(), vm.getCurrentEdit())
+            new EditLenderOutput(vm.getBookId(), vm.getCurrentEdit())
                     .send(owner, requestKey);
             return true;
         }

@@ -33,10 +33,14 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * Launcher to edit-in-place a Parcelable object.
+ * <p>
+ * Note there is <strong>NO EditInParcelableInput</strong>.
+ * Instead these also use {@link EditParcelableInput}.
+ * <p>
+ * The output however <strong>is {@link EditInPlaceParcelableOutput}</strong>
  *
  * @param <T> type of editable object
  *
@@ -96,35 +100,6 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(listener, ERROR_NULL_LISTENER);
 
-        final T data = Output.fromBundle(result);
-        listener.onEdit(Objects.requireNonNull(data, Output.MODIFIED));
+        listener.onEdit(EditInPlaceParcelableOutput.fromBundle(result));
     }
-
-    public static class Output<T extends Parcelable>
-            implements LauncherOutput {
-
-        private static final String MODIFIED = "modified";
-
-        @NonNull
-        private final T data;
-
-        public Output(@NonNull final T data) {
-            this.data = data;
-        }
-
-        @Nullable
-        static <T extends Parcelable> T fromBundle(@NonNull final Bundle args) {
-            //noinspection deprecation
-            return args.getParcelable(MODIFIED);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(1);
-            args.putParcelable(MODIFIED, data);
-            return args;
-        }
-    }
-
 }

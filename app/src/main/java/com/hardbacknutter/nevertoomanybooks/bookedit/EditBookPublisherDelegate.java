@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -89,7 +89,7 @@ class EditBookPublisherDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditParcelableLauncher.Output}.
+     * Class output: {@link EditParcelableOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -203,7 +203,7 @@ class EditBookPublisherDelegate
             return false;
         }
 
-        new EditParcelableLauncher.Output<>(action, publisherVm.getOriginal(), currentEdit)
+        new EditParcelableOutput<>(action, publisherVm.getOriginal(), currentEdit)
                 .send(owner, requestKey);
         return true;
     }

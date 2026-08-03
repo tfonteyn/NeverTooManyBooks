@@ -64,7 +64,7 @@ class EditTocEntryDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditTocEntryLauncher.Output}.
+     * Class output: {@link EditTocEntryOutput}.
      *
      * @param owner hosting Fragment
      * @param args all arguments
@@ -203,7 +203,7 @@ class EditTocEntryDelegate
 
         vm.copyChanges();
 
-        new EditTocEntryLauncher.Output(vm.getOriginal(), vm.getEditPosition())
+        new EditTocEntryOutput(vm.getOriginal(), vm.getEditPosition())
                 .send(owner, requestKey);
         return true;
     }

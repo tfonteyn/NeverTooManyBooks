@@ -74,7 +74,7 @@ class MultiChoiceDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link MultiChoiceLauncher.Output}.
+     * Class output: {@link MultiChoiceOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -193,8 +193,8 @@ class MultiChoiceDelegate
             return true;
         }
 
-        new MultiChoiceLauncher.Output(vm.getPreviousSelection(), vm.getCurrentSelection(),
-                                       vm.getExtras())
+        new MultiChoiceOutput(vm.getPreviousSelection(), vm.getCurrentSelection(),
+                              vm.getExtras())
                 .send(owner, requestKey);
         return true;
     }

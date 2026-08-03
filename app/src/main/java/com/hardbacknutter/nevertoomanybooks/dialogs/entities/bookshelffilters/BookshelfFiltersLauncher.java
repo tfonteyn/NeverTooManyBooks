@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersLauncher
@@ -67,31 +66,7 @@ public class BookshelfFiltersLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(Output.fromBundle(result));
-    }
-
-    public static class Output
-            implements LauncherOutput {
-
-        private static final String BKEY_MODIFIED = "modified";
-
-        private final boolean modified;
-
-        public Output(final boolean modified) {
-            this.modified = modified;
-        }
-
-        static boolean fromBundle(@NonNull final Bundle args) {
-            return args.getBoolean(BKEY_MODIFIED);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(1);
-            args.putBoolean(BKEY_MODIFIED, modified);
-            return args;
-        }
+        resultListener.onResult(BookshelfFiltersOutput.fromBundle(result));
     }
 
     @FunctionalInterface

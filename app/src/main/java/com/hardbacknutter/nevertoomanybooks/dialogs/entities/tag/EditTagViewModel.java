@@ -42,7 +42,14 @@ public class EditTagViewModel
     /** The Tag we're editing. */
     private Tag original;
 
-    /** Current edit. */
+    /**
+     * Current edit.
+     * <p>
+     * Reminder: the current edit will be merged into the {@link #original}
+     * and it is the {@link #getOriginal()} which will be returned as the output.
+     *
+     * @see #saveIfUnique()
+     */
     private Tag currentEdit;
     private TagDao dao;
 
@@ -91,14 +98,12 @@ public class EditTagViewModel
      * <p>
      * If it does, return the existing Tag indicating failure to save.
      *
-     * @param context Current context
-     *
      * @return an empty Optional for SUCCESS, or else the existing Tag.
      *
      * @throws DaoWriteException on failure
      */
     @NonNull
-    Optional<Tag> saveIfUnique(@NonNull final Context context)
+    Optional<Tag> saveIfUnique()
             throws DaoWriteException {
 
         // FIRST check if the name was changed

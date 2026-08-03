@@ -42,7 +42,14 @@ public class EditPublisherViewModel
     /** The Publisher we're editing. */
     private Publisher original;
 
-    /** Current edit. */
+    /**
+     * Current edit.
+     * <p>
+     * Reminder: the current edit will be merged into the {@link #original}
+     * and it is the {@link #getOriginal()} which will be returned as the output.
+     *
+     * @see #saveIfUnique(Context)
+     */
     private Publisher currentEdit;
     private PublisherDao dao;
 

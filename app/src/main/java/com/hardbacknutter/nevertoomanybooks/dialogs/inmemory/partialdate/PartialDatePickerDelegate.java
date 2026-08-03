@@ -109,7 +109,7 @@ class PartialDatePickerDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link PartialDatePickerLauncher.Output}.
+     * Class output: {@link PartialDatePickerOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -301,7 +301,7 @@ class PartialDatePickerDelegate
             return true;
         }
 
-        new PartialDatePickerLauncher.Output(previousSelection, currentSelection, vm.getExtras())
+        new PartialDatePickerOutput(previousSelection, currentSelection, vm.getExtras())
                 .send(owner, requestKey);
         return true;
     }

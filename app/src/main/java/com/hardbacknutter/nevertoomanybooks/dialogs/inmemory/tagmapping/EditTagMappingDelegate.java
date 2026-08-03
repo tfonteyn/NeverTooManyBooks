@@ -62,7 +62,7 @@ class EditTagMappingDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link EditTagMappingLauncher.Output}.
+     * Class output: {@link EditTagMappingOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -159,8 +159,8 @@ class EditTagMappingDelegate
             return true;
         }
 
-        new EditTagMappingLauncher.Output(vm.getOriginal(), vm.getCurrentValue(),
-                                          vm.getExtras())
+        new EditTagMappingOutput(vm.getOriginal(), vm.getCurrentValue(),
+                                 vm.getExtras())
                 .send(owner, requestKey);
         return true;
     }

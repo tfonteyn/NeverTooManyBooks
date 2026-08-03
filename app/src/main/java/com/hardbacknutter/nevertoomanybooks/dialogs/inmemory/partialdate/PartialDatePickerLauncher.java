@@ -27,11 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 /**
  * IMPORTANT: The <strong>input</strong> current-value/selection is a {@code String}.
@@ -81,7 +78,7 @@ public class PartialDatePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final Output output = Output.fromBundle(result);
+        final PartialDatePickerOutput output = PartialDatePickerOutput.fromBundle(result);
         resultListener.onResult(output.getOriginal(), output.getEdited(), output.getExtras());
     }
 
@@ -100,74 +97,5 @@ public class PartialDatePickerLauncher
         void onResult(@NonNull PartialDate previousValue,
                       @NonNull PartialDate currentValue,
                       @Nullable Bundle extras);
-    }
-
-    static class Output
-            implements LauncherOutput {
-        private static final String TAG = "Output";
-        private static final String BKEY_ORIGINAL = TAG + ":original";
-        private static final String BKEY_EDIT = TAG + ":edit";
-        private static final String BKEY_EXTRAS = TAG + ":extras";
-
-        @NonNull
-        private final PartialDate original;
-        @NonNull
-        private final PartialDate edited;
-        @Nullable
-        private final Bundle extras;
-
-        /**
-         * Constructor.
-         *
-         * @param original the previous value
-         * @param edited   the new value
-         * @param extras   (optional) Bundle provided as input
-         */
-        Output(@NonNull final PartialDate original,
-               @NonNull final PartialDate edited,
-               @Nullable final Bundle extras) {
-            this.original = original;
-            this.edited = edited;
-            this.extras = extras;
-        }
-
-        @SuppressWarnings("deprecation")
-        @NonNull
-        static Output fromBundle(@NonNull final Bundle args) {
-            final PartialDate previousValue = Objects.requireNonNull(
-                    args.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
-            final PartialDate currentValue = Objects.requireNonNull(
-                    args.getParcelable(BKEY_EDIT), BKEY_EDIT);
-            final Bundle extras = args.getBundle(BKEY_EXTRAS);
-
-            return new Output(previousValue, currentValue, extras);
-        }
-
-        @NonNull
-        public Bundle toBundle() {
-            final Bundle result = new Bundle(3);
-            result.putParcelable(BKEY_ORIGINAL, original);
-            result.putParcelable(BKEY_EDIT, edited);
-            if (extras != null && !extras.isEmpty()) {
-                result.putBundle(BKEY_EXTRAS, extras);
-            }
-
-            return result;
-        }
-
-        @NonNull
-        PartialDate getOriginal() {
-            return original;
-        }
-
-        @NonNull
-        PartialDate getEdited() {
-            return edited;
-        }
-
-        @Nullable
-        Bundle getExtras() {
-            return extras;
-        }
     }
 }

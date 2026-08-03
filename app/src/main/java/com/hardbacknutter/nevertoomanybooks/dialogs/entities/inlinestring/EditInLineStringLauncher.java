@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.OnEditListener;
 
 /**
@@ -89,61 +88,7 @@ public class EditInLineStringLauncher
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Output output = Output.fromBundle(result);
+        final EditInLineStringOutput output = EditInLineStringOutput.fromBundle(result);
         onEditListener.onEdit(output.getOriginal(), output.getEdited());
-    }
-
-    static class Output
-            implements LauncherOutput {
-
-        private static final String TAG = "Output";
-        private static final String BKEY_ORIGINAL = TAG + ":original";
-        private static final String BKEY_EDIT = TAG + ":edit";
-
-        @NonNull
-        private final String original;
-        @NonNull
-        private final String edited;
-
-        /**
-         * Constructor.
-         *
-         * @param original the previous value
-         * @param edited   the new value
-         */
-        Output(@NonNull final String original,
-               @NonNull final String edited) {
-            this.original = original;
-            this.edited = edited;
-        }
-
-        @NonNull
-        static Output fromBundle(@NonNull final Bundle args) {
-            final String previousValue = Objects.requireNonNull(
-                    args.getString(BKEY_ORIGINAL), BKEY_ORIGINAL);
-            final String currentValue = Objects.requireNonNull(
-                    args.getString(BKEY_EDIT), BKEY_EDIT);
-
-            return new Output(previousValue, currentValue);
-        }
-
-        @NonNull
-        public Bundle toBundle() {
-            final Bundle result = new Bundle(2);
-            result.putString(BKEY_ORIGINAL, original);
-            result.putString(BKEY_EDIT, edited);
-
-            return result;
-        }
-
-        @NonNull
-        String getOriginal() {
-            return original;
-        }
-
-        @NonNull
-        String getEdited() {
-            return edited;
-        }
     }
 }

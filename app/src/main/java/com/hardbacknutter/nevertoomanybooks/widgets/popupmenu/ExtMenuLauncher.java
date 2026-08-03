@@ -25,22 +25,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 
 public class ExtMenuLauncher
         extends DialogLauncher {
-
-    private static final String TAG = "ExtMenuLauncher";
-    private static final String RESULT_MENU_ITEM = TAG + ":mi";
-    private static final String RESULT_MENU_OWNER = TAG + ":owner";
 
     @NonNull
     private final ExtMenuResultListener resultListener;
@@ -115,55 +109,7 @@ public class ExtMenuLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final Output output = Output.fromBundle(result);
+        final ExtMenuOutput output = ExtMenuOutput.fromBundle(result);
         resultListener.onMenuItemClick(output.getMenuOwner(), output.getMenuItemId());
-    }
-
-    public static class Output
-            implements LauncherOutput {
-
-        private final int menuOwner;
-        @IdRes
-        private final int menuItemId;
-
-        /**
-         * Constructor.
-         *
-         * @param menuOwner  as was passed into {@link #launch}
-         * @param menuItemId The menu item that was invoked.
-         */
-        public Output(final int menuOwner,
-                      @IdRes final int menuItemId) {
-            this.menuOwner = menuOwner;
-            this.menuItemId = menuItemId;
-        }
-
-        @NonNull
-        static Output fromBundle(@NonNull final Bundle args) {
-            final int menuOwner = args.getInt(RESULT_MENU_OWNER);
-            @IdRes
-            final int menuItemId = args.getInt(RESULT_MENU_ITEM);
-
-            return new Output(menuOwner, menuItemId);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(2);
-            args.putInt(RESULT_MENU_OWNER, menuOwner);
-            args.putInt(RESULT_MENU_ITEM, menuItemId);
-
-            return args;
-        }
-
-        int getMenuOwner() {
-            return menuOwner;
-        }
-
-        @IdRes
-        int getMenuItemId() {
-            return menuItemId;
-        }
     }
 }

@@ -123,7 +123,7 @@ class CoverBrowserDelegate
     /**
      * Constructor.
      * <p>
-     * Class output: {@link CoverBrowserLauncher.Output}.
+     * Class output: {@link CoverBrowserOutput}.
      *
      * @param owner hosting Fragment
      * @param args  all arguments
@@ -269,7 +269,7 @@ class CoverBrowserDelegate
         }
 
         if (vm.getSelectedFileAbsolutePath() != null) {
-            new CoverBrowserLauncher.Output(vm.getSelectedFileAbsolutePath())
+            new CoverBrowserOutput(vm.getSelectedFileAbsolutePath())
                     .send(owner, requestKey);
             return true;
         }

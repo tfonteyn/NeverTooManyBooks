@@ -38,7 +38,14 @@ public class EditIdentifierViewModel
     /** The Identifier we're editing. */
     private Identifier original;
 
-    /** Current edit. */
+    /**
+     * Current edit.
+     * <p>
+     * Reminder: the current edit will be merged into the {@link #original}
+     * and it is the {@link #getOriginal()} which will be returned as the output.
+     *
+     * @see #saveIfUnique()
+     */
     private Identifier currentEdit;
     private IdentifierDao dao;
 

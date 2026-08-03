@@ -25,13 +25,9 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.LauncherOutput;
 
 public class CoverBrowserLauncher
         extends DialogLauncher {
@@ -82,33 +78,7 @@ public class CoverBrowserLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final String fileSpec = Output.fromBundle(result);
-        resultListener.onResult(Objects.requireNonNull(fileSpec, Output.COVER_FILE_SPEC));
-    }
-
-    public static class Output
-            implements LauncherOutput {
-        static final String COVER_FILE_SPEC = "fileSpec";
-
-        @NonNull
-        private final String fileSpec;
-
-        Output(@NonNull final String fileSpec) {
-            this.fileSpec = fileSpec;
-        }
-
-        @Nullable
-        static String fromBundle(@NonNull final Bundle args) {
-            return args.getString(COVER_FILE_SPEC);
-        }
-
-        @NonNull
-        @Override
-        public Bundle toBundle() {
-            final Bundle args = new Bundle(1);
-            args.putString(COVER_FILE_SPEC, fileSpec);
-            return args;
-        }
+        resultListener.onResult(CoverBrowserOutput.fromBundle(result));
     }
 
     @FunctionalInterface
