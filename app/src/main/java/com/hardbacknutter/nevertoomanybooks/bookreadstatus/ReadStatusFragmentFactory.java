@@ -31,17 +31,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 public final class ReadStatusFragmentFactory {
-
-    private static final String TAG = "ReadStatusFragmentFactory";
-    private static final String BKEY_MODE = TAG + ":mode";
-    private static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
 
     private ReadStatusFragmentFactory() {
     }
@@ -112,7 +106,7 @@ public final class ReadStatusFragmentFactory {
                                @NonNull final Fragment fragment,
                                @NonNull final Mode mode,
                                final boolean embedded) {
-        final Input input = new Input(mode, embedded);
+        final ReadStatusInput input = new ReadStatusInput(mode, embedded);
         fragment.setArguments(input.toBundle());
         fm.beginTransaction()
           .setReorderingAllowed(true)
@@ -132,7 +126,7 @@ public final class ReadStatusFragmentFactory {
      */
     @NonNull
     static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
-                                                @NonNull final Input args) {
+                                                @NonNull final ReadStatusInput args) {
 
         final Mode mode = args.getMode();
         switch (mode) {
@@ -193,45 +187,6 @@ public final class ReadStatusFragmentFactory {
         @Override
         public int describeContents() {
             return 0;
-        }
-    }
-
-    static final class Input {
-        @NonNull
-        private final Mode mode;
-        private final boolean embedded;
-
-        private Input(@NonNull final Mode mode,
-                      final boolean embedded) {
-            this.mode = mode;
-            this.embedded = embedded;
-        }
-
-        @NonNull
-        static Input fromBundle(@NonNull final Bundle args) {
-            @SuppressWarnings("deprecation")
-            final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_MODE));
-            final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
-
-            return new Input(mode, embedded);
-        }
-
-        @NonNull
-        Bundle toBundle() {
-            final Bundle args = new Bundle(2);
-            args.putParcelable(BKEY_MODE, mode);
-            args.putBoolean(BKEY_EMBEDDED, embedded);
-
-            return args;
-        }
-
-        @NonNull
-        Mode getMode() {
-            return mode;
-        }
-
-        boolean isEmbedded() {
-            return embedded;
         }
     }
 }
