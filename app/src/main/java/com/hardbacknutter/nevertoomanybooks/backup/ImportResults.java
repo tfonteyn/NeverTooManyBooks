@@ -36,6 +36,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
@@ -50,7 +51,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Used by {@link RecordReader} and accumulated in {@link DataReader}.
  */
 public class ImportResults
-        extends ReaderResults {
+        extends ReaderResults
+        implements ContractOutput {
 
     /** {@link Parcelable}. */
     public static final Creator<ImportResults> CREATOR = new Creator<>() {

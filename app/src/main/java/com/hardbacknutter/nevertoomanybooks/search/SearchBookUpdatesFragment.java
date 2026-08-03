@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -235,13 +233,10 @@ public class SearchBookUpdatesFragment
             final EditBookOutput result = data.getEditBookOutput();
             if (result != null) {
                 //noinspection DataFlowIssue
-                getActivity().setResult(Activity.RESULT_OK,
-                                        new Intent().putExtras(result.toBundle()));
-                getActivity().finish();
+                result.finishActivityAndSend(getActivity());
             } else {
                 // We should never get here, flw...
                 //noinspection DataFlowIssue
-                getActivity().setResult(Activity.RESULT_CANCELED);
                 getActivity().finish();
             }
         });
@@ -264,9 +259,7 @@ public class SearchBookUpdatesFragment
                 if (result != null) {
                     // We should not get here, but adding this code makes us future proof.
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(result.toBundle()));
-                    getActivity().finish();
+                    result.finishActivityAndSend(getActivity());
                     return;
                 }
             }

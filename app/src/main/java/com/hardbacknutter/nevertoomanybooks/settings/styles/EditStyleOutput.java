@@ -28,9 +28,11 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
-public final class EditStyleOutput {
+public final class EditStyleOutput
+        implements ContractOutput {
 
     private static final String TAG = "EditStyleOutput";
     private static final String BKEY_MODIFIED = TAG + ":m";
@@ -75,8 +77,9 @@ public final class EditStyleOutput {
         return new EditStyleOutput(templateUuid, modified, styleUuid);
     }
 
+    @Override
     @NonNull
-    Bundle toBundle() {
+    public Bundle toBundle() {
         final Bundle args = new Bundle(3);
         args.putString(BKEY_TEMPLATE_UUID, templateUuid);
         args.putBoolean(BKEY_MODIFIED, modified);

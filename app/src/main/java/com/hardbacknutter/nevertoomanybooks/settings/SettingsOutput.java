@@ -27,7 +27,11 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-public final class SettingsOutput {
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
+
+public final class SettingsOutput
+        implements ContractOutput {
+
     private static final String TAG = "SettingsOutput";
     /** Something changed (or not) that requires a recreation of the caller Activity. */
     private static final String BKEY_RECREATE_ACTIVITY = TAG + ":recreate";
@@ -55,6 +59,7 @@ public final class SettingsOutput {
         return Optional.of(new SettingsOutput(recreateActivity, forceRebuildBooklist));
     }
 
+    @Override
     @NonNull
     public Bundle toBundle() {
         final Bundle args = new Bundle(2);

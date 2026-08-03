@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 /**
@@ -36,10 +37,10 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
  * Dev. note: this is a tiny class which we don't really need
  * but is used regardless for consistency and hiding bundle calls.
  * <p>
- * Both {@link #toBundle(ArrayList)} and {@link #fromBundle(Bundle)}
- * are static and bypass local object creation.
+ * {@link #fromBundle(Bundle)} bypasses local object creation.
  */
-final class SingleSiteListInputOutput {
+class SingleSiteListInputOutput
+        implements ContractOutput {
 
     private static final String TAG = "SingleSiteListIOput";
 
@@ -49,8 +50,11 @@ final class SingleSiteListInputOutput {
      * Type: {@code java.util.ArrayList<? extends android.os.Parcelable>)}
      */
     private static final String BKEY_LIST = TAG + ":list";
+    @NonNull
+    private final ArrayList<Site> siteList;
 
-    private SingleSiteListInputOutput() {
+    SingleSiteListInputOutput(@NonNull final List<Site> siteList) {
+        this.siteList = new ArrayList<>(siteList);
     }
 
     @Nullable
@@ -64,7 +68,8 @@ final class SingleSiteListInputOutput {
     }
 
     @NonNull
-    static Bundle toBundle(@NonNull final ArrayList<Site> siteList) {
+    @Override
+    public Bundle toBundle() {
         final Bundle args = new Bundle(1);
         args.putParcelableArrayList(BKEY_LIST, siteList);
 

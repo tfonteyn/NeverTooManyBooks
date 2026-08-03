@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.storage.StorageVolume;
@@ -133,12 +131,9 @@ public class SettingsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final SettingsOutput result = new SettingsOutput(
-                            vm.isForceActivityRecreation(), vm.isForceRebuildBooklist());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(result.toBundle()));
-                    getActivity().finish();
+                    new SettingsOutput(vm.isForceActivityRecreation(), vm.isForceRebuildBooklist())
+                            .finishActivityAndSend(getActivity());
                 }
             };
     private StorageVolumeHelper storageVolumeHelper;

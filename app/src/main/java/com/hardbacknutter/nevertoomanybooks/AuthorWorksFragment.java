@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
@@ -99,12 +97,9 @@ public class AuthorWorksFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final EditBookOutput result =
-                            new EditBookOutput(vm.isDataModified(), 0, 0);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(result.toBundle()));
-                    getActivity().finish();
+                    new EditBookOutput(vm.isDataModified(), 0, 0)
+                            .finishActivityAndSend(getActivity());
                 }
             };
     /** Display a Book. */

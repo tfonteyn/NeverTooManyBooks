@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -86,12 +84,9 @@ public class PreferredStylesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final PreferredStylesOutput args = new PreferredStylesOutput(
-                            vm.getSelectedUuid(), vm.isModified());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(args.toBundle()));
-                    getActivity().finish();
+                    new PreferredStylesOutput(vm.getSelectedUuid(), vm.isModified())
+                            .finishActivityAndSend(getActivity());
                 }
             };
 

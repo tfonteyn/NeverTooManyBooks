@@ -35,7 +35,7 @@ import java.util.List;
  * Bundle encoding is always an {@link EnumSet}.
  */
 public enum SyncContractOutput
-        implements Parcelable {
+        implements Parcelable, ContractOutput {
     /** Data was imported; i.e. local changes were made. */
     Read,
     /** Data was exported/written; no local changes done. */
@@ -73,6 +73,7 @@ public enum SyncContractOutput
         return EnumSet.noneOf(SyncContractOutput.class);
     }
 
+    @Override
     @NonNull
     public Bundle toBundle() {
         final Bundle args = new Bundle(1);

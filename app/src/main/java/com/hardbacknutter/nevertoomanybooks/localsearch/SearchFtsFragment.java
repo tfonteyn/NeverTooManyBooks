@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.localsearch;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -172,10 +170,8 @@ public class SearchFtsFragment
      */
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showFullResults() {
-        final Intent resultIntent = new Intent().putExtras(vm.getCriteria().toBundle());
         //noinspection DataFlowIssue
-        getActivity().setResult(Activity.RESULT_OK, resultIntent);
-        getActivity().finish();
+        vm.getCriteria().finishActivityAndSend(getActivity());
     }
 
     /**

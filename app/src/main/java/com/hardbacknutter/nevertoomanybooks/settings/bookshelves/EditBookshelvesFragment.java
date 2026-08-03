@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.bookshelves;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -86,12 +84,9 @@ public class EditBookshelvesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final EditBookshelvesOutput output =
-                            new EditBookshelvesOutput(vm.getSelectedBookshelfId(), vm.isModified());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(output.toBundle()));
-                    getActivity().finish();
+                    new EditBookshelvesOutput(vm.getSelectedBookshelfId(), vm.isModified())
+                            .finishActivityAndSend(getActivity());
                 }
             };
 

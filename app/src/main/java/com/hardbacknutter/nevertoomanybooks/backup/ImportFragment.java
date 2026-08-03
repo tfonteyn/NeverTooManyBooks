@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -94,8 +93,8 @@ public class ImportFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    // no result, just quit
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
                 }
             };
@@ -522,9 +521,7 @@ public class ImportFragment
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     backPressedCallback.setEnabled(false);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(result.toBundle()));
-                    getActivity().finish();
+                    result.finishActivityAndSend(getActivity());
                 })
                 .create()
                 .show();

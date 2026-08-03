@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,11 +76,11 @@ public class SyncReaderFragment
     /** dummy key for the date picker. */
     private static final String SYNC_DATE = "sd";
 
-    /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    // No result, just quit
                     //noinspection DataFlowIssue
                     getActivity().finish();
                 }
@@ -453,11 +451,8 @@ public class SyncReaderFragment
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
-                    final Intent resultIntent = new Intent()
-                            .putExtras(SyncContractOutput.Read.toBundle());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
-                    getActivity().finish();
+                    SyncContractOutput.Read.finishActivityAndSend(getActivity());
                 })
                 .create()
                 .show();

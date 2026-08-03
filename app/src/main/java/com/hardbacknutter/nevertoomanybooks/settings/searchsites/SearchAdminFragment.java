@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.settings.searchsites;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,7 +46,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -79,13 +77,14 @@ public class SearchAdminFragment
                         vm.persist();
                         // but to keep changes minimal, we still return the list if it's single.
                         if (vm.getTypes().size() == 1) {
-                            final Bundle result = SingleSiteListInputOutput.toBundle(
-                                    new ArrayList<>(vm.getList(vm.getTypes().get(0))));
                             //noinspection DataFlowIssue
-                            getActivity().setResult(Activity.RESULT_OK,
-                                                    new Intent().putExtras(result));
+                            new SingleSiteListInputOutput(vm.getList(vm.getTypes().get(0)))
+                                    .finishActivityAndSend(getActivity());
+                            return;
                         }
+                        // all types, nothing to return
                         //noinspection DataFlowIssue
+                        getActivity().setResult(Activity.RESULT_OK, null);
                         getActivity().finish();
 
                     } else {

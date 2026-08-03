@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -53,14 +51,10 @@ public class StyleFragment
                     //noinspection DataFlowIssue
                     final StyleViewModel.Saved dbResult = vm.insertOrUpdateStyle(getContext());
                     if (dbResult.isSuccess()) {
-                        final EditStyleOutput args = new EditStyleOutput(
-                                vm.getTemplateUuid(), dbResult.isModified(),
-                                vm.getStyle().getUuid());
-
                         //noinspection DataFlowIssue
-                        getActivity().setResult(Activity.RESULT_OK,
-                                                new Intent().putExtras(args.toBundle()));
-                        getActivity().finish();
+                        new EditStyleOutput(vm.getTemplateUuid(), dbResult.isModified(),
+                                            vm.getStyle().getUuid())
+                                .finishActivityAndSend(getActivity());
                     }
                 }
             };

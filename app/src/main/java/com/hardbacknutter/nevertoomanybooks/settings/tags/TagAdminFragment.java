@@ -65,11 +65,9 @@ public class TagAdminFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final SettingsOutput result = new SettingsOutput(false, vm.isModified());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(result.toBundle()));
-                    getActivity().finish();
+                    new SettingsOutput(false, vm.isModified())
+                            .finishActivityAndSend(getActivity());
                 }
             };
 

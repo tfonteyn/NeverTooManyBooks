@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -67,10 +65,10 @@ public abstract class SearchBookBaseFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, createResultIntent());
-                    getActivity().finish();
+                    getResultData().finishActivityAndSend(getActivity());
                 }
             };
+
     SearchCoordinator coordinator;
 
     private ActivityResultLauncher<EditBookInput> editBookLauncher;
@@ -85,7 +83,7 @@ public abstract class SearchBookBaseFragment
     }
 
     @NonNull
-    abstract Intent createResultIntent();
+    abstract EditBookOutput getResultData();
 
     /**
      * The user finished editing a book.

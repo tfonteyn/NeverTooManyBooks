@@ -26,7 +26,8 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-public class EditBookshelvesOutput {
+public class EditBookshelvesOutput
+        implements ContractOutput {
 
     private static final String BKEY_MODIFIED = "modified";
 
@@ -53,6 +54,7 @@ public class EditBookshelvesOutput {
         return new EditBookshelvesOutput(id, modified);
     }
 
+    @Override
     @NonNull
     public Bundle toBundle() {
         final Bundle args = new Bundle(2);
@@ -73,5 +75,14 @@ public class EditBookshelvesOutput {
      */
     public boolean isModified() {
         return modified;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditBookshelvesOutput{"
+               + "selectedBookshelfId=" + selectedBookshelfId
+               + ", modified=" + modified
+               + '}';
     }
 }

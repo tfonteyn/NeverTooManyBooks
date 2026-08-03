@@ -26,7 +26,8 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 //ENHANCE: embed a list of {book-id,modified} pairs instead of the single 'modified' flag
-public final class EditBookOutput {
+public final class EditBookOutput
+        implements ContractOutput {
 
     private static final String TAG = "EditBookOutput";
 
@@ -79,6 +80,7 @@ public final class EditBookOutput {
         return new EditBookOutput(modified, repositionToBookId, lastBookIdProcessed);
     }
 
+    @Override
     @NonNull
     public Bundle toBundle() {
         final Bundle args = new Bundle(3);

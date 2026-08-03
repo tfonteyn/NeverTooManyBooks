@@ -58,12 +58,9 @@ public class ShowBookPagerFragment
                 public void handleOnBackPressed() {
                     // always set the *current* book, so BoB can reposition more accurately.
                     final int currentItem = viewPager != null ? viewPager.getCurrentItem() : 0;
-                    final long bookId = vm.getBookIdAtPosition(currentItem);
-                    final EditBookOutput result = new EditBookOutput(aVm.isModified(), bookId, 0);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            new Intent().putExtras(result.toBundle()));
-                    getActivity().finish();
+                    new EditBookOutput(aVm.isModified(), vm.getBookIdAtPosition(currentItem), 0)
+                            .finishActivityAndSend(getActivity());
                 }
             };
 

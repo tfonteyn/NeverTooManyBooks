@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -102,9 +101,7 @@ public abstract class QueueFragment
                                         final boolean clear = option == 1;
                                         qvm.clear(coordinator, clear);
                                         //noinspection DataFlowIssue
-                                        getActivity().setResult(Activity.RESULT_OK,
-                                                                createResultIntent());
-                                        getActivity().finish();
+                                        getResultData().finishActivityAndSend(getActivity());
                                     })
                             .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                             .create()

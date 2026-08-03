@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
+
 /**
  * Holder class for search criteria with some methods to bulk manipulate them.
  * <p>
@@ -40,7 +42,7 @@ import java.util.List;
  * </ul>
  */
 public class LocalSearchCriteria
-        implements Parcelable {
+        implements Parcelable, ContractOutput {
 
     /** {@link Parcelable}. */
     public static final Creator<LocalSearchCriteria> CREATOR = new Creator<>() {

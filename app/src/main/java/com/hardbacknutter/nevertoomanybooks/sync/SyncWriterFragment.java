@@ -224,6 +224,7 @@ public class SyncWriterFragment
                         .setTitle(R.string.title_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
+                            // no result, just quit
                             //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK);
                             getActivity().finish();
@@ -242,11 +243,8 @@ public class SyncWriterFragment
                         .setTitle(R.string.info_export_successful)
                         .setMessage(itemList)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
-                            final Intent resultIntent = new Intent()
-                                    .putExtras(SyncContractOutput.Write.toBundle());
                             //noinspection DataFlowIssue
-                            getActivity().setResult(Activity.RESULT_OK, resultIntent);
-                            getActivity().finish();
+                            SyncContractOutput.Write.finishActivityAndSend(getActivity());
                         })
                         .create()
                         .show();

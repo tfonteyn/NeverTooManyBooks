@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +52,9 @@ public class IdentifiersAdminFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    // no result, just quit
                     //noinspection DataFlowIssue
+                    getActivity().setResult(Activity.RESULT_OK, null);
                     getActivity().finish();
                 }
             };

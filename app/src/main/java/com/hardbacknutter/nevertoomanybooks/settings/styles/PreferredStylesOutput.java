@@ -27,9 +27,11 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
-public final class PreferredStylesOutput {
+public final class PreferredStylesOutput
+        implements ContractOutput {
 
     private static final String TAG = "PreferredStylesOutput";
     private static final String BKEY_MODIFIED = TAG + ":m";
@@ -46,8 +48,8 @@ public final class PreferredStylesOutput {
      * @param modified  flag indicating if <strong>anything at all</strong> was modified.
      *                  This is independent of the returned style.
      */
-    public PreferredStylesOutput(@Nullable final String styleUuid,
-                                 final boolean modified) {
+    PreferredStylesOutput(@Nullable final String styleUuid,
+                          final boolean modified) {
         this.styleUuid = styleUuid;
         this.modified = modified;
     }
@@ -59,8 +61,9 @@ public final class PreferredStylesOutput {
         return new PreferredStylesOutput(uuid, modified);
     }
 
+    @Override
     @NonNull
-    Bundle toBundle() {
+    public Bundle toBundle() {
         final Bundle args = new Bundle(2);
         args.putString(Style.BKEY_UUID, styleUuid);
         args.putBoolean(BKEY_MODIFIED, modified);

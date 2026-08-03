@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -80,8 +79,8 @@ public class SearchBookByTextFragment
 
     @Override
     @NonNull
-    Intent createResultIntent() {
-        return new Intent().putExtras(vm.getResultData().toBundle());
+    public EditBookOutput getResultData() {
+        return vm.getResultData();
     }
 
     @Override

@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -308,12 +306,9 @@ public class EditBookFragment
 
     /** Single point of exit for this Activity. */
     private void setResultsAndFinish() {
-        final EditBookOutput result =
-                new EditBookOutput(vm.isModified(), vm.getBook().getId(), 0);
         //noinspection DataFlowIssue
-        getActivity().setResult(Activity.RESULT_OK,
-                                new Intent().putExtras(result.toBundle()));
-        getActivity().finish();
+        new EditBookOutput(vm.isModified(), vm.getBook().getId(), 0)
+                .finishActivityAndSend(getActivity());
     }
 
     /**

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -625,8 +624,8 @@ public class SearchBookByIsbnFragment
 
     @Override
     @NonNull
-    Intent createResultIntent() {
-        return new Intent().putExtras(vm.getResultData().toBundle());
+    public EditBookOutput getResultData() {
+        return vm.getResultData();
     }
 
     /**

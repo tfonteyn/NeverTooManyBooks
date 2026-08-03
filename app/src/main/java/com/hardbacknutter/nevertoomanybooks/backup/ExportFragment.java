@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -324,8 +325,11 @@ public class ExportFragment
                         new MaterialAlertDialogBuilder(getContext())
                                 .setIcon(R.drawable.info_24px)
                                 .setTitle(title)
-                                .setPositiveButton(R.string.action_done, (d, w)
-                                        -> getActivity().finish());
+                                .setPositiveButton(R.string.action_done, (d, w) -> {
+                                    //noinspection DataFlowIssue
+                                    getActivity().setResult(Activity.RESULT_OK, null);
+                                    getActivity().finish();
+                                });
 
                 final StringBuilder msg = new StringBuilder(itemList);
 
@@ -431,6 +435,7 @@ public class ExportFragment
                     .putExtra(Intent.EXTRA_STREAM, uri);
             startActivity(intent);
             //noinspection DataFlowIssue
+            getActivity().setResult(Activity.RESULT_OK, null);
             getActivity().finish();
 
         } catch (@NonNull final ActivityNotFoundException e) {
@@ -439,7 +444,12 @@ public class ExportFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_email_failed)
-                    .setPositiveButton(R.string.ok, (d, w) -> getActivity().finish())
+                    .setPositiveButton(R.string.ok, (d, w) -> {
+                        // Still return success, as the EXPORT was successful.
+                        //noinspection DataFlowIssue
+                        getActivity().setResult(Activity.RESULT_OK, null);
+                        getActivity().finish();
+                    })
                     .create()
                     .show();
         }

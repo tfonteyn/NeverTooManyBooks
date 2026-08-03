@@ -27,7 +27,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +47,11 @@ public class SearchSitesSingleListContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final List<Site> list) {
 
+        @SuppressWarnings("TypeMayBeWeakened")
+        final SingleSiteListInputOutput input = new SingleSiteListInputOutput(list);
         return FragmentHostActivityLauncher
                 .createIntent(context, SearchAdminFragment.class, R.layout.activity_main_tabbar)
-                .putExtras(SingleSiteListInputOutput.toBundle(new ArrayList<>(list)));
+                .putExtras(input.toBundle());
     }
 
     @NonNull

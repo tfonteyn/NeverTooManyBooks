@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -86,8 +85,8 @@ public class SearchBookByExternalIdFragment
 
     @Override
     @NonNull
-    Intent createResultIntent() {
-        return new Intent().putExtras(vm.getResultData().toBundle());
+    public EditBookOutput getResultData() {
+        return vm.getResultData();
     }
 
     /**
