@@ -313,6 +313,12 @@ public final class SearchEngineUtils {
         return Optional.of(series);
     }
 
+    /**
+     * If a periodical has no authors, an attempt is made
+     * to use the first publisher, if present, as the author.
+     *
+     * @param book to update
+     */
     public static void ensurePeriodicalEditor(@NonNull final Book book) {
         if (book.getAuthors().isEmpty()) {
             book.getPrimaryPublisher()

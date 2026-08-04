@@ -478,6 +478,9 @@ class DnbBookParser {
         if (!book.hasProductCode() && searchedCode != null) {
             book.setRawProductCode(searchedCode);
         }
+
+        // If didn't get an editor, use the publisher if we have one.
+        SearchEngineUtils.ensurePeriodicalEditor(book);
     }
 
 

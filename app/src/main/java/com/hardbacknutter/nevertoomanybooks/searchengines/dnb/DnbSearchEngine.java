@@ -414,9 +414,6 @@ public class DnbSearchEngine
 
         // all done
         parser.finish(searchedCode);
-
-        // If didn't get an editor, use the publisher if we have one.
-        SearchEngineUtils.ensurePeriodicalEditor(book);
     }
 
     /**
