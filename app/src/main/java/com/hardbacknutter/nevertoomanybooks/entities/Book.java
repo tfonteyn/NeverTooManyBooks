@@ -75,8 +75,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.ValidatorConfig;
@@ -1075,21 +1078,6 @@ public class Book
     }
 
     /**
-     * Update all {@link Bookshelf} details from/with the database.
-     *
-     * @param context Current context
-     */
-    public void refreshBookshelves(@NonNull final Context context) {
-        if (contains(BKEY_BOOKSHELF_LIST)) {
-            final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-            // Bookshelves always use the users preferred Locale
-            getBookshelves().forEach(bookshelf -> bookshelfDao
-                    .refresh(context, bookshelf, locale));
-        }
-    }
-
-    /**
      * Update all {@link Author} details from/with the database.
      * <p>
      * Uses the Book or when not available, the user {@link Locale}.
@@ -1112,23 +1100,23 @@ public class Book
      * @param context Current context
      */
     public void pruneAuthors(@NonNull final Context context) {
-        final List<Author> authors = getAuthors();
-        if (!authors.isEmpty()) {
+        final List<Author> list = getAuthors();
+        if (!list.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Author's always use the book Locale
-            if (authorDao.pruneList(context, authors, author -> bookLocale)) {
+            if (authorDao.pruneList(context, list, author -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
 
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
-        if (authors.isEmpty()) {
+        if (list.isEmpty()) {
             final String searchText = getString(LocalSearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             if (!searchText.isEmpty()) {
-                authors.add(Author.from(searchText));
+                list.add(Author.from(searchText));
                 remove(LocalSearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
@@ -1207,13 +1195,13 @@ public class Book
      * @param context Current context
      */
     public void pruneSeries(@NonNull final Context context) {
-        final List<Series> seriesList = getSeries();
-        if (!seriesList.isEmpty()) {
+        final List<Series> list = getSeries();
+        if (!list.isEmpty()) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Series have their own Locale with fallback to the book-locale
-            if (seriesDao.pruneList(context, seriesList,
+            if (seriesDao.pruneList(context, list,
                                     series -> series.getLocale(userLocale).orElse(bookLocale))) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
@@ -1221,10 +1209,10 @@ public class Book
 
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
-        if (seriesList.isEmpty()) {
+        if (list.isEmpty()) {
             final String searchText = getString(LocalSearchCriteria.BKEY_SEARCH_TEXT_SERIES);
             if (!searchText.isEmpty()) {
-                seriesList.add(Series.from(searchText, getString(DBKey.SERIES.BOOK_SERIES_NUMBER)));
+                list.add(Series.from(searchText, getString(DBKey.SERIES.BOOK_SERIES_NUMBER)));
                 remove(LocalSearchCriteria.BKEY_SEARCH_TEXT_SERIES);
                 remove(DBKey.SERIES.BOOK_SERIES_NUMBER);
                 stage.setStage(EntityStage.Stage.Dirty);
@@ -1293,23 +1281,23 @@ public class Book
      * @param context Current context
      */
     public void prunePublishers(@NonNull final Context context) {
-        final List<Publisher> publishers = getPublishers();
-        if (!publishers.isEmpty()) {
+        final List<Publisher> list = getPublishers();
+        if (!list.isEmpty()) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Publisher's always use the book Locale
-            if (publisherDao.pruneList(context, publishers, publisher -> bookLocale)) {
+            if (publisherDao.pruneList(context, list, publisher -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
 
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
-        if (publishers.isEmpty()) {
+        if (list.isEmpty()) {
             final String searchText = getString(LocalSearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
             if (!searchText.isEmpty()) {
-                publishers.add(Publisher.from(searchText));
+                list.add(Publisher.from(searchText));
                 remove(LocalSearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
@@ -1358,6 +1346,21 @@ public class Book
     }
 
     /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context Current context
+     */
+    public void pruneBookshelves(@NonNull final Context context) {
+        final List<Bookshelf> list = getBookshelves();
+        if (!list.isEmpty()) {
+            final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
+            if (dao.pruneList(context, list)) {
+                stage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
+    }
+
+    /**
      * Get the list of {@link TocEntry}s.
      *
      * @return List
@@ -1374,6 +1377,23 @@ public class Book
      */
     public void setToc(@NonNull final Collection<TocEntry> tocEntries) {
         putParcelableCollection(BKEY_TOC_LIST, tocEntries);
+    }
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context Current context
+     */
+    public void pruneToc(@NonNull final Context context) {
+        final List<TocEntry> list = getToc();
+        if (!list.isEmpty()) {
+            final TocEntryDao dao = ServiceLocator.getInstance().getTocEntryDao();
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
+            if (dao.pruneList(context, list, tocEntry -> bookLocale)) {
+                stage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
     }
 
     /**
@@ -1411,6 +1431,23 @@ public class Book
         putParcelableCollection(BKEY_TAG_LIST, bt);
     }
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context Current context
+     */
+    public void pruneTags(@NonNull final Context context) {
+        final List<Tag> list = getTags();
+        if (!list.isEmpty()) {
+            final TagDao dao = ServiceLocator.getInstance().getTagDao();
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
+            if (dao.pruneList(context, list, tocEntry -> bookLocale)) {
+                stage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
+    }
+
     @Override
     @NonNull
     public List<Identifier.Value> getIdentifiers() {
@@ -1420,6 +1457,21 @@ public class Book
     @Override
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
         putParcelableCollection(Identifier.Value.BKEY_LIST, ivs);
+    }
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context Current context
+     */
+    public void pruneIdentifiers(@NonNull final Context context) {
+        final List<Identifier.Value> list = getIdentifiers();
+        if (!list.isEmpty()) {
+            final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
+            if (dao.pruneList(list)) {
+                stage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
     }
 
     /**

@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -75,17 +74,12 @@ public class SyncReaderProcessor {
     /** Mappers to apply. */
     @SuppressWarnings("FieldNotUsedInToString")
     private final Collection<Mapper> mappers;
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final BookshelfDao bookshelfDao;
 
     @AnyThread
     protected SyncReaderProcessor(@NonNull final Context context,
                                   @NonNull final Builder builder) {
         this.fields = builder.fields;
         this.realNumberParser = builder.realNumberParser;
-
-        bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         mappers = MapperFactory.create(context);
     }
@@ -426,6 +420,7 @@ public class SyncReaderProcessor {
                 final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getAuthors());
+                    remoteBook.pruneAuthors(context);
                 }
                 break;
             }
@@ -433,7 +428,7 @@ public class SyncReaderProcessor {
                 final List<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getBookshelves());
-                    bookshelfDao.pruneList(context, list);
+                    remoteBook.pruneBookshelves(context);
                 }
                 break;
             }
@@ -441,6 +436,7 @@ public class SyncReaderProcessor {
                 final List<Identifier.Value> list = remoteBook.getIdentifiers();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getIdentifiers());
+                    remoteBook.pruneIdentifiers(context);
                 }
                 break;
             }
@@ -448,6 +444,7 @@ public class SyncReaderProcessor {
                 final List<Publisher> list = remoteBook.getPublishers();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getPublishers());
+                    remoteBook.prunePublishers(context);
                 }
                 break;
             }
@@ -455,6 +452,7 @@ public class SyncReaderProcessor {
                 final List<Series> list = remoteBook.getSeries();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getSeries());
+                    remoteBook.pruneSeries(context);
                 }
                 break;
             }
@@ -462,6 +460,7 @@ public class SyncReaderProcessor {
                 final List<Tag> list = remoteBook.getTags();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getTags());
+                    remoteBook.pruneTags(context);
                 }
                 break;
             }
@@ -469,6 +468,7 @@ public class SyncReaderProcessor {
                 final List<TocEntry> list = remoteBook.getToc();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getToc());
+                    remoteBook.pruneToc(context);
                 }
                 break;
             }
