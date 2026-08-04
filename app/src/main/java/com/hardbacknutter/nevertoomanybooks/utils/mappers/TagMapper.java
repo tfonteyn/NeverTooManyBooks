@@ -62,6 +62,12 @@ public class TagMapper
         allMappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
     }
 
+    /**
+     * Constructor - testing only.
+     *
+     * @param locale   Current Locale
+     * @param mappings to use (instead of those from the database)
+     */
     @VisibleForTesting
     public TagMapper(@NonNull final Locale locale,
                      @NonNull final List<TagMapping> mappings) {
