@@ -32,7 +32,6 @@ import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,8 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -314,9 +311,6 @@ public class AmazonSearchEngine
             // Spanish/Portuguese
             "desde "};
 
-    /** Portugal redirects to Spain. */
-    private static final String SPANISH = "es";
-
     /**
      * Parse the "x pages" string.
      * English/French,German,Dutch,Spanish/Portuguese
@@ -339,7 +333,7 @@ public class AmazonSearchEngine
     @Keep
     public AmazonSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
-        super(appContext, config);
+        super(appContext, config, new SpanishPortugueseFallbackLocaleResolver());
     }
 
     /**
@@ -683,7 +677,7 @@ public class AmazonSearchEngine
         allLocales.add(Locale.US);
 
         final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
-        addPriceListed(context, parser, priceText, null, book);
+        parserHelper.addPriceListed(parser, priceText, null, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
@@ -781,7 +775,8 @@ public class AmazonSearchEngine
 
                     final String pubDate = matcher.group(2);
                     if (pubDate != null) {
-                        addPublicationDate(context, siteLocale, pubDate.strip(), book);
+                        final String dateStr = pubDate.strip();
+                        parserHelper.addPublicationDate(context, siteLocale, dateStr, book);
                     }
                 }
 
@@ -791,7 +786,7 @@ public class AmazonSearchEngine
                 }
             } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
                 final String data = SearchEngineUtils.cleanText(value);
-                addPublicationDate(context, siteLocale, data, book);
+                parserHelper.addPublicationDate(context, siteLocale, data, book);
 
             } else if (LABEL_SERIES.contains(lcLabel)) {
                 final String data = SearchEngineUtils.cleanText(value);
@@ -816,24 +811,6 @@ public class AmazonSearchEngine
             if (pages != null && !pages.isEmpty()) {
                 book.setPages(pages);
             }
-        }
-    }
-
-    @NonNull
-    protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
-                                                          @NonNull final Locale locale) {
-
-        // Hack to support the Portuguese site which does a redirect to the Spanish one
-        if (SPANISH.equals(locale.getLanguage())) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales =
-                    new ArrayList<>(LocaleListUtils.asList(locale, userLocales));
-            // "pt" and "pt_BR" use the same spelling for month names
-            allLocales.add(1, new Locale("pt"));
-            return new FullDateParser(isoDateParser, allLocales);
-
-        } else {
-            return super.getFullDateParser(context, locale);
         }
     }
 
@@ -881,7 +858,7 @@ public class AmazonSearchEngine
                         }
                     }
 
-                    addAuthor(author, type, book, false);
+                    parserHelper.addAuthor(author, type, book, false);
                 }
             }
         }

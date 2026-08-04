@@ -291,7 +291,7 @@ public class BnfSearchEngine
                @NonNull final Book book)
             throws CredentialsException, StorageException {
 
-        final BnfBookParser parser = new BnfBookParser(context, this, document, book);
+        final BnfBookParser parser = new BnfBookParser(context, parserHelper, document, book);
         // Parse the sid FIRST
         parser.sid();
         // Parse the product-code next

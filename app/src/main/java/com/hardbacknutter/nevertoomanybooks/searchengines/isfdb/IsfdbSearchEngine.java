@@ -1189,7 +1189,7 @@ public class IsfdbSearchEngine
                                                       .getLocales();
                 final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
                 final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-                addPriceListed(context, parser, tmp, null, book);
+                parserHelper.addPriceListed(parser, tmp, null, book);
             }
         }
     }
@@ -1305,7 +1305,7 @@ public class IsfdbSearchEngine
                     author.setIdentifierValue(Identifier.SID_ISFDB, siId);
                 }
             }
-            addAuthor(author, type, book, false);
+            parserHelper.addAuthor(author, type, book, false);
         }
     }
 

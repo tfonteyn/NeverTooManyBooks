@@ -428,7 +428,7 @@ public class DatabazeKnihSearchEngine
                                                  .stream()
                                                  .map(Element::text)
                                                  .collect(Collectors.toList());
-        setTags(tagNames, book);
+        parserHelper.setTags(tagNames, book);
 
         // Publishers
         final Elements pubElements = bookRightDiv.select("a[href^=/nakladatelstvi/]");
@@ -806,7 +806,7 @@ public class DatabazeKnihSearchEngine
                 }
             }
         }
-        addAuthor(author, type, book, false);
+        parserHelper.addAuthor(author, type, book, false);
     }
 
     @Nullable

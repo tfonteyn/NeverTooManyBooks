@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -558,8 +558,7 @@ public class DoubanSearchEngine
                             //  We'll need to follow the link to the "personage" to
                             //  get the correct SID.
                             //  This would also allow us to get Birthdate etc
-
-                            addAuthor(author, AuthorRole.UNKNOWN, book, false);
+                            parserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false);
                         }
                     }
                     break;
@@ -597,7 +596,8 @@ public class DoubanSearchEngine
                     if (a != null && "a".equals(a.tagName())) {
                         final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
-                            addAuthor(Author.from(s), AuthorRole.TRANSLATOR, book, false);
+                            parserHelper.addAuthor(Author.from(s), AuthorRole.TRANSLATOR,
+                                                   book, false);
                         }
                     }
                     break;
@@ -696,7 +696,7 @@ public class DoubanSearchEngine
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
         final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-        addPriceListed(context, parser, priceStr, MoneyParser.CNY, book);
+        parserHelper.addPriceListed(parser, priceStr, MoneyParser.CNY, book);
     }
 
     /**

@@ -151,7 +151,8 @@ class ParseTest
     private Book getBook(final int resId)
             throws IOException, SAXException {
         final Book book = new Book();
-        final KbNlBookHandler bookHandler = new KbNlBookHandler(searchEngine, book);
+        final KbNlBookHandler bookHandler =
+                new KbNlBookHandler(searchEngine.getParserHelper(), book);
         // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream in = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
@@ -367,7 +368,8 @@ class ParseTest
     void parseAuthor01() {
         final String s = "Isaak Judovič Ozimov (1920-1992) (ISNI 0000 0001 2259 0564)";
         final Book book = new Book();
-        final KbNlBookHandler kbNlBookHandler = new KbNlBookHandler(searchEngine, book);
+        final KbNlBookHandler kbNlBookHandler =
+                new KbNlBookHandler(searchEngine.getParserHelper(), book);
 
         final List<CurrentData> currentData = List.of(new CurrentData(s, null));
         kbNlBookHandler.parseAuthor(currentData, 0);

@@ -147,9 +147,6 @@ public class BolSearchEngine
      */
     private static final String ROOT_REFERER = "/%s/nl/";
 
-    /** Front-covers can be given using either of these keys. We must try both. */
-    private static final List<String> FRONT_COVER_KEYS = List.of("coverImageUrl", "imageUrl");
-
     // Local mapping for the types in the json data
     private static final Map<String, Integer> FORMAT_MAPPING = Map.of(
             "https://schema.org/Paperback", R.string.book_format_paperback,
@@ -444,9 +441,11 @@ public class BolSearchEngine
 
         final JSONObject jsonAuthor = root.optJSONObject("author");
         if (jsonAuthor != null) {
+            // The author in json is the primary author only.
+            // Parse the html for others and roles.
+            // Add directly, don't use the parserHelper addAuthor method
             book.add(Author.from(jsonAuthor.optString("name")));
         }
-        // The author in json is the primary author only. Parse the html for others and roles.
 
 
         final JSONObject jsonPublisher = root.optJSONObject("publisher");
@@ -545,7 +544,7 @@ public class BolSearchEngine
                                            // they are simple Strings
                                            .map(String::valueOf)
                                            .collect(Collectors.toList());
-        setTags(tagNames, book);
+        parserHelper.setTags(tagNames, book);
     }
 
     @VisibleForTesting
@@ -624,7 +623,7 @@ public class BolSearchEngine
                         final String text = SearchEngineUtils.cleanText(value);
                         // can be empty!
                         if (!text.isBlank()) {
-                            addPublicationDate(context, siteLocale, text, book);
+                            parserHelper.addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
                     }
@@ -743,7 +742,7 @@ public class BolSearchEngine
         if (a != null) {
             final String s = SearchEngineUtils.cleanName(a);
             if (!s.isBlank()) {
-                addAuthor(Author.from(s), type, book, addAsFirst);
+                parserHelper.addAuthor(Author.from(s), type, book, addAsFirst);
             }
         }
     }
@@ -810,7 +809,7 @@ public class BolSearchEngine
                                            .stream()
                                            .map(Element::text)
                                            .collect(Collectors.toList());
-        setTags(tagNames, book);
+        parserHelper.setTags(tagNames, book);
     }
 
     /**

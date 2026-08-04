@@ -826,7 +826,7 @@ public class LastDodoSearchEngine
                     author.setIdentifierValue(Identifier.SID_LAST_DODO_NL, siId);
                 }
             }
-            addAuthor(author, type, book, false);
+            parserHelper.addAuthor(author, type, book, false);
         }
     }
 

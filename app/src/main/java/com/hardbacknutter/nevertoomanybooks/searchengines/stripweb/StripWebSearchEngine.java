@@ -388,7 +388,7 @@ public class StripWebSearchEngine
                     case "Verschijningsdatum": {
                         final String text = SearchEngineUtils.cleanText(td);
                         if (!text.isEmpty()) {
-                            addPublicationDate(context, siteLocale, text, book);
+                            parserHelper.addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
                     }
@@ -583,7 +583,7 @@ public class StripWebSearchEngine
                                                   .getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
             final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
-            addPriceListed(context, parser, priceStr, MoneyParser.EUR, book);
+            parserHelper.addPriceListed(parser, priceStr, MoneyParser.EUR, book);
         }
 
         final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");
@@ -635,7 +635,7 @@ public class StripWebSearchEngine
             }
         }
         // Add/merge or skip if already present
-        addAuthor(author, type, book, false);
+        parserHelper.addAuthor(author, type, book, false);
     }
 
     /**

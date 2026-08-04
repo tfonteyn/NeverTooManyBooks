@@ -56,7 +56,15 @@ public abstract class JsoupSearchEngineBase
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
-        this(appContext, config, null);
+        super(appContext, config);
+        this.charSetName = null;
+    }
+
+    protected JsoupSearchEngineBase(@NonNull final Context appContext,
+                                    @NonNull final SearchEngineConfig config,
+                                    @NonNull final LocaleListResolver localeListResolver) {
+        super(appContext, config, localeListResolver);
+        this.charSetName = null;
     }
 
     /**
@@ -70,6 +78,14 @@ public abstract class JsoupSearchEngineBase
                                     @NonNull final SearchEngineConfig config,
                                     @Nullable final String charSetName) {
         super(appContext, config);
+        this.charSetName = charSetName;
+    }
+
+    protected JsoupSearchEngineBase(@NonNull final Context appContext,
+                                    @NonNull final SearchEngineConfig config,
+                                    @Nullable final String charSetName,
+                                    @NonNull final LocaleListResolver localeListResolver) {
+        super(appContext, config, localeListResolver);
         this.charSetName = charSetName;
     }
 

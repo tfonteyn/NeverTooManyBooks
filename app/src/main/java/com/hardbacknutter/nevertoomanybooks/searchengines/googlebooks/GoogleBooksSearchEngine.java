@@ -427,9 +427,7 @@ public class GoogleBooksSearchEngine
                                  @NonNull final JSONObject volumeInfo,
                                  @NonNull final Book book) {
         JSONArray a;
-        int i;
         String s;
-        float f;
 
         final Locale locale = getLocale(context);
 
@@ -449,7 +447,7 @@ public class GoogleBooksSearchEngine
         }
         s = volumeInfo.optString("publishedDate", null);
         if (s != null && !s.isBlank()) {
-            addPublicationDate(context, locale, s, book);
+            parserHelper.addPublicationDate(context, locale, s, book);
         }
 
         s = volumeInfo.optString("description", null);
@@ -462,16 +460,16 @@ public class GoogleBooksSearchEngine
             parseIdentifiers(a, book);
         }
 
-        i = volumeInfo.optInt("pageCount");
-        if (i > 0) {
-            book.setPages(i);
+        final int pageCount = volumeInfo.optInt("pageCount");
+        if (pageCount > 0) {
+            book.setPages(pageCount);
         }
 
         // Google documents this is a "double" with values 0..5,
         // so we rely on decimal separator "." ... flw...
-        f = volumeInfo.optFloat("averageRating");
-        if (!Float.isNaN(f) && f > 0) {
-            ratingParser.normalise(f).ifPresent(book::setRating);
+        final float rating = volumeInfo.optFloat("averageRating");
+        if (!Float.isNaN(rating) && rating > 0) {
+            ratingParser.normalise(rating).ifPresent(book::setRating);
         }
 
         s = volumeInfo.optString("language", null);
@@ -488,7 +486,7 @@ public class GoogleBooksSearchEngine
                     tags.add(category);
                 }
             }
-            setTags(tags, book);
+            parserHelper.setTags(tags, book);
         }
         // BOOK or MAGAZINE : ignored
         //s = volumeInfo.optString("printType", null);
@@ -525,7 +523,7 @@ public class GoogleBooksSearchEngine
                               @NonNull final Book book) {
         for (int i = 0; i < a.length(); i++) {
             final String name = a.optString(i);
-            addAuthor(Author.from(name), AuthorRole.UNKNOWN, book, false);
+            parserHelper.addAuthor(Author.from(name), AuthorRole.UNKNOWN, book, false);
         }
     }
 

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.Attributes;
@@ -167,6 +168,8 @@ class IsfdbPublicationListHandler
     @NonNull
     private final Context context;
     @NonNull
+    private final ParserHelper parserHelper;
+    @NonNull
     private final IsfdbSearchEngine searchEngine;
     @NonNull
     private final boolean[] fetchCovers = new boolean[DBKey.NR_OF_BOOK_COVERS];
@@ -208,6 +211,8 @@ class IsfdbPublicationListHandler
                                 final int maxRecords) {
         this.context = context;
         this.searchEngine = searchEngine;
+        this.parserHelper = searchEngine.getParserHelper();
+
         System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
 
@@ -329,7 +334,7 @@ class IsfdbPublicationListHandler
                 case XML_AUTHOR: {
                     if (inAuthors) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        searchEngine.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
+                        parserHelper.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
                     }
                     break;
                 }
@@ -373,7 +378,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String priceStr = builder.toString().strip();
-                    searchEngine.addPriceListed(context, moneyParser, priceStr, null, book);
+                    parserHelper.addPriceListed(moneyParser, priceStr, null, book);
                     break;
                 }
                 case XML_PAGES: {
@@ -407,7 +412,8 @@ class IsfdbPublicationListHandler
                             imageUrl = "https:" + imageUrl.substring(5);
                         }
                         try {
-                            searchEngine.saveImage(context, imageUrl, null, book.getRawProductCode(), 0, null)
+                            searchEngine.saveImage(context, imageUrl, null,
+                                                   book.getRawProductCode(), 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));
 
@@ -420,7 +426,7 @@ class IsfdbPublicationListHandler
                 case XML_ARTIST: {
                     if (inCoverArtists) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        searchEngine.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book, false);
+                        parserHelper.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book, false);
                     }
                     break;
                 }
