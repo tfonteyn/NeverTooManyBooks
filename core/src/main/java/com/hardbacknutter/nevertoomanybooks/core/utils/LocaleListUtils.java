@@ -25,10 +25,9 @@ import android.os.LocaleList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * Simple helper which transforms a {@link LocaleList} (which is NOT a List) to
@@ -62,16 +61,21 @@ public final class LocaleListUtils {
     @NonNull
     public static List<Locale> asList(@Nullable final Locale firstLocale,
                                       @NonNull final LocaleList localeList) {
-        // A linked set to eliminate any duplicates caused by the prefixed Locale
-        final Set<Locale> locales = new LinkedHashSet<>();
+        final int size = localeList.size();
+        final int capacity = (firstLocale != null) ? size + 1 : size;
+        final List<Locale> result = new ArrayList<>(capacity);
 
         if (firstLocale != null) {
-            locales.add(firstLocale);
+            result.add(firstLocale);
         }
 
-        for (int i = 0; i < localeList.size(); i++) {
-            locales.add(localeList.get(i));
+        for (int i = 0; i < size; i++) {
+            final Locale locale = localeList.get(i);
+            if (locale != null && !result.contains(locale)) {
+                result.add(locale);
+            }
         }
-        return List.copyOf(locales);
+
+        return List.copyOf(result);
     }
 }
