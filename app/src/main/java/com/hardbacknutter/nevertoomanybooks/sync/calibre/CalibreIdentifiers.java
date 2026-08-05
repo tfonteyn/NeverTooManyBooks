@@ -56,9 +56,8 @@ public final class CalibreIdentifiers {
      * "kobo"
      */
     private static final Map<String, String> IDENTIFIER_MAPPING_READER = Map.ofEntries(
-            // I'm not clear on why calibre prefers 'amazon' above 'asin'
-            // but heck, just convert it.
-            Map.entry(AMAZON, Identifier.SID_ASIN),
+            // "amazon*", "isbn*" are handled as exceptions
+
             // mobi is obsolete so we always map it to pure 'asin'
             Map.entry("mobi-asin", Identifier.SID_ASIN),
             // Calibre typically uses 'uri' but sometimes we see 'url'
@@ -73,9 +72,23 @@ public final class CalibreIdentifiers {
                                          @NonNull final String sid,
                                          @NonNull final List<Identifier.Value> ivs) {
         if (IDENTIFIER_ISBN.equals(calKey)) {
+            // The pure "isbn" key always wins.
             book.setRawProductCode(sid);
+            // Done, we never add the "isbn" key to the identifiers.
+            return;
+        }
 
-        } else if (calKey.length() > 6 && calKey.startsWith(AMAZON)) {
+        if (calKey.length() > 4 && calKey.startsWith(IDENTIFIER_ISBN)) {
+            // "isbn_10" and "isbn_13" MAY set the product-code,
+            // but only if "isbn" has not done so already.
+            if (!book.hasProductCode()) {
+                book.setRawProductCode(sid);
+            }
+            // Drop through!
+            // We want to add the "isbn_10"/"isbn_13" keys to the identifiers.
+        }
+
+        if (calKey.length() > 6 && calKey.startsWith(AMAZON)) {
             // Other than strict "amazon", there are variants
             // for local sites; e.g. "amazon_nl", "amazon_fr",...
             // The actual ASIN is always the same,
@@ -83,12 +96,13 @@ public final class CalibreIdentifiers {
             if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
                 ivs.add(new Identifier.Value(Identifier.SID_ASIN, sid));
             }
-        } else {
-            // Map the calKey to our key, or if not found,
-            // just use the calKey itself
-            final String key = IDENTIFIER_MAPPING_READER.getOrDefault(calKey, calKey);
-            //noinspection DataFlowIssue
-            ivs.add(new Identifier.Value(key, sid));
+            return;
         }
+
+        // Map the calKey to our key, or if not found,
+        // just use the calKey itself
+        final String key = IDENTIFIER_MAPPING_READER.getOrDefault(calKey, calKey);
+        //noinspection DataFlowIssue
+        ivs.add(new Identifier.Value(key, sid));
     }
 }
