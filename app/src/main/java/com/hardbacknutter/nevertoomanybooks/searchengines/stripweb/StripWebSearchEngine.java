@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -32,9 +31,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -48,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -573,17 +574,21 @@ public class StripWebSearchEngine
         if (cartForm == null) {
             return;
         }
-        // In EURO; contains a comma as decimal separate.
-        final Element price = cartForm.selectFirst("span[itemprop='price']");
-        if (price != null) {
-            final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
-            final String priceStr = price.text().strip();
-            final LocaleList userLocales = context.getResources().getConfiguration()
-                                                  .getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-            final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
-            parserHelper.addPriceListed(parser, priceStr, MoneyParser.EUR, book);
+        final Element priceElement = cartForm.selectFirst("span[itemprop='price']");
+        if (priceElement != null) {
+            // with a dot as decimal separator
+            final String priceStr = priceElement.attr("content");
+            final BigDecimal value = new BigDecimal(priceStr);
+
+            final Element currencyElement = cartForm.selectFirst("span[itemprop='priceCurrency']");
+            final String currency;
+            if (currencyElement != null) {
+                currency = currencyElement.attr("content");
+            } else {
+                currency = MoneyParser.EUR;
+            }
+            book.setPriceListed(new Money(value, Currency.getInstance(currency)));
         }
 
         final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");
