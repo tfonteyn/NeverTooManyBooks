@@ -28,9 +28,9 @@ import java.util.Set;
 public final class NumberParser {
 
     private static final Set<String> ZERO_VALUES = Set.of(
-            "", "0", "0.0",
+            "", "0", "0.0", "0.00",
             // Comma used as a decimal separator.
-            "0,0");
+            "0,0", "0,00");
 
     private NumberParser() {
     }
@@ -49,6 +49,7 @@ public final class NumberParser {
         final String s = stringValue.strip();
         return ZERO_VALUES.contains(s)
                // Used by Amazon for free kindle books etc...
+               // At least, it was. This may be obsolete.
                || "free".equalsIgnoreCase(s);
     }
 
