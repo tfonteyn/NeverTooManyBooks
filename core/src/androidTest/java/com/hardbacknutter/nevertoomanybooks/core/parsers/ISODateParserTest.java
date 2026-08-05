@@ -90,7 +90,7 @@ class ISODateParserTest {
      * "yyyy-MM-dd HH:mm",
      */
     @Test
-    void isoDateTime() {
+    void spaceTime() {
         final DateParser<LocalDateTime> parser = new ISODateParser(LOCALE);
 
         assertEquals(Optional.of(LocalDateTime.of(2020, 9, 1,
@@ -135,7 +135,7 @@ class ISODateParserTest {
 
     /** JDK 'T' variations */
     @Test
-    void isoTeaTime() {
+    void teaTime() {
         final DateParser<LocalDateTime> parser = new ISODateParser(LOCALE);
 
         assertEquals(Optional.of(LocalDateTime.of(2020, 8, 12,

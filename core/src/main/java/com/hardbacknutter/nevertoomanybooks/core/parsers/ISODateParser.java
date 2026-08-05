@@ -29,8 +29,6 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -51,8 +49,8 @@ public class ISODateParser
 
     @NonNull
     private final Locale locale;
-    /** List of patterns we'll use to parse ISO datetime stamps... */
-    private Collection<DateTimeFormatter> parsers;
+    @Nullable
+    private DateTimeFormatter sqliteIsoDateTime;
 
     /**
      * Constructor.
@@ -63,15 +61,19 @@ public class ISODateParser
         this.locale = systemLocale;
     }
 
+    /**
+     * Parse the date string based on exact known length patterns.
+     * <p>
+     * For optimum performance, do NOT call for length: 6, 9, or outside of the 4..11 range.
+     *
+     * @param dateStr to parse
+     * @param len     the length of dateStr
+     *
+     * @return result
+     */
     @NonNull
-    private static Optional<LocalDateTime> parseLenBased(@NonNull final CharSequence dateStr) {
-
-        final int len = dateStr.length();
-        // invalid lengths
-        if (len < 4 || len == 6 || len == 9) {
-            return Optional.empty();
-        }
-
+    private static Optional<LocalDateTime> parseLenBased(@NonNull final CharSequence dateStr,
+                                                         final int len) {
         try {
             switch (len) {
                 case 4: {
@@ -132,47 +134,63 @@ public class ISODateParser
             return Optional.empty();
         }
 
-        // try a fast and dirty parse step based on the length of the string
-        final Optional<LocalDateTime> lenBasedResult = parseLenBased(dateStr);
-        if (lenBasedResult.isPresent()) {
-            return lenBasedResult;
+        // Fast fail
+        final int len = dateStr.length();
+        if (len < 4) {
+            return Optional.empty();
+        }
+
+        // Don't try invalid lengths for parseLenBased
+        if (len != 6 && len != 9 && len < 12) {
+            // try parsing based on the length of the string
+            final Optional<LocalDateTime> lenBasedResult = parseLenBased(dateStr, len);
+            if (lenBasedResult.isPresent()) {
+                return lenBasedResult;
+            }
         }
 
         // secondly, try full parsing for more complicated patterns.
-        if (parsers == null) {
-            create();
+
+        // Time separator at position 10 (or 11 for negative year -yyyy)
+        final int sepPos = (dateStr.charAt(0) == '-') ? 11 : 10;
+        // sanity check
+        if (len <= sepPos) {
+            return Optional.empty();
         }
-        for (final DateTimeFormatter dtf : parsers) {
+
+        // ISO-8601 Standard; with a 'T' between date and time
+        final char sep = dateStr.charAt(sepPos);
+        if (sep == 'T' || sep == 't') {
             try {
-                return Optional.of(LocalDateTime.parse(dateStr, dtf));
+                return Optional.of(LocalDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME));
             } catch (@NonNull final DateTimeParseException ignore) {
-                // ignore and try the next one
+                return Optional.empty();
+            }
+        }
+
+        if (sep == ' ') {
+            if (sqliteIsoDateTime == null) {
+                createSQLiteDateTimeFormatter();
+            }
+            // SQLite Standard; with a ' ' between date and time
+            try {
+                return Optional.of(LocalDateTime.parse(dateStr, sqliteIsoDateTime));
+            } catch (@NonNull final DateTimeParseException ignore) {
+                return Optional.empty();
             }
         }
 
         return Optional.empty();
     }
 
-    /**
-     * Create the parser list.
-     */
-    private void create() {
-        parsers = new ArrayList<>();
-
-        // '2011-12-03T10:15:30',
-        // '2011-12-03T10:15:30+01:00'
-        // '2011-12-03T10:15:30+01:00[Europe/Paris]'
-        // Uses ResolverStyle.STRICT / IsoChronology.INSTANCE
-        // This parser includes ISO_LOCAL_DATE_TIME
-        parsers.add(DateTimeFormatter.ISO_DATE_TIME);
-
+    private void createSQLiteDateTimeFormatter() {
         /*
          * Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
          * '2011-12-03 10:15:30',
          * '2011-12-03 10:15:30+01:00'
          * '2011-12-03 10:15:30+01:00[Europe/Paris]'
          */
-        final DateTimeFormatter sqliteIsoDateTime = new DateTimeFormatterBuilder()
+        sqliteIsoDateTime = new DateTimeFormatterBuilder()
                 .parseCaseInsensitive()
                 .append(DateTimeFormatter.ISO_LOCAL_DATE)
                 // A space instead of the normal 'T'
@@ -187,7 +205,5 @@ public class ISODateParser
                 .appendLiteral(']')
                 // Uses ResolverStyle.SMART and 'null' Chronology
                 .toFormatter(locale);
-
-        parsers.add(sqliteIsoDateTime);
     }
 }
