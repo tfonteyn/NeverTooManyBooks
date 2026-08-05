@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MoneyParserTest {
 
-    private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
+    private static final BigDecimal twelveDotThreeFour = new BigDecimal("12.34");
 
     @NonNull
     static Stream<Arguments> readArgs() {
@@ -55,12 +55,12 @@ class MoneyParserTest {
                 Arguments.of(List.of(Locale.UK),
                              "£12.34", twelveDotThreeFour, MoneyParser.GBP),
                 Arguments.of(List.of(Locale.UK),
-                             "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
+                             "£12", new BigDecimal("12.0"), MoneyParser.GBP),
 
                 Arguments.of(List.of(Locale.UK),
-                             "12/6", BigDecimal.valueOf(0.625d), MoneyParser.GBP),
+                             "12/6", new BigDecimal("0.625"), MoneyParser.GBP),
                 Arguments.of(List.of(Locale.UK),
-                             "10/-", BigDecimal.valueOf(0.5d), MoneyParser.GBP),
+                             "10/-", new BigDecimal("0.5"), MoneyParser.GBP),
 
                 // Variations of EUR and Locale.{eu}
                 Arguments.of(List.of(new Locale("de", "DE")),
@@ -84,7 +84,7 @@ class MoneyParserTest {
                 Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
                              "£12.34", twelveDotThreeFour, MoneyParser.GBP),
                 Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
-                             "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
+                             "£12", new BigDecimal("12.0"), MoneyParser.GBP),
 
                 Arguments.of(List.of(new Locale("de", "DE"), Locale.UK),
                              "12,34&nbsp;€", twelveDotThreeFour, MoneyParser.EUR),
@@ -109,7 +109,9 @@ class MoneyParserTest {
         final Optional<Money> oMoney = moneyParser.parse(source);
         assertTrue(oMoney.isPresent());
         final Money money = oMoney.get();
-        assertEquals(value, money.getValue());
+
+        assertEquals(0, value.compareTo(money.getValue()));
+
         final Currency currency = money.getCurrency();
         assertNotNull(currency);
         assertEquals(code, currency.getCurrencyCode());

@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +72,17 @@ public class MoneyParser {
      * This is a fixed/static map with historical symbols and overrides.
      */
     private static final Map<String, String> HISTORIC_EXCEPTIONS = new HashMap<>();
+
+    /**
+     * Cache results of {@link #createDynamicCurrencyMap(Locale)} for each Locale.
+     */
+    private static final Map<Locale, Map<String, String>> DYNAMIC_MAP_CACHE
+            = new ConcurrentHashMap<>();
+
+    static {
+        createCurrencyMap();
+    }
+
     /**
      * A Map to translate currency <strong>symbols</strong> to their official ISO code.
      * This is dynamically build from all currencies, using the {@link #locale}.
@@ -92,9 +105,6 @@ public class MoneyParser {
         this.realNumberParser = RealNumberParser.money(numberLocales);
 
         dynamicCurrencyMap = createDynamicCurrencyMap(currencyLocale);
-        if (HISTORIC_EXCEPTIONS.isEmpty()) {
-            createCurrencyMap();
-        }
     }
 
     /**
@@ -227,9 +237,10 @@ public class MoneyParser {
 
             // the British pound was made up of 20 shillings, each of which was
             // made up of 12 pence, a total of 240 pence. Madness...
-            final double value = ((shillings * 12) + pence) / 240d;
-            final Currency currency = Currency.getInstance(GBP);
-            return Optional.of(new Money(BigDecimal.valueOf(value), currency));
+            final BigDecimal value = BigDecimal
+                    .valueOf(((long) shillings * 12) + pence)
+                    .divide(BigDecimal.valueOf(240), 2, RoundingMode.HALF_UP);
+            return Optional.of(new Money(value, Currency.getInstance(GBP)));
 
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
@@ -239,25 +250,27 @@ public class MoneyParser {
 
     @NonNull
     private Map<String, String> createDynamicCurrencyMap(final Locale locale) {
-        final Map<String, String> dynamicMap = new HashMap<>();
+        return DYNAMIC_MAP_CACHE.computeIfAbsent(locale, loc -> {
+            final Map<String, String> dynamicMap = new HashMap<>();
 
-        for (final Currency currency : Currency.getAvailableCurrencies()) {
-            final String code = currency.getCurrencyCode();
-            final String symbol = currency.getSymbol(locale).toLowerCase(locale);
+            for (final Currency currency : Currency.getAvailableCurrencies()) {
+                final String code = currency.getCurrencyCode();
+                final String symbol = currency.getSymbol(loc).toLowerCase(loc);
 
-            // Some symbols are used by multiple countries (e.g., '$')
-            // Give preference to the native currency of the website's locale.
-            if (currency.equals(Currency.getInstance(code))) {
-                dynamicMap.put(symbol, code);
-            } else {
-                dynamicMap.putIfAbsent(symbol, code);
+                // Some symbols are used by multiple countries (e.g., '$')
+                // Give preference to the native currency of the website's locale.
+                if (currency.equals(Currency.getInstance(code))) {
+                    dynamicMap.put(symbol, code);
+                } else {
+                    dynamicMap.putIfAbsent(symbol, code);
+                }
+
+                // Also register the raw lowercase ISO code as a safe fallback match
+                dynamicMap.put(code.toLowerCase(loc), code);
             }
 
-            // Also register the raw lowercase ISO code as a safe fallback match
-            dynamicMap.put(code.toLowerCase(locale), code);
-        }
-
-        return Collections.unmodifiableMap(dynamicMap);
+            return Collections.unmodifiableMap(dynamicMap);
+        });
     }
 
 
@@ -334,7 +347,11 @@ public class MoneyParser {
                 // If we have a normalised ISO3 code, use it.
                 // Otherwise try to convert it to one.
                 if (currencyCode.length() == 3) {
-                    currency = Currency.getInstance(currencyCode);
+                    try {
+                        currency = Currency.getInstance(currencyCode);
+                    } catch (final IllegalArgumentException e) {
+                        currency = fromSymbol(currencyStr);
+                    }
                 } else {
                     currency = fromSymbol(currencyStr);
                 }
@@ -346,8 +363,8 @@ public class MoneyParser {
         if (valueStr != null && !valueStr.isBlank()) {
             //noinspection OverlyBroadCatchBlock
             try {
-                final double value = realNumberParser.parseDouble(valueStr);
-                return Optional.of(new Money(BigDecimal.valueOf(value), currency));
+                final BigDecimal value = realNumberParser.parseBigDecimal(valueStr);
+                return Optional.of(new Money(value, currency));
 
             } catch (@NonNull final IllegalArgumentException ignore) {
                 // covers NumberFormatException
