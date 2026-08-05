@@ -85,57 +85,58 @@ public class Money
 
     /** Cached EURO currency. */
     public static final Currency EURO = Currency.getInstance(EUR_STR);
-    private static final Map<String, Double> EUROS = Map.ofEntries(
+    @SuppressWarnings("CheckStyle")
+    private static final Map<String, BigDecimal> EUROS = Map.ofEntries(
             // Andorra
-            Map.entry("ADP", 166.386d),
+            Map.entry("ADP", new BigDecimal("166.386")),
             // Austria
-            Map.entry("ATS", 13.7603d),
+            Map.entry("ATS", new BigDecimal("13.7603")),
             // Belgium
-            Map.entry("BEF", 40.3399d),
+            Map.entry("BEF", new BigDecimal("40.3399")),
             // Bulgaria
-            Map.entry("BGN", 1.95583d),
+            Map.entry("BGN", new BigDecimal("1.95583")),
             // Croatia
-            Map.entry("HRK", 7.53450d),
+            Map.entry("HRK", new BigDecimal("7.53450")),
             // Cyprus
-            Map.entry("CYP", 0.585274d),
+            Map.entry("CYP", new BigDecimal("0.585274")),
             // Estonia
-            Map.entry("EEK", 15.6466d),
+            Map.entry("EEK", new BigDecimal("15.6466")),
             // Finland
-            Map.entry("FIM", 5.94573d),
+            Map.entry("FIM", new BigDecimal("5.94573")),
             // France
-            Map.entry("FRF", 6.55957d),
+            Map.entry("FRF", new BigDecimal("6.55957")),
             // Germany
-            Map.entry("DEM", 1.95583d),
+            Map.entry("DEM", new BigDecimal("1.95583")),
             // Greece
-            Map.entry("GRD", 340.75d),
+            Map.entry("GRD", new BigDecimal("340.75")),
             // Ireland
-            Map.entry("IEP", 0.787564d),
+            Map.entry("IEP", new BigDecimal("0.787564")),
             // Italy
-            Map.entry("ITL", 1936.27d),
+            Map.entry("ITL", new BigDecimal("1936.27")),
             // Latvia
-            Map.entry("LVL", 0.702804d),
+            Map.entry("LVL", new BigDecimal("0.702804")),
             // Lithuania
-            Map.entry("LTL", 3.45280d),
+            Map.entry("LTL", new BigDecimal("3.45280")),
             // Luxembourg
-            Map.entry("LUF", 40.3399d),
+            Map.entry("LUF", new BigDecimal("40.3399")),
             // Malta
-            Map.entry("MTL", 0.429300d),
+            Map.entry("MTL", new BigDecimal("0.429300")),
             // Monaco
-            Map.entry("MCF", 6.55957d),
+            Map.entry("MCF", new BigDecimal("6.55957")),
             // Netherlands
-            Map.entry("NLG", 2.20371d),
+            Map.entry("NLG", new BigDecimal("2.20371")),
             // Portugal
-            Map.entry("PTE", 200.482d),
+            Map.entry("PTE", new BigDecimal("200.482")),
             // San Marino
-            Map.entry("SML", 1936.27d),
+            Map.entry("SML", new BigDecimal("1936.27")),
             // Slovakia
-            Map.entry("SKK", 30.1260d),
+            Map.entry("SKK", new BigDecimal("30.1260")),
             // Slovenia
-            Map.entry("SIT", 239.640d),
+            Map.entry("SIT", new BigDecimal("239.640")),
             // Spain
-            Map.entry("ESP", 166.386d),
+            Map.entry("ESP", new BigDecimal("166.386")),
             // Vatican City
-            Map.entry("VAL", 1936.27d)
+            Map.entry("VAL", new BigDecimal("1936.27"))
     );
 
     private static final long serialVersionUID = -8273127556226893529L;
@@ -159,8 +160,7 @@ public class Money
     }
 
     private Money(@NonNull final Parcel in) {
-        //noinspection DataFlowIssue
-        value = (BigDecimal) in.readSerializable();
+        value = new BigDecimal(in.readString());
         final boolean hasCurrency = in.readByte() != 0;
         if (hasCurrency) {
             currency = Currency.getInstance(in.readString());
@@ -172,7 +172,9 @@ public class Money
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeSerializable(value);
+        //noinspection CallToNumericToString
+        dest.writeString(value.toString());
+
         if (currency != null) {
             dest.writeByte((byte) 1);
             dest.writeString(currency.getCurrencyCode());
@@ -292,13 +294,13 @@ public class Money
             return new Money(value, currency);
         }
 
-        final Double rate = EUROS.get(currency.getCurrencyCode());
+        final BigDecimal rate = EUROS.get(currency.getCurrencyCode());
         if (rate == null) {
             // Not a Euro currency, return as is.
             return new Money(value, currency);
         }
 
-        return new Money(value.divide(BigDecimal.valueOf(rate), RoundingMode.HALF_UP), EURO);
+        return new Money(value.divide(rate, RoundingMode.HALF_UP), EURO);
     }
 
     @Override
