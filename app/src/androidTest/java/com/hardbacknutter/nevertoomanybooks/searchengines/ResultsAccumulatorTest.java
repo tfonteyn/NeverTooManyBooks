@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.core.util.Function;
 import androidx.core.util.Pair;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -376,7 +377,7 @@ class ResultsAccumulatorTest
         book.setRawProductCode("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
-        book.putDouble(DBKey.PRICE_LISTED, 7.99);
+        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("7.99"));
 
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry"),

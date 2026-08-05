@@ -21,15 +21,23 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.os.Bundle;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,23 +48,47 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("CheckStyle")
-class MoneyTest {
+class MoneyTest
+        extends BaseDBTest {
 
-    private static final double VALUE = 12.34d;
-    private final Money money = MoneyParser.parse(BigDecimal.valueOf(VALUE), MoneyParser.GBP);
+    /**
+     * Tests include adding the price value as Money, BigDecimal, double and String.
+     * The result must be parsable to a BigDecimal.
+     */
+    private static final double D_VALUE = 12.34d;
+    private static final String S_VALUE = "12.34";
+    private static final BigDecimal BD_VALUE = new BigDecimal(S_VALUE);
+    private final Money money = MoneyParser.parse(BD_VALUE, MoneyParser.GBP);
+
+    private RealNumberParser parser;
 
     private DataManager dataManager;
 
+    @BeforeEach
+    void setup()
+            throws StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        dataManager = new DataManager();
+
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        parser = RealNumberParser.money(allLocales);
+    }
+
     @SuppressWarnings({"SameParameterValue", "deprecation"})
-    private static void checkPriceData(@NonNull final DataManager dataManager,
+    private void checkPriceData(@NonNull final DataManager dataManager,
                                        @NonNull final String key,
-                                       final double value,
+                                       @NonNull final BigDecimal expected,
                                        @Nullable final String currency) {
         final Bundle rawData = dataManager.getRawData();
 
         final Object v = rawData.get(key);
-        assertInstanceOf(Double.class, v);
-        assertEquals(value, (double) v);
+        assertNotNull(v);
+
+        final BigDecimal value = parser.toBigDecimal(v);
+
+        assertEquals(0, expected.compareTo(value));
 
         final Object c = rawData.get(key + DBKey.CURRENCY_SUFFIX);
         if (currency == null) {
@@ -67,43 +99,81 @@ class MoneyTest {
         }
     }
 
-    @BeforeEach
-    void setup() {
-        dataManager = new DataManager();
-    }
-
     @Test
     void putMoney() {
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
-        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, MoneyParser.GBP);
     }
 
     @Test
     void putObject() {
         // Test for put(.., Object); do NOT replace with putMoney
         dataManager.put(DBKey.PRICE_LISTED, money);
-        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, MoneyParser.GBP);
     }
 
+
     @Test
-    void putComponents() {
-        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
+    void putComponentsBigDecimal() {
+        dataManager.putBigDecimal(DBKey.PRICE_LISTED, BD_VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.GBP);
 
-        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, MoneyParser.GBP);
     }
 
     @Test
-    void putValueOnly() {
-        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
-        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, null);
+    void putComponentsBigDouble() {
+        dataManager.putDouble(DBKey.PRICE_LISTED, D_VALUE);
+        dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.GBP);
+
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, MoneyParser.GBP);
     }
 
     @Test
-    void putValueAndIllegalCurrency() {
-        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
+    void putComponentsString() {
+        dataManager.putString(DBKey.PRICE_LISTED, S_VALUE);
+        dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.GBP);
+
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, MoneyParser.GBP);
+    }
+
+    @Test
+    void putValueOnlyBigDecimal() {
+        dataManager.putBigDecimal(DBKey.PRICE_LISTED, BD_VALUE);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, null);
+    }
+
+    @Test
+    void putValueOnlyBigDouble() {
+        dataManager.putDouble(DBKey.PRICE_LISTED, D_VALUE);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, null);
+    }
+
+    @Test
+    void putValueOnlyBigString() {
+        dataManager.putString(DBKey.PRICE_LISTED, S_VALUE);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, null);
+    }
+
+    @Test
+    void putValueAndIllegalCurrencyBigDecimal() {
+        dataManager.putBigDecimal(DBKey.PRICE_LISTED, BD_VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "chocolates");
-        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "chocolates");
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, "chocolates");
+    }
+
+    @Test
+    void putValueAndIllegalCurrencyDouble() {
+        dataManager.putDouble(DBKey.PRICE_LISTED, D_VALUE);
+        dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "chocolates");
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, "chocolates");
+    }
+
+    @Test
+    void putValueAndIllegalCurrencyString() {
+        dataManager.putString(DBKey.PRICE_LISTED, S_VALUE);
+        dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "chocolates");
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, "chocolates");
     }
 
     @SuppressWarnings("deprecation")

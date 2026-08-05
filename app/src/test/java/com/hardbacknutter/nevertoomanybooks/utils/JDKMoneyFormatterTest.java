@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 class JDKMoneyFormatterTest {
 
-    private static final double VALUE = 1234.50d;
+    private static final String VALUE = "1234.50";
 
     @NonNull
     static Stream<Arguments> readArgs() {
@@ -67,12 +67,11 @@ class JDKMoneyFormatterTest {
     @MethodSource("readArgs")
     void formatUS(@NonNull final Locale locale,
                   @NonNull final String currencyCode,
-                  final double input,
+                  @NonNull final String input,
                   @NonNull final String expected) {
 
         final FieldFormatter<Money> f = new MoneyFormatter(locale);
-        final Money money = new Money(BigDecimal.valueOf(input),
-                                      Currency.getInstance(currencyCode));
+        final Money money = new Money(new BigDecimal(input), Currency.getInstance(currencyCode));
         assertNotNull(money);
         // The context would only be needed when a currency is not recognized by the JDK.
         // So we force pass-in a null which in such a situation will throw NPE.

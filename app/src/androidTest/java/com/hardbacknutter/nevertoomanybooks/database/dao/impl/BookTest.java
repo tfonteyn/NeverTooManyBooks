@@ -74,7 +74,7 @@ class BookTest
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
+        final Money money = MoneyParser.parse(new BigDecimal("1.23"), MoneyParser.USD);
         book.setPriceListed(money);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
@@ -93,10 +93,10 @@ class BookTest
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
+        final Money money = MoneyParser.parse(BigDecimal.ZERO, "");
         book.setPriceListed(money);
 
-        book.putDouble(DBKey.PRICE_PAID, 456.789d);
+        book.putBigDecimal(DBKey.PRICE_PAID, new BigDecimal("456.789"));
         // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
@@ -274,8 +274,8 @@ class BookTest
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
 
-        book.putDouble(DBKey.PRICE_LISTED, 12.34);
-        book.putDouble(DBKey.PRICE_PAID, 0);
+        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("12.34"));
+        book.putBigDecimal(DBKey.PRICE_PAID, BigDecimal.ZERO);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processNullsAndBlanks(book, true);
@@ -303,8 +303,8 @@ class BookTest
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
 
-        book.putDouble(DBKey.PRICE_LISTED, 12.34);
-        book.putDouble(DBKey.PRICE_PAID, 0);
+        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("12.34"));
+        book.putBigDecimal(DBKey.PRICE_PAID, BigDecimal.ZERO);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processNullsAndBlanks(book, false);

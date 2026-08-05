@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MoneyFormatterTest {
 
-    private static final double VALUE = 1234.50d;
+    private static final String VALUE = "1234.50";
 
     @NonNull
     static Stream<Arguments> readArgs() {
@@ -65,11 +65,11 @@ class MoneyFormatterTest {
     @MethodSource("readArgs")
     void format(@NonNull final Locale fLocale,
                 @NonNull final String fCurrencyCode,
-                @NonNull final Double fInput,
+                @NonNull final String fInput,
                 @NonNull final String fExpected) {
         final FieldFormatter<Money> f = new MoneyFormatter(fLocale);
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(fInput), fCurrencyCode);
+        final Money money = MoneyParser.parse(new BigDecimal(fInput), fCurrencyCode);
         assertNotNull(money);
         assertEquals(fExpected, f.format(context, money));
     }

@@ -61,7 +61,7 @@ class BookCoderTest
 
     @Test
     void putMoney() {
-        final Money money = new Money(BigDecimal.valueOf(12.34d), Money.EURO);
+        final Money money = new Money(new BigDecimal("12.34"), Money.EURO);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         final JSONObject encode = bookCoder.encode(book);
@@ -72,7 +72,7 @@ class BookCoderTest
 
     @Test
     void putMoneyComponents() {
-        book.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("12.34"));
         book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
 
         final JSONObject encode = bookCoder.encode(book);
@@ -83,7 +83,7 @@ class BookCoderTest
 
     @Test
     void putMoneyComponentsNoCurrency() {
-        book.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("12.34"));
 
         final JSONObject encode = bookCoder.encode(book);
 
