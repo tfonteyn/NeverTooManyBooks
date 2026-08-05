@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +47,7 @@ class RealNumberParserTest {
 
     private static final float FLOAT = 1234.56f;
     private static final double DOUBLE = 1234.56d;
+    private static final BigDecimal BIGDEC = new BigDecimal("1234.56");
 
     @NonNull
     static Stream<Arguments> decDotGrpComma() {
@@ -87,7 +89,7 @@ class RealNumberParserTest {
 
     @ParameterizedTest
     @MethodSource("decDotGrpComma")
-    void parseFloat10(@NonNull final List<Locale> testLocales) {
+    void parse10(@NonNull final List<Locale> testLocales) {
         final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertEquals(FLOAT, parser.parseFloat(DEC_DOT_NO_GROUPING));
@@ -101,12 +103,19 @@ class RealNumberParserTest {
 
         assertThrows(NumberFormatException.class, () -> parser.parseDouble(DEC_COMMA_NO_GROUPING));
         assertThrows(NumberFormatException.class, () -> parser.parseDouble(DEC_COMMA_GROUPING_DOT));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_DOT_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_DOT_GROUPING_COMMA));
+
+        assertThrows(NumberFormatException.class, () -> parser.parseBigDecimal(DEC_COMMA_NO_GROUPING));
+        assertThrows(NumberFormatException.class, () -> parser.parseBigDecimal(DEC_COMMA_GROUPING_DOT));
+
     }
 
 
     @ParameterizedTest
     @MethodSource("decCommaNoGrp")
-    void parseFloat20(@NonNull final List<Locale> testLocales) {
+    void parse20(@NonNull final List<Locale> testLocales) {
         final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertThrows(NumberFormatException.class, () -> parser.parseFloat(DEC_DOT_NO_GROUPING));
@@ -120,12 +129,18 @@ class RealNumberParserTest {
 
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_NO_GROUPING));
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_GROUPING_DOT));
+
+        assertThrows(NumberFormatException.class, () -> parser.parseBigDecimal(DEC_DOT_NO_GROUPING));
+        assertThrows(NumberFormatException.class, () -> parser.parseBigDecimal(DEC_DOT_GROUPING_COMMA));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_GROUPING_DOT));
     }
 
 
     @ParameterizedTest
     @MethodSource("decCommaGrpDot")
-    void parseFloat30(@NonNull final List<Locale> testLocales) {
+    void parse30(@NonNull final List<Locale> testLocales) {
         final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertThrows(NumberFormatException.class, () -> parser.parseFloat(DEC_DOT_NO_GROUPING));
@@ -139,6 +154,12 @@ class RealNumberParserTest {
 
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_NO_GROUPING));
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_GROUPING_DOT));
+
+        assertThrows(NumberFormatException.class, () -> parser.parseBigDecimal(DEC_DOT_NO_GROUPING));
+        assertThrows(NumberFormatException.class, () -> parser.parseBigDecimal(DEC_DOT_GROUPING_COMMA));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_GROUPING_DOT));
     }
 
     @ParameterizedTest
@@ -160,12 +181,18 @@ class RealNumberParserTest {
 
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_NO_GROUPING));
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_GROUPING_DOT));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_DOT_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_DOT_GROUPING_COMMA));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_GROUPING_DOT));
     }
 
 
     @ParameterizedTest
     @MethodSource("decDotGrpComma_decDotGrpComma")
-    void parseFloat30_10(@NonNull final List<Locale> testLocales) {
+    void parse30_10(@NonNull final List<Locale> testLocales) {
         final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertEquals(FLOAT, parser.parseFloat(DEC_DOT_NO_GROUPING));
@@ -179,5 +206,11 @@ class RealNumberParserTest {
 
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_NO_GROUPING));
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_GROUPING_DOT));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_DOT_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_DOT_GROUPING_COMMA));
+
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_NO_GROUPING));
+        assertEquals(BIGDEC, parser.parseBigDecimal(DEC_COMMA_GROUPING_DOT));
     }
 }

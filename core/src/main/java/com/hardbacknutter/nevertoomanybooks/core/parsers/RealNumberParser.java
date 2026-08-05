@@ -25,6 +25,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -56,6 +58,7 @@ public class RealNumberParser {
 
     private static final String ERROR_NOT_A_FLOAT = "Not a float or no suitable Locale: ";
     private static final String ERROR_NOT_A_DOUBLE = "Not a double or no suitable Locale: ";
+    private static final String ERROR_NOT_A_BIGDECIMAL = "Not a BigDecimal or no suitable Locale: ";
     @NonNull
     private final List<Locale> locales;
     /**
@@ -129,6 +132,156 @@ public class RealNumberParser {
     }
 
     /**
+     * Replace/strip a number of special character  which can appear as
+     * thousands-separator and decimal-separator to make further parsing easier.
+     * <p>
+     * Dev. note: This is likely overkill...
+     *
+     * @param s to normalise
+     *
+     * @return normalised string
+     */
+    @SuppressWarnings({"UnnecessaryUnicodeEscape", "CharacterComparison"})
+    @NonNull
+    private static String normalizeNumericString(@NonNull final String s) {
+
+        final String text = s.strip();
+        if (text.isBlank()) {
+            return text;
+        }
+        final int len = text.length();
+
+        if (!needsNormalization(text, len)) {
+            return text;
+        }
+
+        final StringBuilder sb = new StringBuilder(text.length());
+
+        for (int i = 0; i < text.length(); i++) {
+            final char c = text.charAt(i);
+
+            // Map Non-ASCII Minus Signs to standard ASCII '-'
+            switch (c) {
+                case '\u2212':
+                    // MINUS SIGN (−)
+                case '\u2013':
+                    // EN DASH (–)
+                case '\u2014':
+                    // EM DASH (—)
+                case '\uFE63':
+                    // SMALL HYPHEN-MINUS (﹣)
+                case '\uFF0D':
+                    // FULLWIDTH HYPHEN-MINUS (－)
+                    sb.append('-');
+                    continue;
+
+                default:
+                    break;
+            }
+
+            // Map Full-width Japanese/Chinese ０-９ to 0-9
+            if (c >= '\uFF10' && c <= '\uFF19') {
+                sb.append((char) ('0' + (c - '\uFF10')));
+                continue;
+            }
+
+            // Normalize spaces, quote variants, and Arabic decimal separator
+            final char normalizedChar;
+            if (c == '\u00A0' || c == '\u2009' || c == '\u202F') {
+                // Special space characters
+                normalizedChar = ' ';
+            } else if (c == '’') {
+                // fancy Swiss
+                normalizedChar = '\'';
+            } else if (c == '٫') {
+                // Arabic
+                normalizedChar = '.';
+            } else {
+                normalizedChar = c;
+            }
+
+            // Strip these grouping separator ONLY if strictly between two digits
+            // French
+            if (normalizedChar == ' '
+                // Swiss
+                || normalizedChar == '\''
+                // Arabic
+                || normalizedChar == '٬'
+                // computer generated
+                || normalizedChar == '_') {
+
+                if (i > 0 && i < len - 1
+                    && Character.isDigit(text.charAt(i - 1))
+                    && Character.isDigit(text.charAt(i + 1))) {
+                    // Skip the grouping separator
+                    continue;
+                }
+            }
+
+            // Keep character as-is
+            sb.append(normalizedChar);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Check for being pure asci digits and {@code .} or {@code ,}.
+     *
+     * @param text to check
+     * @param len  length of text
+     *
+     * @return flag
+     */
+    @SuppressWarnings("CharacterComparison")
+    private static boolean needsNormalization(@NonNull final CharSequence text,
+                                              final int len) {
+        for (int i = 0; i < len; i++) {
+            final char c = text.charAt(i);
+            //
+            if ((c < '0' || c > '9') && c != '.' && c != '-') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Replacement for {@code Float.parseFloat(String)} using {@code List<Locales>}.
+     *
+     * @param source String to parse
+     *
+     * @return Resulting value ({@code null} or empty String becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public float parseFloat(@Nullable final String source)
+            throws NumberFormatException {
+
+        if (NumberParser.isZero(source)) {
+            return 0f;
+        }
+
+        final String s = normalizeNumericString(source);
+
+        // Sanity check
+        if (locales.isEmpty()) {
+            return Float.parseFloat(s);
+        }
+
+        // no decimal part and no thousands sep ?
+        if (s.indexOf('.') == -1 && s.indexOf(',') == -1) {
+            return Float.parseFloat(s);
+        }
+
+        final Number number = getNumber(s, false);
+        if (number != null) {
+            return number.floatValue();
+        }
+        throw new NumberFormatException(ERROR_NOT_A_FLOAT + s + ", locales=" + locales);
+    }
+
+    /**
      * Translate the passed Object to a {@code float} value.
      * <p>
      * This is a wrapper around {@link #parseFloat(String)} which will check
@@ -155,42 +308,44 @@ public class RealNumberParser {
             return parseFloat(stringValue);
         } catch (@NonNull final NumberFormatException e) {
             // as a last resort try boolean
-            // This is a safeguard for importing BC backups
+            // This is a safeguard for importing from CSV
             return BooleanParser.toBoolean(source) ? 1 : 0;
         }
     }
 
     /**
-     * Replacement for {@code Float.parseFloat(String)} using {@code List<Locales>}.
+     * Replacement for {@code Double.parseDouble(String)} using a {@code List<Locales>}.
      *
      * @param source String to parse
      *
-     * @return Resulting value ({@code null} or empty String becomes 0)
+     * @return Resulting value ({@code null} or empty String becomes {@code 0})
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public float parseFloat(@Nullable final String source)
+    public double parseDouble(@Nullable final String source)
             throws NumberFormatException {
 
         if (NumberParser.isZero(source)) {
-            return 0f;
+            return 0d;
         }
+
+        final String s = normalizeNumericString(source);
 
         // Sanity check
         if (locales.isEmpty()) {
-            return Float.parseFloat(source);
+            return Double.parseDouble(s);
         }
 
         // no decimal part and no thousands sep ?
-        if (source.indexOf('.') == -1 && source.indexOf(',') == -1) {
-            return Float.parseFloat(source);
+        if (s.indexOf('.') == -1 && s.indexOf(',') == -1) {
+            return Double.parseDouble(s);
         }
 
-        final Number number = getNumber(source);
+        final Number number = getNumber(s, false);
         if (number != null) {
-            return number.floatValue();
+            return number.doubleValue();
         }
-        throw new NumberFormatException(ERROR_NOT_A_FLOAT + source + ", locales=" + locales);
+        throw new NumberFormatException(ERROR_NOT_A_DOUBLE + s + ", locales=" + locales);
     }
 
     /**
@@ -221,13 +376,60 @@ public class RealNumberParser {
             return parseDouble(stringValue);
         } catch (@NonNull final NumberFormatException e) {
             // as a last resort try boolean
-            // This is a safeguard for importing BC backups
+            // This is a safeguard for importing from CSV
             return BooleanParser.toBoolean(source) ? 1 : 0;
         }
     }
 
     /**
-     * Replacement for {@code Double.parseDouble(String)} using a {@code List<Locales>}.
+     * Translate the passed Object to a {@code BigDecimal} value.
+     * <p>
+     * This is a wrapper around {@link #parseBigDecimal(String)} which will check
+     * for the given source to be convertible to a {@code BigDecimal}
+     * before parsing as a {@code String}.
+     *
+     * @param source Object to convert
+     *
+     * @return Resulting value; {@code null} or empty string becomes {@code BigDecimal.ZERO}
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public BigDecimal toBigDecimal(@Nullable final Object source)
+            throws NumberFormatException {
+
+        if (source == null) {
+            return BigDecimal.ZERO;
+        }
+
+        if (source instanceof BigDecimal) {
+            return (BigDecimal) source;
+        }
+
+        if (source instanceof Long || source instanceof Integer
+            || source instanceof Short || source instanceof Byte) {
+            return BigDecimal.valueOf(((Number) source).longValue());
+        }
+
+        if (source instanceof BigInteger) {
+            return new BigDecimal((BigInteger) source);
+        }
+
+        if (source instanceof Float || source instanceof Double) {
+            return new BigDecimal(source.toString());
+        }
+
+        final String stringValue = source.toString().strip();
+        try {
+            return parseBigDecimal(stringValue);
+        } catch (@NonNull final NumberFormatException e) {
+            // as a last resort try boolean
+            // This is a safeguard for importing from CSV
+            return BooleanParser.toBoolean(source) ? BigDecimal.ONE : BigDecimal.ZERO;
+        }
+    }
+
+    /**
+     * Parse BigDecimals without the need to use {@code double} as an interim value.
      *
      * @param source String to parse
      *
@@ -235,38 +437,62 @@ public class RealNumberParser {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public double parseDouble(@Nullable final String source)
+    @NonNull
+    public BigDecimal parseBigDecimal(@Nullable final String source)
             throws NumberFormatException {
 
         if (NumberParser.isZero(source)) {
-            return 0d;
+            return BigDecimal.ZERO;
         }
+
+        final String s = normalizeNumericString(source);
 
         // Sanity check
         if (locales.isEmpty()) {
-            return Double.parseDouble(source);
+            return new BigDecimal(s);
         }
 
         // no decimal part and no thousands sep ?
-        if (source.indexOf('.') == -1 && source.indexOf(',') == -1) {
-            return Double.parseDouble(source);
+        if (s.indexOf('.') == -1 && s.indexOf(',') == -1) {
+            return new BigDecimal(s);
         }
 
-        final Number number = getNumber(source);
-        if (number != null) {
-            return number.doubleValue();
+        final Number number = getNumber(s, true);
+        if (number instanceof BigDecimal) {
+            return (BigDecimal) number;
         }
-        throw new NumberFormatException(ERROR_NOT_A_DOUBLE + source + ", locales=" + locales);
+
+        if (number != null) {
+            return new BigDecimal(number.toString());
+        }
+
+        throw new NumberFormatException(ERROR_NOT_A_BIGDECIMAL + s + ", locales=" + locales);
     }
 
-
+    /**
+     * Parse the given source into a {@code Number}.
+     * <p>
+     * <strong>Parses text from the beginning of the given string to produce a number.
+     * The method may not use the entire text of the given string.</strong>
+     * i.o.w. any invalid suffix is simply ignored.
+     *
+     * @param source          to parse
+     * @param parseBigDecimal flag to enable BigDecimal parsing (or not)
+     *
+     * @return number
+     */
     @Nullable
-    private Number getNumber(@NonNull final String source) {
+    private Number getNumber(@NonNull final String source,
+                             final boolean parseBigDecimal) {
         // we check in order - first match returns.
         for (final Locale locale : locales) {
             //noinspection ProhibitedExceptionCaught
             try {
                 final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+                if (parseBigDecimal) {
+                    nf.setParseBigDecimal(true);
+                }
+
                 // if the dec sep for this format is present in the source,
                 // decode with this Locale; otherwise skip to the next one
                 final DecimalFormatSymbols decimalFormatSymbols = nf.getDecimalFormatSymbols();
