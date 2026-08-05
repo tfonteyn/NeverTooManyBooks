@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import androidx.annotation.NonNull;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,6 +142,37 @@ public class JSoupHelper {
             }
         }
         return OptionalDouble.empty();
+    }
+
+    /**
+     * Get a positive (can be zero) BigDecimal value.
+     * <p>
+     * <strong>IMPORTANT</strong>: this only works for
+     * {@code \d+} or {@code \d+.\d+} formatted values.
+     *
+     * @param root to start the lookup
+     * @param id   to lookup
+     *
+     * @return BigDecimal
+     */
+    @NonNull
+    public Optional<BigDecimal> getPositiveOrZeroBigDecimal(@NonNull final Element root,
+                                                            @NonNull final String id) {
+        final Element element = root.getElementById(id);
+        if (element != null) {
+            final String val = element.val();
+            if (!val.isEmpty()) {
+                try {
+                    final BigDecimal value = new BigDecimal(val);
+                    if (value.signum() >= 0) {
+                        return Optional.of(value);
+                    }
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     /**
