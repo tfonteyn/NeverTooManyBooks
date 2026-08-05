@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
@@ -170,7 +171,7 @@ public class RMBook
 
         } else if (menuItemId == R.id.MENU_SHARE) {
             final Book book = Book.from(bookId);
-            context.startActivity(book.getShareIntent(context, vm.getStyle()));
+            context.startActivity(CitationFactory.getShareIntent(context, book, vm.getStyle()));
             return true;
         }
 

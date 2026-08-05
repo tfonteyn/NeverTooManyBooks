@@ -20,11 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.citations;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class CitationFactory {
+
+    private static final String TAG = "CitationFactory";
 
     private CitationFactory() {
     }
@@ -50,5 +60,43 @@ public final class CitationFactory {
             default:
                 return new DefaultCitation(style);
         }
+    }
+
+    /**
+     * Creates a chooser with matched apps for sharing some text.
+     *
+     * @param context Current context
+     * @param book    to cite
+     * @param style   to apply
+     *
+     * @return the intent
+     */
+    @NonNull
+    public static Intent getShareIntent(@NonNull final Context context,
+                                        @NonNull final Book book,
+                                        @NonNull final Style style) {
+
+        final Citation citation = create(style);
+        final String text = citation.cite(context, book);
+
+        final Intent intent = new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, text);
+
+        book.getImage(context, 0).ifPresent(file -> {
+            try {
+                final Uri uri = GenericFileProvider.createUri(file, book.getTitle());
+                // read access to the input uri
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                      .putExtra(Intent.EXTRA_STREAM, uri);
+            } catch (@NonNull final IllegalArgumentException e) {
+                // Ignore the error, but log it. If the GenericFileProvider
+                // is at fault, the user will be hit with this exception
+                // when they add/edit covers.
+                LoggerFactory.getLogger().e(TAG, e, file.getAbsolutePath());
+            }
+        });
+
+        return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));
     }
 }

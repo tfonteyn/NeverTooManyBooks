@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
@@ -761,7 +762,7 @@ public class ShowBookDetailsFragment
 
             } else if (menuItemId == R.id.MENU_SHARE) {
                 //noinspection DataFlowIssue
-                startActivity(book.getShareIntent(context, aVm.getStyle()));
+                startActivity(CitationFactory.getShareIntent(context, book, aVm.getStyle()));
                 return true;
 
             } else if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {

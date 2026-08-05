@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.os.Parcel;
@@ -58,8 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.citations.Citation;
-import com.hardbacknutter.nevertoomanybooks.citations.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -98,7 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -2252,42 +2247,6 @@ public class Book
     /** Used exclusively during display / populating the Views when loading the book. */
     public void unlockStage() {
         stage.unlock();
-    }
-
-    /**
-     * Creates a chooser with matched apps for sharing some text.
-     *
-     * @param context Current context
-     * @param style   to apply
-     *
-     * @return the intent
-     */
-    @NonNull
-    public Intent getShareIntent(@NonNull final Context context,
-                                 @NonNull final Style style) {
-
-        final Citation citation = CitationFactory.create(style);
-        final String text = citation.cite(context, this);
-
-        final Intent intent = new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_TEXT, text);
-
-        getImage(context, 0).ifPresent(file -> {
-            try {
-                final Uri uri = GenericFileProvider.createUri(file, getTitle());
-                // read access to the input uri
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                      .putExtra(Intent.EXTRA_STREAM, uri);
-            } catch (@NonNull final IllegalArgumentException e) {
-                // Ignore the error, but log it. If the GenericFileProvider
-                // is at fault, the user will be hit with this exception
-                // when they add/edit covers.
-                LoggerFactory.getLogger().e(TAG, e, file.getAbsolutePath());
-            }
-        });
-
-        return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));
     }
 
     /**
