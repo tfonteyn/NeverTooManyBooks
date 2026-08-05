@@ -152,7 +152,7 @@ class AuthorMergeTest {
         author2.setDeathDate("2015-12-23");
         final List<Identifier.Value> ivs = List.of(
                 new Identifier.Value(Identifier.SID_GOODREADS, 153852));
-        author2.addIdentifiers(ivs);
+        author2.setIdentifiers(ivs);
 
         final AuthorMergeHelper h = new AuthorMergeHelper();
         final boolean merged = h.merge(context, author1, author2);
@@ -176,7 +176,7 @@ class AuthorMergeTest {
         author2.setRole(AuthorRole.WRITER);
         author2.setBirthDate("1902-04-09");
         author2.setDeathDate("2000-11-22");
-        author2.addIdentifiers(List.of(
+        author2.setIdentifiers(List.of(
                 new Identifier.Value(Identifier.SID_GOODREADS, 415035)));
 
         final AuthorMergeHelper h = new AuthorMergeHelper();

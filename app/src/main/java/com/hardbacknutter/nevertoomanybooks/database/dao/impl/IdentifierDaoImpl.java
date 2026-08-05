@@ -33,11 +33,11 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -257,7 +257,8 @@ public class IdentifierDaoImpl
         }
 
         long iId;
-        try (SynchronizedStatement stmtFindByKey = db.compileStatement(Sql.FIND_ID_BY_KEY_AND_ENTITY_TYPE);
+        try (SynchronizedStatement stmtFindByKey = db.compileStatement(
+                Sql.FIND_ID_BY_KEY_AND_ENTITY_TYPE);
              SynchronizedStatement stmtInsert = db.compileStatement(Sql.INSERT);
              SynchronizedStatement stmtUpdate = db.compileStatement(Sql.UPDATE)) {
 
@@ -340,19 +341,19 @@ public class IdentifierDaoImpl
             return false;
         }
 
-        final Set<String> keysFound = new HashSet<>();
-        final List<Identifier.Value> result =
-                list.stream()
-                    .filter(this::isValidIdentifier)
-                    .filter(iv -> keysFound.add(iv.getKey().toLowerCase(Locale.ENGLISH)))
-                    .collect(Collectors.toList());
+        final Set<String> keysFound = new HashSet<>(list.size());
+        final Iterator<Identifier.Value> iterator = list.iterator();
+        boolean modified = false;
 
-        if (list.equals(result)) {
-            return false;
+        while (iterator.hasNext()) {
+            final Identifier.Value iv = iterator.next();
+            if (!isValidIdentifier(iv) || !keysFound.add(iv.getKey().toLowerCase(Locale.ENGLISH))) {
+                iterator.remove();
+                modified = true;
+            }
         }
-        list.clear();
-        list.addAll(result);
-        return true;
+
+        return modified;
     }
 
     private boolean isValidIdentifier(@NonNull final Identifier.Value iv) {

@@ -702,6 +702,7 @@ public class CalibreContentServerReader
                     }
                 }
             }
+            ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
             if (!ivs.isEmpty()) {
                 book.setIdentifiers(ivs);
             }

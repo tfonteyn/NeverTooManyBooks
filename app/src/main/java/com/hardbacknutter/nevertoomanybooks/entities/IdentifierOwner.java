@@ -53,17 +53,6 @@ public interface IdentifierOwner {
     void setIdentifiers(@NonNull Collection<Identifier.Value> ivs);
 
     /**
-     * Add the given list of  {@link Identifier.Value}s.
-     *
-     * @param ivs list
-     */
-    default void addIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        final List<Identifier.Value> identifiers = getIdentifiers();
-        identifiers.addAll(ivs);
-        setIdentifiers(identifiers);
-    }
-
-    /**
      * Set the value for the given {@link Identifier}.
      * <p>
      * Convenience method.
@@ -85,12 +74,13 @@ public interface IdentifierOwner {
      */
     default void setIdentifierValue(@NonNull final String key,
                                     @Nullable final String value) {
-        // get and remove old value if present
+        // get the list, removing the old value if present
         final List<Identifier.Value> ivs = getIdentifiers()
-                .stream().filter(iv -> !iv.getKey().equals(key))
+                .stream()
+                .filter(iv -> !iv.getKey().equals(key))
                 .collect(Collectors.toList());
 
-        // add the new value if valid
+        // add the new value if it is valid
         if (value != null && !value.isBlank() && !"0".equals(value)) {
             ivs.add(new Identifier.Value(key, value));
         }

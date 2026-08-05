@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -155,6 +156,7 @@ class WikidataBookParser {
             parseIdentifiers(o, ivs);
         }
 
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }

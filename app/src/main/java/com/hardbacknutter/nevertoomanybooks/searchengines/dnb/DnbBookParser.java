@@ -829,7 +829,7 @@ class DnbBookParser {
                     final List<Identifier.Value> ivs = parseAuthorIdentifiers(tag);
                     if (!ivs.isEmpty()) {
                         ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
-                        author.addIdentifiers(ivs);
+                        author.setIdentifiers(ivs);
                     }
 
                     // Birth and Death dates.
@@ -1008,6 +1008,7 @@ class DnbBookParser {
                             ivs.add(new Identifier.Value(Identifier.SID_ISSN, normalise(x)));
                         }
 
+                        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
                         if (!ivs.isEmpty()) {
                             series.setIdentifiers(ivs);
                         }
@@ -1252,7 +1253,7 @@ class DnbBookParser {
                         final List<Identifier.Value> ivs = parseAuthorIdentifiers(tag);
                         if (!ivs.isEmpty()) {
                             ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
-                            realAuthor.addIdentifiers(ivs);
+                            realAuthor.setIdentifiers(ivs);
                         }
                         final Pair<String, String> dates = parseAuthorDates(tag);
                         realAuthor.setBirthDate(dates.first);

@@ -1338,6 +1338,7 @@ public class OpenLibrarySearchEngine
         parseIdentifier(document, "lccn").ifPresent(ivs::add);
         parseIdentifier(document, "oclc_numbers").ifPresent(ivs::add);
 
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
