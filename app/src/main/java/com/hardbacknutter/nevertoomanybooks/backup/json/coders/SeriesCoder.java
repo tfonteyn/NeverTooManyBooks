@@ -26,11 +26,14 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 public class SeriesCoder
         implements JsonCoder<Series> {
+
+    private static final String ALT_COMPLETE_KEY = "complete";
 
     private final JsonCoder<Identifier.Value> identifierValueCoder = new IdentifierValueCoder();
 
@@ -73,12 +76,13 @@ public class SeriesCoder
         }
         if (data.has(DBKey.SERIES.COMPLETE)) {
             series.setComplete(data.getBoolean(DBKey.SERIES.COMPLETE));
-        } else if (data.has("complete")) {
-            series.setComplete(data.getBoolean("complete"));
+        } else if (data.has(ALT_COMPLETE_KEY)) {
+            series.setComplete(data.getBoolean(ALT_COMPLETE_KEY));
         }
 
         if (data.has(Identifier.Value.BKEY_LIST)) {
-            series.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(Identifier.Value.BKEY_LIST)));
+            final JSONArray array = data.getJSONArray(Identifier.Value.BKEY_LIST);
+            series.setIdentifiers(identifierValueCoder.decode(array));
         }
         return series;
     }
