@@ -1394,20 +1394,23 @@ class BooklistBuilder {
             s = UPDATE_ + listTable.getName()
                 + _SET_ + DBKey.FK_BOOK + '=' + taSums + '.' + caSum
                 + _FROM_ + taSums
-                + _WHERE_ + listTable.dot(DBKey.PK_ID) + '=' + taSums + '.' + caParentId;
+                + _WHERE_ + listTable.getName() + '.' + DBKey.PK_ID
+                + '=' + taSums + '.' + caParentId;
         } else {
             // Android 13- cannot handle a FROM in an UPDATE
             s = UPDATE_ + listTable.getName()
                 + _SET_ + DBKey.FK_BOOK + '='
                 + '('
                 + SELECT_ + caSum + _FROM_ + taSums
-                + _WHERE_ + taSums + '.' + caParentId + '=' + listTable.getName() + '.' + DBKey.PK_ID
+                + _WHERE_ + taSums + '.' + caParentId
+                + '=' + listTable.getName() + '.' + DBKey.PK_ID
                 + ')'
                 + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + parentLevel
                 + _AND_ + EXISTS_
                 + '('
                 + SELECT_ + '1' + _FROM_ + taSums
-                + _WHERE_ + taSums + '.' + caParentId + '=' + listTable.getName() + '.' + DBKey.PK_ID
+                + _WHERE_ + taSums + '.' + caParentId
+                + '=' + listTable.getName() + '.' + DBKey.PK_ID
                 + ')';
         }
 
