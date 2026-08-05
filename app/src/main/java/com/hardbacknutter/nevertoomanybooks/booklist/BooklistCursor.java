@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.core.util.Pair;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -219,6 +220,14 @@ public class BooklistCursor
             return 0;
         }
         return data.getDouble(key, parser);
+    }
+
+    @Override
+    @NonNull
+    public BigDecimal getBigDecimal(@NonNull final String key,
+                                    @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
+        return getCurrentCursor().getRow().getBigDecimal(key, parser);
     }
 
     @NonNull

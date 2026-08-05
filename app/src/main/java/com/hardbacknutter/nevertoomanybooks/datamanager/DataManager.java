@@ -310,8 +310,9 @@ public class DataManager
     /**
      * Get the raw data object specified by the passed key.
      * <p>
-     * <strong>IMPORTANT:</strong> use only when you are certain the key
-     * does <strong>NOT</strong> represent a Money value.
+     * <strong>IMPORTANT: Does NOT Support returning a {@link Money} object</strong>
+     * <p>
+     * Use {@link #get(String, RealNumberParser)} for detection/return of {@link Money} objects.
      *
      * @param key Key of data object
      *
@@ -324,6 +325,8 @@ public class DataManager
 
     /**
      * Get the data object specified by the passed key.
+     * <p>
+     * <strong>Supports returning a {@link Money} object</strong>
      *
      * @param key    Key of data object
      * @param parser to use for number parsing
@@ -336,8 +339,7 @@ public class DataManager
         if (DBKey.getMoneyKeys().contains(key)) {
             try {
                 if (rawData.containsKey(key)) {
-                    return MoneyParser.parse(BigDecimal.valueOf(getDouble(key, parser)),
-                                             getString(key + DBKey.CURRENCY_SUFFIX));
+                    return getMoney(key, parser);
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
@@ -417,6 +419,28 @@ public class DataManager
         rawData.putDouble(key, value);
     }
 
+    @NonNull
+    @Override
+    public BigDecimal getBigDecimal(@NonNull final String key,
+                                    @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
+        // always use a parser. The type should be a String, as set by putBigDecimal;
+        // but could also be a double due to generic handling elsewhere.
+        return parser.toBigDecimal(rawData.get(key));
+    }
+
+    /**
+     * Store a BigDecimal value. It is written as a String with '.' as the decimal separator.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putBigDecimal(@NonNull final String key,
+                              @NonNull final BigDecimal value) {
+        //noinspection CallToNumericToString
+        rawData.putString(key, value.toString());
+    }
+
     @Override
     public float getFloat(@NonNull final String key,
                           @NonNull final RealNumberParser parser)
@@ -460,7 +484,30 @@ public class DataManager
     }
 
     /**
-     * Store a {@link Money} value as a {@code double} for the value,
+     * Returns the value associated with the given key.
+     * <p>
+     * <strong>THIS IS A PRIVATE METHOD AND SHOULD STAY PRIVATE</strong>
+     *
+     * @param key    Key of data object
+     * @param parser to use for number parsing
+     *
+     * @return value; {@code null} becomes a Money object with value {@code BigDecimal.ZERO}.
+     *         The returned value may or may not have a Currency set.
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     * @see #get(String, RealNumberParser)
+     */
+    @NonNull
+    private Money getMoney(@NonNull final String key,
+                           @NonNull final RealNumberParser parser)
+        throws NumberFormatException {
+
+        return MoneyParser.parse(getBigDecimal(key, parser),
+                                 getString(key + DBKey.CURRENCY_SUFFIX));
+    }
+
+    /**
+     * Store a {@link Money} value as a {@code BigDecimal} for the value,
      * and a {@code String} for the currency.
      *
      * @param key   Key of data object
@@ -468,10 +515,15 @@ public class DataManager
      */
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
-        rawData.putDouble(key, money.getValue().doubleValue());
+
+        putBigDecimal(key, money.getValue());
+
         final Currency currency = money.getCurrency();
         if (currency != null) {
             rawData.putString(key + DBKey.CURRENCY_SUFFIX, currency.getCurrencyCode());
+        } else {
+            // Explicitly remove in case we're replace a Money object with a new one
+            rawData.remove(key + DBKey.CURRENCY_SUFFIX);
         }
     }
 

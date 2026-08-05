@@ -24,6 +24,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
@@ -97,6 +98,21 @@ public interface DataHolder {
      */
     double getDouble(@NonNull String key,
                      @NonNull RealNumberParser parser)
+            throws NumberFormatException;
+
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param key    Key of data object
+     * @param parser to use for number parsing.
+     *
+     * @return value; {@code null} becomes {@code BigDecimal.ZERO}
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    @NonNull
+    BigDecimal getBigDecimal(@NonNull String key,
+                             @NonNull RealNumberParser parser)
             throws NumberFormatException;
 
     /**

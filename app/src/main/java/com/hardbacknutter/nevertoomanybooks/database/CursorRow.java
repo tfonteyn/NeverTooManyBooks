@@ -25,6 +25,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -145,6 +146,26 @@ public class CursorRow
         //     return 0;
         // }
         return cursor.getLong(col);
+    }
+
+    /**
+     * @throws ColumnNotPresentException if the column was not present.
+     */
+    @Override
+    @NonNull
+    public BigDecimal getBigDecimal(@NonNull final String key,
+                                    @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
+
+        final Integer col = columnIndexCache.get(key);
+        if (col == null) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (cursor.isNull(col)) {
+        //     return 0;
+        // }
+        final String s = cursor.getString(col);
+        return new BigDecimal(s);
     }
 
     /**
