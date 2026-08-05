@@ -110,8 +110,8 @@ public class FullDateParser
     /** List of patterns we'll use to parse dates. */
     @Nullable
     private Collection<DateTimeFormatter> textParsers;
-    @Nullable
-    private Collection<DateTimeFormatter> numericalParsers;
+    @NonNull
+    private final Collection<DateTimeFormatter> numericalParsers = new ArrayList<>();
 
     /**
      * Constructor.
@@ -123,6 +123,8 @@ public class FullDateParser
                           @NonNull final List<Locale> locales) {
         this.isoDateParser = isoDateParser;
         this.locales = locales;
+
+        addPatterns(numericalParsers, NUMERICAL_PATTERNS, List.of(Locale.ROOT));
     }
 
     /**
@@ -158,10 +160,6 @@ public class FullDateParser
         // Try ISO first,
         return isoDateParser.parse(dateStr).or(() -> {
             // then numerical,
-            if (numericalParsers == null) {
-                numericalParsers = new ArrayList<>();
-                addPatterns(numericalParsers, NUMERICAL_PATTERNS, locales);
-            }
             return parse(numericalParsers, dateStr, firstLocale).or(() -> {
                 // or lastly the extensive text based.
                 if (textParsers == null) {
