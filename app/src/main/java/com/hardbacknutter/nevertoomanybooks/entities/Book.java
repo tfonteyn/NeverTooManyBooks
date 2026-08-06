@@ -79,9 +79,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.ValidatorConfig;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BigDecimalValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DoubleValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
@@ -450,9 +450,11 @@ public class Book
         duplicate.setPrintRun(getString(DBKey.PRINT_RUN, null));
         duplicate.setContentType(getContentType());
         duplicate.setPublicationDate(getString(DBKey.PUBLICATION_DATE, null));
-        duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
-        duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
         duplicate.setFirstPublicationDate(getString(DBKey.FIRST_PUBLICATION_DATE, null));
+
+        // Copy the price as components
+        duplicate.putBigDecimal(DBKey.PRICE_LISTED, getBigDecimal(DBKey.PRICE_LISTED, realNumberParser));
+        duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
 
         duplicate.setFormat(getString(DBKey.FORMAT, null));
         duplicate.setColor(getString(DBKey.COLOR, null));
@@ -480,7 +482,9 @@ public class Book
         duplicate.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
 
         duplicate.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
-        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID, realNumberParser));
+
+        // Copy the price as components
+        duplicate.putBigDecimal(DBKey.PRICE_PAID, getBigDecimal(DBKey.PRICE_PAID, realNumberParser));
         duplicate.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
         duplicate.putInt(DBKey.CONDITION_BOOK, getInt(DBKey.CONDITION_BOOK));
@@ -929,30 +933,6 @@ public class Book
     }
 
     /**
-     * Set the listed price. Both parameters are optional.
-     * A {@code null} or an empty string will remove the field
-     *
-     * @param price     to set
-     * @param currency  to set
-     *
-     * @see #setPriceListed(Money)
-     */
-    @Discouraged(message = "Use setPriceListed(Money) when possible")
-    public void setPriceListed(@Nullable final String price,
-                               @Nullable final String currency) {
-        if (price != null && !price.isBlank()) {
-            putString(DBKey.PRICE_LISTED, price);
-        } else {
-            remove(DBKey.PRICE_LISTED);
-        }
-        if (currency != null && !currency.isBlank()) {
-            putString(DBKey.PRICE_LISTED_CURRENCY, currency);
-        } else {
-            remove(DBKey.PRICE_LISTED_CURRENCY);
-        }
-    }
-
-    /**
      * Set the paid price.
      *
      * @param price to set; a {@code null} will remove the field
@@ -965,6 +945,7 @@ public class Book
             remove(DBKey.PRICE_PAID_CURRENCY);
         }
     }
+
     /**
      * Get the language.
      *
@@ -2146,7 +2127,7 @@ public class Book
 
         final DataValidator priceValidator = new OrValidator(
                 new BlankValidator(),
-                new DoubleValidator(realNumberParser));
+                new BigDecimalValidator(realNumberParser));
         final DataValidator longValidator = new LongValidator();
         final DataValidator nonBlankValidator = new NonBlankValidator();
 

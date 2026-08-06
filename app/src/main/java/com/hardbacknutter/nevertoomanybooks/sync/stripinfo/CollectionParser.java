@@ -25,8 +25,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.math.BigDecimal;
-
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -165,8 +163,8 @@ class CollectionParser {
                         @NonNull final String nameAttr,
                         @NonNull final Book book) {
         // '0' is an acceptable value that should be stored.
-        jSoupHelper.getPositiveOrZeroDouble(root, nameAttr).ifPresent(
-                value -> book.setPricePaid(new Money(BigDecimal.valueOf(value), Money.EURO)));
+        jSoupHelper.getPositiveOrZeroBigDecimal(root, nameAttr).ifPresent(
+                value -> book.setPricePaid(new Money(value, Money.EURO)));
     }
 
     @AnyThread

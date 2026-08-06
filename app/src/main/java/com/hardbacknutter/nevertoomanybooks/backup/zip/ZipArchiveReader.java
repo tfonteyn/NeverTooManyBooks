@@ -62,6 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * Currently supported formats.
  * <ul>
  *     <li>
+ *         v10: app version 8.1.0
+ *               Prices (Money) is now written as BigDecimal/Strings.
+ *     </li>
+ *     <li>
  *         v9: app version 8.0.0
  *              Identify uri fields have changed
  *              Adds Identifiers to Series

@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -165,7 +166,7 @@ public class ParserHelper {
      *
      * @param moneyParser for parsing
      * @param priceStr    the field as retrieved with or without currency embedded
-     * @param currencyStr optional default currency string to use
+     * @param currencyStr (optional) default currency string to use
      *                    when the priceStr does not have one
      * @param book        Bundle to update
      */
@@ -179,13 +180,13 @@ public class ParserHelper {
         if (oMoney.isPresent()) {
             Money money = oMoney.get();
             if (money.getCurrency() != null) {
-                // We have parsed both the value and the currency from the input string.
+                // We have parsed both the value+currency
                 book.setPriceListed(money);
                 return;
 
             } else if (currencyStr != null && !currencyStr.isBlank()) {
                 try {
-                    // use the given currency string, and the value from the previous parse result
+                    // use the default currency string
                     final Currency currency = Currency.getInstance(currencyStr);
                     money = new Money(money.getValue(), currency);
                     book.setPriceListed(money);
@@ -196,14 +197,9 @@ public class ParserHelper {
             }
         }
 
-        // Parsing failed, store the input string as-is.
-        book.setPriceListed(priceStr, currencyStr);
-
         // Log this as we need to understand WHY it failed.
         LoggerFactory.getLogger().w(config.getEngineId().toString(),
-                                    "processPriceListed Failed to parse",
-                                    "currencyStr=" + currencyStr,
-                                    "priceStr=" + priceStr);
+                                    "processPriceListed failed priceStr=" + priceStr);
     }
 
     /**

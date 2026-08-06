@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -77,6 +78,7 @@ public class BookCoder
     private final Context context;
 
     private final TagMapper tagMapper;
+    private final Set<String> moneyKeys;
 
     /**
      * Constructor.
@@ -88,6 +90,7 @@ public class BookCoder
                      @NonNull final Style defaultStyle) {
 
         this.context = context;
+        moneyKeys = DBKey.getMoneyKeys();
 
         bookshelfCoder = new BookshelfCoder(defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
@@ -109,6 +112,15 @@ public class BookCoder
                         @NonNull final Book book,
                         @NonNull final String key)
             throws JSONException {
+
+        if (moneyKeys.contains(key)) {
+            // handle the value only, the currency will be handled as a generic String below
+            final String value = book.getString(key, null);
+            if (value != null && !value.isBlank()) {
+                out.put(key, value);
+            }
+            return;
+        }
 
         switch (key) {
             case Book.BKEY_BOOKSHELF_LIST: {
@@ -209,6 +221,15 @@ public class BookCoder
         final Iterator<String> it = data.keys();
         while (it.hasNext()) {
             final String key = it.next();
+
+            if (moneyKeys.contains(key)) {
+                // Archive v9- stored double values.
+                // v10+ stores as String.
+                // Hence, explicitly convert to String.
+                book.put(key, String.valueOf(data.get(key)));
+                continue;
+            }
+
             switch (key) {
                 case Book.BKEY_AUTHOR_LIST: {
                     book.setAuthors(authorCoder.decode(data.getJSONArray(key)));

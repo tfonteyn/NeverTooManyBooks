@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -372,23 +373,23 @@ class ResultsAccumulator {
                               @NonNull final Book book,
                               @NonNull final MoneyParser moneyParser,
                               @NonNull final RealNumberParser realNumberParser) {
-        // Fetch as Object, as engines MAY store typed data
+        // Fetch as Object, as engines MAY store differently typed data
         final Object dataToAdd = siteData.get(key, realNumberParser);
-        if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
+        if (dataToAdd == null || dataToAdd.toString().isBlank()) {
             return;
         }
 
         // If we already have previous data, we're done
-        // (fetch as String; we don't care about the actual data-type)
+        // Fetch as String to test on presence
         final String previous = book.getString(key, null);
-        if (previous != null && !previous.isEmpty()) {
+        if (previous != null && !previous.isBlank()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueSkipped("processMoney", key, dataToAdd);
             }
             return;
         }
 
-        // Money, double or float ? Just copy the new data.
+        // Money, BigDecimal, double or float ? Copy the new data.
         if (dataToAdd instanceof Money) {
             book.putMoney(key, (Money) dataToAdd);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
@@ -396,8 +397,19 @@ class ResultsAccumulator {
             }
             return;
         }
+        if (dataToAdd instanceof BigDecimal) {
+            book.putBigDecimal(key, (BigDecimal) dataToAdd);
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
+                dbgLogValueCopied("processMoney", key, dataToAdd.toString());
+            }
+            return;
+        }
+
+        // This really should never be the case, but paranoia... just convert these
         if (dataToAdd instanceof Double || dataToAdd instanceof Float) {
-            book.putDouble(key, (double) dataToAdd);
+            // convert to BigDecimal
+            book.putBigDecimal(key, new BigDecimal(dataToAdd.toString()));
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processMoney", key, dataToAdd.toString());

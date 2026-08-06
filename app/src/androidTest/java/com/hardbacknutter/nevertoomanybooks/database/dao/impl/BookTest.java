@@ -100,27 +100,22 @@ class BookTest
         // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
-        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
-        bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
-        //dump(book);
+        bdh.processPrices(book, parser);
+        dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED,
-                                        moneyParser.getRealNumberParser()), 0);
-        assertNull(book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-
-        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID,
-                                              moneyParser.getRealNumberParser()), 0);
-        assertNull(book.getString(DBKey.PRICE_PAID_CURRENCY, null));
+        assertPriceListed(book, "0", null, parser);
+        assertPricePaid(book, "456.789", null, parser);
     }
 
     @Test
     void preprocessPrices03() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
+        final MoneyParser parser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("fra");
-        // as a valid string
-        book.putString(DBKey.PRICE_LISTED, "");
+        // BigDecimal as an invalid string
+        book.putString(DBKey.PRICE_LISTED, "A lot of");
+        // Currency as a valid String
         book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
         // as an invalid string
         book.putString(DBKey.PRICE_PAID, "test");

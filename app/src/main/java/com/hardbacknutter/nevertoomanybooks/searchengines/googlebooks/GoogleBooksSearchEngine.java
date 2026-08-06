@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -501,15 +502,19 @@ public class GoogleBooksSearchEngine
         }
 
         final JSONObject listPrice = saleInfo.optJSONObject("listPrice");
-        if (listPrice != null) {
-            final String currencyCode = listPrice.optString("currencyCode", null);
-            // Google documents this as a "double", so we rely on decimal separator "." ... flw...
-            final double amount = listPrice.optDouble("amount");
-            if (currencyCode != null && !currencyCode.isEmpty()
-                && !Double.isNaN(amount)) {
-                final Money money = MoneyParser.parse(BigDecimal.valueOf(amount), currencyCode);
-                book.setPriceListed(money);
-            }
+        if (listPrice == null) {
+            return;
+        }
+        final String currencyCode = listPrice.optString("currencyCode", null);
+       if (currencyCode == null || currencyCode.isEmpty()) {
+            return;
+        }
+        // Google documents this as a "double", hence, we rely on decimal separator "." ... flw...
+        // o.optBigDecimal() will use doubleValue(), so its useless.
+        final Object rawPrice = listPrice.opt("amount");
+        if (rawPrice instanceof Number) {
+            final BigDecimal price = new BigDecimal(rawPrice.toString());
+            book.setPriceListed(MoneyParser.parse(price, currencyCode));
         }
     }
 

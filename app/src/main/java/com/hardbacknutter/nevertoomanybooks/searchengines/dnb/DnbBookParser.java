@@ -199,10 +199,9 @@ class DnbBookParser {
                 return null;
             }
             try {
-                // The values use a dot as decimal separator.
-                // Don't use our RealNumberParser as that would use a ',' for germany etc...
-                final double val = Double.parseDouble(s);
-                return new Money(BigDecimal.valueOf(val), currency);
+                // The values use a dot as decimal separator; BigDecimal compatible.
+                // Don't use our MoneyParser as that would use a ',' for Germany etc...
+                return new Money(new BigDecimal(s), currency);
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }

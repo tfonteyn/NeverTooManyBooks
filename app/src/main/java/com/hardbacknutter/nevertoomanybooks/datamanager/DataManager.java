@@ -193,7 +193,8 @@ public class DataManager
      *      <li>booleans -> long (0,1)</li>
      *      <li>int -> long</li>
      *      <li>float -> double</li>
-     *      <li>date -> string</li>
+     *      <li>date -> String</li>
+     *      <li>Money values -> BigDecimal as String</li>
      * </ul>
      *
      * @param cursor an already positioned Cursor to read from
@@ -201,25 +202,34 @@ public class DataManager
      * @throws IllegalArgumentException for unsupported types.
      */
     public void putAll(@NonNull final Cursor cursor) {
+        final Set<String> moneyKeys = DBKey.getMoneyKeys();
+
         for (int i = 0; i < cursor.getColumnCount(); i++) {
-            final String name = cursor.getColumnName(i);
+            final String key = cursor.getColumnName(i);
+
+            if (moneyKeys.contains(key)) {
+                // Money is a BigDecimal, stored as a String
+                rawData.putString(key, cursor.getString(i));
+                continue;
+            }
+
             switch (cursor.getType(i)) {
                 case Cursor.FIELD_TYPE_STRING:
-                    rawData.putString(name, cursor.getString(i));
+                    rawData.putString(key, cursor.getString(i));
                     break;
 
                 case Cursor.FIELD_TYPE_INTEGER:
                     // a null becomes 0
-                    rawData.putLong(name, cursor.getLong(i));
+                    rawData.putLong(key, cursor.getLong(i));
                     break;
 
                 case Cursor.FIELD_TYPE_FLOAT:
                     // a null becomes 0.0
-                    rawData.putDouble(name, cursor.getDouble(i));
+                    rawData.putDouble(key, cursor.getDouble(i));
                     break;
 
                 case Cursor.FIELD_TYPE_BLOB:
-                    putSerializable(name, cursor.getBlob(i));
+                    putSerializable(key, cursor.getBlob(i));
                     break;
 
                 case Cursor.FIELD_TYPE_NULL:
@@ -234,6 +244,16 @@ public class DataManager
 
     /**
      * Store an Object value. The object will be cast to one of the supported types.
+     * <p>
+     * This code is a subset of Bundle#putObject(String, Object)
+     * which is not part of the public API.
+     * <p>
+     * In addition, this method supports:
+     * <ul>
+     *     <li>{@link Money} using {@link #putMoney(String, Money)}</li>
+     *     <li>{@code BigDecimal} using {@link #putBigDecimal(String, BigDecimal)}</li>
+     *     <li>{@code BigInteger} using {@link BigInteger#toString()} for future compatibility</li>
+     * </ul>
      *
      * @param key   Key of data object
      * @param value to store
@@ -242,13 +262,13 @@ public class DataManager
      */
     public void put(@NonNull final String key,
                     @Nullable final Object value) {
-        // This code is a subset of Bundle#putObject(String, Object)
-        // which is not part of the public API.
-        // In addition, we support BigInteger/BigDecimal
 
         if (value instanceof Money) {
-            // special handling
             putMoney(key, (Money) value);
+        } else if (value instanceof BigDecimal) {
+            putBigDecimal(key, (BigDecimal) value);
+        } else if (value instanceof BigInteger) {
+            rawData.putString(key, value.toString());
 
         } else if (value instanceof CharSequence) {
             rawData.putCharSequence(key, (CharSequence) value);
@@ -262,13 +282,6 @@ public class DataManager
             rawData.putFloat(key, (float) value);
         } else if (value instanceof Boolean) {
             rawData.putBoolean(key, (boolean) value);
-
-        } else if (value instanceof BigInteger) {
-            // added since org.json:json:20201115
-            rawData.putLong(key, ((Number) value).longValue());
-        } else if (value instanceof BigDecimal) {
-            // added since org.json:json:20201115
-            rawData.putDouble(key, ((Number) value).doubleValue());
 
         } else if (value instanceof Parcelable) {
             rawData.putParcelable(key, (Parcelable) value);
@@ -329,7 +342,7 @@ public class DataManager
      * <strong>Supports returning a {@link Money} object</strong>
      *
      * @param key    Key of data object
-     * @param parser to use for number parsing
+     * @param parser to use for {@link Money} parsing
      *
      * @return Data object, or {@code null} when not present or the value is {@code null}
      */
@@ -424,9 +437,19 @@ public class DataManager
     public BigDecimal getBigDecimal(@NonNull final String key,
                                     @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-        // always use a parser. The type should be a String, as set by putBigDecimal;
-        // but could also be a double due to generic handling elsewhere.
-        return parser.toBigDecimal(rawData.get(key));
+        // The type should be a String, as used by putBigDecimal;
+        final Object source = rawData.get(key);
+        if (source instanceof String) {
+            try {
+                return new BigDecimal((String) source);
+            } catch (@NonNull final NumberFormatException e) {
+                LoggerFactory.getLogger()
+                             .e(TAG, "key='" + key + "' new BigDecimal() failed for: " + source);
+            }
+        }
+
+        // fallback to parsing
+        return parser.toBigDecimal(source);
     }
 
     /**
@@ -434,6 +457,8 @@ public class DataManager
      *
      * @param key   Key of data object
      * @param value to store
+     *
+     * @see #getBigDecimal(String, RealNumberParser)
      */
     public void putBigDecimal(@NonNull final String key,
                               @NonNull final BigDecimal value) {

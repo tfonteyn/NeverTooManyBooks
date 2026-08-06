@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -582,18 +583,20 @@ public class DefaultBookCoder
     private void processPrice(@NonNull final Book book) {
         if (book.contains(DBKey.PRICE_LISTED)) {
             final String s = book.getString(DBKey.PRICE_LISTED);
-            if (s.isEmpty()) {
-                // might as well remove empty values
-                book.remove(DBKey.PRICE_LISTED);
-            } else {
+            if (!s.isBlank()) {
                 try {
-                    final double v = moneyParser.getRealNumberParser().parseDouble(s);
-                    book.putDouble(DBKey.PRICE_LISTED, v);
+                    final BigDecimal v = moneyParser.getRealNumberParser().parseBigDecimal(s);
+                    book.putBigDecimal(DBKey.PRICE_LISTED, v);
+                    return;
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore, drop the field
-                    book.remove(DBKey.PRICE_LISTED);
                 }
             }
+
+            // remove failures to parse and empty values
+            book.remove(DBKey.PRICE_LISTED);
+            // Future compatibility
+            book.remove(DBKey.PRICE_LISTED_CURRENCY);
         }
     }
 

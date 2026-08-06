@@ -299,8 +299,7 @@ class CollectionFormUploader {
                     final Money value = ((Money) v).toEuro();
                     builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(value));
                 } else {
-                    // We got a double without currency,
-                    // just send the value string as-is.
+                    // Money parsing failed. Send the value string as-is.
                     builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(v));
                 }
             }

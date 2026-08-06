@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -1267,17 +1268,21 @@ public class EditBookViewModel
         plField.setFormatter(doubleNumberFormatter, false)
                .setTextInputLayoutId(R.id.lbl_price_listed)
                .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
-               // Copy to price_paid field if applicable
+               // Copy PRICE_LISTED to PRICE_PAID field if applicable
                .addOnFocusChangeListener((view, hasFocus) -> {
                    if (!hasFocus) {
                        getField(DBKey.PRICE_PAID).ifPresent(destField -> {
                            if (destField.isEmpty()) {
-                               // Paranoia... parse it to a double.
-                               final double value = realNumberParser.toDouble(
-                                       requireField(DBKey.PRICE_LISTED).getValue());
-                               // Update BOTH the book and the field
-                               getBook().putDouble(DBKey.PRICE_PAID, value);
-                               destField.setValue(value);
+                               // Paranoia... try parsing it to a BigDecimal.
+                               final Object source = requireField(DBKey.PRICE_LISTED).getValue();
+                               try {
+                                   final BigDecimal value = realNumberParser.toBigDecimal(source);
+                                   // Update BOTH the book and the field
+                                   getBook().putBigDecimal(DBKey.PRICE_PAID, value);
+                                   destField.setValue(value);
+                               } catch (@NonNull final NumberFormatException ignore) {
+                                   // ignore
+                               }
                            }
                        });
                    }
@@ -1299,14 +1304,12 @@ public class EditBookViewModel
                     if (!hasFocus) {
                         getField(DBKey.PRICE_PAID_CURRENCY).ifPresent(destField -> {
                             if (destField.isEmpty()) {
-                                final String value = (String)
-                                        requireField(DBKey.PRICE_LISTED_CURRENCY)
-                                                .getValue();
-                                if (value != null) {
+                                final String source = (String)
+                                        requireField(DBKey.PRICE_LISTED_CURRENCY).getValue();
+                                if (source != null) {
                                     // Update BOTH the book and the field
-                                    getBook().putString(DBKey.PRICE_PAID_CURRENCY,
-                                                        value);
-                                    destField.setValue(value);
+                                    getBook().putString(DBKey.PRICE_PAID_CURRENCY, source);
+                                    destField.setValue(source);
                                 }
                             }
                         });

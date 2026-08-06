@@ -529,11 +529,12 @@ public class BolSearchEngine
 
     private void parseJsonPrice(@NonNull final JSONObject o,
                                 @NonNull final Book book) {
-        final float price = o.optFloat("price");
-        if (!Float.isNaN(price)) {
+        // o.optBigDecimal() will use doubleValue(), so its useless.
+        final Object rawPrice = o.opt("price");
+        if (rawPrice instanceof Number) {
+            final BigDecimal price = new BigDecimal(rawPrice.toString());
             final String priceCurrency = o.optString("priceCurrency", "EUR");
-            book.setPriceListed(new Money(BigDecimal.valueOf(price),
-                                          Currency.getInstance(priceCurrency)));
+            book.setPriceListed(new Money(price, Currency.getInstance(priceCurrency)));
         }
     }
 
@@ -788,10 +789,13 @@ public class BolSearchEngine
                 final Element centsElement = priceContainer
                         .selectFirst("span.translate-x-\\[20\\%\\][aria-hidden=true]");
 
-                BigDecimal price = BigDecimal.valueOf(Integer.parseInt(euroElement.text()));
+                // Because they are in separate elements, we do a quick BigDecimal calculation
+                // instead of using the full MoneyParser.
+                BigDecimal price = new BigDecimal(euroElement.text());
                 if (centsElement != null) {
-                    final int cents = Integer.parseInt(euroElement.text());
-                    price = price.add(new BigDecimal(cents / 100));
+                    final BigDecimal cents = new BigDecimal(centsElement.text())
+                            .movePointLeft(2);
+                    price = price.add(cents);
                 }
 
                 book.setPriceListed(new Money(price, Money.EURO));
