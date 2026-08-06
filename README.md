@@ -29,8 +29,10 @@ download.<br>
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-If you're migrating from the app "Book Catalogue", please
-see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
+#### Importing existing collections:
+- [Migrating from the app "Book Catalogue"](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
+- [Goodreads CSV files](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-goodreads)
+- Calibre CSV files import, or full [synchronization with a Calibre Server](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Calibre)
 
 ### Download the latest release: 8.0.0
 
