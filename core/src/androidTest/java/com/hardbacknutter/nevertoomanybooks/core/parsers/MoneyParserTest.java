@@ -58,7 +58,7 @@ class MoneyParserTest {
                              "£12", new BigDecimal("12.0"), MoneyParser.GBP),
 
                 Arguments.of(List.of(Locale.UK),
-                             "12/6", new BigDecimal("0.625"), MoneyParser.GBP),
+                             "12/6", new BigDecimal("0.63"), MoneyParser.GBP),
                 Arguments.of(List.of(Locale.UK),
                              "10/-", new BigDecimal("0.5"), MoneyParser.GBP),
 

@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -45,6 +46,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -71,33 +74,28 @@ class BookTest
     @Test
     void preprocessPrices01() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
+        final MoneyParser parser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
-        final Money money = MoneyParser.parse(new BigDecimal("1.23"), MoneyParser.USD);
-        book.setPriceListed(money);
+        book.setPriceListed(new Money(new BigDecimal("1.23"),
+                                      Currency.getInstance(MoneyParser.USD)));
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
-        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
+        bdh.processPrices(book, parser);
         dump(book);
 
-        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "1.23", MoneyParser.USD, parser);
     }
 
     /** US English book, price set, currency not set. */
     @Test
     void preprocessPrices02() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
+        final MoneyParser parser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
-        final Money money = MoneyParser.parse(BigDecimal.ZERO, "");
-        book.setPriceListed(money);
-
-        book.putBigDecimal(DBKey.PRICE_PAID, new BigDecimal("456.789"));
-        // no PRICE_PAID_CURRENCY
+        book.setPriceListed(new Money(BigDecimal.ZERO, null));
+        book.setPricePaid(new Money(new BigDecimal("456.789"), null));
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrices(book, parser);
@@ -117,24 +115,26 @@ class BookTest
         book.putString(DBKey.PRICE_LISTED, "A lot of");
         // Currency as a valid String
         book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
-        // as an invalid string
-        book.putString(DBKey.PRICE_PAID, "test");
-        // no PRICE_PAID_CURRENCY
+
+        // BigDecimal as a valid String
+        book.putString(DBKey.PRICE_PAID, "");
+        // Currency not present
+        book.remove(DBKey.PRICE_PAID_CURRENCY);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
-        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
-        bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
-        //dump(book);
+        bdh.processPrices(book, parser);
+        dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED,
-                                        moneyParser.getRealNumberParser()), 0);
+        // "A lot of" is correct as preprocessPrices should NOT change illegal values.
+        // Explicitly using 'get' to bypass type conversions
+        //noinspection deprecation
+        final Object actual = book.getRawData().get(DBKey.PRICE_LISTED);
+        assertNotNull(actual);
+        assertInstanceOf(String.class, actual);
+        assertEquals("A lot of", actual);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        // "test" is correct as preprocessPrices should NOT change illegal values.
-        // Explicitly use 'get' to test for any wrong type.
-        //noinspection deprecation
-        assertEquals("test", book.getRawData().get(DBKey.PRICE_PAID));
-        assertNull(book.getString(DBKey.PRICE_PAID_CURRENCY, null));
+        assertPricePaid(book, "0", null, parser);
     }
 
     @Test
@@ -148,12 +148,10 @@ class BookTest
         book.setPriceListed(money.get());
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
-        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
+        bdh.processPrices(book, moneyParser);
         dump(book);
 
-        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED,
-                                         moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "45", MoneyParser.EUR, moneyParser);
     }
 
     @Test
@@ -269,8 +267,8 @@ class BookTest
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
 
-        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("12.34"));
-        book.putBigDecimal(DBKey.PRICE_PAID, BigDecimal.ZERO);
+        book.setPriceListed(new Money(new BigDecimal("12.34"), null));
+        book.setPricePaid(new Money(BigDecimal.ZERO, null));
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processNullsAndBlanks(book, true);
@@ -283,10 +281,8 @@ class BookTest
         // text, default "". A null is removed.
         assertFalse(book.contains(DBKey.READ_END__DATE));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID,
-                                        moneyParser.getRealNumberParser()), 0);
+        assertPriceListed(book, "12.34", null, moneyParser);
+        assertPricePaid(book, BigDecimal.ZERO, null, moneyParser);
     }
 
     @Test
@@ -312,10 +308,9 @@ class BookTest
         // text, default "". A null is replaced by the default
         assertEquals("", book.getString(DBKey.READ_END__DATE, null));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID,
-                                        moneyParser.getRealNumberParser()), 0);
+        assertPriceListed(book, "12.34", null, moneyParser);
+        assertEquals(0, BigDecimal.ZERO.compareTo(
+                book.getBigDecimal(DBKey.PRICE_PAID, moneyParser.getRealNumberParser())));
     }
 
     private void dump(@NonNull final DataManager data) {

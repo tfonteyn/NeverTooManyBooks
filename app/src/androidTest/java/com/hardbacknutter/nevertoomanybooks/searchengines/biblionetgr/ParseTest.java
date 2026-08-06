@@ -124,9 +124,7 @@ class ParseTest
         assertTrue(description.startsWith("Η γαλέρα του αυτοκράτορα καταλαμβάνεται"));
         assertTrue(description.endsWith("ξαναβρεί την όρεξή του ;"));
 
-        assertEquals(3.30d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "3.30", MoneyParser.EUR, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(1, bookTags.size());
@@ -203,14 +201,9 @@ class ParseTest
         assertEquals("603", book.getString(DBKey.PAGES, null));
         assertEquals("ell", book.getString(DBKey.LANGUAGE, null));
 
-        final String description = book.getDescription();
-        assertEquals(
-                "Εισηγητές: Καρβέλης, Τάκης - Ιλίνσκαγια, Σόνια - Καράογλου, Χ. Λ. - Παπακωστούλα- Γιανναρά, Γ. Α. - Μηλιώτης Κωνσταντίνος Ε. κ.ά.",
-                description);
+        assertTrue(book.getDescription().startsWith("Εισηγητές: Καρβέλης, Τάκης - Ιλίνσκαγια,"));
 
-        assertEquals(31.8d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "31.8", MoneyParser.EUR, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());

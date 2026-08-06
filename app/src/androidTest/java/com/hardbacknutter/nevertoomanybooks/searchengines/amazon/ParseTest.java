@@ -95,9 +95,7 @@ class ParseTest
         assertEquals("608", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "4.99", MoneyParser.GBP, moneyParser);
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -141,9 +139,7 @@ class ParseTest
         assertEquals("336", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(6.97d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "6.97", MoneyParser.GBP, moneyParser);
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -188,9 +184,7 @@ class ParseTest
         assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Relié", book.getString(DBKey.FORMAT, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
-        assertEquals(15.50d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "15.50", MoneyParser.EUR, moneyParser);
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -235,9 +229,7 @@ class ParseTest
         assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
         assertEquals("128", book.getString(DBKey.PAGES, null));
-        assertEquals(10.00d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "10.00", MoneyParser.EUR, moneyParser);
         assertEquals("1974-07-01", book.getString(DBKey.PUBLICATION_DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -279,9 +271,7 @@ class ParseTest
         assertEquals("German", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("121", book.getString(DBKey.PAGES, null));
-        assertEquals(12.98d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "12.98", MoneyParser.USD, moneyParser);
         assertEquals("1981-01-01", book.getString(DBKey.PUBLICATION_DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -324,9 +314,7 @@ class ParseTest
         assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Tapa blanda", book.getString(DBKey.FORMAT, null));
         assertEquals("320", book.getString(DBKey.PAGES, null));
-        assertEquals(32.83d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "32.83", MoneyParser.EUR, moneyParser);
         assertEquals("2015-03-26", book.getString(DBKey.PUBLICATION_DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -369,9 +357,7 @@ class ParseTest
         assertEquals("Tapa dura", book.getString(DBKey.FORMAT, null));
         assertEquals("Español", book.getString(DBKey.LANGUAGE, null));
         assertEquals("720", book.getString(DBKey.PAGES, null));
-        assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "21.75", MoneyParser.EUR, moneyParser);
         assertEquals("2023-06-14", book.getString(DBKey.PUBLICATION_DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();

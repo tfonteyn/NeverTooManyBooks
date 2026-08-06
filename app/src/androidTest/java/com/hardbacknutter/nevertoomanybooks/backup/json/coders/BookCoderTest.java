@@ -60,13 +60,25 @@ class BookCoderTest
     }
 
     @Test
+    void putPrice() {
+        book.setPriceListed(new Money(new BigDecimal("12.34"), Money.EURO));
+
+        final JSONObject encode = bookCoder.encode(book);
+
+        // Fetch BigDecimal/String
+        assertEquals("12.34", encode.getString(DBKey.PRICE_LISTED));
+        assertEquals("EUR", encode.getString(DBKey.PRICE_LISTED_CURRENCY));
+    }
+
+    @Test
     void putMoney() {
         final Money money = new Money(new BigDecimal("12.34"), Money.EURO);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         final JSONObject encode = bookCoder.encode(book);
 
-        assertEquals(12.34d, encode.getDouble(DBKey.PRICE_LISTED), 0);
+        // Fetch BigDecimal/String
+        assertEquals("12.34", encode.getString(DBKey.PRICE_LISTED));
         assertEquals("EUR", encode.getString(DBKey.PRICE_LISTED_CURRENCY));
     }
 
@@ -77,7 +89,8 @@ class BookCoderTest
 
         final JSONObject encode = bookCoder.encode(book);
 
-        assertEquals(12.34d, encode.getDouble(DBKey.PRICE_LISTED), 0);
+        // Fetch BigDecimal/String
+        assertEquals("12.34", encode.getString(DBKey.PRICE_LISTED));
         assertEquals("EUR", encode.getString(DBKey.PRICE_LISTED_CURRENCY));
     }
 
@@ -90,11 +103,16 @@ class BookCoderTest
         assertTrue(encode.has(DBKey.PRICE_LISTED));
         assertFalse(encode.has(DBKey.PRICE_LISTED_CURRENCY));
 
-        assertEquals(12.34d, encode.getDouble(DBKey.PRICE_LISTED), 0);
+        // Fetch BigDecimal/String
+        assertEquals("12.34", encode.getString(DBKey.PRICE_LISTED));
     }
 
+    /**
+     * This is a non-sensical test, but is meant to test that {@link BookCoder#encode(Book)}
+     * properly writes a Money String WITHOUT caring about the validity.
+     */
     @Test
-    void putMoneyCustomString() {
+    void putPriceListedCustomString() {
         book.putString(DBKey.PRICE_LISTED, "a lot of money");
 
         final JSONObject encode = bookCoder.encode(book);
@@ -103,6 +121,22 @@ class BookCoderTest
         assertFalse(encode.has(DBKey.PRICE_LISTED_CURRENCY));
 
         assertEquals("a lot of money", encode.getString(DBKey.PRICE_LISTED));
+    }
+
+    /**
+     * This is a non-sensical test, but is meant to test that {@link BookCoder#encode(Book)}
+     * properly writes a Money String WITHOUT caring about the validity.
+     */
+    @Test
+    void putPricePaidCustomString() {
+        book.putString(DBKey.PRICE_PAID, "a lot of money");
+
+        final JSONObject encode = bookCoder.encode(book);
+
+        assertTrue(encode.has(DBKey.PRICE_PAID));
+        assertFalse(encode.has(DBKey.PRICE_PAID_CURRENCY));
+
+        assertEquals("a lot of money", encode.getString(DBKey.PRICE_PAID));
     }
 
     @Test

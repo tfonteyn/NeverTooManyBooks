@@ -159,9 +159,7 @@ class IsfdbXmlPublicationTest
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG, null));
 
-        assertEquals(1.75d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "1.75", MoneyParser.GBP, moneyParser);
 
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());

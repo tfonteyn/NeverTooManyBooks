@@ -109,9 +109,7 @@ class ParseTest
         assertEquals("13665857", book.requireIdentifierValue(Identifier.SID_OCLC));
 
         assertEquals("1986-10", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "1.95", MoneyParser.GBP, moneyParser);
         assertEquals("159", book.getString(DBKey.PAGES, null));
         assertEquals("pb", book.getString(DBKey.FORMAT, null));
         assertEquals("COLLECTION", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
@@ -197,9 +195,7 @@ class ParseTest
         assertEquals("431964", book.requireIdentifierValue(Identifier.SID_ISFDB));
 
         assertEquals("2013-11-07", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "9.99", MoneyParser.GBP, moneyParser);
         assertEquals("257", book.getString(DBKey.PAGES, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
@@ -275,9 +271,7 @@ class ParseTest
         assertEquals("B00W2EBY8O", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("2015-09-01", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "11.99", MoneyParser.USD, moneyParser);
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
 
@@ -356,9 +350,7 @@ class ParseTest
 
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("180", book.getString(DBKey.PAGES, null));
-        assertEquals(7.5d, book.getDouble(DBKey.PRICE_LISTED,
-                                          moneyParser.getRealNumberParser()), 0);
-        assertEquals("SKR", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "7.5", "SKR", moneyParser);
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals("340", book.getString(IsfdbSearchEngine.SiteField.CATALOG_ID, null));
 
@@ -435,8 +427,6 @@ class ParseTest
         Log.d(TAG, book.toString());
 
         // We're only interested in the price field to check if the Locale is working as expected.
-        assertEquals(7.0d, book.getDouble(DBKey.PRICE_LISTED,
-                                          moneyParser.getRealNumberParser()), 0);
-        assertEquals("DEM", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "7.0", "DEM", moneyParser);
     }
 }

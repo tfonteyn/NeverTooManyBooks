@@ -265,9 +265,7 @@ class ParseTest
         assertEquals("302", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
 
-        assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED,
-                                         moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "23", MoneyParser.CNY, moneyParser);
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
@@ -349,9 +347,7 @@ class ParseTest
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
-        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED,
-                                         moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "45", MoneyParser.CNY, moneyParser);
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
@@ -507,9 +503,7 @@ class ParseTest
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertFalse(book.contains(DBKey.RATING));
 
-        assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED,
-                                         moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "58", MoneyParser.CNY, moneyParser);
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);

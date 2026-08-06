@@ -122,9 +122,7 @@ class UserCollectionTest
         assertTrue(collectionData.isOwned());
         assertTrue(collectionData.isWanted());
 
-        assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID,
-                                       moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
+        assertPricePaid(b0, "45", MoneyParser.EUR, moneyParser);
         assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED, null));
     }
 

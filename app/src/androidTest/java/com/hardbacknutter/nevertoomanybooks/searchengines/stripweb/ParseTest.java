@@ -93,6 +93,7 @@ class ParseTest
         assertEquals("https://www.stripweb.be/nl-nl/jim-cutlass-integraal",
                      searchEngine.parseMultiResult(document));
     }
+
     /**
      * Fairly standard single book.
      */
@@ -128,9 +129,7 @@ class ParseTest
                      " dit alles in het jubileum jaar van Lucky Luke 75 verschijnt midden 2021",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "9.99", MoneyParser.EUR, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(3, bookTags.size());
@@ -218,9 +217,7 @@ class ParseTest
                      " en Corentin Rouge.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "9.99", MoneyParser.EUR, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(3, bookTags.size());
@@ -317,9 +314,7 @@ class ParseTest
                      " fantasie van Jean Van Hamme? Drie duo's namen intussen de uitdaging aan.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(44.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "44.99", MoneyParser.EUR, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());

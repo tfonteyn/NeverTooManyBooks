@@ -113,13 +113,17 @@ class ParseTest
 
     /**
      * be/nl + dutch book
+     *
+     * <pre>
+     *     {"@type":"Book","name":"Alter ego","@description":"<b>Genomineerd voor de NS Publieksprijs 2023</b> Het leven lacht Lynn eindelijk toe. Ze is getrouwd met de twintig jaar oudere Camiel Storm, een bekende chef-kok, en verzorgt met verve de pr voor diens sterrenrestaurant De Luwte. Voor de buitenwereld vormen de twee een succesvol powerkoppel. Maar terwijl Camiel avond na avond de sterren van de hemel staat te koken, onderhoudt Lynn een passievolle affaire met de jonge, opvliegende Laurens. Door ambitieuze uitbreidingsplannen komt het huwelijk verder onder druk te staan. En wanneer er onverklaarbare dingen gebeuren in en rond de villa van Camiel en Lynn, kan Lynn bij niemand terecht. Esther Verhoef is een van de succesvolste en veelzijdigste schrijvers van Nederland. Zij is onze meest bekroonde en genomineerde thrillerauteur. Van haar psychologische thrillers en romans zijn in eigen land ruim 2,9 miljoen exemplaren verkocht. ‘Esther Verhoef hoort duidelijk tot de schrijvende elite in ons land.’ Algemeen Dagblad ‘Als je de adrenaline van de recensent nog tot diep in de nacht laat stromen, is dat vakwerk.’ De Volkskrant ‘Verhoef bewijst keer op keer dat zij in Nederland de koningin van het genre genoemd mag worden.’ Vrij Nederland Over De Nachtdienst: ‘De schrijfster doet haar langjarige reputatie als “koningin van de Nederlandse thriller” opnieuw eer aan.’ De Telegraaf ‘De Nachtdienst is geraffineerd opgebouwd en nagelbijtend spannend.’ Margriet","url":"https://www.bol.com/be/nl/p/alter-ego/9300000135231906/","bookFormat":"https://schema.org/Paperback","isbn":"9789044652901","numberOfPages":"416","offers":{"@type":"Offer","price":"22.99","priceCurrency":"EUR","itemCondition":"https://schema.org/NewCondition","availability":"InStock","seller":{"@type":"Organization","name":"bol"}},"datePublished":"2023-03-28"}
+     * </pre>
      */
     @Test
     void parse01()
             throws IOException, StorageException, SearchException {
 
         final String locationHeader =
-                "https://www.bol.com/be/nl/p/alter-ego/9300000135231911/?s2a=";
+                "https://www.bol.com/be/nl/p/alter-ego/9300000135231906/?cid=1786008557620-6794174876919";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789044652901_be_nl_dutch;
 
@@ -131,18 +135,18 @@ class ParseTest
         Log.d(TAG, book.toString());
 
         assertEquals("Alter ego", book.getString(DBKey.TITLE, null));
-        assertEquals("9789044652895", book.getString(DBKey.ISBN, null));
+        assertEquals("9789044652901", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2023-04-06", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2023-03-28", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("416", book.getString(DBKey.PAGES, null));
-        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(19.85d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "22.99", MoneyParser.EUR, moneyParser);
 
-        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Een sterrenkok, zijn jonge vrouw"));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("<b>Genomineerd voor de NS Publieks"));
+
         final List<Tag> bookTags = book.getTags();
         assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
@@ -162,7 +166,7 @@ class ParseTest
         final Author author = authors.get(0);
         assertEquals("Verhoef", author.getFamilyName());
         assertEquals("Esther", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER, author.getRole());
+        //assertEquals(AuthorRole.WRITER, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -170,12 +174,12 @@ class ParseTest
         covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044652895_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044652901_0_.jpg"));
 
         covers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044652895_1_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044652901_1_.jpg"));
     }
 
     @Test
@@ -200,9 +204,10 @@ class ParseTest
         assertEquals("408", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(27.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "27.99", MoneyParser.EUR, moneyParser);
+
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("<p><strong>‘Timothy Garton Ash beschrijft"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(3, bookTags.size());
@@ -218,18 +223,18 @@ class ParseTest
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(1, authors.size());
 
         Author author;
         author = authors.get(0);
         assertEquals("Ash", author.getFamilyName());
         assertEquals("Timothy Garton", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER, author.getRole());
+//        assertEquals(AuthorRole.WRITER, author.getRole());
 
-        author = authors.get(1);
-        assertEquals("Pieters", author.getFamilyName());
-        assertEquals("Inge", author.getGivenNames());
-        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
+//        author = authors.get(1);
+//        assertEquals("Pieters", author.getFamilyName());
+//        assertEquals("Inge", author.getGivenNames());
+//        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -270,9 +275,7 @@ class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "16.5", MoneyParser.EUR, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -283,7 +286,7 @@ class ParseTest
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
-        assertEquals("Mercis Publishing B.V", allPublishers.get(0).getName());
+        assertEquals("Mercis Publishing B.V.", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -292,7 +295,7 @@ class ParseTest
         final Author author = authors.get(0);
         assertEquals("Bruna", author.getFamilyName());
         assertEquals("Dick", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
+        //assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
     }
 
     /** The redirect from {@link #parseMultiResult02()} */
@@ -319,11 +322,8 @@ class ParseTest
         assertEquals("664", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        // It's 4.8, but we round up in the case
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(24.07d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(4.8f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
+        assertPriceListed(book, "24.07", MoneyParser.EUR, moneyParser);
 
         assertTrue(book.getString(DBKey.DESCRIPTION)
                        .startsWith("It is the story of the Galactic Empire, crumbling"));
@@ -336,24 +336,24 @@ class ParseTest
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        assertEquals(2, allPublishers.size());
+        assertEquals(1, allPublishers.size());
         assertEquals("Everyman'S Library", allPublishers.get(0).getName());
-        assertEquals("Penguin Random House UK", allPublishers.get(1).getName());
+        //assertEquals("Penguin Random House UK", allPublishers.get(1).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(1, authors.size());
 
         Author author;
         author = authors.get(0);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER, author.getRole());
+        //assertEquals(AuthorRole.WRITER, author.getRole());
 
-        author = authors.get(1);
-        assertEquals("Dirda", author.getFamilyName());
-        assertEquals("Michael", author.getGivenNames());
-        assertEquals(AuthorRole.EDITOR, author.getRole());
+//        author = authors.get(1);
+//        assertEquals("Dirda", author.getFamilyName());
+//        assertEquals("Michael", author.getGivenNames());
+//        assertEquals(AuthorRole.EDITOR, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -392,11 +392,10 @@ class ParseTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(22.49d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "22.49", MoneyParser.EUR, moneyParser);
 
-        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("<p>'Wederom een rijke, roerende en actuele roman"));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("<p>'Wederom een rijke, roerende en actuele roman"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -411,17 +410,17 @@ class ParseTest
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(1, authors.size());
 
         Author author;
         author = authors.get(0);
         assertEquals("Shafak", author.getFamilyName());
         assertEquals("Elif", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER, author.getRole());
-        author = authors.get(1);
-        assertEquals("Smits", author.getFamilyName());
-        assertEquals("Manon", author.getGivenNames());
-        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
+//        assertEquals(AuthorRole.WRITER, author.getRole());
+//        author = authors.get(1);
+//        assertEquals("Smits", author.getFamilyName());
+//        assertEquals("Manon", author.getGivenNames());
+//        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;

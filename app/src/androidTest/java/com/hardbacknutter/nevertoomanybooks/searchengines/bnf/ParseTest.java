@@ -24,11 +24,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -63,6 +65,8 @@ class ParseTest
 
     private BnfSearchEngine searchEngine;
 
+    private MoneyParser moneyParser;
+
     @BeforeEach
     void setup()
             throws StorageException {
@@ -72,6 +76,10 @@ class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
 
         // DON'T call wikipedia
         ServiceLocator.getInstance().getSharedPreferences()
@@ -163,10 +171,12 @@ class ParseTest
         assertEquals("2024", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("152", book.getString(DBKey.PAGES, null));
 
-        assertEquals("7.3", book.getString(DBKey.PRICE_LISTED, null));
-        assertEquals("EUR", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "7.3", MoneyParser.EUR, moneyParser);
 
-        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Un dictionnaire pour les nommer tous !"));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("Un dictionnaire pour les nommer tous !"));
+
+
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -255,10 +265,10 @@ class ParseTest
         assertEquals("Colored", book.getString(DBKey.COLOR, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
 
-        assertEquals("14.5", book.getString(DBKey.PRICE_LISTED, null));
-        assertEquals("EUR", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "14.5", MoneyParser.EUR, moneyParser);
 
-        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Alors que Nävis est sur la piste d'un de ces mystérieux métamorphes"));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("Alors que Nävis est sur la piste d'un de ces mystérieux métamorphes"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

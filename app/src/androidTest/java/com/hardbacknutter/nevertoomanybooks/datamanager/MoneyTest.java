@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
-import android.os.Bundle;
 import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
@@ -32,7 +31,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -60,7 +58,7 @@ class MoneyTest
     private static final BigDecimal BD_VALUE = new BigDecimal(S_VALUE);
     private final Money money = MoneyParser.parse(BD_VALUE, MoneyParser.GBP);
 
-    private RealNumberParser parser;
+    private MoneyParser parser;
 
     private DataManager dataManager;
 
@@ -73,29 +71,38 @@ class MoneyTest
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        parser = RealNumberParser.money(allLocales);
+        parser = new MoneyParser(allLocales.get(0), allLocales);
     }
 
-    @SuppressWarnings({"SameParameterValue", "deprecation"})
+    /**
+     * Low level checks!
+     */
+    @SuppressWarnings("SameParameterValue")
     private void checkPriceData(@NonNull final DataManager dataManager,
-                                       @NonNull final String key,
-                                       @NonNull final BigDecimal expected,
-                                       @Nullable final String currency) {
-        final Bundle rawData = dataManager.getRawData();
+                                @NonNull final String key,
+                                @NonNull final BigDecimal expectedValue,
+                                @Nullable final String expectedCurrency) {
 
-        final Object v = rawData.get(key);
+        // Low level checks!
+        final Object v = dataManager.get(key);
         assertNotNull(v);
 
-        final BigDecimal value = parser.toBigDecimal(v);
+        // Mimic what dataManager.getBigDecimal does
+        final BigDecimal value;
+        if (v instanceof String) {
+            value = new BigDecimal((String) v);
+        } else {
+            value = parser.getRealNumberParser().toBigDecimal(v);
+        }
 
-        assertEquals(0, expected.compareTo(value));
+        assertEquals(0, expectedValue.compareTo(value));
 
-        final Object c = rawData.get(key + DBKey.CURRENCY_SUFFIX);
-        if (currency == null) {
+        final Object c = dataManager.get(key + DBKey.CURRENCY_SUFFIX);
+        if (expectedCurrency == null) {
             assertNull(c);
         } else {
             assertInstanceOf(String.class, c);
-            assertEquals(currency, c);
+            assertEquals(expectedCurrency, c);
         }
     }
 
@@ -123,6 +130,7 @@ class MoneyTest
 
     @Test
     void putComponentsBigDouble() {
+        // EXPLICITLY USE putDouble FOR TESTING
         dataManager.putDouble(DBKey.PRICE_LISTED, D_VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.GBP);
 
@@ -145,6 +153,7 @@ class MoneyTest
 
     @Test
     void putValueOnlyBigDouble() {
+        // EXPLICITLY USE putDouble FOR TESTING
         dataManager.putDouble(DBKey.PRICE_LISTED, D_VALUE);
         checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, null);
     }
@@ -164,6 +173,7 @@ class MoneyTest
 
     @Test
     void putValueAndIllegalCurrencyDouble() {
+        // EXPLICITLY USE putDouble FOR TESTING
         dataManager.putDouble(DBKey.PRICE_LISTED, D_VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "chocolates");
         checkPriceData(dataManager, DBKey.PRICE_LISTED, BD_VALUE, "chocolates");

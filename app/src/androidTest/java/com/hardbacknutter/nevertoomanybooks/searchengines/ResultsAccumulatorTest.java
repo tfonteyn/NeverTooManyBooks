@@ -26,14 +26,16 @@ import androidx.core.util.Pair;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -133,7 +135,8 @@ class ResultsAccumulatorTest
         book.setRawProductCode("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
-        book.putString(DBKey.PRICE_LISTED, "7.99");
+        book.setPriceListed(new Money(new BigDecimal("7.99"),
+                                      Currency.getInstance(MoneyParser.GBP)));
 
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry"),
@@ -146,7 +149,6 @@ class ResultsAccumulatorTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_ISFDB, "568139")));
 
         book.putString(IsfdbSearchEngine.SiteField.ISBN_2, "0552574473");
-        book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         return new Pair<>(Locale.US, book);
     }
@@ -183,15 +185,14 @@ class ResultsAccumulatorTest
         book.setRawProductCode("978-0552574471");
         book.setPages(336);
         book.setTitle("The Shepherd's Crown: A Discworld Novel, Volume 41");
-        book.putString(DBKey.PRICE_LISTED, "7.29");
+        book.setPriceListed(new Money(new BigDecimal("7.29"),
+                                      Currency.getInstance(MoneyParser.GBP)));
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry")
                         .setRole(AuthorRole.WRITER)));
         book.setPublishers(List.of(new Publisher("Corgi Childrens")));
 
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_ASIN, "0552574473")));
-
-        book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         return new Pair<>(Locale.UK, book);
     }
@@ -256,7 +257,7 @@ class ResultsAccumulatorTest
         book.setRawProductCode("9780552574471");
         book.setPages(335);
         book.setTitle("Shepherds Crown");
-        book.putString(DBKey.PRICE_LISTED, "8.87");
+        book.setPriceListed(new Money(new BigDecimal("8.87"), Money.EURO));
 
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry")
@@ -377,7 +378,8 @@ class ResultsAccumulatorTest
         book.setRawProductCode("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
-        book.putBigDecimal(DBKey.PRICE_LISTED, new BigDecimal("7.99"));
+        book.setPriceListed(new Money(new BigDecimal("7.99"),
+                                      Currency.getInstance(MoneyParser.GBP)));
 
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry"),
@@ -404,7 +406,6 @@ class ResultsAccumulatorTest
         ));
 
         book.putString(IsfdbSearchEngine.SiteField.ISBN_2, "0552574473");
-        book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         return book;
     }

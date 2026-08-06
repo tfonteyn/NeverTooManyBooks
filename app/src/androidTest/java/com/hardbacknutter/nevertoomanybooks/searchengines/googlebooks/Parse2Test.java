@@ -163,9 +163,7 @@ class Parse2Test
                      + " the vast distances of interstellar space.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(5.49d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "5.49", MoneyParser.GBP, moneyParser);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(1, bookTags.size());

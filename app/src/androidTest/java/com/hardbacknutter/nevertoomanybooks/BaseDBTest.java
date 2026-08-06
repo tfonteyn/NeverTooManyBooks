@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,8 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
@@ -64,11 +69,56 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({"OverlyBroadThrowsClause", "MissingJavadoc"})
-public abstract class BaseDBTest {
+public class BaseDBTest {
 
     protected ServiceLocator serviceLocator;
     protected Context context;
     private Context appContext;
+
+    protected static void assertPriceListed(@NonNull final Book book,
+                                            @NonNull final String expectedValue,
+                                            @Nullable final String expectedCurrency,
+                                            @NonNull final MoneyParser parser) {
+        assertPriceEqual(book, DBKey.PRICE_LISTED,
+                         new BigDecimal(expectedValue), expectedCurrency, parser);
+    }
+
+    protected static void assertPriceListed(@NonNull final Book book,
+                                            @NonNull final BigDecimal expectedValue,
+                                            @Nullable final String expectedCurrency,
+                                            @NonNull final MoneyParser parser) {
+        assertPriceEqual(book, DBKey.PRICE_LISTED,
+                         expectedValue, expectedCurrency, parser);
+    }
+
+    protected static void assertPricePaid(@NonNull final Book book,
+                                          @NonNull final String expectedValue,
+                                          @Nullable final String expectedCurrency,
+                                          @NonNull final MoneyParser parser) {
+        assertPriceEqual(book, DBKey.PRICE_PAID,
+                         new BigDecimal(expectedValue), expectedCurrency, parser);
+    }
+
+    protected static void assertPricePaid(@NonNull final Book book,
+                                          @NonNull final BigDecimal expectedValue,
+                                          @Nullable final String expectedCurrency,
+                                          @NonNull final MoneyParser moneyParser) {
+        assertPriceEqual(book, DBKey.PRICE_PAID,
+                         expectedValue, expectedCurrency, moneyParser);
+    }
+
+    private static void assertPriceEqual(@NonNull final Book book,
+                                         @NonNull final String key,
+                                         @NonNull final BigDecimal expectedValue,
+                                         @Nullable final String expectedCurrency,
+                                         @NonNull final MoneyParser parser) {
+
+        final RealNumberParser realNumberParser = parser.getRealNumberParser();
+        final BigDecimal price = book.getBigDecimal(key, realNumberParser);
+        assertEquals(0, expectedValue.compareTo(price),
+                     () -> "expected: " + expectedValue + ", but was: " + price);
+        assertEquals(expectedCurrency, book.getString(key + DBKey.CURRENCY_SUFFIX, null));
+    }
 
     /**
      * Setup.

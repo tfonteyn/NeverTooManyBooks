@@ -288,8 +288,7 @@ class SruParseTest
         assertEquals("Lucky Luke", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("fre", book.getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
 
-        assertEquals(17.0, book.getDouble(DBKey.PRICE_LISTED, moneyParser.getRealNumberParser()), 0);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertPriceListed(book, "17.0", MoneyParser.EUR, moneyParser);
 
         assertEquals(0, book.getTags().size());
 
@@ -310,7 +309,7 @@ class SruParseTest
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1976", author.getBirthDate().orElse(null));
         assertEquals("128409142", author.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("128409142", author.getIdentifierValue("DE-588").orElse(null));
+        assertEquals("128409142", author.getIdentifierValue("de-588").orElse(null));
         assertEquals("0000000368558513", author.getIdentifierValue(Identifier.SID_ISNI).orElse(null));
         assertEquals("Q114237", author.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
 
@@ -321,7 +320,7 @@ class SruParseTest
         assertEquals("1976", realAuthor.getBirthDate().orElse(null));
         assertEquals(AuthorRole.UNKNOWN, realAuthor.getRole());
         assertEquals("1216065012", realAuthor.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("1216065012", realAuthor.getIdentifierValue("DE-588").orElse(null));
+        assertEquals("1216065012", realAuthor.getIdentifierValue("de-588").orElse(null));
 
         author = authors.get(1);
         assertEquals("Kleist", author.getFamilyName());
@@ -330,7 +329,7 @@ class SruParseTest
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1970-02-11", author.getBirthDate().orElse(null));
         assertEquals("120643480", author.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("120643480", author.getIdentifierValue("DE-588").orElse(null));
+        assertEquals("120643480", author.getIdentifierValue("de-588").orElse(null));
         assertEquals("0000000116350679", author.getIdentifierValue(Identifier.SID_ISNI).orElse(null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
