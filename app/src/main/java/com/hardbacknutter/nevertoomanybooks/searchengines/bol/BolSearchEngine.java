@@ -416,6 +416,7 @@ public class BolSearchEngine
             }
         } else {
             // If for whatever reason the json blob is missing, fall back to html.
+            // 2026-08-06: this code path may not be up to date!
             parseHtml(context, searchedCode, document, fetchCovers, book);
         }
     }
@@ -442,15 +443,23 @@ public class BolSearchEngine
         final JSONObject jsonAuthor = root.optJSONObject("author");
         if (jsonAuthor != null) {
             // The author in json is the primary author only.
-            // Parse the html for others and roles.
+            // We would need to parse the html for others and roles.
             // Add directly, don't use the parserHelper addAuthor method
-            book.add(Author.from(jsonAuthor.optString("name")));
+            final String name = jsonAuthor.optString("name");
+            if (!name.isBlank()) {
+                book.add(Author.from(name));
+            }
         }
 
 
         final JSONObject jsonPublisher = root.optJSONObject("publisher");
         if (jsonPublisher != null) {
-            book.add(Publisher.from(jsonPublisher.optString("name")));
+            // same as authors,
+            // We would need to parse the html for others and roles.
+            final String name = jsonPublisher.optString("name");
+            if (!name.isBlank()) {
+                book.add(Publisher.from(name));
+            }
         }
         final JSONObject jsonRating = root.optJSONObject("aggregateRating");
         if (jsonRating != null) {
@@ -483,16 +492,21 @@ public class BolSearchEngine
         int index = 0;
         if (searchedCode != null) {
             for (int i = 0; i < works.length(); i++) {
-                final ProductCode code = ISBN.parse(works.getJSONObject(i).optString("isbn"));
-                if (code.equals(searchedCode)) {
-                    // found it
-                    index = i;
-                    break;
+                final String text = works.getJSONObject(i).optString("isbn");
+                if (!text.isBlank()) {
+                    final ProductCode code = ISBN.parse(text);
+                    if (code.equals(searchedCode)) {
+                        // found it
+                        index = i;
+                        break;
+                    }
                 }
             }
         }
         // use the first one if we did not find a match
         final JSONObject work = works.getJSONObject(index);
+
+        // There is a "name" which is a repeat of the title. Ignoring this one.
 
         // back to using "opt"!
         book.setRawProductCode(work.optString("isbn"));
@@ -500,8 +514,10 @@ public class BolSearchEngine
         // the format is ISO
         book.setPublicationDate(work.optString("datePublished"));
 
-        if (book.getDescription().isEmpty()) {
-            book.setDescription(work.optString("@description"));
+        final String description = work.optString("@description");
+        if (!description.isBlank()) {
+            // overwrite generic description with edition specific description
+            book.setDescription(description);
         }
 
         // do NOT use "@type", as the value "Book" is used for both book and ebook :/
@@ -529,13 +545,11 @@ public class BolSearchEngine
 
     private void parseJsonPrice(@NonNull final JSONObject o,
                                 @NonNull final Book book) {
-        // o.optBigDecimal() will use doubleValue(), so its useless.
-        final Object rawPrice = o.opt("price");
-        if (rawPrice instanceof Number) {
-            final BigDecimal price = new BigDecimal(rawPrice.toString());
-            final String priceCurrency = o.optString("priceCurrency", "EUR");
-            book.setPriceListed(new Money(price, Currency.getInstance(priceCurrency)));
-        }
+        // its a String!
+        final String rawPrice = o.optString("price");
+        final BigDecimal price = new BigDecimal(rawPrice);
+        final String priceCurrency = o.optString("priceCurrency", "EUR");
+        book.setPriceListed(new Money(price, Currency.getInstance(priceCurrency)));
     }
 
     private void parseJsonTags(@NonNull final JSONArray genre,
