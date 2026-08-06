@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.os.Parcelable;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -96,6 +97,7 @@ public interface DataHolder {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
+    @Discouraged(message = "Don't use unless absolutely needed")
     double getDouble(@NonNull String key,
                      @NonNull RealNumberParser parser)
             throws NumberFormatException;

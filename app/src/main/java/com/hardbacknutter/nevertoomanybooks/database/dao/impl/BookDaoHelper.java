@@ -502,16 +502,11 @@ class BookDaoHelper {
                                 cv.put(columnName, realNumberParser.toDouble(entry));
                             } catch (@NonNull final NumberFormatException e) {
                                 // We do NOT want to fail at this point.
-                                // Although the conclusion cannot be 100%, we're
-                                // very likely looking at a "list price" field coming
-                                // from an import which cannot be parsed.
                                 // Log, but skip this field.
-                                // This does mean that sentiments like:
-                                // list_price="a lot of money" will NOT be preserved!
                                 LoggerFactory.getLogger()
-                                             .w(TAG, "columnName(float)=" + columnName,
+                                             .w(TAG, e.getMessage(),
+                                                "columnName(float)=" + columnName,
                                                 "entry=" + entry,
-                                                e.getMessage(),
                                                 "book=" + book);
                             }
                             break;

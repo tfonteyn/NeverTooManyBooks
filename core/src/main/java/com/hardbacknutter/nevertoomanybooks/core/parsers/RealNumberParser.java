@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import android.os.Build;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -322,6 +323,7 @@ public class RealNumberParser {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
+    @Discouraged(message = "Don't use unless absolutely needed")
     public double parseDouble(@Nullable final String source)
             throws NumberFormatException {
 
@@ -361,6 +363,7 @@ public class RealNumberParser {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
+    @Discouraged(message = "Don't use unless absolutely needed")
     public double toDouble(@Nullable final Object source)
             throws NumberFormatException {
 
