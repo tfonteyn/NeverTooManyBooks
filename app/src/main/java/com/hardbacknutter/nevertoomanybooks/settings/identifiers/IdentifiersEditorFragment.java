@@ -21,9 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
