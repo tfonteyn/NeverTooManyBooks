@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.ArrayRes;
+import androidx.annotation.Discouraged;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -213,8 +214,7 @@ public final class SettingsManager {
         for (final Setting p : vm.getSettings()) {
             if (keySet.contains(p.getKey())) {
                 p.load(context, vm.getDataStore());
-                adapter.findPosition(p.getKey())
-                       .ifPresent(adapter::notifyItemChanged);
+                notifyItemChanged(p);
             }
         }
     }
@@ -226,6 +226,16 @@ public final class SettingsManager {
      */
     public void save(@NonNull final Setting p) {
         p.save(recyclerView.getContext(), vm.getDataStore());
+        notifyItemChanged(p);
+    }
+
+    /**
+     * Notify that the given setting was changed.
+     *
+     * @param p the {@link Setting}.
+     */
+    @Discouraged(message = "Only to be used if you're not using the save method")
+    public void notifyItemChanged(@NonNull final Setting p) {
         adapter.findPosition(p.getKey())
                .ifPresent(adapter::notifyItemChanged);
     }
