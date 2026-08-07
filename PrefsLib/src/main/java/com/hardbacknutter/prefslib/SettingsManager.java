@@ -348,10 +348,13 @@ public final class SettingsManager {
                 if (!Objects.equals(p.getValue(), newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null && callback.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
+                    if (callback != null) {
+                        if (callback.onChange(p, newValue)) {
+                            // perform the update
+                            p.setValue(newValue);
+                            save(p);
+                        }
+                        // handled
                         return;
                     }
 
@@ -374,10 +377,13 @@ public final class SettingsManager {
                 if (!Objects.equals(p.getValue(), newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null && callback.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
+                    if (callback != null) {
+                        if (callback.onChange(p, newValue)) {
+                            // perform the update
+                            p.setValue(newValue);
+                            save(p);
+                        }
+                        // handled
                         return;
                     }
 
@@ -398,10 +404,13 @@ public final class SettingsManager {
                 if (!p.isValueEquals(newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null && callback.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
+                    if (callback != null) {
+                        if (callback.onChange(p, newValue)) {
+                            // perform the update
+                            p.setValue(newValue);
+                            save(p);
+                        }
+                        // handled
                         return;
                     }
 
@@ -422,10 +431,13 @@ public final class SettingsManager {
                 if (!Objects.equals(p.getValue(), newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null && callback.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
+                    if (callback != null) {
+                        if (callback.onChange(p, newValue)) {
+                            // perform the update
+                            p.setValue(newValue);
+                            save(p);
+                        }
+                        // handled
                         return;
                     }
 
@@ -446,10 +458,13 @@ public final class SettingsManager {
                 if (!Objects.equals(p.isChecked(), newObjectValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null && callback.onChange(p, newValue)) {
-                        // perform the update
-                        p.setChecked(newValue);
-                        save(p);
+                    if (callback != null) {
+                        if (callback.onChange(p, newValue)) {
+                            // perform the update
+                            p.setChecked(newValue);
+                            save(p);
+                        }
+                        // handled
                         return;
                     }
 
@@ -1162,7 +1177,7 @@ public final class SettingsManager {
                                      @NonNull final RecyclerView recyclerView) {
 
             if (changedListener == null) {
-                // Default: accept changes
+                // Default: accept all changes
                 changedListener = (setting, newValue) -> true;
             }
             if (clickListener == null) {
