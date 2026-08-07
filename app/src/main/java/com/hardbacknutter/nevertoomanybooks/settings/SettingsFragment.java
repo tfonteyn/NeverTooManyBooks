@@ -448,24 +448,26 @@ public class SettingsFragment
                 .setMessage(R.string.confirm_rebuild_orderby_columns)
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
-                .setNegativeButton(R.string.cancel, (d, w) -> {
-                    // revert/store the original value
-                    ((BooleanSetting) setting).setChecked(vm.getStoredTitleOrderBy());
-                    getSettingsManager().save(setting);
-                    // and remove any scheduling
-                    StartupViewModel.schedule(context,
-                                              StartupViewModel.PK_REBUILD_TITLE_OB,
-                                              false);
-                })
+                // Cancel always restores the original situation.
+                .setNegativeButton(R.string.cancel, (d, w)
+                        -> restoreSortTitleReordered(context, setting))
                 .setPositiveButton(R.string.ok, (d, w) -> {
-                    // Update/store the new value
                     final boolean checked = newValue != null && (boolean) newValue;
-                    ((BooleanSetting) setting).setChecked(checked);
-                    getSettingsManager().save(setting);
-                    // and schedule the rebuild
-                    StartupViewModel.schedule(context,
-                                              StartupViewModel.PK_REBUILD_TITLE_OB,
-                                              true);
+                    if (checked == vm.getStoredTitleOrderBy()) {
+                        // we're (back) on the original value, i.e. no changes
+                        // We'd get here if the user changes their mind
+                        // and clicked OK again.
+                        restoreSortTitleReordered(context, setting);
+                    } else {
+                        // Schedule the rebuild
+                        StartupViewModel.schedule(context,
+                                                  StartupViewModel.PK_REBUILD_TITLE_OB,
+                                                  true);
+                        // Update/store the new value
+
+                        ((BooleanSetting) setting).setChecked(checked);
+                        getSettingsManager().save(setting);
+                    }
                 })
                 .create()
                 .show();
@@ -473,6 +475,15 @@ public class SettingsFragment
         // Never let the system update the preference value,
         // it's handled in above Dialog.
         return false;
+    }
+
+    private void restoreSortTitleReordered(@NonNull final Context context,
+                                           @NonNull final Setting setting) {
+        // Remove any scheduling
+        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, false);
+        // revert/store the original value
+        ((BooleanSetting) setting).setChecked(vm.getStoredTitleOrderBy());
+        getSettingsManager().save(setting);
     }
 
     private boolean onChangeEnableLending(@NonNull final Setting setting,
@@ -494,6 +505,7 @@ public class SettingsFragment
         String summary = p.isChecked()
                          ? context.getString(R.string.ps_show_titles_reordered_on)
                          : context.getString(R.string.ps_show_titles_reordered_off);
+
 
         final Spannable spannable;
         // Use the 'schedulerKey' to get the condition!
