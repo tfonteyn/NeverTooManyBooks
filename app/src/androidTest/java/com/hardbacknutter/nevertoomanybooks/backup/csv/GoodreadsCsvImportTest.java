@@ -124,6 +124,7 @@ class GoodreadsCsvImportTest
         assertTrue(oMetaData.isPresent());
         metaData = oMetaData.get();
         assertNotNull(metaData);
+        //noinspection deprecation
         Assertions.assertEquals(CsvFormat.Goodreads,
                                 metaData.getData().getParcelable(CsvFormat.BKEY));
         assertTrue(metaData.getData().containsKey(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
@@ -146,8 +147,8 @@ class GoodreadsCsvImportTest
         // 5,3.99,Het Spectrum,Paperback,172,1973,1972,,2020/06/05,books,books (#8),read,
         // ,,,1,0
 
-        Optional<Long> oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS,
-                                                            "8998451");
+        Optional<Long> oBookId = bookIdentifierDao
+                .findIdentifierOwnerId(Identifier.SID_GOODREADS, "8998451");
         assertTrue(oBookId.isPresent());
         long bookId = oBookId.get();
 
@@ -197,7 +198,7 @@ class GoodreadsCsvImportTest
         // Tor Books,Hardcover,472,2014,2006,,2024/04/24,
         // "currently-reading, books","currently-reading (#3), books (#15)",currently-reading,
         // On my todo list,,my own notes on this book,1,0
-        oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS, "20518872");
+        oBookId = bookIdentifierDao.findIdentifierOwnerId(Identifier.SID_GOODREADS, "20518872");
         assertTrue(oBookId.isPresent());
         bookId = oBookId.get();
 

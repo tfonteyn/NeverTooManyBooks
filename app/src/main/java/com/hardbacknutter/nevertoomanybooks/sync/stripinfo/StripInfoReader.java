@@ -245,8 +245,8 @@ public class StripInfoReader
         final String externalId = siBook.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         // lookup locally using the externalId.
-        final Optional<Long> oBookId = bookIdentifierDao.findFkId(Identifier.SID_STRIP_INFO,
-                                                                  externalId);
+        final Optional<Long> oBookId = bookIdentifierDao
+                .findIdentifierOwnerId(Identifier.SID_STRIP_INFO, externalId);
         try {
             // check if we already have the StripInfo book in the local database
             if (oBookId.isPresent()) {

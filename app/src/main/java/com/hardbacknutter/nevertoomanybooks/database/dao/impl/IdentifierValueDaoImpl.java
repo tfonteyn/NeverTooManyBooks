@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -156,8 +157,8 @@ public class IdentifierValueDaoImpl
 
     @Override
     @NonNull
-    public Optional<Long> findFkId(@NonNull final String key,
-                                   @NonNull final String sid) {
+    public Optional<Long> findIdentifierOwnerId(@NonNull final String key,
+                                              @NonNull final String sid) {
         try (SynchronizedStatement stmt = db.compileStatement(
                 sql.FIND_FK_BY_IDENTIFIER_KEY_AND_SID)) {
             stmt.bindString(1, key);

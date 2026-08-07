@@ -26,9 +26,11 @@ import androidx.annotation.NonNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.IdentifierOwner;
 
 /**
  * <strong>External-id</strong> or <strong>sid</strong>:
@@ -91,7 +93,8 @@ public interface IdentifierValueDao {
                              @IntRange(from = 1) long fkId);
 
     /**
-     * Find the foreign-key id for the given SID and name.
+     * Find the {@link IdentifierOwner} id for the given SID and name.
+     * i.o.w. the id of the book, author,... to which the given key/sid combination refers to.
      *
      * @param key one of the {@link Identifier} SID constants
      * @param sid value
@@ -99,6 +102,6 @@ public interface IdentifierValueDao {
      * @return foreign-key id
      */
     @NonNull
-    Optional<Long> findFkId(@NonNull String key,
-                            @NonNull String sid);
+    Optional<Long> findIdentifierOwnerId(@NonNull String key,
+                                         @NonNull String sid);
 }
