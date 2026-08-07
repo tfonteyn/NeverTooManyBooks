@@ -389,7 +389,7 @@ public class StripWebSearchEngine
                     case "Verschijningsdatum": {
                         final String text = SearchEngineUtils.cleanText(td);
                         if (!text.isEmpty()) {
-                            parserHelper.addPublicationDate(context, siteLocale, text, book);
+                            bookParserHelper.addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
                     }
@@ -640,7 +640,7 @@ public class StripWebSearchEngine
             }
         }
         // Add/merge or skip if already present
-        parserHelper.addAuthor(author, type, book, false);
+        bookParserHelper.addAuthor(author, type, book, false);
     }
 
     /**

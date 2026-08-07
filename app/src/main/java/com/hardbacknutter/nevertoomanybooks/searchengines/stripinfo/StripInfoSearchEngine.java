@@ -1032,7 +1032,7 @@ public class StripInfoSearchEngine
                     author.setIdentifierValue(Identifier.SID_STRIP_INFO, siId);
                 }
             }
-            parserHelper.addAuthor(author, type, book, false);
+            bookParserHelper.addAuthor(author, type, book, false);
         }
         return 1;
     }

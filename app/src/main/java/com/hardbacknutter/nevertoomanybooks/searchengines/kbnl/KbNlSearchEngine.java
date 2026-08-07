@@ -278,7 +278,7 @@ public class KbNlSearchEngine
 
         final Book book = new Book();
 
-        final DefaultHandler handler = new KbNlBookHandler(parserHelper, book);
+        final DefaultHandler handler = new KbNlBookHandler(bookParserHelper, book);
 
         final SAXParser parser;
         try {

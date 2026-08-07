@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public class ParserHelper {
+public class BookParserHelper {
 
     private final SearchEngineConfig config;
     private final LocaleListResolver localeListResolver;
@@ -57,8 +57,8 @@ public class ParserHelper {
 
     private final IdentifierDao identifierDao;
 
-    ParserHelper(@NonNull final SearchEngineConfig config,
-                 @NonNull final LocaleListResolver localeListResolver) {
+    BookParserHelper(@NonNull final SearchEngineConfig config,
+                     @NonNull final LocaleListResolver localeListResolver) {
         this.config = config;
         this.localeListResolver = localeListResolver;
 

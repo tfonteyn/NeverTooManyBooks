@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ParserHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.SAXException;
@@ -66,20 +66,20 @@ class KbNlBookHandler
             Pattern.compile("(\\d\\d\\d\\d)-(\\d\\d\\d\\d|)");
 
     @NonNull
-    private final ParserHelper parserHelper;
+    private final BookParserHelper bookParserHelper;
     @Nullable
     private String tmpSeriesNr;
 
     /**
      * Constructor.
      *
-     * @param parserHelper to use
+     * @param bookParserHelper to use
      * @param data         Book to update
      */
-    KbNlBookHandler(@NonNull final ParserHelper parserHelper,
+    KbNlBookHandler(@NonNull final BookParserHelper bookParserHelper,
                     @NonNull final Book data) {
         super(data);
-        this.parserHelper = parserHelper;
+        this.bookParserHelper = bookParserHelper;
     }
 
     @Override
@@ -463,7 +463,7 @@ class KbNlBookHandler
                 }
             }
 
-            parserHelper.addAuthor(author, type, book, false);
+            bookParserHelper.addAuthor(author, type, book, false);
         }
     }
 

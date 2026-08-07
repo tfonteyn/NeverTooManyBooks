@@ -310,7 +310,7 @@ public class BertrandPtSearchEngine
                       .map(SearchEngineUtils::cleanName)
                       .filter(name -> !name.isBlank())
                       .map(Author::from)
-                      .forEach(author -> parserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false));
+                      .forEach(author -> bookParserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false));
 
         Element element;
 
@@ -397,7 +397,7 @@ public class BertrandPtSearchEngine
                                                  .stream()
                                                  .map(Element::text)
                                                  .collect(Collectors.toList());
-            parserHelper.setTags(tagNames, book);
+            bookParserHelper.setTags(tagNames, book);
         }
 
         final Element priceElement = document.selectFirst(
@@ -407,7 +407,7 @@ public class BertrandPtSearchEngine
             final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
             final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
             final String priceStr = priceElement.text();
-            parserHelper.addPriceListed(parser, priceStr, MoneyParser.EUR, book);
+            bookParserHelper.addPriceListed(parser, priceStr, MoneyParser.EUR, book);
         }
 
         // First try for the readers rating

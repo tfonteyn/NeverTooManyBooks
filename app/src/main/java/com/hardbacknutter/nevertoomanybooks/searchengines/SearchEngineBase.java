@@ -70,7 +70,7 @@ public abstract class SearchEngineBase
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     @NonNull
-    protected final ParserHelper parserHelper;
+    protected final BookParserHelper bookParserHelper;
 
     @Nullable
     private SSLContext sslContext;
@@ -95,7 +95,7 @@ public abstract class SearchEngineBase
                      @NonNull final SearchEngineConfig config,
                      @NonNull final LocaleListResolver localeListResolver) {
         this.config = config;
-        this.parserHelper = new ParserHelper(config, localeListResolver);
+        this.bookParserHelper = new BookParserHelper(config, localeListResolver);
     }
 
     @NonNull
@@ -231,8 +231,8 @@ public abstract class SearchEngineBase
     }
 
     @NonNull
-    public ParserHelper getParserHelper() {
-        return parserHelper;
+    public BookParserHelper getParserHelper() {
+        return bookParserHelper;
     }
 
     @Override

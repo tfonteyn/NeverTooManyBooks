@@ -446,7 +446,7 @@ public class GoogleBooksSearchEngine
         }
         s = volumeInfo.optString("publishedDate", null);
         if (s != null && !s.isBlank()) {
-            parserHelper.addPublicationDate(context, locale, s, book);
+            bookParserHelper.addPublicationDate(context, locale, s, book);
         }
 
         s = volumeInfo.optString("description", null);
@@ -485,7 +485,7 @@ public class GoogleBooksSearchEngine
                     tags.add(category);
                 }
             }
-            parserHelper.setTags(tags, book);
+            bookParserHelper.setTags(tags, book);
         }
         // BOOK or MAGAZINE : ignored
         //s = volumeInfo.optString("printType", null);
@@ -526,7 +526,7 @@ public class GoogleBooksSearchEngine
                               @NonNull final Book book) {
         for (int i = 0; i < a.length(); i++) {
             final String name = a.optString(i);
-            parserHelper.addAuthor(Author.from(name), AuthorRole.UNKNOWN, book, false);
+            bookParserHelper.addAuthor(Author.from(name), AuthorRole.UNKNOWN, book, false);
         }
     }
 

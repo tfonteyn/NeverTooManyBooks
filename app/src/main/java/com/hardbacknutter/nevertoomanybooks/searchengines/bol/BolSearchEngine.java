@@ -444,7 +444,7 @@ public class BolSearchEngine
         if (jsonAuthor != null) {
             // The author in json is the primary author only.
             // We would need to parse the html for others and roles.
-            // Add directly, don't use the parserHelper addAuthor method
+            // Add directly, don't use the bookParserHelper addAuthor method
             final String name = jsonAuthor.optString("name");
             if (!name.isBlank()) {
                 book.add(Author.from(name));
@@ -559,7 +559,7 @@ public class BolSearchEngine
                                            // they are simple Strings
                                            .map(String::valueOf)
                                            .collect(Collectors.toList());
-        parserHelper.setTags(tagNames, book);
+        bookParserHelper.setTags(tagNames, book);
     }
 
     @VisibleForTesting
@@ -638,7 +638,7 @@ public class BolSearchEngine
                         final String text = SearchEngineUtils.cleanText(value);
                         // can be empty!
                         if (!text.isBlank()) {
-                            parserHelper.addPublicationDate(context, siteLocale, text, book);
+                            bookParserHelper.addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
                     }
@@ -757,7 +757,7 @@ public class BolSearchEngine
         if (a != null) {
             final String s = SearchEngineUtils.cleanName(a);
             if (!s.isBlank()) {
-                parserHelper.addAuthor(Author.from(s), type, book, addAsFirst);
+                bookParserHelper.addAuthor(Author.from(s), type, book, addAsFirst);
             }
         }
     }
@@ -827,7 +827,7 @@ public class BolSearchEngine
                                            .stream()
                                            .map(Element::text)
                                            .collect(Collectors.toList());
-        parserHelper.setTags(tagNames, book);
+        bookParserHelper.setTags(tagNames, book);
     }
 
     /**

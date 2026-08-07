@@ -435,7 +435,7 @@ public class BiblionetGrSearchEngine
                         // -> Literary Society of Agrinio "Kostas Chatzopoulos"
                         final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
-                            // Add directly, don't use the parserHelper addAuthor method
+                            // Add directly, don't use the bookParserHelper addAuthor method
                             book.add(Author.asOrganisation(s));
                         }
                     });
@@ -479,7 +479,7 @@ public class BiblionetGrSearchEngine
           .map(SearchEngineUtils::cleanName)
           .filter(name -> !name.isBlank())
           .map(Author::from)
-          .forEach(a -> parserHelper.addAuthor(a, type, book, false));
+          .forEach(a -> bookParserHelper.addAuthor(a, type, book, false));
     }
 
     private void processDetails(@NonNull final Context context,
@@ -703,7 +703,7 @@ public class BiblionetGrSearchEngine
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(Locale.UK, userLocales);
         final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-        parserHelper.addPriceListed(parser, text, MoneyParser.EUR, book);
+        bookParserHelper.addPriceListed(parser, text, MoneyParser.EUR, book);
     }
 
     private void processSubjectTags(@NonNull final Element data,
@@ -728,7 +728,7 @@ public class BiblionetGrSearchEngine
                 }
             }
         }
-        parserHelper.setTags(tagNames, book);
+        bookParserHelper.setTags(tagNames, book);
     }
 
     /**

@@ -437,7 +437,7 @@ public class KbNlHtmlSearchEngine
 
             s = SearchEngineUtils.cleanName(s);
             if (!s.isBlank()) {
-                parserHelper.addAuthor(Author.from(s), type, book, false);
+                bookParserHelper.addAuthor(Author.from(s), type, book, false);
             }
         }
     }

@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.Attributes;
@@ -168,7 +168,7 @@ class IsfdbPublicationListHandler
     @NonNull
     private final Context context;
     @NonNull
-    private final ParserHelper parserHelper;
+    private final BookParserHelper bookParserHelper;
     @NonNull
     private final IsfdbSearchEngine searchEngine;
     @NonNull
@@ -211,7 +211,7 @@ class IsfdbPublicationListHandler
                                 final int maxRecords) {
         this.context = context;
         this.searchEngine = searchEngine;
-        this.parserHelper = searchEngine.getParserHelper();
+        this.bookParserHelper = searchEngine.getParserHelper();
 
         System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
@@ -334,7 +334,7 @@ class IsfdbPublicationListHandler
                 case XML_AUTHOR: {
                     if (inAuthors) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        parserHelper.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
+                        bookParserHelper.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
                     }
                     break;
                 }
@@ -378,7 +378,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String priceStr = builder.toString().strip();
-                    parserHelper.addPriceListed(moneyParser, priceStr, null, book);
+                    bookParserHelper.addPriceListed(moneyParser, priceStr, null, book);
                     break;
                 }
                 case XML_PAGES: {
@@ -426,7 +426,7 @@ class IsfdbPublicationListHandler
                 case XML_ARTIST: {
                     if (inCoverArtists) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        parserHelper.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book, false);
+                        bookParserHelper.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book, false);
                     }
                     break;
                 }

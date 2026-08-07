@@ -558,7 +558,7 @@ public class DoubanSearchEngine
                             //  We'll need to follow the link to the "personage" to
                             //  get the correct SID.
                             //  This would also allow us to get Birthdate etc
-                            parserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false);
+                            bookParserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false);
                         }
                     }
                     break;
@@ -596,8 +596,8 @@ public class DoubanSearchEngine
                     if (a != null && "a".equals(a.tagName())) {
                         final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
-                            parserHelper.addAuthor(Author.from(s), AuthorRole.TRANSLATOR,
-                                                   book, false);
+                            bookParserHelper.addAuthor(Author.from(s), AuthorRole.TRANSLATOR,
+                                                       book, false);
                         }
                     }
                     break;
@@ -696,7 +696,7 @@ public class DoubanSearchEngine
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
         final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-        parserHelper.addPriceListed(parser, priceStr, MoneyParser.CNY, book);
+        bookParserHelper.addPriceListed(parser, priceStr, MoneyParser.CNY, book);
     }
 
     /**

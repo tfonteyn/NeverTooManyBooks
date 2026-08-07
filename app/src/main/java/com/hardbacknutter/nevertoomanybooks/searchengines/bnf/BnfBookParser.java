@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ParserHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.jsoup.nodes.Document;
@@ -144,7 +144,7 @@ class BnfBookParser {
     @NonNull
     private final Context context;
     @NonNull
-    private final ParserHelper parserHelper;
+    private final BookParserHelper bookParserHelper;
     @NonNull
     private final Document document;
     @NonNull
@@ -153,11 +153,11 @@ class BnfBookParser {
     private final PartialDateParser partialDateParser;
 
     BnfBookParser(@NonNull final Context context,
-                  @NonNull final ParserHelper parserHelper,
+                  @NonNull final BookParserHelper bookParserHelper,
                   @NonNull final Document document,
                   @NonNull final Book book) {
         this.context = context;
-        this.parserHelper = parserHelper;
+        this.bookParserHelper = bookParserHelper;
         this.document = document;
         this.book = book;
 
@@ -293,7 +293,7 @@ class BnfBookParser {
                                               .getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(Locale.FRANCE, userLocales);
         final MoneyParser parser = new MoneyParser(Locale.FRANCE, allLocales);
-        parserHelper.addPriceListed(parser, s, null, book);
+        bookParserHelper.addPriceListed(parser, s, null, book);
     }
 
     /**

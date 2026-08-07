@@ -739,7 +739,7 @@ public class GoodreadsSearchEngine
         } else {
             author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
         }
-        parserHelper.addAuthor(author, role, book, false);
+        bookParserHelper.addAuthor(author, role, book, false);
     }
 
     private void parseSeries(@NonNull final JSONObject apolloState,
@@ -802,7 +802,7 @@ public class GoodreadsSearchEngine
                 }
             }
         }
-        parserHelper.setTags(tagNames, book);
+        bookParserHelper.setTags(tagNames, book);
     }
 
     /**

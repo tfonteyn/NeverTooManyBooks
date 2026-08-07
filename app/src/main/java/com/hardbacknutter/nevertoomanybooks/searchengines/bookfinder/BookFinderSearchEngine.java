@@ -193,7 +193,7 @@ public class BookFinderSearchEngine
         if (authorElement != null) {
             final String s = SearchEngineUtils.cleanName(authorElement);
             if (!s.isBlank()) {
-                parserHelper.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
+                bookParserHelper.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
             }
         }
         final Element ratingElement = bookInfo.selectFirst("div.rating"
@@ -267,7 +267,7 @@ public class BookFinderSearchEngine
                 book.add(Publisher.from(s.strip()));
                 if (parts.length > 1 && !parts[1].isBlank()) {
                     final String dateStr = parts[1].strip();
-                    parserHelper.addPublicationDate(context, siteLocale, dateStr, book);
+                    bookParserHelper.addPublicationDate(context, siteLocale, dateStr, book);
                 }
             }
         }

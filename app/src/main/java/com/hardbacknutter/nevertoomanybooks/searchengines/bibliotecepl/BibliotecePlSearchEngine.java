@@ -701,7 +701,7 @@ public class BibliotecePlSearchEngine
             if (g1 != null) {
                 final String s = SearchEngineUtils.cleanName(g1);
                 if (!s.isBlank()) {
-                    parserHelper.addAuthor(Author.from(s), type, book, false);
+                    bookParserHelper.addAuthor(Author.from(s), type, book, false);
                 }
             }
         }

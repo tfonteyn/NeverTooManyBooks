@@ -677,7 +677,7 @@ public class AmazonSearchEngine
         allLocales.add(Locale.US);
 
         final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
-        parserHelper.addPriceListed(parser, priceText, null, book);
+        bookParserHelper.addPriceListed(parser, priceText, null, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
@@ -776,7 +776,7 @@ public class AmazonSearchEngine
                     final String pubDate = matcher.group(2);
                     if (pubDate != null) {
                         final String dateStr = pubDate.strip();
-                        parserHelper.addPublicationDate(context, siteLocale, dateStr, book);
+                        bookParserHelper.addPublicationDate(context, siteLocale, dateStr, book);
                     }
                 }
 
@@ -786,7 +786,7 @@ public class AmazonSearchEngine
                 }
             } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
                 final String data = SearchEngineUtils.cleanText(value);
-                parserHelper.addPublicationDate(context, siteLocale, data, book);
+                bookParserHelper.addPublicationDate(context, siteLocale, data, book);
 
             } else if (LABEL_SERIES.contains(lcLabel)) {
                 final String data = SearchEngineUtils.cleanText(value);
@@ -858,7 +858,7 @@ public class AmazonSearchEngine
                         }
                     }
 
-                    parserHelper.addAuthor(author, type, book, false);
+                    bookParserHelper.addAuthor(author, type, book, false);
                 }
             }
         }
