@@ -29,6 +29,9 @@ import java.util.Objects;
 
 /**
  * The value is a {@code float}.
+ * Use a step-size of {@code 1} for use as an {@code int}.
+ * <p>
+ * The UI will display this setting as a Slider.
  * <p>
  * Dev. note: technically it should be a {@code Float} object
  * allowing {@code null} for not-set.
