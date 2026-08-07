@@ -34,6 +34,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -155,8 +156,14 @@ class UserCollection {
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
         this.searchEngine = searchEngine;
-        jsoupLoader = new JsoupLoader(this.searchEngine.createGetDocumentRequest(context),
-                                      this.searchEngine.getEngineId());
+
+        @SuppressWarnings("DataFlowIssue")
+        final boolean enableLog = this.searchEngine.getEngineId()
+                                                   .getConfig()
+                                                   .isLogHttpGetRequests();
+        final FutureHttp<Document> request = this.searchEngine.createGetDocumentRequest(context);
+        jsoupLoader = new JsoupLoader(request, enableLog);
+
         formParser = new CollectionParser(context, bookshelfMapper);
     }
 

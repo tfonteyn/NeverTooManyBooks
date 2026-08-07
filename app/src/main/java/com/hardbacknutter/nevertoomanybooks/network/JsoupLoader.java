@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.Jsoup;
@@ -56,8 +55,6 @@ public class JsoupLoader {
 
     @NonNull
     private final FutureHttp<Document> httpGet;
-    @NonNull
-    private final EngineId engineId;
     private final boolean logEnabled;
     /** The downloaded and parsed web page. */
     @Nullable
@@ -74,15 +71,13 @@ public class JsoupLoader {
     /**
      * Constructor.
      *
-     * @param httpGet  to use
-     * @param engineId to use
+     * @param httpGet   to use
+     * @param enableLog flag
      */
     public JsoupLoader(@NonNull final FutureHttp<Document> httpGet,
-                       @NonNull final EngineId engineId) {
+                       final boolean enableLog) {
         this.httpGet = httpGet;
-        this.engineId = engineId;
-        //noinspection DataFlowIssue
-        this.logEnabled = engineId.getConfig().isLogHttpGetRequests();
+        this.logEnabled = enableLog;
     }
 
     /**
