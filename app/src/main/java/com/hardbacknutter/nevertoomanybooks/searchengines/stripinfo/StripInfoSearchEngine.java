@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
-import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.JSoupParserHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -166,7 +166,7 @@ public class StripInfoSearchEngine
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
     /** Delegate common Element handling. */
-    private final JSoupHelper jSoupHelper = new JSoupHelper();
+    private final JSoupParserHelper jSoupParserHelper = new JSoupParserHelper();
 
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
 
@@ -1217,7 +1217,7 @@ public class StripInfoSearchEngine
                                @NonNull final Book book,
                                @IntRange(from = 1) final long externalId) {
 
-        jSoupHelper.getPositiveLong(document, "stripCollectie-" + externalId).ifPresent(
+        jSoupParserHelper.getPositiveLong(document, "stripCollectie-" + externalId).ifPresent(
                 collectionId -> {
                     try {
                         //noinspection DataFlowIssue

@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
 
-public class JSoupHelper {
+public class JSoupParserHelper {
 
     private static final String ATTR_CHECKED = "checked";
     private static final String ATTR_STYLE = "style";

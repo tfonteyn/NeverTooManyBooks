@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.JSoupParserHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -88,7 +88,7 @@ class CollectionFormUploader {
     private static final String ERROR_COLLECTION_ID_0 = "collectionId == 0";
 
     /** Delegate common Element handling. */
-    private final JSoupHelper jSoupHelper = new JSoupHelper();
+    private final JSoupParserHelper jSoupParserHelper = new JSoupParserHelper();
 
     @NonNull
     private final String postUrl;
@@ -360,8 +360,8 @@ class CollectionFormUploader {
 
         final Document form = doPost(postBody);
 
-        final OptionalLong siteExtId = jSoupHelper.getPositiveLong(form, FF_STRIP_ID);
-        final OptionalLong siteCollId = jSoupHelper.getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
+        final OptionalLong siteExtId = jSoupParserHelper.getPositiveLong(form, FF_STRIP_ID);
+        final OptionalLong siteCollId = jSoupParserHelper.getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
         if (siteExtId.isPresent() && externalId.equals(String.valueOf(siteExtId.getAsLong()))
             && siteCollId.isPresent() && collectionId == siteCollId.getAsLong()) {
             postBody = new FormBody.Builder()
@@ -404,7 +404,7 @@ class CollectionFormUploader {
                     .build();
             final Document responseForm = doPost(postBody);
 
-            jSoupHelper.getPositiveLong(responseForm, FF_STRIP_COLLECTIE_ID).ifPresent(id -> {
+            jSoupParserHelper.getPositiveLong(responseForm, FF_STRIP_COLLECTIE_ID).ifPresent(id -> {
                 collectionData.setCollectionId(id);
                 book.setStage(EntityStage.Stage.Dirty);
             });

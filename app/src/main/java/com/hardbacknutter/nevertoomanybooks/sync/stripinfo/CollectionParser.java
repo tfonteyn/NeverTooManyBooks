@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.JSoupParserHelper;
 
 import org.jsoup.nodes.Element;
 
@@ -49,7 +49,7 @@ import org.jsoup.nodes.Element;
 class CollectionParser {
 
     /** Delegate common Element handling. */
-    private final JSoupHelper jSoupHelper = new JSoupHelper();
+    private final JSoupParserHelper jSoupParserHelper = new JSoupParserHelper();
     @Nullable
     private final Bookshelf wishListBookshelf;
     @Nullable
@@ -82,8 +82,8 @@ class CollectionParser {
                        @NonNull final String nameAttr,
                        @NonNull final Book book) {
 
-        jSoupHelper.getBoolean(root, nameAttr)
-                   .ifPresent(value -> book.putBoolean(DBKey.READ__BOOL, true));
+        jSoupParserHelper.getBoolean(root, nameAttr)
+                         .ifPresent(value -> book.putBoolean(DBKey.READ__BOOL, true));
     }
 
     @AnyThread
@@ -91,7 +91,7 @@ class CollectionParser {
                         @NonNull final String nameAttr,
                         @NonNull final Book book,
                         @NonNull final StripInfoCollectionData collectionData) {
-        jSoupHelper.getBoolean(root, nameAttr).ifPresent(value -> {
+        jSoupParserHelper.getBoolean(root, nameAttr).ifPresent(value -> {
             collectionData.setOwned(true);
             if (ownedBooksBookshelf != null) {
                 book.add(ownedBooksBookshelf);
@@ -104,7 +104,7 @@ class CollectionParser {
                           @NonNull final String nameAttr,
                           @NonNull final Book book,
                           final StripInfoCollectionData collectionData) {
-        jSoupHelper.getBoolean(root, nameAttr).ifPresent(value -> {
+        jSoupParserHelper.getBoolean(root, nameAttr).ifPresent(value -> {
             collectionData.setDigital(true);
             if (digitalBooksBookshelf != null) {
                 book.add(digitalBooksBookshelf);
@@ -117,7 +117,7 @@ class CollectionParser {
                            @NonNull final String nameAttr,
                            @NonNull final Book book,
                            final StripInfoCollectionData collectionData) {
-        jSoupHelper.getBoolean(root, nameAttr).ifPresent(value -> {
+        jSoupParserHelper.getBoolean(root, nameAttr).ifPresent(value -> {
             collectionData.setWanted(true);
             if (wishListBookshelf != null) {
                 book.add(wishListBookshelf);
@@ -129,21 +129,21 @@ class CollectionParser {
     void parseLocation(@NonNull final Element root,
                        @NonNull final String nameAttr,
                        @NonNull final Book book) {
-        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(book::setLocation);
+        jSoupParserHelper.getNonEmptyString(root, nameAttr).ifPresent(book::setLocation);
     }
 
     @AnyThread
     void parseNotes(@NonNull final Element root,
                     @NonNull final String nameAttr,
                     @NonNull final Book book) {
-        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(book::setNotes);
+        jSoupParserHelper.getNonEmptyString(root, nameAttr).ifPresent(book::setNotes);
     }
 
     @AnyThread
     void parseDateAcquired(@NonNull final Element root,
                            @NonNull final String nameAttr,
                            @NonNull final Book book) {
-        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(value -> {
+        jSoupParserHelper.getNonEmptyString(root, nameAttr).ifPresent(value -> {
             // Incoming value attribute is in the format "DD/MM/YYYY".
             if (value.length() == 10) {
                 // we could use the date parser...
@@ -163,7 +163,7 @@ class CollectionParser {
                         @NonNull final String nameAttr,
                         @NonNull final Book book) {
         // '0' is an acceptable value that should be stored.
-        jSoupHelper.getPositiveOrZeroBigDecimal(root, nameAttr).ifPresent(
+        jSoupParserHelper.getPositiveOrZeroBigDecimal(root, nameAttr).ifPresent(
                 value -> book.setPricePaid(new Money(value, Money.EURO)));
     }
 
@@ -182,7 +182,7 @@ class CollectionParser {
                       @NonNull final String nameAttr,
                       @NonNull final Book book) {
         // The edition ("druk") is a text-field
-        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(value -> {
+        jSoupParserHelper.getNonEmptyString(root, nameAttr).ifPresent(value -> {
             if ("1".equals(value)) {
                 book.setEditionFlags(Book.Edition.FIRST);
             } else {
@@ -202,6 +202,6 @@ class CollectionParser {
     void parseAmount(@NonNull final Element root,
                      @NonNull final String nameAttr,
                      final StripInfoCollectionData collectionData) {
-        jSoupHelper.getPositiveInt(root, nameAttr).ifPresent(collectionData::setAmount);
+        jSoupParserHelper.getPositiveInt(root, nameAttr).ifPresent(collectionData::setAmount);
     }
 }
