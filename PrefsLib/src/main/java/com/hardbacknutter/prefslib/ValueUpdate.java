@@ -24,7 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * The payload for an {@code onChange} from the {@code ViewModel} to the {@link SettingsManager}.
+ * The payload for an {@code onChange} from
+ * the {@code SettingsManagerViewModel} to the {@link SettingsManager}.
  *
  * @param <S> type of {@link Setting}
  * @param <T> type of data

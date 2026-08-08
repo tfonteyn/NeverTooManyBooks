@@ -39,7 +39,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.prefslib.DialogInput;
 import com.hardbacknutter.prefslib.MultiChoiceSetting;
 import com.hardbacknutter.prefslib.SettingsManagerViewModel;
 import com.hardbacknutter.prefslib.databinding.PrefsLibDialogMultiChoiceBinding;

@@ -33,7 +33,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
-import com.hardbacknutter.prefslib.DialogInput;
 import com.hardbacknutter.prefslib.SettingsManagerViewModel;
 import com.hardbacknutter.prefslib.StringSetting;
 import com.hardbacknutter.prefslib.databinding.PrefsLibDialogEditStringBinding;

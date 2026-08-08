@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.prefslib;
+package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
 
 import android.os.Bundle;
 

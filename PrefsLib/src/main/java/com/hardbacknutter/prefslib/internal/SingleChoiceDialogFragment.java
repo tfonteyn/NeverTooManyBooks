@@ -36,7 +36,6 @@ import com.google.android.material.radiobutton.MaterialRadioButton;
 
 import java.util.Objects;
 
-import com.hardbacknutter.prefslib.DialogInput;
 import com.hardbacknutter.prefslib.SettingsManagerViewModel;
 import com.hardbacknutter.prefslib.SingleChoiceSetting;
 import com.hardbacknutter.prefslib.databinding.PrefsLibDialogSingleChoiceBinding;

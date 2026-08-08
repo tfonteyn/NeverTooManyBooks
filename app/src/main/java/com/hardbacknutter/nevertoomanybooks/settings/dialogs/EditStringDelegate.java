@@ -62,7 +62,7 @@ class EditStringDelegate
     private Toolbar toolbar;
 
     EditStringDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final com.hardbacknutter.prefslib.DialogInput args) {
+                       @NonNull final DialogInput args) {
         this.owner = owner;
         final String key = args.getKey();
         dialogMessage = args.getDialogMessage();

@@ -65,7 +65,7 @@ class MultiChoiceDelegate
     private Toolbar toolbar;
 
     MultiChoiceDelegate(@NonNull final DialogFragment owner,
-                        @NonNull final com.hardbacknutter.prefslib.DialogInput args) {
+                        @NonNull final DialogInput args) {
         this.owner = owner;
         final String key = args.getKey();
         dialogMessage = args.getDialogMessage();

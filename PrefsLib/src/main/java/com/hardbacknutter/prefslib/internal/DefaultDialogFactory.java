@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.hardbacknutter.prefslib.DialogInput;
 import com.hardbacknutter.prefslib.Setting;
 import com.hardbacknutter.prefslib.SettingsDialogFactory;
 

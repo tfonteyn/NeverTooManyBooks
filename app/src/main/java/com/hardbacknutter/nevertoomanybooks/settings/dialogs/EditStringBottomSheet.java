@@ -32,7 +32,7 @@ public class EditStringBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditStringDelegate(this, com.hardbacknutter.prefslib.DialogInput
+        setDelegate(new EditStringDelegate(this, DialogInput
                 .fromBundle(requireArguments())));
     }
 }

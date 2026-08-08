@@ -99,7 +99,7 @@ public class DBSDialogFactory
             }
         }
 
-        final com.hardbacknutter.prefslib.DialogInput args = new com.hardbacknutter.prefslib.DialogInput(setting.getKey(), dialogMessage);
+        final DialogInput args = new DialogInput(setting.getKey(), dialogMessage);
         fragment.setArguments(args.toBundle());
         return fragment;
     }

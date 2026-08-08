@@ -32,7 +32,7 @@ public class SingleChoiceBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new SingleChoiceDelegate(this, com.hardbacknutter.prefslib.DialogInput
+        setDelegate(new SingleChoiceDelegate(this, DialogInput
                 .fromBundle(requireArguments())));
     }
 }
