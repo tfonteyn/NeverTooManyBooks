@@ -28,13 +28,15 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * The value is a {@code String} from {@link #getEntryValues()}.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class SingleChoiceSetting
-        extends Setting {
+        extends Setting
+        implements SettingWithDialog {
 
     private static final int NONE = -1;
 
@@ -42,6 +44,9 @@ public class SingleChoiceSetting
     private String notSetSummary;
     @Nullable
     private String negativeButtonText;
+
+    @Nullable
+    private Function<Setting, String> dialogMessageProvider;
 
     @Nullable
     private CharSequence[] entries;
@@ -159,6 +164,17 @@ public class SingleChoiceSetting
 
     public void setNegativeButtonText(@Nullable final String negativeButtonText) {
         this.negativeButtonText = negativeButtonText;
+    }
+
+    @Override
+    public void setDialogMessageProvider(@Nullable final Function<Setting, String> provider) {
+        dialogMessageProvider = provider;
+    }
+
+    @Override
+    @Nullable
+    public String getDialogMessage() {
+        return dialogMessageProvider != null ? dialogMessageProvider.apply(this) : null;
     }
 
     /**

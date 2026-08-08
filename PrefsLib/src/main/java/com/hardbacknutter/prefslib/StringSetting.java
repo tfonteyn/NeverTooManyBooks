@@ -27,13 +27,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * The value is a {@code String}.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class StringSetting
-        extends Setting {
+        extends Setting
+        implements SettingWithDialog {
 
     @Nullable
     private String notSetSummary;
@@ -43,6 +45,9 @@ public class StringSetting
     private String negativeButtonText;
     @Nullable
     private String positiveButtonText;
+
+    @Nullable
+    private Function<Setting, String> dialogMessageProvider;
 
     private int inputType = InputType.TYPE_CLASS_TEXT;
 
@@ -114,6 +119,17 @@ public class StringSetting
 
     public void setNegativeButtonText(@Nullable final String negativeButtonText) {
         this.negativeButtonText = negativeButtonText;
+    }
+
+    @Override
+    public void setDialogMessageProvider(@Nullable final Function<Setting, String> provider) {
+        dialogMessageProvider = provider;
+    }
+
+    @Override
+    @Nullable
+    public String getDialogMessage() {
+        return dialogMessageProvider != null ? dialogMessageProvider.apply(this) : null;
     }
 
     /**

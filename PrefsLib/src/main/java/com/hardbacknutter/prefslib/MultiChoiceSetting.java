@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,8 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class MultiChoiceSetting
-        extends Setting {
+        extends Setting
+        implements SettingWithDialog {
 
     @Nullable
     private String notSetSummary;
@@ -49,6 +51,9 @@ public class MultiChoiceSetting
     private String negativeButtonText;
     @Nullable
     private String positiveButtonText;
+
+    @Nullable
+    private Function<Setting, String> dialogMessageProvider;
 
     @Nullable
     private CharSequence[] entries;
@@ -191,6 +196,17 @@ public class MultiChoiceSetting
 
     public void setClearButtonText(@Nullable final String clearButtonText) {
         this.clearButtonText = clearButtonText;
+    }
+
+    @Override
+    public void setDialogMessageProvider(@Nullable final Function<Setting, String> provider) {
+        dialogMessageProvider = provider;
+    }
+
+    @Override
+    @Nullable
+    public String getDialogMessage() {
+        return dialogMessageProvider != null ? dialogMessageProvider.apply(this) : null;
     }
 
     /**

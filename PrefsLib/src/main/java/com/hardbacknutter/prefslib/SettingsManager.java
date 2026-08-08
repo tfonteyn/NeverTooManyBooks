@@ -71,6 +71,8 @@ import com.hardbacknutter.util.livedataevent.LiveDataEvent;
  */
 public final class SettingsManager {
 
+    private static final String DIALOG_TAG = "setting_dialog";
+
     @NonNull
     private final Fragment owner;
     @NonNull
@@ -292,9 +294,14 @@ public final class SettingsManager {
     }
 
     private void onShowDialog(@NonNull final LiveDataEvent<Setting> message) {
-        message.process(setting -> dialogFactory
-                .create(recyclerView.getContext(), setting, null)
-                .show(owner.getChildFragmentManager(), "setting_dialog"));
+        message.process(setting -> {
+            String dialogMsg = null;
+            if (setting instanceof SettingWithDialog) {
+                dialogMsg = ((SettingWithDialog) setting).getDialogMessage();
+            }
+            dialogFactory.create(recyclerView.getContext(), setting, dialogMsg)
+                         .show(owner.getChildFragmentManager(), DIALOG_TAG);
+        });
     }
 
     private void onClick(@NonNull final LiveDataEvent<Setting> message) {

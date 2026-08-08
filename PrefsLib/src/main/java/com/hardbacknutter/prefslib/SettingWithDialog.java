@@ -20,29 +20,28 @@
 
 package com.hardbacknutter.prefslib;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
-@FunctionalInterface
-public interface SettingsDialogFactory {
+import java.util.function.Function;
+
+/**
+ * A setting which shows a dialog to get the value,
+ * can display an additional message.
+ */
+public interface SettingWithDialog {
 
     /**
-     * Callback requesting a DialogFragment for the given setting.
-     * <p>
-     * The optional message is provided by the Setting, but passed
-     * separately to allow the factory to override as needed.
+     * Set or remove the provider.
      *
-     * @param context       Current context
-     * @param setting       for which a dialog should be created
-     * @param dialogMessage (optional) message which should be displayed
-     *
-     * @return dialog fragment
+     * @param provider to use
      */
-    @NonNull
-    DialogFragment create(@NonNull Context context,
-                          @NonNull Setting setting,
-                          @Nullable String dialogMessage);
+    void setDialogMessageProvider(@Nullable Function<Setting, String> provider);
+
+    /**
+     * Called when a dialog is displayed.
+     *
+     * @return message, or {@code null} for none
+     */
+    @Nullable
+    String getDialogMessage();
 }
