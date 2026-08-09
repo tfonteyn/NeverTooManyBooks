@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -300,23 +299,20 @@ public final class SettingsManager {
 
     private void onClick(@NonNull final LiveDataEvent<Setting> message) {
         message.process(setting -> {
-            // Give the Setting specific listener a chance to handle it
-            final OnSettingClickListener callback = onClickCallbacks.get(setting.getKey());
+
+            final OnSettingClickListener callback = onClickCallbacks
+                    .getOrDefault(setting.getKey(), onSettingClickListener);
             if (callback != null && callback.onClick(setting)) {
                 return;
             }
 
-            // Give the global listener a chance to handle it
-            if (onSettingClickListener != null && onSettingClickListener.onClick(setting)) {
-                return;
-            }
-
+            // No listener, or the listener did not handle it.
             // Take default action for some types
             switch (setting.getType()) {
                 case Boolean: {
                     // Click emulates clicking the actual switch
                     final BooleanSetting bs = (BooleanSetting) setting;
-                    change(bs, !bs.isChecked());
+                    onChange(bs, !bs.isChecked());
                     break;
                 }
                 case Fragment: {
@@ -338,159 +334,41 @@ public final class SettingsManager {
                 case Float:
                 case SingleChoice:
                 case MultiChoice:
-                    // Not applicable
+                    // No meaningful default
                     break;
             }
         });
     }
 
     private void onChange(@NonNull final LiveDataEvent<ValueUpdate<Setting, Object>> message) {
-        message.process(update -> change(update.getSetting(), update.getNewValue()));
+        message.process(update -> onChange(update.getSetting(), update.getNewValue()));
     }
 
-    private void change(@NonNull final Setting setting,
-                        @Nullable final Object newObjectValue) {
+    private void onChange(@NonNull final Setting setting,
+                          @Nullable final Object newObjectValue) {
         switch (setting.getType()) {
             case SingleChoice: {
-                final SingleChoiceSetting p = (SingleChoiceSetting) setting;
-                final CharSequence newValue = (CharSequence) newObjectValue;
-
-                // If there was a change...
-                if (!Objects.equals(p.getValue(), newValue)) {
-                    // Give the Setting specific listener a chance to handle it
-                    final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null) {
-                        if (callback.onChange(p, newValue)) {
-                            // perform the update
-                            p.setValue(newValue);
-                            save(p);
-                        }
-                        // handled
-                        return;
-                    }
-
-                    // Give the global listener a chance to handle it
-                    if (onSettingChangeListener != null
-                        && onSettingChangeListener.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
-                    }
-                }
+                //noinspection DataFlowIssue
+                onChange((SingleChoiceSetting) setting, (CharSequence) newObjectValue);
                 break;
             }
             case MultiChoice: {
-                final MultiChoiceSetting p = (MultiChoiceSetting) setting;
                 //noinspection unchecked
-                final Set<String> newValue = (Set<String>) newObjectValue;
-
-                // If there was a change...
-                if (!Objects.equals(p.getValue(), newValue)) {
-                    // Give the Setting specific listener a chance to handle it
-                    final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null) {
-                        if (callback.onChange(p, newValue)) {
-                            // perform the update
-                            p.setValue(newValue);
-                            save(p);
-                        }
-                        // handled
-                        return;
-                    }
-
-                    // Give the global listener a chance to handle it
-                    if (onSettingChangeListener != null
-                        && onSettingChangeListener.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
-                    }
-                }
+                onChange((MultiChoiceSetting) setting, (Set<String>) newObjectValue);
                 break;
             }
             case Float: {
-                final FloatSetting p = (FloatSetting) setting;
                 final float newValue = newObjectValue != null ? (float) newObjectValue : 0;
-
-                // If there was a change...
-                // Dont use Objects.equals; we need to allow for the epsilon difference
-                if (!p.isValueEquals(newValue)) {
-                    // Give the Setting specific listener a chance to handle it
-                    final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null) {
-                        if (callback.onChange(p, newValue)) {
-                            // perform the update
-                            p.setValue(newValue);
-                            save(p);
-                        }
-                        // handled
-                        return;
-                    }
-
-                    // Give the global listener a chance to handle it
-                    if (onSettingChangeListener != null
-                        && onSettingChangeListener.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
-                    }
-                }
+                onChange((FloatSetting) setting, newValue);
                 break;
             }
             case String: {
-                final StringSetting p = (StringSetting) setting;
-                final String newValue = (String) newObjectValue;
-
-                // If there was a change...
-                if (!Objects.equals(p.getValue(), newValue)) {
-                    // Give the Setting specific listener a chance to handle it
-                    final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null) {
-                        if (callback.onChange(p, newValue)) {
-                            // perform the update
-                            p.setValue(newValue);
-                            save(p);
-                        }
-                        // handled
-                        return;
-                    }
-
-                    // Give the global listener a chance to handle it
-                    if (onSettingChangeListener != null
-                        && onSettingChangeListener.onChange(p, newValue)) {
-                        // perform the update
-                        p.setValue(newValue);
-                        save(p);
-                    }
-                }
+                onChange((StringSetting) setting, (String) newObjectValue);
                 break;
             }
             case Boolean: {
-                final BooleanSetting p = (BooleanSetting) setting;
                 final boolean newValue = newObjectValue != null && (boolean) newObjectValue;
-
-                // If there was a change...
-                if (!Objects.equals(p.isChecked(), newValue)) {
-                    // Give the Setting specific listener a chance to handle it
-                    final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
-                    if (callback != null) {
-                        if (callback.onChange(p, newValue)) {
-                            // perform the update
-                            p.setChecked(newValue);
-                            save(p);
-                        }
-                        // handled
-                        return;
-                    }
-
-                    // Give the global listener a chance to handle it
-                    if (onSettingChangeListener != null
-                        && onSettingChangeListener.onChange(p, newValue)) {
-                        // perform the update
-                        p.setChecked(newValue);
-                        save(p);
-                    }
-                }
+                onChange((BooleanSetting) setting, newValue);
                 break;
             }
 
@@ -500,6 +378,70 @@ public final class SettingsManager {
             case Header:
                 // Not applicable
                 break;
+        }
+    }
+
+    private void onChange(@NonNull final SingleChoiceSetting setting,
+                          @Nullable final CharSequence newValue) {
+
+        final OnSettingChangeListener callback = onChangeCallbacks
+                .getOrDefault(setting.getKey(), onSettingChangeListener);
+
+        if (callback != null && callback.onChange(setting, newValue)) {
+            // perform the update
+            setting.setValue(newValue);
+            save(setting);
+        }
+    }
+
+    private void onChange(@NonNull final MultiChoiceSetting setting,
+                          @Nullable final Set<String> newValue) {
+
+        final OnSettingChangeListener callback = onChangeCallbacks
+                .getOrDefault(setting.getKey(), onSettingChangeListener);
+        if (callback != null && callback.onChange(setting, newValue)) {
+            // perform the update
+            setting.setValue(newValue);
+            save(setting);
+        }
+    }
+
+    private void onChange(@NonNull final FloatSetting setting,
+                          final float newValue) {
+
+        final OnSettingChangeListener callback = onChangeCallbacks
+                .getOrDefault(setting.getKey(), onSettingChangeListener);
+
+        if (callback != null && callback.onChange(setting, newValue)) {
+            // perform the update
+            setting.setValue(newValue);
+            save(setting);
+        }
+    }
+
+    private void onChange(@NonNull final StringSetting setting,
+                          @Nullable final String newValue) {
+
+        final OnSettingChangeListener callback = onChangeCallbacks
+                .getOrDefault(setting.getKey(), onSettingChangeListener);
+
+        if (callback != null && callback.onChange(setting, newValue)) {
+            // perform the update
+            setting.setValue(newValue);
+            save(setting);
+        }
+    }
+
+    private void onChange(@NonNull final BooleanSetting setting,
+                          final boolean newValue) {
+
+        final OnSettingChangeListener callback = onChangeCallbacks
+                .getOrDefault(setting.getKey(), onSettingChangeListener);
+
+        if (callback != null && callback.onChange(setting, newValue)) {
+            // perform the update
+            setting.setChecked(newValue);
+            save(setting);
         }
     }
 

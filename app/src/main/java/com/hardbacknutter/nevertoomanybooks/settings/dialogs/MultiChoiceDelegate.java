@@ -175,14 +175,7 @@ class MultiChoiceDelegate
     private boolean saveChanges() {
         // the model is already updated by the adapters selection listener.
 
-        final Set<CharSequence> newValue = vm.getNewValue();
-
-        // anything actually changed ? If not, we're done.
-        if (Objects.equals(setting.getValue(), newValue)) {
-            return true;
-        }
-
-        svm.onChange(setting, newValue);
+        svm.onChange(setting, vm.getNewValue());
         return true;
     }
 }

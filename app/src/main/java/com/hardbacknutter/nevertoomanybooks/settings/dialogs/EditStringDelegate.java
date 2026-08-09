@@ -169,15 +169,7 @@ class EditStringDelegate
     private boolean saveChanges() {
         viewToModel();
 
-        @Nullable
-        final String newValue = vm.getNewValue();
-
-        // anything actually changed ? If not, we're done.
-        if (Objects.equals(setting.getValue(), newValue)) {
-            return true;
-        }
-
-        svm.onChange(setting, newValue);
+        svm.onChange(setting, vm.getNewValue());
         return true;
     }
 
