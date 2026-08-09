@@ -62,8 +62,9 @@ public class MultiChoiceSetting
 
     private final Set<String> value = new HashSet<>();
 
-    MultiChoiceSetting(@NonNull final String key) {
-        super(Type.MultiChoice, key);
+    MultiChoiceSetting(@NonNull final String key,
+                       @NonNull final SettingsDataStore dataStore) {
+        super(Type.MultiChoice, key, dataStore);
     }
 
     /**
@@ -244,15 +245,13 @@ public class MultiChoiceSetting
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        setValue(store.getStringSet(getKey(), value));
+    public void load(@NonNull final Context context) {
+        setValue(dataStore.getStringSet(getKey(), value));
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        store.putStringSet(getKey(), value);
+    public void save(@NonNull final Context context) {
+        dataStore.putStringSet(getKey(), value);
     }
 
     @Override

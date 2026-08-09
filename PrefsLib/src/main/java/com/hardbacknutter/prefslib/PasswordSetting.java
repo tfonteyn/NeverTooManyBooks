@@ -35,8 +35,9 @@ public class PasswordSetting
 
     private static final String MASK = "********";
 
-    PasswordSetting(@NonNull final String key) {
-        super(key);
+    PasswordSetting(@NonNull final String key,
+                    @NonNull final SettingsDataStore dataStore) {
+        super(key, dataStore);
 
         setInputType(InputType.TYPE_CLASS_TEXT
                      | InputType.TYPE_TEXT_VARIATION_PASSWORD);

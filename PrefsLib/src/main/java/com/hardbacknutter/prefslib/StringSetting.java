@@ -56,8 +56,9 @@ public class StringSetting
 
     private boolean emptyIsNotSet = true;
 
-    StringSetting(@NonNull final String key) {
-        super(Type.String, key);
+    StringSetting(@NonNull final String key,
+                  @NonNull final SettingsDataStore dataStore) {
+        super(Type.String, key, dataStore);
     }
 
     public int getInputType() {
@@ -177,15 +178,13 @@ public class StringSetting
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        setValue(store.getString(getKey(), value));
+    public void load(@NonNull final Context context) {
+        setValue(dataStore.getString(getKey(), value));
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        store.putString(getKey(), value);
+    public void save(@NonNull final Context context) {
+        dataStore.putString(getKey(), value);
     }
 
     @Override

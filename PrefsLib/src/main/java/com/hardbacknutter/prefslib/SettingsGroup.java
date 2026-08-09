@@ -35,8 +35,9 @@ public class SettingsGroup
     private final List<Setting> subSettings;
 
     SettingsGroup(@NonNull final String key,
-                  @NonNull final List<Setting> subSettings) {
-        super(Type.Group, key);
+                  @NonNull final List<Setting> subSettings,
+                  @NonNull final SettingsDataStore dataStore) {
+        super(Type.Group, key, dataStore);
         this.subSettings = subSettings;
     }
 
@@ -46,15 +47,13 @@ public class SettingsGroup
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        subSettings.forEach(setting -> setting.load(context, store));
+    public void load(@NonNull final Context context) {
+        subSettings.forEach(setting -> setting.load(context));
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        subSettings.forEach(setting -> setting.save(context, store));
+    public void save(@NonNull final Context context) {
+        subSettings.forEach(setting -> setting.save(context));
     }
 
     @Override

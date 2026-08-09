@@ -43,7 +43,6 @@ public class SettingsManagerViewModel
     private final MutableLiveData<LiveDataEvent<Setting>>
             onShowDialog = new MutableLiveData<>();
 
-    private SettingsDataStore dataStore;
     private List<Setting> settings;
 
     /**
@@ -53,15 +52,12 @@ public class SettingsManagerViewModel
      * <p>
      * Do NOT call from the dialog fragments.
      *
-     * @param dataStore to use
-     * @param settings          current list
+     * @param settings current list
      */
-    void init(@NonNull final SettingsDataStore dataStore,
-              @NonNull final List<Setting> settings) {
+    void init(@NonNull final List<Setting> settings) {
         // This ViewModel is owned by the Activity, so we can share it
         // between the hosting fragment and any dialog fragments as needed.
-        // So we MUST always update the FRAGMENT store/settings.
-        this.dataStore = dataStore;
+        // But we MUST always update the FRAGMENT settings
         this.settings = settings;
     }
 
@@ -89,11 +85,6 @@ public class SettingsManagerViewModel
     @NonNull
     List<Setting> getSettings() {
         return settings;
-    }
-
-    @NonNull
-    SettingsDataStore getDataStore() {
-        return dataStore;
     }
 
     @NonNull

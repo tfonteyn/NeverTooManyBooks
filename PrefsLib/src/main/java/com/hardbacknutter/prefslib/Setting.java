@@ -37,6 +37,8 @@ public abstract class Setting {
     private final Type type;
     @NonNull
     private final String key;
+    @NonNull
+    SettingsDataStore dataStore;
 
     @DrawableRes
     private int iconResId;
@@ -53,9 +55,11 @@ public abstract class Setting {
     Function<Context, CharSequence> summaryProvider;
 
     protected Setting(@NonNull final Type type,
-                      @NonNull final String key) {
+                      @NonNull final String key,
+                      @NonNull final SettingsDataStore dataStore) {
         this.type = type;
         this.key = key;
+        this.dataStore = dataStore;
     }
 
     @NonNull
@@ -140,12 +144,18 @@ public abstract class Setting {
         this.summaryProvider = provider;
     }
 
+    /**
+     * Override the global data-store (as set by the {@link SettingsManager.Builder}.
+     *
+     * @param dataStore to use
+     */
+    public void setDataStore(@NonNull final SettingsDataStore dataStore) {
+        this.dataStore = dataStore;
+    }
 
-    public abstract void load(@NonNull Context context,
-                              @NonNull SettingsDataStore store);
+    public abstract void load(@NonNull Context context);
 
-    public abstract void save(@NonNull Context context,
-                              @NonNull SettingsDataStore store);
+    public abstract void save(@NonNull Context context);
 
     @Override
     public boolean equals(@Nullable final Object o) {

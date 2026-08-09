@@ -24,27 +24,28 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+@SuppressWarnings("unused")
 public class ActionSetting
         extends Setting {
 
-    ActionSetting(@NonNull final String key) {
-        super(Type.Action, key);
+    ActionSetting(@NonNull final String key,
+                  @NonNull final SettingsDataStore dataStore) {
+        super(Type.Action, key, dataStore);
     }
 
     ActionSetting(@NonNull final Type type,
-                  @NonNull final String key) {
-        super(type, key);
+                  @NonNull final String key,
+                  @NonNull final SettingsDataStore dataStore) {
+        super(type, key, dataStore);
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
+    public void load(@NonNull final Context context) {
         // not applicable
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
+    public void save(@NonNull final Context context) {
         // not applicable
     }
 }

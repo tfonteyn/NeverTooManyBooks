@@ -45,8 +45,9 @@ public class BooleanSetting
 
     private boolean checked;
 
-    BooleanSetting(@NonNull final String key) {
-        super(Type.Boolean, key);
+    BooleanSetting(@NonNull final String key,
+                   @NonNull final SettingsDataStore dataStore) {
+        super(Type.Boolean, key, dataStore);
     }
 
     public boolean isChecked() {
@@ -106,15 +107,13 @@ public class BooleanSetting
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        setChecked(store.getBoolean(getKey(), checked));
+    public void load(@NonNull final Context context) {
+        setChecked(dataStore.getBoolean(getKey(), checked));
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        store.putBoolean(getKey(), checked);
+    public void save(@NonNull final Context context) {
+        dataStore.putBoolean(getKey(), checked);
     }
 
     @Override

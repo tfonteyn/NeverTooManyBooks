@@ -55,8 +55,9 @@ public class SingleChoiceSetting
 
     private int checkedIndex = NONE;
 
-    SingleChoiceSetting(@NonNull final String key) {
-        super(Type.SingleChoice, key);
+    SingleChoiceSetting(@NonNull final String key,
+                        @NonNull final SettingsDataStore dataStore) {
+        super(Type.SingleChoice, key, dataStore);
     }
 
     /**
@@ -202,22 +203,20 @@ public class SingleChoiceSetting
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
+    public void load(@NonNull final Context context) {
         if (checkedIndex == NONE || entryValues == null) {
-            setValue(store.getString(getKey(), null));
+            setValue(dataStore.getString(getKey(), null));
         } else {
-            setValue(store.getString(getKey(), entryValues[checkedIndex].toString()));
+            setValue(dataStore.getString(getKey(), entryValues[checkedIndex].toString()));
         }
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
+    public void save(@NonNull final Context context) {
         if (checkedIndex == NONE || entryValues == null) {
-            store.putString(getKey(), null);
+            dataStore.putString(getKey(), null);
         } else {
-            store.putString(getKey(), entryValues[checkedIndex].toString());
+            dataStore.putString(getKey(), entryValues[checkedIndex].toString());
         }
     }
 

@@ -43,8 +43,9 @@ public class FragmentSetting
 
     FragmentSetting(@NonNull final String key,
                     @NonNull final String className,
-                    @IdRes final int container) {
-        super(Type.Fragment, key);
+                    @IdRes final int container,
+                    @NonNull final SettingsDataStore dataStore) {
+        super(Type.Fragment, key, dataStore);
         this.className = className;
         this.container = container;
     }

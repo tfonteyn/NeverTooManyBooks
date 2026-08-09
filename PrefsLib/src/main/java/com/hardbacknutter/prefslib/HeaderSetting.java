@@ -32,27 +32,39 @@ public class HeaderSetting
 
     private boolean sorted;
 
-    HeaderSetting(@NonNull final String key) {
-        super(Type.Header, key);
+    HeaderSetting(@NonNull final String key,
+                  @NonNull final SettingsDataStore dataStore) {
+        super(Type.Header, key, dataStore);
     }
 
+    /**
+     * Do the items under this header need to be sorted {@code true},
+     * or listed in the order they were defined {@code false}.
+     *
+     * @return flag
+     */
     public boolean isSorted() {
         return sorted;
     }
 
+    /**
+     * Set whether the items under this header will need to be sorted.
+     *
+     * @param sorted flag
+     *
+     * @see #isSorted()
+     */
     public void setSorted(final boolean sorted) {
         this.sorted = sorted;
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
+    public void load(@NonNull final Context context) {
         // not applicable
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
+    public void save(@NonNull final Context context) {
         // not applicable
     }
 

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.ArrayRes;
-import androidx.annotation.Discouraged;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.prefslib.internal.DefaultDialogFactory;
 import com.hardbacknutter.prefslib.internal.HeaderDivider;
@@ -120,7 +120,7 @@ public final class SettingsManager {
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(owner.getActivity()).get(SettingsManagerViewModel.class);
-        vm.init(builder.dataStore, builder.settings);
+        vm.init(builder.settings);
 
         final LifecycleOwner viewLifecycleOwner = owner.getViewLifecycleOwner();
         vm.onShowDialog().observe(viewLifecycleOwner, this::onShowDialog);
@@ -200,7 +200,7 @@ public final class SettingsManager {
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void loadAll() {
         final Context context = recyclerView.getContext();
-        vm.getSettings().forEach(s -> s.load(context, vm.getDataStore()));
+        vm.getSettings().forEach(s -> s.load(context));
     }
 
     /**
@@ -215,7 +215,7 @@ public final class SettingsManager {
         final Set<CharSequence> keySet = new HashSet<>(Arrays.asList(keys));
         for (final Setting p : vm.getSettings()) {
             if (keySet.contains(p.getKey())) {
-                p.load(context, vm.getDataStore());
+                p.load(context);
                 notifyItemChanged(p);
             }
         }
@@ -227,17 +227,11 @@ public final class SettingsManager {
      * @param p the {@link Setting}.
      */
     public void save(@NonNull final Setting p) {
-        p.save(recyclerView.getContext(), vm.getDataStore());
+        p.save(recyclerView.getContext());
         notifyItemChanged(p);
     }
 
-    /**
-     * Notify that the given setting was changed.
-     *
-     * @param p the {@link Setting}.
-     */
-    @Discouraged(message = "Only to be used if you're not using the save method")
-    public void notifyItemChanged(@NonNull final Setting p) {
+    private void notifyItemChanged(@NonNull final Setting p) {
         adapter.findPosition(p.getKey())
                .ifPresent(adapter::notifyItemChanged);
     }
@@ -390,7 +384,7 @@ public final class SettingsManager {
                 //noinspection unchecked
                 final Set<String> newValue = (Set<String>) newObjectValue;
 
-                // If there was a change
+                // If there was a change...
                 if (!Objects.equals(p.getValue(), newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
@@ -417,7 +411,9 @@ public final class SettingsManager {
             case Float: {
                 final FloatSetting p = (FloatSetting) setting;
                 final float newValue = newObjectValue != null ? (float) newObjectValue : 0;
-                // If there was a change
+
+                // If there was a change...
+                // Dont use Objects.equals; we need to allow for the epsilon difference
                 if (!p.isValueEquals(newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
@@ -444,7 +440,8 @@ public final class SettingsManager {
             case String: {
                 final StringSetting p = (StringSetting) setting;
                 final String newValue = (String) newObjectValue;
-                // If there was a change
+
+                // If there was a change...
                 if (!Objects.equals(p.getValue(), newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
@@ -471,8 +468,9 @@ public final class SettingsManager {
             case Boolean: {
                 final BooleanSetting p = (BooleanSetting) setting;
                 final boolean newValue = newObjectValue != null && (boolean) newObjectValue;
-                // If there was a change
-                if (!Objects.equals(p.isChecked(), newObjectValue)) {
+
+                // If there was a change...
+                if (!Objects.equals(p.isChecked(), newValue)) {
                     // Give the Setting specific listener a chance to handle it
                     final OnSettingChangeListener callback = onChangeCallbacks.get(p.getKey());
                     if (callback != null) {
@@ -505,14 +503,21 @@ public final class SettingsManager {
         }
     }
 
+    /**
+     * When adding Settings which do not require a key (e.g. {@code header})
+     * an internal key will be generated: {@code "HK_x"} with 'x' an int counter.
+     */
     @SuppressWarnings("WeakerAccess")
     public static final class Builder {
 
         @NonNull
         private final Context context;
-        private final List<Setting> settings = new ArrayList<>();
+        /** Pass to individual settings at creation time. Not used by the SettingsManager. */
         @NonNull
         private final SettingsDataStore dataStore;
+
+        private final List<Setting> settings = new ArrayList<>();
+
         private final Map<String, OnSettingClickListener> onClickCallbacks = new HashMap<>();
         private final Map<String, OnSettingChangeListener> onChangeCallbacks = new HashMap<>();
         private boolean sortRoot;
@@ -521,6 +526,10 @@ public final class SettingsManager {
         private OnSettingChangeListener changedListener;
         @Nullable
         private OnSettingClickListener clickListener;
+
+        // counter for creating unset but valid keys.
+        private int unsetKey;
+        private final Supplier<String> createKey = () -> "HK_" + unsetKey++;
 
         /**
          * Constructor.
@@ -635,7 +644,7 @@ public final class SettingsManager {
          * @param title string resource
          */
         public void header(@StringRes final int title) {
-            header("", title, null);
+            header(createKey.get(), title, null);
         }
 
         /**
@@ -657,7 +666,7 @@ public final class SettingsManager {
          */
         public void header(@StringRes final int title,
                            @Nullable final Consumer<HeaderSetting> p) {
-            header("", title, p);
+            header(createKey.get(), title, p);
         }
 
         /**
@@ -670,7 +679,7 @@ public final class SettingsManager {
         public void header(@NonNull final String key,
                            @StringRes final int title,
                            @Nullable final Consumer<HeaderSetting> p) {
-            final HeaderSetting s = new HeaderSetting(key);
+            final HeaderSetting s = new HeaderSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -698,7 +707,7 @@ public final class SettingsManager {
                          @StringRes final int title,
                          final boolean defValue) {
 
-            final BooleanSetting s = new BooleanSetting(key);
+            final BooleanSetting s = new BooleanSetting(key, dataStore);
             s.setTitle(context.getString(title));
             s.setChecked(defValue);
             add(s);
@@ -739,7 +748,7 @@ public final class SettingsManager {
                          @StringRes final int summaryTrue,
                          @Nullable final OnSettingChangeListener onChangeListener,
                          @Nullable final Consumer<BooleanSetting> p) {
-            final BooleanSetting s = new BooleanSetting(key);
+            final BooleanSetting s = new BooleanSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -773,7 +782,7 @@ public final class SettingsManager {
                                final float valueTo,
                                @Nullable final OnSettingChangeListener onChangeListener,
                                @Nullable final Consumer<FloatSetting> p) {
-            final FloatSetting s = new FloatSetting(key);
+            final FloatSetting s = new FloatSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -822,7 +831,7 @@ public final class SettingsManager {
                          @StringRes final int positiveButtonText,
                          @Nullable final OnSettingChangeListener onChangeListener,
                          @Nullable final Consumer<StringSetting> p) {
-            final StringSetting s = new StringSetting(key);
+            final StringSetting s = new StringSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -889,7 +898,7 @@ public final class SettingsManager {
                              @StringRes final int positiveButtonText,
                              @Nullable final OnSettingChangeListener onChangeListener,
                              @Nullable final Consumer<PasswordSetting> p) {
-            final PasswordSetting s = new PasswordSetting(key);
+            final PasswordSetting s = new PasswordSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -984,7 +993,7 @@ public final class SettingsManager {
                                  @StringRes final int negativeButtonText,
                                  @Nullable final OnSettingChangeListener onChangeListener,
                                  @Nullable final Consumer<SingleChoiceSetting> p) {
-            final SingleChoiceSetting s = new SingleChoiceSetting(key);
+            final SingleChoiceSetting s = new SingleChoiceSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -1080,7 +1089,7 @@ public final class SettingsManager {
                                 @StringRes final int positiveButtonText,
                                 @Nullable final OnSettingChangeListener onChangeListener,
                                 @Nullable final Consumer<MultiChoiceSetting> p) {
-            final MultiChoiceSetting s = new MultiChoiceSetting(key);
+            final MultiChoiceSetting s = new MultiChoiceSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -1133,7 +1142,7 @@ public final class SettingsManager {
                            @StringRes final int title,
                            @Nullable final OnSettingClickListener onClickListener,
                            @Nullable final Consumer<ActionSetting> p) {
-            final ActionSetting s = new ActionSetting(key);
+            final ActionSetting s = new ActionSetting(key, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -1159,7 +1168,7 @@ public final class SettingsManager {
                              @NonNull final String className,
                              @IdRes final int container,
                              @Nullable final Consumer<FragmentSetting> p) {
-            final FragmentSetting s = new FragmentSetting(key, className, container);
+            final FragmentSetting s = new FragmentSetting(key, className, container, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -1173,7 +1182,7 @@ public final class SettingsManager {
         public void group(@NonNull final String key,
                           @StringRes final int title,
                           @NonNull final List<Setting> subSettings) {
-            final SettingsGroup s = new SettingsGroup(key, subSettings);
+            final SettingsGroup s = new SettingsGroup(key, subSettings, dataStore);
             if (title != 0) {
                 s.setTitle(context.getString(title));
             }
@@ -1188,10 +1197,20 @@ public final class SettingsManager {
          * @param recyclerView The view to use
          *
          * @return manager
+         *
+         * @throws IllegalArgumentException if there is a duplicate key
          */
         @NonNull
         public SettingsManager build(@NonNull final Fragment owner,
                                      @NonNull final RecyclerView recyclerView) {
+
+            final Set<String> keys = new HashSet<>();
+            // Sanity check, all keys must be unique
+            settings.stream().map(Setting::getKey).forEach(key -> {
+                if (!keys.add(key)) {
+                    throw new IllegalArgumentException("Duplicate key: " + key);
+                }
+            });
 
             if (changedListener == null) {
                 // Default: accept all changes

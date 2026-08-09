@@ -53,8 +53,9 @@ public class FloatSetting
 
     private float value;
 
-    FloatSetting(@NonNull final String key) {
-        super(Type.Float, key);
+    FloatSetting(@NonNull final String key,
+                 @NonNull final SettingsDataStore dataStore) {
+        super(Type.Float, key, dataStore);
     }
 
     public float getValueFrom() {
@@ -102,15 +103,13 @@ public class FloatSetting
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        setValue(store.getFloat(getKey(), value));
+    public void load(@NonNull final Context context) {
+        setValue(dataStore.getFloat(getKey(), value));
     }
 
     @Override
-    public void save(@NonNull final Context context,
-                     @NonNull final SettingsDataStore store) {
-        store.putFloat(getKey(), value);
+    public void save(@NonNull final Context context) {
+        dataStore.putFloat(getKey(), value);
     }
 
     @Override
