@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 public class LocaleListResolverDefault
         implements LocaleListResolver {
 
-    public static final LocaleListResolverDefault INSTANCE = new LocaleListResolverDefault();
+    public static final LocaleListResolver INSTANCE = new LocaleListResolverDefault();
 
     @NonNull
     @Override
