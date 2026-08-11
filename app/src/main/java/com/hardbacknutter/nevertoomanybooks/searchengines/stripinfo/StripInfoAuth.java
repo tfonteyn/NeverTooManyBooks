@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -212,7 +213,9 @@ public class StripInfoAuth
                 .toString();
 
         httpPost = HttpCallFactory.create(EngineId.StripInfoBe);
-        httpPost.post(url, postBody, null);
+        httpPost.setHeader(HttpConstants.CONTENT_TYPE,
+                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
+                .post(url, postBody, null);
 
         userId = getUserId().orElseThrow(
                 () -> new CredentialsException(R.string.site_stripinfo_be, "login failed"));
