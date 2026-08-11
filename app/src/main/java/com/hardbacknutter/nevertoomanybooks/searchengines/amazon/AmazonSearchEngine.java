@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -333,7 +334,8 @@ public class AmazonSearchEngine
     @Keep
     public AmazonSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
-        super(appContext, config, new SpanishPortugueseFallbackLocaleResolver());
+        super(appContext, config,
+              new BookParserHelper(config, SpanishPortugueseFallbackLocaleResolver.INSTANCE));
     }
 
     /**

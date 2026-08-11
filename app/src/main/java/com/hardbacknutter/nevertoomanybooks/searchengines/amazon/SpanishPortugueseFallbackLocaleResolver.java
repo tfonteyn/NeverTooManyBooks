@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleListResolver;
 class SpanishPortugueseFallbackLocaleResolver
         implements LocaleListResolver {
 
+    public static final LocaleListResolver INSTANCE = new SpanishPortugueseFallbackLocaleResolver();
+
     private static final String SPANISH = "es";
     // "pt" and "pt_BR" use the same spelling for month names
     private static final Locale PORTUGUESE = new Locale("pt");

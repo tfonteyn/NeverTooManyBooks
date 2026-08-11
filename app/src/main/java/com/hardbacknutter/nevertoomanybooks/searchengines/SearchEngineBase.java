@@ -88,14 +88,14 @@ public abstract class SearchEngineBase
      */
     protected SearchEngineBase(@NonNull final Context appContext,
                                @NonNull final SearchEngineConfig config) {
-        this(appContext, config, LocaleListResolverDefault.INSTANCE);
+        this(appContext, config, new BookParserHelper(config, LocaleListResolverDefault.INSTANCE));
     }
 
     SearchEngineBase(@NonNull final Context appContext,
                      @NonNull final SearchEngineConfig config,
-                     @NonNull final LocaleListResolver localeListResolver) {
+                     @NonNull final BookParserHelper bookParserHelper) {
         this.config = config;
-        this.bookParserHelper = new BookParserHelper(config, localeListResolver);
+        this.bookParserHelper = bookParserHelper;
     }
 
     @NonNull

@@ -43,7 +43,7 @@ public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
 
     @Nullable
-    private final String charSetName;
+    private String charSetName;
     /** Responsible for loading and parsing the web page. */
     @Nullable
     private JsoupLoader jsoupLoader;
@@ -57,38 +57,32 @@ public abstract class JsoupSearchEngineBase
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-        this.charSetName = null;
-    }
-
-    protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    @NonNull final SearchEngineConfig config,
-                                    @NonNull final LocaleListResolver localeListResolver) {
-        super(appContext, config, localeListResolver);
-        this.charSetName = null;
     }
 
     /**
      * Constructor.
      *
-     * @param appContext  The <strong>application</strong> context
-     * @param config      the search engine configuration
-     * @param charSetName to use; or {@code null} to auto-select.
+     * @param appContext       The <strong>application</strong> context
+     * @param config           the search engine configuration
+     * @param bookParserHelper custom parser
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config,
-                                    @Nullable final String charSetName) {
-        super(appContext, config);
-        this.charSetName = charSetName;
+                                    @NonNull final BookParserHelper bookParserHelper) {
+        super(appContext, config, bookParserHelper);
     }
 
-    protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    @NonNull final SearchEngineConfig config,
-                                    @Nullable final String charSetName,
-                                    @NonNull final LocaleListResolver localeListResolver) {
-        super(appContext, config, localeListResolver);
+    /**
+     * Set the character set for jsoup parsing.
+     * Default is {@code null} to let JSoup auto-detect it.
+     * <p>
+     * Only needed of the sites character set does not match the actual used one.
+     *
+     * @param charSetName to use; or {@code null} to auto-select.
+     */
+    protected void setCharSetName(@Nullable final String charSetName) {
         this.charSetName = charSetName;
     }
-
 
     @WorkerThread
     @NonNull

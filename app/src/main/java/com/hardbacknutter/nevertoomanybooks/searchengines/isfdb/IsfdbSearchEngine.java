@@ -310,7 +310,8 @@ public class IsfdbSearchEngine
     @Keep
     public IsfdbSearchEngine(@NonNull final Context appContext,
                              @NonNull final SearchEngineConfig config) {
-        super(appContext, config, CHARSET_DECODE_PAGE);
+        super(appContext, config);
+        setCharSetName(CHARSET_DECODE_PAGE);
 
         authorResolverHelper = new AuthorResolverHelper();
     }

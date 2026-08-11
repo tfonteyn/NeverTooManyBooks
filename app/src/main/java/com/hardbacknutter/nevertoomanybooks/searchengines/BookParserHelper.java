@@ -57,8 +57,8 @@ public class BookParserHelper {
 
     private final IdentifierDao identifierDao;
 
-    BookParserHelper(@NonNull final SearchEngineConfig config,
-                     @NonNull final LocaleListResolver localeListResolver) {
+    public BookParserHelper(@NonNull final SearchEngineConfig config,
+                            @NonNull final LocaleListResolver localeListResolver) {
         this.config = config;
         this.localeListResolver = localeListResolver;
 
