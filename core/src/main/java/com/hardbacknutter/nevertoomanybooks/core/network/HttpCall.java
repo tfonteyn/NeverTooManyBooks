@@ -101,6 +101,8 @@ public class HttpCall {
      * @param httpClient  the one
      * @param cookieStore for logging <strong>all</strong> cookies as desired
      * @param siteResId   string resource representing the caller
+     *                    Used for exceptions, and read from the exception-to-usermessage
+     *                    convertor.
      * @param logEnabled  flag
      */
     public HttpCall(@NonNull final OkHttpClient httpClient,
