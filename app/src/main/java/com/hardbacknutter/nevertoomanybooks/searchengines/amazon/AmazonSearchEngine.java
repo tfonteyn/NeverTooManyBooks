@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -964,5 +965,39 @@ public class AmazonSearchEngine
         }
 
         return getHostUrl() + fields;
+    }
+
+    /**
+     * The Amazon site for Portugal redirects to Spain.
+     * <p>
+     * When we detect a Spanish language Amazon site, we simply add the Portuguese Locale
+     * <strong>after</strong> the Spanish one.
+     * <p>
+     * This is used for parsing month names in dates.
+     */
+    private static final class SpanishPortugueseFallbackLocaleResolver
+            implements LocaleResolver {
+
+        static final LocaleResolver INSTANCE = new SpanishPortugueseFallbackLocaleResolver();
+
+        private static final String SPANISH = "es";
+        // "pt" and "pt_BR" use the same spelling for month names
+        private static final Locale PORTUGUESE = new Locale("pt");
+
+        @NonNull
+        @Override
+        public List<Locale> resolveLocales(@NonNull final Context context,
+                                           @NonNull final Locale siteLocale) {
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = new ArrayList<>(
+                    LocaleListUtils.asList(siteLocale, userLocales));
+
+            // Add Portuguese as the 2nd Locale, after the Spanish one
+            if (SPANISH.equals(siteLocale.getLanguage())) {
+                allLocales.add(1, PORTUGUESE);
+            }
+
+            return allLocales;
+        }
     }
 }
