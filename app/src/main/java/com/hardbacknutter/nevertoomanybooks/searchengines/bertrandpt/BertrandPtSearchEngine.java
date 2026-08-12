@@ -300,9 +300,6 @@ public class BertrandPtSearchEngine
         // BUT https://www.bertrand.pt/ebook/galaxy-s-isaac-asimov-collection-volume-2-isaac-asimov/19866052
         //==> NOT the series...
 
-        // Use the site locale for all parsing!
-        final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
-
         // The author is often missing when the book is not a 'standard' portuguese book.
         final Elements authorElements = bookInfo.select(
                 "div#productPageSectionDetails-collapseDetalhes-content-author > a");
@@ -403,6 +400,7 @@ public class BertrandPtSearchEngine
         final Element priceElement = document.selectFirst(
                 "div#productPageRightSectionTop-saleAction-price-current");
         if (priceElement != null) {
+            final Locale siteLocale = getLocale(context);
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
             final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
