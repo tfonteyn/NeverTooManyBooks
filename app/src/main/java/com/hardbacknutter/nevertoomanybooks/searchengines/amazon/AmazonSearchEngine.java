@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -65,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -335,8 +333,9 @@ public class AmazonSearchEngine
     @Keep
     public AmazonSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
-        super(appContext, config,
-              new BookParserHelper(config, SpanishPortugueseFallbackLocaleResolver.INSTANCE));
+        super(appContext, config);
+        bookParserHelper.setDateParserLocaleResolver(SpanishPortugueseFallbackLocaleResolver.INSTANCE);
+        bookParserHelper.setMoneyParserLocaleResolver(MoneyParserLocaleResolver.INSTANCE);
     }
 
     /**
@@ -669,22 +668,13 @@ public class AmazonSearchEngine
             }
         }
 
-        final MoneyParser parser = createMoneyParser(context, siteLocale);
-        bookParserHelper.addPriceListed(parser, priceText, null, book);
+        bookParserHelper.addPriceListed(context, siteLocale, priceText, null, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
         if (formatElement != null) {
             book.setFormat(SearchEngineUtils.cleanText(formatElement));
         }
-    }
-
-    @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = MoneyParserLocaleResolver.INSTANCE
-                .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
     }
 
     private void parseASIN(@NonNull final Document document,

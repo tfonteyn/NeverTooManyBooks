@@ -199,6 +199,9 @@ public class MoneyParser {
      * <p>
      * If the currency is in any form invalid, a Money object is <strong>STILL</strong> returned,
      * but with its currency set to {@code null}.
+     * <p>
+     * Dev. note: this method does not actually create/use the MoneyParser,
+     * but semantically it belongs here.
      *
      * @param value       to set
      * @param currencyStr (optional) to parse

@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -399,9 +398,9 @@ public class BertrandPtSearchEngine
         final Element priceElement = document.selectFirst(
                 "div#productPageRightSectionTop-saleAction-price-current");
         if (priceElement != null) {
-            final MoneyParser parser = createMoneyParser(context, getLocale(context));
-            final String priceStr = priceElement.text();
-            bookParserHelper.addPriceListed(parser, priceStr, MoneyParser.EUR, book);
+            bookParserHelper.addPriceListed(context, getLocale(context),
+                                            priceElement.text(), MoneyParser.EUR,
+                                            book);
         }
 
         // First try for the readers rating
@@ -436,14 +435,6 @@ public class BertrandPtSearchEngine
             parseCovers(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
-    }
-
-    @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
-                .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
     }
 
     /**

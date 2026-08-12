@@ -60,19 +60,6 @@ public abstract class JsoupSearchEngineBase
     }
 
     /**
-     * Constructor.
-     *
-     * @param appContext       The <strong>application</strong> context
-     * @param config           the search engine configuration
-     * @param bookParserHelper custom parser
-     */
-    protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    @NonNull final SearchEngineConfig config,
-                                    @NonNull final BookParserHelper bookParserHelper) {
-        super(appContext, config, bookParserHelper);
-    }
-
-    /**
      * Set the character set for jsoup parsing.
      * Default is {@code null} to let JSoup auto-detect it.
      * <p>

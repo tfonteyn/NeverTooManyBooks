@@ -131,6 +131,7 @@ public class BiblionetGrSearchEngine
     public BiblionetGrSearchEngine(@NonNull final Context appContext,
                                    @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+        bookParserHelper.setMoneyParserLocaleResolver(MoneyParserLocaleResolver.INSTANCE);
 
         authorResolverHelper = new AuthorResolverHelper();
     }
@@ -697,17 +698,7 @@ public class BiblionetGrSearchEngine
     private void parsePrice(@NonNull final Context context,
                             @NonNull final CharSequence text,
                             @NonNull final Book book) {
-        final Locale siteLocale = getLocale(context);
-        final MoneyParser parser = createMoneyParser(context, siteLocale);
-        bookParserHelper.addPriceListed(parser, text, MoneyParser.EUR, book);
-    }
-
-    @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = MoneyParserLocaleResolver.INSTANCE
-                .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
+        bookParserHelper.addPriceListed(context, getLocale(context), text, MoneyParser.EUR, book);
     }
 
     private void processSubjectTags(@NonNull final Element data,

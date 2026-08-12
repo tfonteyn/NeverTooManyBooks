@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -49,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -66,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -694,16 +691,7 @@ public class DoubanSearchEngine
                             @NonNull final CharSequence text,
                             @NonNull final Book book) {
 
-        final MoneyParser parser = createMoneyParser(context, SITE_LOCALE);
-        bookParserHelper.addPriceListed(parser, text, MoneyParser.CNY, book);
-    }
-
-    @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
-                .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
+        bookParserHelper.addPriceListed(context, SITE_LOCALE, text, MoneyParser.CNY, book);
     }
 
     /**

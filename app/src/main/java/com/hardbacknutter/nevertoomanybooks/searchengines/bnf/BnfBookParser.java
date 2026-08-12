@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -50,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.jsoup.nodes.Document;
@@ -289,16 +287,7 @@ class BnfBookParser {
             return;
         }
 
-        final MoneyParser parser = createMoneyParser(context, Locale.FRANCE);
-        bookParserHelper.addPriceListed(parser, s, null, book);
-    }
-
-    @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
-                .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
+        bookParserHelper.addPriceListed(context, Locale.FRANCE, s, null, book);
     }
 
     /**

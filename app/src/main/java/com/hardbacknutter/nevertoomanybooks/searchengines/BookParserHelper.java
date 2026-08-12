@@ -52,34 +52,17 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class BookParserHelper {
 
     private final SearchEngineConfig config;
-    private final LocaleResolver dateLocaleResolver;
-    private final ISODateParser isoDateParser;
-
     private final IdentifierDao identifierDao;
 
-    /**
-     * Constructor.
-     * <p>
-     * Uses a fixed Locale resolver.
-     *
-     * @param config from the engine
-     */
-    BookParserHelper(@NonNull final SearchEngineConfig config) {
-        this(config, LocaleResolverDefault.INSTANCE);
-    }
+    private final ISODateParser isoDateParser;
 
-    /**
-     * Constructor.
-     * <p>
-     * Uses a dynamic Locale resolver for sites which may redirect.
-     *
-     * @param config             from the engine
-     * @param dateLocaleResolver to resolve the 'allLocales' for the date parser.
-     */
-    public BookParserHelper(@NonNull final SearchEngineConfig config,
-                            @NonNull final LocaleResolver dateLocaleResolver) {
+    @NonNull
+    private LocaleResolver dateParserLocaleResolver = LocaleResolverDefault.INSTANCE;
+    @NonNull
+    private LocaleResolver moneyParserLocaleResolver = LocaleResolverDefault.INSTANCE;
+
+    BookParserHelper(@NonNull final SearchEngineConfig config) {
         this.config = config;
-        this.dateLocaleResolver = dateLocaleResolver;
 
         identifierDao = ServiceLocator.getInstance().getIdentifierDao();
 
@@ -87,11 +70,38 @@ public class BookParserHelper {
         isoDateParser = new ISODateParser(systemLocale);
     }
 
+    /**
+     * Override the default {@link LocaleResolverDefault#INSTANCE}.
+     *
+     * @param resolver to use
+     */
+    public void setDateParserLocaleResolver(@NonNull final LocaleResolver resolver) {
+        this.dateParserLocaleResolver = resolver;
+    }
+
+    /**
+     * Override the default {@link LocaleResolverDefault#INSTANCE}.
+     *
+     * @param resolver to use
+     */
+    public void setMoneyParserLocaleResolver(@NonNull final LocaleResolver resolver) {
+        this.moneyParserLocaleResolver = resolver;
+    }
+
     @NonNull
     private DateParser<LocalDateTime> createFullDateParser(@NonNull final Context context,
                                                            @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = dateLocaleResolver.resolveLocales(context, siteLocale);
+        final List<Locale> allLocales = dateParserLocaleResolver
+                .resolveLocales(context, siteLocale);
         return new FullDateParser(isoDateParser, allLocales);
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
+        final List<Locale> allLocales = moneyParserLocaleResolver
+                .resolveLocales(context, siteLocale);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     /**
@@ -182,19 +192,21 @@ public class BookParserHelper {
     /**
      * Process the price-listed field according to the given site locale.
      *
-     * @param moneyParser for parsing
+     * @param context    Current context
+     * @param siteLocale for parsing
      * @param priceStr    the field as retrieved with or without currency embedded
      * @param currencyStr (optional) default currency string to use
      *                    when the priceStr does not have one
      * @param book        Bundle to update
      */
-    public void addPriceListed(@NonNull final MoneyParser moneyParser,
+    public void addPriceListed(@NonNull final Context context,
+                               @NonNull final Locale siteLocale,
                                @NonNull final CharSequence priceStr,
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 
         // First ignore the given currency string (if any) and try parsing
-        final Optional<Money> oMoney = moneyParser.parse(priceStr);
+        final Optional<Money> oMoney = createMoneyParser(context, siteLocale).parse(priceStr);
         if (oMoney.isPresent()) {
             Money money = oMoney.get();
             if (money.getCurrency() != null) {

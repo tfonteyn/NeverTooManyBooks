@@ -32,7 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
@@ -46,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.Attributes;
@@ -179,6 +177,7 @@ class IsfdbPublicationListHandler
     @NonNull
     private final List<Book> bookList = new ArrayList<>();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+    private final Locale siteLocale;
     private int maxRecords;
     private boolean inPublication;
     /** The current book we're parsing data for. Will be added to the {@link #bookList}. */
@@ -192,8 +191,6 @@ class IsfdbPublicationListHandler
     private String externalIdType;
     @Nullable
     private String externalId;
-
-    private final MoneyParser moneyParser;
 
     /**
      * Constructor.
@@ -210,20 +207,11 @@ class IsfdbPublicationListHandler
                                 final int maxRecords) {
         this.context = context;
         this.searchEngine = searchEngine;
+        this.siteLocale = searchEngine.getLocale(context);
         this.bookParserHelper = searchEngine.getParserHelper();
 
         System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
-
-        moneyParser = createMoneyParser(context, searchEngine.getLocale(context));
-    }
-
-    @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
-                .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
     }
 
     @NonNull
@@ -382,7 +370,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String priceStr = builder.toString().strip();
-                    bookParserHelper.addPriceListed(moneyParser, priceStr, null, book);
+                    bookParserHelper.addPriceListed(context, siteLocale, priceStr, null, book);
                     break;
                 }
                 case XML_PAGES: {
