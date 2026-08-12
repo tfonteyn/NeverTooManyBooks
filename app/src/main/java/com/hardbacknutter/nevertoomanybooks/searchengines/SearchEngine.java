@@ -105,11 +105,6 @@ public interface SearchEngine
     Locale getLocale(@NonNull Context context);
 
     /**
-     * Reset the engine, ready for a new search.
-     */
-    void reset();
-
-    /**
      * Set the caller to allow <strong>PULL</strong> checks if we should cancel the search.
      * i.e. the engine will ask the caller at semiregular intervals if it should quit.
      *

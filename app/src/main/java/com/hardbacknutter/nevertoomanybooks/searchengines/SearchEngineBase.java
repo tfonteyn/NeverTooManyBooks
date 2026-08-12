@@ -248,11 +248,6 @@ public abstract class SearchEngineBase
     }
 
     @Override
-    public void reset() {
-        setCaller(null);
-    }
-
-    @Override
     public void setCaller(@Nullable final Cancellable caller) {
         this.caller = caller;
         cancelRequested.set(false);
