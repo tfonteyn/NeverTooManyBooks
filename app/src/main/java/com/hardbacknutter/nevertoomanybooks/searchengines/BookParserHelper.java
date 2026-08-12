@@ -57,6 +57,10 @@ public class BookParserHelper {
 
     private final IdentifierDao identifierDao;
 
+    public BookParserHelper(@NonNull final SearchEngineConfig config) {
+        this(config, LocaleListResolverDefault.INSTANCE);
+    }
+
     public BookParserHelper(@NonNull final SearchEngineConfig config,
                             @NonNull final LocaleListResolver localeListResolver) {
         this.config = config;

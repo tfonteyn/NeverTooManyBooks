@@ -88,7 +88,7 @@ public abstract class SearchEngineBase
      */
     protected SearchEngineBase(@NonNull final Context appContext,
                                @NonNull final SearchEngineConfig config) {
-        this(appContext, config, new BookParserHelper(config, LocaleListResolverDefault.INSTANCE));
+        this(appContext, config, new BookParserHelper(config));
     }
 
     SearchEngineBase(@NonNull final Context appContext,
