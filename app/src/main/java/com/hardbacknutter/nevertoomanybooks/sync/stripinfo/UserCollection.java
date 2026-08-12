@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -135,8 +136,7 @@ class UserCollection {
     /** Internal id from the website; used in the auth Cookie and links. */
     @NonNull
     private final String userId;
-    @NonNull
-    private final StripInfoSearchEngine searchEngine;
+    private final String hostUrl;
     @NonNull
     private final CollectionParser formParser;
     private int maxPages = 1;
@@ -155,13 +155,12 @@ class UserCollection {
                    @NonNull final String userId,
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
-        this.searchEngine = searchEngine;
+        hostUrl = searchEngine.getHostUrl();
 
         @SuppressWarnings("DataFlowIssue")
-        final boolean enableLog = this.searchEngine.getEngineId()
-                                                   .getConfig()
-                                                   .isLogHttpGetRequests();
-        final FutureHttp<Document> request = this.searchEngine.createGetDocumentRequest(context);
+        final boolean enableLog = EngineId.StripInfoBe.getConfig().isLogHttpGetRequests();
+
+        final FutureHttp<Document> request = searchEngine.createGetDocumentRequest(context);
         jsoupLoader = new JsoupLoader(request, enableLog);
 
         formParser = new CollectionParser(context, bookshelfMapper);
@@ -193,15 +192,13 @@ class UserCollection {
             throws SearchException, IOException {
 
         if (pageNr > maxPages) {
-            throw new SearchException(searchEngine.getEngineId(), "Can't fetch more pages", null);
+            throw new SearchException(EngineId.StripInfoBe, "Can't fetch more pages", null);
         }
 
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, pageNr));
 
-        final String url = searchEngine.getHostUrl()
-                           + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
-
+        final String url = hostUrl + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
         final Document document = jsoupLoader.loadDocument(context, url, null);
         return parseDocument(document, pageNr, progressListener);
     }
@@ -220,14 +217,13 @@ class UserCollection {
                 return count;
 
             } catch (@NonNull final NumberFormatException e) {
-                throw new SearchException(searchEngine.getEngineId(),
+                throw new SearchException(EngineId.StripInfoBe,
                                           "Unable to read page number", null);
             }
         }
 
-        throw new SearchException(searchEngine.getEngineId(),
-                                  "No 'div.pagination > a' found",
-                                  null);
+        throw new SearchException(EngineId.StripInfoBe,
+                                  "No 'div.pagination > a' found", null);
     }
 
     @VisibleForTesting

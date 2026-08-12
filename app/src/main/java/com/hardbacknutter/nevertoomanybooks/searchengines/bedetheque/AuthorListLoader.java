@@ -55,6 +55,7 @@ class AuthorListLoader {
     private final Context context;
     @NonNull
     private final BedethequeSearchEngine searchEngine;
+    private final String hostUrl;
     @NonNull
     private final Locale locale;
     private final BedethequeCacheDao bedethequeCacheDao;
@@ -64,6 +65,7 @@ class AuthorListLoader {
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
+        hostUrl = searchEngine.getHostUrl();
 
         bedethequeCacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
     }
@@ -85,7 +87,7 @@ class AuthorListLoader {
     boolean fetch(final char c1)
             throws SearchException, CredentialsException {
 
-        final String url = searchEngine.getHostUrl() + "/liste_auteurs_BD_" + c1 + ".html";
+        final String url = hostUrl + "/liste_auteurs_BD_" + c1 + ".html";
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parseAuthorList(document);
