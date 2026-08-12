@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bnf;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -52,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.jsoup.nodes.Document;
@@ -297,8 +296,8 @@ class BnfBookParser {
     @NonNull
     private MoneyParser createMoneyParser(@NonNull final Context context,
                                           @NonNull final Locale siteLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
+                .resolveLocales(context, siteLocale);
         return new MoneyParser(siteLocale, allLocales);
     }
 

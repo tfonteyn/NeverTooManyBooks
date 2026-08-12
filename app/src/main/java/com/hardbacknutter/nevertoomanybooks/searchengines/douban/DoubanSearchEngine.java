@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -700,8 +701,8 @@ public class DoubanSearchEngine
     @NonNull
     private MoneyParser createMoneyParser(@NonNull final Context context,
                                           @NonNull final Locale siteLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
+                .resolveLocales(context, siteLocale);
         return new MoneyParser(siteLocale, allLocales);
     }
 

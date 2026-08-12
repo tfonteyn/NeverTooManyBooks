@@ -682,16 +682,8 @@ public class AmazonSearchEngine
     @NonNull
     private MoneyParser createMoneyParser(@NonNull final Context context,
                                           @NonNull final Locale siteLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> tmpAllLocales = LocaleListUtils.asList(siteLocale, userLocales);
-        // Amazon does not give a hoot about other countries outside of the US.
-        // So, for example, on the german site we find prices like "€12.34", i.e. using a dot
-        // as the decimal separator instead of the proper comma as used in Germany.
-        // We're keeping the site-locale first to guard against Amazon doing the right thing...
-        // but add the US Locale in the meantime.
-        final List<Locale> allLocales = new ArrayList<>(tmpAllLocales);
-        allLocales.add(Locale.US);
-
+        final List<Locale> allLocales = MoneyParserLocaleResolver.INSTANCE
+                .resolveLocales(context, siteLocale);
         return new MoneyParser(siteLocale, allLocales);
     }
 
@@ -996,6 +988,29 @@ public class AmazonSearchEngine
             if (SPANISH.equals(siteLocale.getLanguage())) {
                 allLocales.add(1, PORTUGUESE);
             }
+
+            return allLocales;
+        }
+    }
+
+    private static final class MoneyParserLocaleResolver
+        implements LocaleResolver {
+
+        static final LocaleResolver INSTANCE = new MoneyParserLocaleResolver();
+
+        @NonNull
+        @Override
+        public List<Locale> resolveLocales(@NonNull final Context context,
+                                           @NonNull final Locale siteLocale) {
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> tmpAllLocales = LocaleListUtils.asList(siteLocale, userLocales);
+            // Amazon does not give a hoot about other countries outside of the US.
+            // So, for example, on the german site we find prices like "€12.34", i.e. using a dot
+            // as the decimal separator instead of the proper comma as used in Germany.
+            // We're keeping the site-locale first to guard against Amazon doing the right thing...
+            // but add the US Locale in the meantime.
+            final List<Locale> allLocales = new ArrayList<>(tmpAllLocales);
+            allLocales.add(Locale.US);
 
             return allLocales;
         }

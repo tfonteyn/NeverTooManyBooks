@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -48,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -61,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -442,8 +441,8 @@ public class BertrandPtSearchEngine
     @NonNull
     private MoneyParser createMoneyParser(@NonNull final Context context,
                                           @NonNull final Locale siteLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        final List<Locale> allLocales = LocaleResolverDefault.INSTANCE
+                .resolveLocales(context, siteLocale);
         return new MoneyParser(siteLocale, allLocales);
     }
 

@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -704,12 +705,8 @@ public class BiblionetGrSearchEngine
     @NonNull
     private MoneyParser createMoneyParser(@NonNull final Context context,
                                           @NonNull final Locale siteLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        // The Greek Locale uses the "," as the decimal separator,
-        // but the site uses "." instead.
-        // While we would normally parse here with the site Locale,
-        // we parse the mony value with the UK one instead to force a "."
-        final List<Locale> allLocales = LocaleListUtils.asList(Locale.UK, userLocales);
+        final List<Locale> allLocales = MoneyParserLocaleResolver.INSTANCE
+                .resolveLocales(context, siteLocale);
         return new MoneyParser(siteLocale, allLocales);
     }
 
@@ -771,5 +768,23 @@ public class BiblionetGrSearchEngine
             url = getHostUrl() + url;
         }
         return saveImage(context, url, null, bookId, cIdx, null);
+    }
+
+    private static final class MoneyParserLocaleResolver
+            implements LocaleResolver {
+
+        static final LocaleResolver INSTANCE = new MoneyParserLocaleResolver();
+
+        @NonNull
+        @Override
+        public List<Locale> resolveLocales(@NonNull final Context context,
+                                           @NonNull final Locale siteLocale) {
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            // The Greek Locale uses the "," as the decimal separator,
+            // but the site uses "." instead.
+            // While we would normally parse here with the site Locale,
+            // we parse the mony value with the UK one instead to force a "."
+            return LocaleListUtils.asList(Locale.UK, userLocales);
+        }
     }
 }
