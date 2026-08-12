@@ -27,6 +27,7 @@ import androidx.annotation.EmptySuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
@@ -230,6 +231,7 @@ public abstract class SearchEngineBase
         }
     }
 
+    @VisibleForTesting
     @NonNull
     public BookParserHelper getParserHelper() {
         return bookParserHelper;

@@ -1820,7 +1820,8 @@ public class IsfdbSearchEngine
             throws StorageException, SearchException {
 
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(context, this, fetchCovers, maxRecords);
+                new IsfdbPublicationListHandler(context, this, bookParserHelper,
+                                                fetchCovers, maxRecords);
 
         final SAXParser parser;
         try {

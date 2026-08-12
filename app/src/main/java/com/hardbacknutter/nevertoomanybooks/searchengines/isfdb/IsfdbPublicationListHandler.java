@@ -195,20 +195,22 @@ class IsfdbPublicationListHandler
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param searchEngine to use
-     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
-     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param maxRecords   the maximum number of "Publication" records to fetch
+     * @param context          Current context
+     * @param searchEngine     to use
+     * @param bookParserHelper to use
+     * @param fetchCovers      Set array indexes to {@code true} to fetch a cover for that index.
+     *                         Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param maxRecords       the maximum number of "Publication" records to fetch
      */
     IsfdbPublicationListHandler(@NonNull final Context context,
                                 @NonNull final IsfdbSearchEngine searchEngine,
+                                @NonNull final BookParserHelper bookParserHelper,
                                 @NonNull final boolean[] fetchCovers,
                                 final int maxRecords) {
         this.context = context;
         this.searchEngine = searchEngine;
         this.siteLocale = searchEngine.getLocale(context);
-        this.bookParserHelper = searchEngine.getParserHelper();
+        this.bookParserHelper = bookParserHelper;
 
         System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
