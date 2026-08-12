@@ -50,8 +50,6 @@ class IsfdbEditionsHandlerTest
 
     private static final String TAG = "IsfdbEditionsHandlerTes";
 
-    private String sBaseUrl;
-
     private IsfdbSearchEngine searchEngine;
 
     @BeforeEach
@@ -63,8 +61,6 @@ class IsfdbEditionsHandlerTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-
-        sBaseUrl = searchEngine.getHostUrl();
     }
 
     @Test
@@ -126,12 +122,12 @@ class IsfdbEditionsHandlerTest
     void searchSingleEditionIsbn()
             throws SearchException, CredentialsException {
 
-        final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9020612476&type=ISBN";
+        final String path = "https://www.isfdb.org/cgi-bin/se.cgi?arg=9020612476&type=ISBN";
         final Document document = searchEngine.loadDocument(context, path, null);
         assertNotNull(document);
         assertTrue(document.hasText());
 
-        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?406329", document.location());
+        assertEquals("https://www.isfdb.org/cgi-bin/pl.cgi?406329", document.location());
     }
 
 
@@ -145,13 +141,13 @@ class IsfdbEditionsHandlerTest
     void searchMultiEditionIsbn()
             throws SearchException, CredentialsException {
 
-        final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
+        final String path = "https://www.isfdb.org/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         final Document document = searchEngine.loadDocument(context, path, null);
 
         assertNotNull(document);
         assertTrue(document.hasText());
 
-        assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN",
+        assertEquals("https://www.isfdb.org/cgi-bin/se.cgi?arg=9781473208926&type=ISBN",
                      document.location());
     }
 }
