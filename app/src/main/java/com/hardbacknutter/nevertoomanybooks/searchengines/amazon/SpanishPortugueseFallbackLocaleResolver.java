@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleListResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolver;
 
 /**
  * The Amazon site for Portugal redirects to Spain.
@@ -41,9 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleListResolver;
  * This is mainly/only used for date parsing (month names).
  */
 class SpanishPortugueseFallbackLocaleResolver
-        implements LocaleListResolver {
+        implements LocaleResolver {
 
-    public static final LocaleListResolver INSTANCE = new SpanishPortugueseFallbackLocaleResolver();
+    public static final LocaleResolver INSTANCE = new SpanishPortugueseFallbackLocaleResolver();
 
     private static final String SPANISH = "es";
     // "pt" and "pt_BR" use the same spelling for month names

@@ -21,25 +21,25 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+@FunctionalInterface
+public interface LocaleResolver {
 
-public class LocaleListResolverDefault
-        implements LocaleListResolver {
-
-    public static final LocaleListResolver INSTANCE = new LocaleListResolverDefault();
-
+    /**
+     * Combine the user-locale and the site-locale adding any special quirks
+     * needed for the site.
+     *
+     * @param context    Current context
+     * @param siteLocale to use
+     *
+     * @return a list of Locales starting with the siteLocale
+     */
     @NonNull
-    @Override
-    public List<Locale> resolveLocales(@NonNull final Context context,
-                                       @NonNull final Locale siteLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        return LocaleListUtils.asList(siteLocale, userLocales);
-    }
+    List<Locale> resolveLocales(@NonNull Context context,
+                                @NonNull Locale siteLocale);
 }

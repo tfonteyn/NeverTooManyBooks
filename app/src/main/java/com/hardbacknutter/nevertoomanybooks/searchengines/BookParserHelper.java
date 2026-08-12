@@ -52,7 +52,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class BookParserHelper {
 
     private final SearchEngineConfig config;
-    private final LocaleListResolver dateLocaleResolver;
+    private final LocaleResolver dateLocaleResolver;
     private final ISODateParser isoDateParser;
 
     private final IdentifierDao identifierDao;
@@ -65,7 +65,7 @@ public class BookParserHelper {
      * @param config from the engine
      */
     BookParserHelper(@NonNull final SearchEngineConfig config) {
-        this(config, LocaleListResolverDefault.INSTANCE);
+        this(config, LocaleResolverDefault.INSTANCE);
     }
 
     /**
@@ -77,7 +77,7 @@ public class BookParserHelper {
      * @param dateLocaleResolver to resolve the 'allLocales' for the date parser.
      */
     public BookParserHelper(@NonNull final SearchEngineConfig config,
-                            @NonNull final LocaleListResolver dateLocaleResolver) {
+                            @NonNull final LocaleResolver dateLocaleResolver) {
         this.config = config;
         this.dateLocaleResolver = dateLocaleResolver;
 
