@@ -428,7 +428,7 @@ public class GoogleBooksSearchEngine
         JSONArray a;
         String s;
 
-        final Locale locale = getLocale(context);
+        final Locale siteLocale = getLocale(context);
 
         s = volumeInfo.optString("title", null);
         if (s != null && !s.isBlank()) {
@@ -446,7 +446,7 @@ public class GoogleBooksSearchEngine
         }
         s = volumeInfo.optString("publishedDate", null);
         if (s != null && !s.isBlank()) {
-            bookParserHelper.addPublicationDate(context, locale, s, book);
+            bookParserHelper.addPublicationDate(context, siteLocale, s, book);
         }
 
         s = volumeInfo.optString("description", null);

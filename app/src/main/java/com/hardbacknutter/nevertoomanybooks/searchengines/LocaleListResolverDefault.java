@@ -38,8 +38,8 @@ public class LocaleListResolverDefault
     @NonNull
     @Override
     public List<Locale> resolveLocales(@NonNull final Context context,
-                                       @NonNull final Locale targetLocale) {
+                                       @NonNull final Locale siteLocale) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        return LocaleListUtils.asList(targetLocale, userLocales);
+        return LocaleListUtils.asList(siteLocale, userLocales);
     }
 }

@@ -52,19 +52,34 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class BookParserHelper {
 
     private final SearchEngineConfig config;
-    private final LocaleListResolver localeListResolver;
+    private final LocaleListResolver dateLocaleResolver;
     private final ISODateParser isoDateParser;
 
     private final IdentifierDao identifierDao;
 
-    public BookParserHelper(@NonNull final SearchEngineConfig config) {
+    /**
+     * Constructor.
+     * <p>
+     * Uses a fixed Locale resolver.
+     *
+     * @param config from the engine
+     */
+    BookParserHelper(@NonNull final SearchEngineConfig config) {
         this(config, LocaleListResolverDefault.INSTANCE);
     }
 
+    /**
+     * Constructor.
+     * <p>
+     * Uses a dynamic Locale resolver for sites which may redirect.
+     *
+     * @param config             from the engine
+     * @param dateLocaleResolver to resolve the 'allLocales' for the date parser.
+     */
     public BookParserHelper(@NonNull final SearchEngineConfig config,
-                            @NonNull final LocaleListResolver localeListResolver) {
+                            @NonNull final LocaleListResolver dateLocaleResolver) {
         this.config = config;
-        this.localeListResolver = localeListResolver;
+        this.dateLocaleResolver = dateLocaleResolver;
 
         identifierDao = ServiceLocator.getInstance().getIdentifierDao();
 
@@ -73,9 +88,9 @@ public class BookParserHelper {
     }
 
     @NonNull
-    private DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
-                                                        @NonNull final Locale locale) {
-        final List<Locale> allLocales = localeListResolver.resolveLocales(context, locale);
+    private DateParser<LocalDateTime> createFullDateParser(@NonNull final Context context,
+                                                           @NonNull final Locale siteLocale) {
+        final List<Locale> allLocales = dateLocaleResolver.resolveLocales(context, siteLocale);
         return new FullDateParser(isoDateParser, allLocales);
     }
 
@@ -134,13 +149,13 @@ public class BookParserHelper {
      * or a full-date string in one of the supported formats.
      * Partial date-strings will <strong>FAIL</strong>
      *
-     * @param context Current context
-     * @param locale  for parsing
-     * @param dateStr the date field as retrieved
-     * @param book    Bundle to update
+     * @param context    Current context
+     * @param siteLocale for parsing
+     * @param dateStr    the date field as retrieved
+     * @param book       Bundle to update
      */
     public void addPublicationDate(@NonNull final Context context,
-                                   @NonNull final Locale locale,
+                                   @NonNull final Locale siteLocale,
                                    @Nullable final String dateStr,
                                    @NonNull final Book book) {
 
@@ -159,7 +174,7 @@ public class BookParserHelper {
         }
 
         // error or not 4 digits? Do a full parse.
-        getFullDateParser(context, locale)
+        createFullDateParser(context, siteLocale)
                 .parse(dateStr)
                 .ifPresent(book::setPublicationDate);
     }
@@ -174,7 +189,7 @@ public class BookParserHelper {
      * @param book        Bundle to update
      */
     public void addPriceListed(@NonNull final MoneyParser moneyParser,
-                               @NonNull final String priceStr,
+                               @NonNull final CharSequence priceStr,
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 

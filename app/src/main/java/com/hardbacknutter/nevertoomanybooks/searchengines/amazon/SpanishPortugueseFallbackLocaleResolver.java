@@ -52,12 +52,13 @@ class SpanishPortugueseFallbackLocaleResolver
     @NonNull
     @Override
     public List<Locale> resolveLocales(@NonNull final Context context,
-                                       @NonNull final Locale targetLocale) {
+                                       @NonNull final Locale siteLocale) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = new ArrayList<>(
-                LocaleListUtils.asList(targetLocale, userLocales));
+                LocaleListUtils.asList(siteLocale, userLocales));
 
-        if (SPANISH.equals(targetLocale.getLanguage())) {
+        // Add Portuguese as the 2nd Locale, after the Spanish one
+        if (SPANISH.equals(siteLocale.getLanguage())) {
             allLocales.add(1, PORTUGUESE);
         }
 
