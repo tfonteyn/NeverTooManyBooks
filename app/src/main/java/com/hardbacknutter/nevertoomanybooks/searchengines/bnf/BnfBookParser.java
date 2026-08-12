@@ -289,11 +289,17 @@ class BnfBookParser {
         if (s.isBlank()) {
             return;
         }
-        final LocaleList userLocales = context.getResources().getConfiguration()
-                                              .getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(Locale.FRANCE, userLocales);
-        final MoneyParser parser = new MoneyParser(Locale.FRANCE, allLocales);
+
+        final MoneyParser parser = createMoneyParser(context, Locale.FRANCE);
         bookParserHelper.addPriceListed(parser, s, null, book);
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     /**

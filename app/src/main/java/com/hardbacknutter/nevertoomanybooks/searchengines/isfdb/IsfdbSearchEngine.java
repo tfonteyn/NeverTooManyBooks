@@ -1183,16 +1183,22 @@ public class IsfdbSearchEngine
                             @NonNull final Element labelElement,
                             @NonNull final Book book) {
         final Element data = labelElement.nextElementSibling();
-        if (data != null) {
-            final String tmp = data.ownText();
-            if (!tmp.isEmpty()) {
-                final LocaleList userLocales = context.getResources().getConfiguration()
-                                                      .getLocales();
-                final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
-                final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-                bookParserHelper.addPriceListed(parser, tmp, null, book);
-            }
+        if (data == null) {
+            return;
         }
+        final String tmp = data.ownText();
+        if (tmp.isEmpty()) {
+            return;
+        }
+        final MoneyParser parser = createMoneyParser(context, SITE_LOCALE);
+        bookParserHelper.addPriceListed(parser, tmp, null, book);
+    }
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     private void parsePublicationSeries(@NonNull final Element li,

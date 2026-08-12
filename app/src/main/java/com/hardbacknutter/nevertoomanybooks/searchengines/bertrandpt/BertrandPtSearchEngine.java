@@ -400,10 +400,7 @@ public class BertrandPtSearchEngine
         final Element priceElement = document.selectFirst(
                 "div#productPageRightSectionTop-saleAction-price-current");
         if (priceElement != null) {
-            final Locale siteLocale = getLocale(context);
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-            final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
+            final MoneyParser parser = createMoneyParser(context, getLocale(context));
             final String priceStr = priceElement.text();
             bookParserHelper.addPriceListed(parser, priceStr, MoneyParser.EUR, book);
         }
@@ -440,6 +437,14 @@ public class BertrandPtSearchEngine
             parseCovers(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     /**

@@ -668,6 +668,19 @@ public class AmazonSearchEngine
             }
         }
 
+        final MoneyParser parser = createMoneyParser(context, siteLocale);
+        bookParserHelper.addPriceListed(parser, priceText, null, book);
+
+        // The format can/should also be here
+        final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
+        if (formatElement != null) {
+            book.setFormat(SearchEngineUtils.cleanText(formatElement));
+        }
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> tmpAllLocales = LocaleListUtils.asList(siteLocale, userLocales);
         // Amazon does not give a hoot about other countries outside of the US.
@@ -678,14 +691,7 @@ public class AmazonSearchEngine
         final List<Locale> allLocales = new ArrayList<>(tmpAllLocales);
         allLocales.add(Locale.US);
 
-        final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
-        bookParserHelper.addPriceListed(parser, priceText, null, book);
-
-        // The format can/should also be here
-        final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
-        if (formatElement != null) {
-            book.setFormat(SearchEngineUtils.cleanText(formatElement));
-        }
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     private void parseASIN(@NonNull final Document document,

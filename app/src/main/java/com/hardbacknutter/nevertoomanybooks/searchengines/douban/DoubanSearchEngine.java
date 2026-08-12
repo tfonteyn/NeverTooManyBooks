@@ -690,13 +690,19 @@ public class DoubanSearchEngine
     }
 
     private void parsePrice(@NonNull final Context context,
-                            @NonNull final String priceStr,
+                            @NonNull final CharSequence text,
                             @NonNull final Book book) {
 
+        final MoneyParser parser = createMoneyParser(context, SITE_LOCALE);
+        bookParserHelper.addPriceListed(parser, text, MoneyParser.CNY, book);
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
-        final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-        bookParserHelper.addPriceListed(parser, priceStr, MoneyParser.CNY, book);
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     /**

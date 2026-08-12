@@ -694,16 +694,23 @@ public class BiblionetGrSearchEngine
     }
 
     private void parsePrice(@NonNull final Context context,
-                            @NonNull final String text,
+                            @NonNull final CharSequence text,
                             @NonNull final Book book) {
-        // ouch... the Greek Locale uses the "," as the decimal separator,
+        final Locale siteLocale = getLocale(context);
+        final MoneyParser parser = createMoneyParser(context, siteLocale);
+        bookParserHelper.addPriceListed(parser, text, MoneyParser.EUR, book);
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        // The Greek Locale uses the "," as the decimal separator,
         // but the site uses "." instead.
         // While we would normally parse here with the site Locale,
         // we parse the mony value with the UK one instead to force a "."
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(Locale.UK, userLocales);
-        final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
-        bookParserHelper.addPriceListed(parser, text, MoneyParser.EUR, book);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     private void processSubjectTags(@NonNull final Element data,

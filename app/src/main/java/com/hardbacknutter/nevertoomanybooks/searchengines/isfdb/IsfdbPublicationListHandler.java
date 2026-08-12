@@ -216,10 +216,15 @@ class IsfdbPublicationListHandler
         System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
 
-        final Locale siteLocale = searchEngine.getLocale(context);
+        moneyParser = createMoneyParser(context, searchEngine.getLocale(context));
+    }
+
+    @NonNull
+    private MoneyParser createMoneyParser(@NonNull final Context context,
+                                          @NonNull final Locale siteLocale) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-        moneyParser = new MoneyParser(siteLocale, allLocales);
+        return new MoneyParser(siteLocale, allLocales);
     }
 
     @NonNull
@@ -426,7 +431,8 @@ class IsfdbPublicationListHandler
                 case XML_ARTIST: {
                     if (inCoverArtists) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        bookParserHelper.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book, false);
+                        bookParserHelper.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST,
+                                                   book, false);
                     }
                     break;
                 }
