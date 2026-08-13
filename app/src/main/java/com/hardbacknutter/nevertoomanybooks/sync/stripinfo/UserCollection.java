@@ -47,6 +47,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 
 /**
  * <strong>Used by the synchronisation logic, i.e. the {@link StripInfoReader}.</strong>
@@ -202,7 +203,9 @@ class UserCollection {
                 R.string.progress_msg_loading_page, pageNr));
 
         final String url = hostUrl + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
-        final Document document = jsoupLoader.loadDocument(context, url, null);
+        final Document document = jsoupLoader
+                .loadDocument(context, Parser.htmlParser(), url, null);
+
         return parseDocument(document, pageNr, progressListener);
     }
 

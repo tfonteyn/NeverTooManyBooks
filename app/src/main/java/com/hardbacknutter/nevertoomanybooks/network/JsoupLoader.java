@@ -106,22 +106,6 @@ public class JsoupLoader {
         document = null;
     }
 
-    @WorkerThread
-    @NonNull
-    public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @Nullable final Map<String, String> headers)
-            throws IOException {
-
-        // are we requesting the same url again ?
-        if (document != null && url.equals(requestUrl)) {
-            // return the previously parsed doc
-            return document;
-        }
-
-        return loadDocument(context, Parser.htmlParser(), url, headers);
-    }
-
     /**
      * Fetch the URL and parse it into {@link #document}.
      * Will silently return if it has downloaded the document before.
