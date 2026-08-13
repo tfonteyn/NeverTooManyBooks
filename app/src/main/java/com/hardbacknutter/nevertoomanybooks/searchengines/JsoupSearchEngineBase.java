@@ -110,8 +110,7 @@ public abstract class JsoupSearchEngineBase
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
         try {
-            @SuppressWarnings("DataFlowIssue")
-            final boolean logEnabled = getEngineId().getConfig().isLogHttpGetRequests();
+            final boolean logEnabled = getConfig().isLogHttpGetRequests();
             jsoupLoader = new JsoupLoader(createGetDocumentRequest(context), logEnabled);
             jsoupLoader.setCharSetName(charSetName);
             jsoupLoader.setSslContext(getSslContext());

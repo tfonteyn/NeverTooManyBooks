@@ -58,8 +58,7 @@ class SruAuthorParseTest
 
         final DnbSearchEngine searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+                searchEngine.getConfig().setLogHttpGetRequests(true);
 
         resolver = new DnbAuthorResolver(searchEngine);
     }

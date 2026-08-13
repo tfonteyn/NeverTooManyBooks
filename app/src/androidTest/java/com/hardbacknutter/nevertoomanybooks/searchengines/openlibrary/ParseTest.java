@@ -65,9 +65,7 @@ class ParseTest
 
         searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-
+        searchEngine.getConfig().setLogHttpGetRequests(true);
         // 2024-11-07: this is not functional yet... the username/password are not stored
         // when running as a test
         //        assertTrue("Username/password must be configured",

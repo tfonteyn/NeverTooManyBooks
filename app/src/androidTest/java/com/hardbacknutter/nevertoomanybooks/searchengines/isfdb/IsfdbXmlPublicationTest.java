@@ -77,9 +77,7 @@ class IsfdbXmlPublicationTest
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-
+        searchEngine.getConfig().setLogHttpGetRequests(true);
         final SharedPreferences preferences = ServiceLocator.getInstance().getSharedPreferences();
         // Override the default 'false'
         preferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();

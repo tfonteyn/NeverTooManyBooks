@@ -56,9 +56,7 @@ class SearchByIsbnTest
 
         searchEngine = EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-    }
+        searchEngine.getConfig().setLogHttpGetRequests(true);    }
 
     @Test
     void Isbn9781849182089()

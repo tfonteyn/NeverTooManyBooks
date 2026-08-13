@@ -60,7 +60,7 @@ class ParseTest
 
         searchEngine = (LibraryThingSearchEngine) EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+        searchEngine.getConfig().setLogHttpGetRequests(true);
 
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()

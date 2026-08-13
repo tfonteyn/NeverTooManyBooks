@@ -51,9 +51,7 @@ class NormaliseSeriesTitlesTest
         book = new Book();
         searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-    }
+        searchEngine.getConfig().setLogHttpGetRequests(true);    }
 
     /** Dutch test data using site locale Dutch. */
     @Test

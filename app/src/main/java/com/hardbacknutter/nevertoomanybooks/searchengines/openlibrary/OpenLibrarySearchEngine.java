@@ -1770,9 +1770,7 @@ public class OpenLibrarySearchEngine
         //Saving to: ‘image.jpg’
 
         if ("isbn".equals(key)) {
-            //noinspection DataFlowIssue
-            getEngineId().getConfig().getThrottler().waitUntilRequestAllowed(
-                    COVER_BY_ISBN_REQUEST_DELAY);
+            getConfig().getThrottler().waitUntilRequestAllowed(COVER_BY_ISBN_REQUEST_DELAY);
         }
         return saveImage(context, url, null, id, cIdx, size);
     }

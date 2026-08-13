@@ -75,8 +75,7 @@ class ParseTest
 
         searchEngine = (BibliotecePlSearchEngine) EngineId.BibliotecePl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+                searchEngine.getConfig().setLogHttpGetRequests(true);
 
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()

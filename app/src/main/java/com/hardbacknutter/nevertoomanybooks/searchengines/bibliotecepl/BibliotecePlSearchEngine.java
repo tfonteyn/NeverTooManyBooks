@@ -742,8 +742,7 @@ public class BibliotecePlSearchEngine
                            @NonNull final Book book) {
         // We're not using the helper 'setTags(tagNames, book) because
         // this site can have tags in two different sections.
-        //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
+        final Set<String> tagsToIgnore = getConfig().getTagsToIgnore();
         // the cssQuery is based on the page source, and not on the page-inspect
         // as the td.tags element is transformed by JavaScript by the time we inspect it.
         // The sub element can be a 'div' or a 'span'

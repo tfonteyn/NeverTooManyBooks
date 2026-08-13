@@ -362,8 +362,7 @@ public class StripWebSearchEngine
         String tmpSeriesNr = null;
         // We're not using the helper 'setTags(tagNames, book) because
         // this site can have tags in two different sections.
-        //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
+        final Set<String> tagsToIgnore = getConfig().getTagsToIgnore();
 
         for (final Element divRows : techInfoSection.select("div")) {
             final Element th = divRows.selectFirst("strong");

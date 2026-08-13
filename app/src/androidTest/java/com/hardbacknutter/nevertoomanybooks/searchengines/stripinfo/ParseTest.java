@@ -77,9 +77,7 @@ class ParseTest
 
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-    }
+        searchEngine.getConfig().setLogHttpGetRequests(true);    }
 
     @Test
     void parse01()

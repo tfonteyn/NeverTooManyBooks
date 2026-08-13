@@ -64,9 +64,7 @@ class IisnParseTest
         searchEngine =
                 (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-    }
+        searchEngine.getConfig().setLogHttpGetRequests(true);    }
 
     @Test
     void mfsf()

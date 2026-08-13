@@ -67,9 +67,7 @@ class ParseTest
 
         searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
-    }
+        searchEngine.getConfig().setLogHttpGetRequests(true);    }
 
     @Test
     void parseMultiResult()
