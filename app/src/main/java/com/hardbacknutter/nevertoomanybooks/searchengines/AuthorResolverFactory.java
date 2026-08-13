@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -78,8 +79,7 @@ public final class AuthorResolverFactory {
                       .collect(Collectors.toList());
 
         return Stream.concat(searchByName.stream(), searchBySid.stream())
-                     .sorted((f1, f2) ->
-                                     f1.getName(context).compareToIgnoreCase(f2.getName(context)))
+                     .sorted(Comparator.comparing(EngineId::name))
                      .collect(Collectors.toList());
     }
 }
