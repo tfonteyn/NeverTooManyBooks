@@ -93,8 +93,13 @@ public class DatabazeKnihSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
-    private static final String SITE_URL = "https://www.databazeknih.cz";
-    private static final String BOOK_URL = "https://www.databazeknih.cz/prehled-knihy/x-%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.databazeknih.cz";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("cs", "CZ");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "databazeknih";
+
     // see class docs!
     static final String AUTHOR_URL = "https://www.databazeknih.cz/autori/x-%s";
 
@@ -104,17 +109,17 @@ public class DatabazeKnihSearchEngine
      * Search by isbn, or any other set of keywords.
      * Param 1: url encoded isbn/keywords
      */
-    private static final String SEARCH = "/search?in=books&q=%1$s";
+    private static final String SEARCH_URL = HOST_URL + "/search?in=books&q=%1$s";
     /**
      * Search by sid.
      * Param 1: sid
      */
-    private static final String BY_SID = "/prehled-knihy/x-%1$s";
+    private static final String BY_SID = HOST_URL + "/prehled-knihy/x-%1$s";
     /**
      * Fetch a lazy-loading subsection of the book page.
      * Param 1: sid
      */
-    private static final String MORE_DETAILS_URL = "/book-detail-more-info/%1$s";
+    private static final String MORE_DETAILS_URL = HOST_URL + "/book-detail-more-info/%1$s";
 
     /** The HTML title attribute starts with this if we get a list back. */
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
@@ -182,12 +187,12 @@ public class DatabazeKnihSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("databazeknih",
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_databazeknih_cz,
                                     List.of(R.string.site_description_czech,
                                             R.string.site_description_catalog),
-                                    "https://www.databazeknih.cz",
-                                    new Locale("cs", "CZ"))
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(DatabazeKnihPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DATABAZE_KNIH)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_DATABAZE_KNIH)
@@ -209,19 +214,18 @@ public class DatabazeKnihSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_databaze_knih);
+        final String site = "https://www.databazeknih.cz";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_DATABAZE_KNIH,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.databazeknih.cz/prehled-knihy/x-%s",
                                "P10386"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_DATABAZE_KNIH,
-                               name,
-                               SITE_URL,
+                               name, site,
                                AUTHOR_URL,
                                "P10387")
         );
@@ -234,7 +238,7 @@ public class DatabazeKnihSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(BY_SID, externalId);
+        final String url = String.format(BY_SID, externalId);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -286,7 +290,7 @@ public class DatabazeKnihSearchEngine
             return book;
         }
 
-        final String url = getHostUrl() + String.format(SEARCH, queryParams);
+        final String url = String.format(SEARCH_URL, queryParams);
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
@@ -354,7 +358,7 @@ public class DatabazeKnihSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }
@@ -454,7 +458,7 @@ public class DatabazeKnihSearchEngine
         // Sanity check
         if (sid != null && !sid.isEmpty()) {
             // fetch the "more details" and parse
-            final String url = getHostUrl() + String.format(MORE_DETAILS_URL, sid);
+            final String url = String.format(MORE_DETAILS_URL, sid);
             final Document d2 = loadDocument(context, url, null);
             parseLabelValueTable(d2, book);
         }
@@ -466,8 +470,8 @@ public class DatabazeKnihSearchEngine
             if (a != null) {
                 String url = a.attr("href");
                 if (!url.isEmpty()) {
-                    // url is relative, add the host
-                    url = getHostUrl() + url;
+                    // url is relative, prefix the host
+                    url = HOST_URL + url;
                     final Document d2 = loadDocument(context, url, null);
                     parseToc(context, d2, book);
                 }

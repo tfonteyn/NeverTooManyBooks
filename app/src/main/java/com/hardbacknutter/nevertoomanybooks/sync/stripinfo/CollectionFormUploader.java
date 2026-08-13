@@ -114,9 +114,7 @@ class CollectionFormUploader {
                 (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         httpClient = searchEngine.createHttpClient();
 
-        //noinspection DataFlowIssue
-        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
-                  + StripInfoSearchEngine.COLLECTION_FORM_URL;
+        postUrl = StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();

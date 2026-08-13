@@ -163,19 +163,13 @@ public abstract class SearchEngineBase
     }
 
     @Override
-    @NonNull
-    public String getHostUrl() {
-        return config.getHostUrl();
-    }
-
-    @Override
     public void ping()
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker().ping(
-                getHostUrl(), config.getConnectTimeoutInMs());
+                config.getHostUrl(), config.getConnectTimeoutInMs());
     }
 
     /**
@@ -229,6 +223,11 @@ public abstract class SearchEngineBase
                 }
                 return locale.orElse(Locale.US);
         }
+    }
+
+    @NonNull
+    public SearchEngineConfig getConfig() {
+        return config;
     }
 
     @VisibleForTesting

@@ -89,25 +89,29 @@ public class LastDodoSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId {
 
-    private static final String SITE_URL = "https://www.lastdodo.nl";
-    private static final String BOOK_URL = "https://www.lastdodo.nl/nl/items/%s";
-    private static final String AUTHOR_URL = "https://www.lastdodo.nl/nl/areas/%s";
-    private static final String SERIES_URL = "https://www.lastdodo.nl/nl/areas/%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.lastdodo.nl";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("nl", "NL");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "lastdodo";
 
     /**
      * Param 1: external book ID; really a 'long'.
      * Param 2: 147==comics
      */
-    private static final String BY_EXTERNAL_ID = "/nl/items/%1$s";
+    private static final String BY_SID = HOST_URL + "/nl/items/%1$s";
     /**
      * Hardcoded to: 147==comics.
      * Param 1: The search word(s)
      * When searching for an ISBN, it must include the '-' characters! (2022-05-31)
      */
-    private static final String SEARCH = "/nl/areas/search?type_id=147&q=%1$s";
+    private static final String SEARCH_URL = HOST_URL + "/nl/areas/search?type_id=147&q=%1$s";
+
     private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
             Pattern.compile("(.*)\\(([a-z].*)\\)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     /** Parse an id from the Author and Series urls It's a relative url. */
     private static final Pattern AREAS_ID = Pattern.compile(".*/areas/(\\d+)-.*");
 
@@ -144,13 +148,13 @@ public class LastDodoSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("lastdodo",
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_lastdodo_nl,
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_catalog,
                                             R.string.site_description_eu_comics),
-                                    SITE_URL,
-                                    new Locale("nl", "NL"))
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_LAST_DODO_NL)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_LAST_DODO_NL)
@@ -174,27 +178,25 @@ public class LastDodoSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_lastdodo_nl);
+        final String site = "https://www.lastdodo.nl";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_LAST_DODO_NL,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.lastdodo.nl/nl/items/%s",
                                "P10419"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_LAST_DODO_NL,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://www.lastdodo.nl/nl/areas/%s",
                                "P10419"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_LAST_DODO_NL,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://www.lastdodo.nl/nl/areas/%s",
                                "P10419")
         );
     }
@@ -312,7 +314,7 @@ public class LastDodoSearchEngine
             throws SearchException, CredentialsException, StorageException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = String.format(BY_SID, externalId);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -332,7 +334,7 @@ public class LastDodoSearchEngine
         final String codeStr = productCode.getFormatted(getEngineId());
         // Reformat 10 or 13 digit codes to the site-required format,
         // whether they are valid ISBN or not.
-        final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(codeStr));
+        final String url = String.format(SEARCH_URL, formatIsbnWithDashes(codeStr));
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -374,7 +376,7 @@ public class LastDodoSearchEngine
             return book;
         }
 
-        final String url = getHostUrl() + String.format(SEARCH, words);
+        final String url = String.format(SEARCH_URL, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -435,7 +437,7 @@ public class LastDodoSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }

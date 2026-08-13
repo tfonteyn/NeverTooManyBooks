@@ -519,7 +519,7 @@ public enum EngineId
      * @return default/hardcoded url for the site.
      */
     @NonNull
-    String getDefaultUrl() {
+    public String getDefaultUrl() {
         return defaultUrl;
     }
 

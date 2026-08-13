@@ -109,9 +109,7 @@ public class CollectionFormParser {
 
         this.httpClient = httpClient;
 
-        //noinspection DataFlowIssue
-        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
-                  + StripInfoSearchEngine.COLLECTION_FORM_URL;
+        postUrl = StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }

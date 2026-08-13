@@ -70,17 +70,26 @@ public class LibraryThingSearchEngine
         implements SearchEngine.AlternativeEditions<AltEditionProductCode>,
                    SearchEngine.UserRegistration {
 
-    private static final String SITE_URL = "https://www.librarything.com";
-    private static final String BOOK_URL = "https://www.librarything.com/work/%s";
-    private static final String AUTHOR_URL = "https://www.librarything.com/a/%s";
-    private static final String SERIES_URL = "https://www.librarything.com/nseries/%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.librarything.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "librarything";
 
     private static final String TAG = "LibraryThingSearchEngin";
 
-    private static final String PREFERENCE_KEY = "librarything";
-
-    static final String PK_API_TOKEN = PREFERENCE_KEY + ".api.token";
+    /** Exact length of the API token. */
     static final int TOKEN_LEN = 32;
+    /** Preference key, stores the token. */
+    static final String PK_API_TOKEN = HOST_PREF_KEY + ".api.token";
+
+    /**
+     * Search for alternative editions.
+     * Param 1: the API token
+     * Param 2: isbn
+     */
+    private static final String ALT_EDITIONS_URL = HOST_URL + "/api/%1$s/thingISBN/%2$s";
 
     @Nullable
     private FutureHttp<Boolean> httpGet;
@@ -111,12 +120,12 @@ public class LibraryThingSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_library_thing,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog),
-                                    "https://www.librarything.com",
-                                    Locale.US)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(LibraryThingPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_LIBRARY_THING);
     }
@@ -136,27 +145,25 @@ public class LibraryThingSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_library_thing);
+        final String site = "https://www.librarything.com";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_LIBRARY_THING,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.librarything.com/work/%s",
                                "P1085"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_LIBRARY_THING,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://www.librarything.com/a/%s",
                                "P7400"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_LIBRARY_THING,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://www.librarything.com/nseries/%s",
                                "P8513")
         );
     }
@@ -242,8 +249,7 @@ public class LibraryThingSearchEngine
                     context.getString(R.string.error_http_401_authorization_failed));
         }
 
-        final String url = getHostUrl() + String.format("/api/%1$s/thingISBN/%2$s",
-                                                        apiToken, codeStr);
+        final String url = String.format(ALT_EDITIONS_URL, apiToken, codeStr);
         final SAXParser parser;
         try {
             parser = SAXParserFactory.newInstance().newSAXParser();

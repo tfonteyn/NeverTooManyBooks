@@ -79,22 +79,28 @@ public class KbNlHtmlSearchEngine
     private static final String BASE_URL_COVERS =
             "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
 
+    /** Fallback only, we should always extract it from the url. */
+    private static final String DEFAULT_DB_VERSION = "2.37";
+    /** Fallback only, we should always extract it from the url. */
+    private static final String DEFAULT_SET_NUMBER = "1";
+
     /**
-     * Search by code.
+     * Search by product-code.
      * <p>
      * param 1: db version (part of the site session vars)
      * param 2: the set number (part of the site session vars)
-     * param 3: the ISBN
+     * param 3: the ISBN or ISSN
      */
-    private static final String SEARCH_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/CMD?"
-                                             // Action is a search
-                                             + "ACT=SRCHA&"
-                                             // by ISBN/ISSN
-                                             + "IKT=1007&"
-                                             // Results sorted by Relevance
-                                             + "SRT=RLV&"
-                                             // search term
-                                             + "TRM=%3$s";
+    private static final String SEARCH_URL =
+            KbNlSearchEngine.HOST_URL + "/cbs/DB=%1$s/SET=%2$s/TTL=1/CMD?"
+            // Action is a search
+            + "ACT=SRCHA&"
+            // by ISBN/ISSN
+            + "IKT=1007&"
+            // Results sorted by Relevance
+            + "SRT=RLV&"
+            // search term
+            + "TRM=%3$s";
 
     /**
      * Fetch a book.
@@ -103,15 +109,15 @@ public class KbNlHtmlSearchEngine
      * param 2: the set number (part of the site session params)
      * Param 3: the SHW part of the url as found in a multi-result
      */
-    private static final String BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
+    private static final String BOOK_URL = KbNlSearchEngine.HOST_URL + "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
     @Nullable
     private String tmpSeriesNr;
 
     @NonNull
-    private String dbVersion = "2.37";
+    private String dbVersion = DEFAULT_DB_VERSION;
     @NonNull
-    private String setNr = "1";
+    private String setNr = DEFAULT_SET_NUMBER;
 
     /**
      * Constructor.
@@ -177,7 +183,7 @@ public class KbNlHtmlSearchEngine
             throws SearchException {
         final FutureHttp<Boolean> httpHead = createHeadRequest();
         try {
-            httpHead.head(getHostUrl() + "/cbs/", con -> true);
+            httpHead.head(KbNlSearchEngine.HOST_URL + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -193,7 +199,7 @@ public class KbNlHtmlSearchEngine
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, codeStr);
+        final String url = String.format(SEARCH_URL, dbVersion, setNr, codeStr);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -265,7 +271,7 @@ public class KbNlHtmlSearchEngine
         if (url.isBlank()) {
             return null;
         }
-        return getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, url);
+        return String.format(BOOK_URL, dbVersion, setNr, url);
     }
 
     /**

@@ -30,9 +30,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Currency;
@@ -97,18 +97,17 @@ public class StripWebSearchEngine
                    SearchEngine.ByBarcode,
                    SearchEngine.SearchOnSite {
 
-    // Linking to books etc is not possible due to the site tech
-    private static final String SITE_URL = "https://www.stripweb.be";
-
-    private static final String PREFERENCE_KEY = "stripweb";
-
-    /** Website character encoding. */
-    private static final String CHARSET = "UTF-8";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.stripweb.be";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("nl", "BE");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "stripweb";
 
     /**
      * Param 1: search terms.
      */
-    private static final String SEARCH_URL = "/nl-nl/zoeken?type=&text=%1$s";
+    private static final String SEARCH_URL = HOST_URL + "/nl-nl/zoeken?type=&text=%1$s";
 
     /**
      * Some titles have suffixes which we need to strip.
@@ -119,16 +118,18 @@ public class StripWebSearchEngine
      * <p>
      * Entries MUST all be lowercase.
      */
-    private static final Set<String> TITLE_SUFFIXES = Set.of(" - met ex libris - sc",
-                                                             " - met ex libris hc",
-                                                             " - met ex libris",
-                                                             " met ex libris sc",
-                                                             " + ex libris",
-                                                             " -vip club met ex libris",
-                                                             " + ex libris gesigneerd hc",
-                                                             // typo is from website!
-                                                             " + ex lbiris sc",
-                                                             " sc");
+    private static final Set<String> TITLE_SUFFIXES =
+            Set.of( " - met ex libris - sc",
+                    " - met ex libris hc",
+                    " - met ex libris",
+                    " met ex libris sc",
+                    " + ex libris",
+                    " -vip club met ex libris",
+                    " + ex libris gesigneerd hc",
+                    // typo is from website!
+                    " + ex lbiris sc",
+                    " sc");
+
     private static final String LANG_NLD = "nld";
     private static final String LANG_FRA = "fra";
     private static final String LANG_ENG = "eng";
@@ -163,13 +164,13 @@ public class StripWebSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_stripweb_be,
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_shop,
                                             R.string.site_description_eu_comics),
-                                    SITE_URL,
-                                    new Locale("nl", "BE"))
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(StripWebPreferencesFragment.class)
                 .setAuthorResolverSupplier(StripWebAuthorResolver::create);
     }
@@ -189,12 +190,14 @@ public class StripWebSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_stripweb_be);
+        final String site = "https://www.stripweb.be";
+        // Linking to books etc is not possible due to the site technology used.
+        // We store the id for potential future usage.
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_STRIPWEB,
-                               name,
-                               SITE_URL,
+                               name, site,
                                null,
                                null)
         );
@@ -207,7 +210,7 @@ public class StripWebSearchEngine
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
+        final String url = String.format(SEARCH_URL, codeStr);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -242,7 +245,7 @@ public class StripWebSearchEngine
             return book;
         }
 
-        final String url = getHostUrl() + String.format(SEARCH_URL, words);
+        final String url = String.format(SEARCH_URL, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -304,7 +307,7 @@ public class StripWebSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }
@@ -453,7 +456,7 @@ public class StripWebSearchEngine
             }
         }
 
-        parsePrice(context, document, book);
+        parsePrice(document, book);
         parseDescription(document, book);
         parseRating(details, book);
 
@@ -567,8 +570,7 @@ public class StripWebSearchEngine
         }
     }
 
-    private void parsePrice(@NonNull final Context context,
-                            @NonNull final Document document,
+    private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book) {
         final Element cartForm = document.selectFirst("form[id='frmAddToCart']");
         if (cartForm == null) {
@@ -711,14 +713,14 @@ public class StripWebSearchEngine
         String url = cover.attr("href");
         // Sanity check; the url is supposed to be relative
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return saveImage(context, url, null, bookId, cIdx, null);
     }
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = HOST_PREF_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         if (prefs.contains(key)) {
@@ -747,11 +749,7 @@ public class StripWebSearchEngine
             final String cAuthor = SearchEngineUtils
                     .encodeSearchString(author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
-                try {
-                    fields.add(URLEncoder.encode(cAuthor, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add(URLEncoder.encode(cAuthor, StandardCharsets.UTF_8));
             }
         }
 
@@ -759,15 +757,11 @@ public class StripWebSearchEngine
             final String cSeries = SearchEngineUtils
                     .encodeSearchString(series.getTitle());
             if (!cSeries.isEmpty()) {
-                try {
-                    fields.add(URLEncoder.encode(cSeries, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add(URLEncoder.encode(cSeries, StandardCharsets.UTF_8));
             }
         }
 
-        return getHostUrl() + String.format(SEARCH_URL, fields);
+        return String.format(SEARCH_URL, fields);
     }
 
     public static final class SiteField {

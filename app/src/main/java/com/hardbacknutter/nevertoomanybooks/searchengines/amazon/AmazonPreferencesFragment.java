@@ -104,8 +104,7 @@ public class AmazonPreferencesFragment
                     p.setIcon(R.drawable.link_24px);
                     p.setInputType(InputType.TYPE_CLASS_TEXT
                                    | InputType.TYPE_TEXT_VARIATION_URI);
-                    //noinspection DataFlowIssue
-                    p.setValue(EngineId.Amazon.getConfig().getHostUrl());
+                    p.setValue(EngineId.Amazon.getDefaultUrl());
                     p.setSummaryProvider(c -> hostUrlValidator.getSummary(c, p.getValue()));
                 });
 

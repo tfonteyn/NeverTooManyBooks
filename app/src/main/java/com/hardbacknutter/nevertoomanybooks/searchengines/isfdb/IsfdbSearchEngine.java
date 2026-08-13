@@ -33,6 +33,8 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,15 +106,21 @@ public class IsfdbSearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
-    private static final String SITE_URL = "https://www.isfdb.org";
-    private static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.isfdb.org";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "isfdb";
+
     static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
-    private static final String SERIES_URL = "https://www.isfdb.org/cgi-bin/pe.cgi?%s";
-    private static final String PUB_SERIES_URL = "https://www.isfdb.org/cgi-bin/pubseries.cgi?%s";
 
-    private static final Locale SITE_LOCALE = Locale.US;
-
-    private static final String PREFERENCE_KEY = "isfdb";
+    /** Preferences - Type: {@code boolean}. */
+    static final String PK_SERIES_FROM_TOC =
+            HOST_PREF_KEY + ".search.toc.series";
+    /** Preference key - Type: {@code boolean}, whether to login to the site before searches. */
+    static final String PK_LOGIN_TO_SEARCH =
+            HOST_PREF_KEY + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
 
     /**
      * The site claims to use ISO-8859-1.
@@ -125,15 +133,12 @@ public class IsfdbSearchEngine
      * (tested with UTF-8 similarly fails to decode those symbols)
      */
     static final String CHARSET_DECODE_PAGE = "Windows-1252";
-    /** But to encode the search url (a GET), the charset must be 8859-1. */
-    @SuppressWarnings("WeakerAccess")
-    static final String CHARSET_ENCODE_URL = "iso-8859-1";
+    /** But to encode the search url (a GET), the charset must indeed be 8859-1. */
+    private static final Charset CHARSET_ENCODE_URL = StandardCharsets.ISO_8859_1;
+
     /** Map ISFDB book types to {@link Book.ContentType}. */
     static final Map<String, Book.ContentType> TYPE_MAP = new HashMap<>();
-    /** Preferences - Type: {@code boolean}. */
-    static final String PK_SERIES_FROM_TOC = PREFERENCE_KEY + ".search.toc.series";
-    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY
-                                             + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
+
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 
@@ -160,12 +165,13 @@ public class IsfdbSearchEngine
      *
      * @see #USE
      */
-    private static final String CGI_ADV_SEARCH_PREFIX = CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
-                                                        + "ORDERBY=pub_title"
-                                                        + "&ACTION=query"
-                                                        + "&START=0"
-                                                        + "&TYPE=Publication"
-                                                        + "&C=AND";
+    private static final String CGI_ADV_SEARCH_PREFIX =
+            HOST_URL + CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
+            + "ORDERBY=pub_title"
+            + "&ACTION=query"
+            + "&START=0"
+            + "&TYPE=Publication"
+            + "&C=AND";
 
     /**
      * JSoup selector to detect whether a login will be needed.
@@ -180,15 +186,16 @@ public class IsfdbSearchEngine
      * Search by SID.
      * Param 1: external book ID.
      */
-    private static final String CGI_BY_EXTERNAL_ID = CGI_BIN + CGI_PL + "?%1$s";
+    private static final String CGI_BY_EXTERNAL_ID = HOST_URL + CGI_BIN + CGI_PL + "?%1$s";
     /**
      * SSearch alternative editions.
      * Param 1: isbn
      */
-    private static final String CGI_EDITIONS = CGI_BIN + CGI_SE + "?arg=%s&type=ISBN";
+    private static final String CGI_EDITIONS = HOST_URL + CGI_BIN + CGI_SE + "?arg=%s&type=ISBN";
 
     private static final String REST_BIN = CGI_BIN + "/rest";
-    private static final String REST_BY_EXTERNAL_ID = REST_BIN + "/getpub_by_internal_ID.cgi?%1$s";
+    private static final String REST_BY_EXTERNAL_ID = HOST_URL + REST_BIN
+                                                      + "/getpub_by_internal_ID.cgi?%1$s";
 
     /**
      * Either the Web page itself, and/or the JSoup parser has used both decimal and hex
@@ -324,13 +331,13 @@ public class IsfdbSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_isfdb,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog,
                                             R.string.site_description_fsf),
-                                    "https://www.isfdb.org",
-                                    SITE_LOCALE)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_ISFDB)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_ISFDB)
@@ -357,34 +364,31 @@ public class IsfdbSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_isfdb);
+        final String site = "https://www.isfdb.org";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_ISFDB,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.isfdb.org/cgi-bin/pl.cgi?%s",
                                "P1234"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_ISFDB,
-                               name,
-                               SITE_URL,
+                               name, site,
                                AUTHOR_URL,
                                "P1233"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_ISFDB,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://www.isfdb.org/cgi-bin/pe.cgi?%s",
                                "P1235"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_ISFDB_PUB_SERIES,
-                               name,
-                               SITE_URL,
-                               PUB_SERIES_URL,
+                               name, site,
+                               "https://www.isfdb.org/cgi-bin/pubseries.cgi?%s",
                                "P13137")
         );
     }
@@ -426,7 +430,7 @@ public class IsfdbSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
+        final String url = String.format(CGI_BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -510,18 +514,14 @@ public class IsfdbSearchEngine
             return book;
         }
 
-        //noinspection OverlyBroadCatchBlock
-        try {
-            final String urlStr = getHostUrl() + CGI_ADV_SEARCH_PREFIX
-                                  + URLEncoder.encode(sb.toString(), CHARSET_ENCODE_URL);
+        final String urlStr = CGI_ADV_SEARCH_PREFIX
+                              + URLEncoder.encode(sb.toString(), CHARSET_ENCODE_URL);
 
-            final List<AltEditionIsfdb> editions = fetchEditions(context, urlStr, productCode);
-            if (!editions.isEmpty()) {
-                fetchByEdition(context, editions.get(0), criteria.getFetchCovers(), book);
-            }
-        } catch (@NonNull final IOException e) {
-            throw new SearchException(getEngineId(), e);
+        final List<AltEditionIsfdb> editions = fetchEditions(context, urlStr, productCode);
+        if (!editions.isEmpty()) {
+            fetchByEdition(context, editions.get(0), criteria.getFetchCovers(), book);
         }
+
         return book;
     }
 
@@ -1187,7 +1187,7 @@ public class IsfdbSearchEngine
         if (tmp.isEmpty()) {
             return;
         }
-        bookParserHelper.addPriceListed(context, SITE_LOCALE, tmp, null, book);
+        bookParserHelper.addPriceListed(context, HOST_LOCALE, tmp, null, book);
     }
 
     private void parsePublicationSeries(@NonNull final Element li,
@@ -1415,7 +1415,7 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
 
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(CGI_EDITIONS, codeStr);
+        final String url = String.format(CGI_EDITIONS, codeStr);
         return fetchEditions(context, url, productCode);
     }
 
@@ -1602,8 +1602,7 @@ public class IsfdbSearchEngine
         }
 
         // go get it.
-        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID,
-                                                        edition.getSid());
+        final String url = String.format(CGI_BY_EXTERNAL_ID, edition.getSid());
         return loadDocument(context, url, null);
     }
 
@@ -1732,7 +1731,7 @@ public class IsfdbSearchEngine
         //    return pub[0]
         //  else:
         //    return 0
-        final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
+        final String url = String.format(REST_BY_EXTERNAL_ID, externalId);
 
         final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1);
         if (publicationsList.isEmpty()) {

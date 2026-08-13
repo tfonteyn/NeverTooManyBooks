@@ -30,8 +30,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -120,10 +120,12 @@ public class AmazonSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.SearchOnSite {
 
-    private static final String PREFERENCE_KEY = "amazon";
+    // The host can be configured by the user: always use #getHost(Context)
+    // The Locale is dynamically set depending on host-url: always use #getLocale(Context)
 
-    /** Website character encoding. */
-    private static final String CHARSET = "UTF-8";
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "amazon";
+
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
@@ -350,8 +352,7 @@ public class AmazonSearchEngine
     @NonNull
     public static EngineId.Builder init() {
         // amazon.com, amazon.ca : blocked by captcha
-        // The Locale will be dynamically set depending on the country
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_amazon,
                                     List.of(R.string.site_description_various_languages,
                                             R.string.site_description_shop),
@@ -421,6 +422,16 @@ public class AmazonSearchEngine
                                    + "/stores/author/%s");
         }
         return Optional.empty();
+    }
+
+    /**
+     * Convenience shortcut to the host-url from the config.
+     *
+     * @return url
+     */
+    @NonNull
+    private String getHostUrl() {
+        return getConfig().getHostUrl();
     }
 
     @NonNull
@@ -905,7 +916,7 @@ public class AmazonSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = HOST_PREF_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
         return ServiceLocator.getInstance().getSharedPreferences().getBoolean(key, true);
     }
 
@@ -927,22 +938,14 @@ public class AmazonSearchEngine
             final String cAuthor = SearchEngineUtils
                     .encodeSearchString(author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
-                try {
-                    fields.add("field-author=" + URLEncoder.encode(cAuthor, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add("field-author=" + URLEncoder.encode(cAuthor, StandardCharsets.UTF_8));
             }
         }
         if (series != null) {
             final String cSeries = SearchEngineUtils
                     .encodeSearchString(series.getTitle());
             if (!cSeries.isEmpty()) {
-                try {
-                    fields.add("field-keywords=" + URLEncoder.encode(cSeries, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add("field-keywords=" + URLEncoder.encode(cSeries, StandardCharsets.UTF_8));
             }
         }
 

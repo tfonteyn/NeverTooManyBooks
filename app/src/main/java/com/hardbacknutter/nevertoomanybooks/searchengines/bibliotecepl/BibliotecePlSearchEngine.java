@@ -76,14 +76,15 @@ public class BibliotecePlSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByText {
 
-    // The site has no author/series ids - they use a pure text search when searching
-    // all books for a specific author.
-    private static final String SITE_URL = "https://w.bibliotece.pl";
-    private static final String BOOK_URL = "https://w.bibliotece.pl/%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://w.bibliotece.pl";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("pl", "PL");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "bibliotecepl";
 
-    private static final Locale SITE_LOCALE = new Locale("pl", "PL");
-    // also used as the identifier value
-    private static final String PREFERENCE_KEY = "bibliotecepl";
+    private static final String TAG = "BibliotecePlSearchEng";
+
     /**
      * Optional prefixes for the search.
      *
@@ -99,8 +100,8 @@ public class BibliotecePlSearchEngine
      *
      * @see <a href="https://w.bibliotece.pl/info/search/">advanced search info</a>
      */
-    private static final String SEARCH = "/search/?q=";
-    private static final String TAG = "BibliotecePlSearchEng";
+    private static final String SEARCH_URL = HOST_URL + "/search/?q=";
+
     private static final Pattern SID_FROM_LOCATION_PATTERN = Pattern.compile(
             "https://w\\.bibliotece\\.pl/(\\d+).*/.*");
     private static final Pattern AUTHOR_DATE_SUFFIX = Pattern.compile(
@@ -177,12 +178,12 @@ public class BibliotecePlSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_bibliotece_pl,
                                     List.of(R.string.site_description_polish,
                                             R.string.site_description_catalog),
-                                    SITE_URL,
-                                    SITE_LOCALE)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BibliotecePlPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BIBLIOTECE_PL)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BIBLIOTECE_PL)
@@ -208,13 +209,15 @@ public class BibliotecePlSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_bibliotece_pl);
+        final String site = "https://w.bibliotece.pl";
+        // The site has no author/series ids - they use a pure text search when searching
+        // all books for a specific author.
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_BIBLIOTECE_PL,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://w.bibliotece.pl/%s",
                                null)
         );
     }
@@ -225,7 +228,7 @@ public class BibliotecePlSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + '/' + externalId;
+        final String url = HOST_URL + '/' + externalId;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -263,7 +266,7 @@ public class BibliotecePlSearchEngine
             throws SearchException, CredentialsException, StorageException {
 
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + SEARCH + searchPrefix + codeStr;
+        final String url = SEARCH_URL + searchPrefix + codeStr;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -315,7 +318,7 @@ public class BibliotecePlSearchEngine
             return book;
         }
 
-        final String url = getHostUrl() + SEARCH + words;
+        final String url = SEARCH_URL + words;
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -377,7 +380,7 @@ public class BibliotecePlSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }
@@ -579,7 +582,7 @@ public class BibliotecePlSearchEngine
         for (final Element th : bookData.select("th")) {
             final Element td = th.nextElementSibling();
             if (td != null && "td".equals(td.tagName())) {
-                final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
+                final String lcLabel = th.text().toLowerCase(HOST_LOCALE);
                 switch (lcLabel) {
                     case LABEL_AUTHOR:
                     case LABEL_AUTHORS: {
@@ -783,7 +786,7 @@ public class BibliotecePlSearchEngine
         String url = sumUrl.attr("href");
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
 
         if (isCancelled()) {
@@ -819,7 +822,7 @@ public class BibliotecePlSearchEngine
             final Element td = th.nextElementSibling();
             if (td != null) {
                 // Keep in sync with parseAuthors(..)
-                final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
+                final String lcLabel = th.text().toLowerCase(HOST_LOCALE);
                 switch (lcLabel) {
                     case LABEL_AUTHOR:
                     case LABEL_AUTHORS:

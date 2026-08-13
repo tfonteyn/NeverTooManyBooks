@@ -92,15 +92,12 @@ public class DoubanSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionDouban> {
 
-    /** Main site, but NOT the search site. */
-    private static final String SITE_URL = "https://book.douban.com";
-    private static final String BOOK_URL = "https://book.douban.com/subject/%s";
-    private static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
-    private static final String SERIES_URL = "https://book.douban.com/series/%s";
-
-    private static final Locale SITE_LOCALE = Locale.CHINA;
-
-    private static final String PREFERENCE_KEY = "douban";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://search.douban.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.CHINA;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "douban";
 
     /**
      * Preference key: whether to select the most-recent book {@code true}
@@ -109,12 +106,12 @@ public class DoubanSearchEngine
      * Type: {@code boolean}
      */
     public static final String PK_FETCH_MOST_RECENT =
-            PREFERENCE_KEY + ".search.result.order.by.date";
+            HOST_PREF_KEY + ".search.result.order.by.date";
 
     /**
      * param 1: the ISBN.
      */
-    private static final String SEARCH_URL = "/book/subject_search?search_text=%1$s";
+    private static final String SEARCH_URL = HOST_URL + "/book/subject_search?search_text=%1$s";
 
     /**
      * Support for foreign author names.
@@ -158,12 +155,12 @@ public class DoubanSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_douban,
                                     List.of(R.string.site_description_chinese,
                                             R.string.site_description_catalog),
-                                    "https://search.douban.com",
-                                    SITE_LOCALE)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(DoubanPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DOUBAN);
     }
@@ -183,27 +180,25 @@ public class DoubanSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_douban);
+        final String site = "https://book.douban.com";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_DOUBAN,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://book.douban.com/subject/%s",
                                "P6442"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_DOUBAN,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://www.douban.com/personage/%s",
                                "P6441"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_DOUBAN,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://book.douban.com/series/%s",
                                "P10318")
         );
     }
@@ -216,7 +211,7 @@ public class DoubanSearchEngine
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
+        final String url = String.format(SEARCH_URL, codeStr);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -257,7 +252,7 @@ public class DoubanSearchEngine
             return book;
         }
 
-        final String url = getHostUrl() + String.format(SEARCH_URL, words);
+        final String url = String.format(SEARCH_URL, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -691,7 +686,7 @@ public class DoubanSearchEngine
                             @NonNull final CharSequence text,
                             @NonNull final Book book) {
 
-        bookParserHelper.addPriceListed(context, SITE_LOCALE, text, MoneyParser.CNY, book);
+        bookParserHelper.addPriceListed(context, HOST_LOCALE, text, MoneyParser.CNY, book);
     }
 
     /**
@@ -833,7 +828,7 @@ public class DoubanSearchEngine
             throws SearchException, CredentialsException {
 
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
+        final String url = String.format(SEARCH_URL, codeStr);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Optional<JSONArray> oItems = extractItemList(document);
@@ -887,7 +882,7 @@ public class DoubanSearchEngine
             final ProductCode productCode = edition.getCode();
             final String codeStr = productCode.getFormatted(getEngineId());
 
-            final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
+            final String url = String.format(SEARCH_URL, codeStr);
             final Document document = loadDocument(context, url, null);
             if (!isCancelled()) {
                 return parseCover(context, document, codeStr, cIdx)

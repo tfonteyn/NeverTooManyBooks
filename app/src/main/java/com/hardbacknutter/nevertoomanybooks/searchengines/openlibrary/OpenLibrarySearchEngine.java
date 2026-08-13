@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -98,20 +98,25 @@ public class OpenLibrarySearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
-    private static final String SITE_URL = "https://openlibrary.org";
-    private static final String BOOK_URL = "https://openlibrary.org/books/%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://openlibrary.org";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "openlibrary";
+
     static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
-    private static final String SERIES_URL = "https://openlibrary.org/series/%s";
 
-    private static final String PREFERENCE_KEY = "openlibrary";
+    /** Preference key - Type: {@code boolean}, whether to login to the site before searches. */
+    static final String PK_LOGIN_TO_SEARCH =
+            HOST_PREF_KEY + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
 
-    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY
-                                             + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
-    private static final String BASE_BOOK_URL = "/search.json?"
-                                                + "q=%1$s"
-                                                + "&fields=key,editions";
+    private static final String BASE_BOOK_URL =
+            HOST_URL + "/search.json?"
+            + "q=%1$s"
+            + "&fields=key,editions";
 
-    private static final String SEARCH_BY_EXTERNAL_ID = "/books/%1$s.json";
+    private static final String BY_SID = HOST_URL + "/books/%1$s.json";
 
     /**
      * The covers are available in 3 sizes.
@@ -166,6 +171,7 @@ public class OpenLibrarySearchEngine
             Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
             Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
+
     private static final String TYPE_TEXT = "/type/text";
 
     private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
@@ -203,12 +209,12 @@ public class OpenLibrarySearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_open_library,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog),
-                                    "https://openlibrary.org",
-                                    Locale.US)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(OpenLibraryPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_OPEN_LIBRARY)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_OPEN_LIBRARY)
@@ -231,27 +237,25 @@ public class OpenLibrarySearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_open_library);
+        final String site = "https://openlibrary.org";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Text,
                                Identifier.SID_OPEN_LIBRARY,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://openlibrary.org/books/%s",
                                "P648"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Text,
                                Identifier.SID_OPEN_LIBRARY,
-                               name,
-                               SITE_URL,
+                               name, site,
                                AUTHOR_URL,
                                "P648"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Text,
                                Identifier.SID_OPEN_LIBRARY,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://openlibrary.org/series/%s",
                                null)
         );
     }
@@ -311,7 +315,7 @@ public class OpenLibrarySearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(SEARCH_BY_EXTERNAL_ID, externalId);
+        final String url = String.format(BY_SID, externalId);
         final Book book = new Book();
         try {
             final String response = loadDocument(context, url);
@@ -333,7 +337,7 @@ public class OpenLibrarySearchEngine
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(BASE_BOOK_URL, codeStr);
+        final String url = String.format(BASE_BOOK_URL, codeStr);
 
         final Book book = new Book();
         fetchBook(context, url, criteria.getFetchCovers(), book);
@@ -365,7 +369,7 @@ public class OpenLibrarySearchEngine
         }
 
         // Limit the result to a single book for performance.
-        final String url = getHostUrl() + String.format(BASE_BOOK_URL, words) + "&limit=1";
+        final String url = String.format(BASE_BOOK_URL, words) + "&limit=1";
 
         fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;
@@ -450,7 +454,7 @@ public class OpenLibrarySearchEngine
                                        .getString("key");
 
             // "/books/OL22853304M.json"
-            final String editionUrl = getHostUrl() + key + ".json";
+            final String editionUrl = HOST_URL + key + ".json";
             response = loadDocument(context, editionUrl);
 
             parse(context, new JSONObject(response), fetchCovers, book);
@@ -639,7 +643,7 @@ public class OpenLibrarySearchEngine
         if (works != null && !works.isEmpty()) {
             final String work = works.getJSONObject(0).optString("key");
             if (!work.isEmpty()) {
-                final String editionUrl = getHostUrl() + work + ".json";
+                final String editionUrl = HOST_URL + work + ".json";
                 final String workResponse = loadDocument(context, editionUrl);
                 workDocument = new JSONObject(workResponse);
             }
@@ -999,7 +1003,7 @@ public class OpenLibrarySearchEngine
             authorParser = new AuthorParser(context, this);
         }
 
-        final String authorUrl = getHostUrl() + key + ".json";
+        final String authorUrl = HOST_URL + key + ".json";
         final String response = loadDocument(context, authorUrl);
         final JSONObject document = new JSONObject(response);
         final Author author = authorParser.parse(context, document);
@@ -1124,7 +1128,7 @@ public class OpenLibrarySearchEngine
             return;
         }
 
-        final String url = getHostUrl() + key + ".json";
+        final String url = HOST_URL + key + ".json";
         final String response = loadDocument(context, url);
         final JSONObject document = new JSONObject(response);
 
@@ -1428,7 +1432,7 @@ public class OpenLibrarySearchEngine
 
         // https://openlibrary.org/isbn/9780141339092.json
         // => redirects to: https://openlibrary.org/books/OL27104332M.json
-        String url = getHostUrl() + "/isbn/" + codeStr + ".json";
+        String url = HOST_URL + "/isbn/" + codeStr + ".json";
         try {
             // and we get:
             // {
@@ -1447,7 +1451,7 @@ public class OpenLibrarySearchEngine
             if (works != null && !works.isEmpty()) {
                 // Now fetch: https://openlibrary.org/works/OL5725956W/editions.json
                 final String worksKey = works.getJSONObject(0).optString("key");
-                url = getHostUrl() + worksKey + "/editions.json";
+                url = HOST_URL + worksKey + "/editions.json";
                 response = loadDocument(context, url);
                 return parseEditions(new JSONObject(response));
             }

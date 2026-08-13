@@ -85,15 +85,6 @@ public interface SearchEngine
     EngineId getEngineId();
 
     /**
-     * Get the host url.
-     *
-     * @return url, including scheme.
-     */
-    @AnyThread
-    @NonNull
-    String getHostUrl();
-
-    /**
      * Get the Locale for this engine.
      *
      * @param context Current context

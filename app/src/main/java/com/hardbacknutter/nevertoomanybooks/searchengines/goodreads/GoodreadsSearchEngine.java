@@ -86,29 +86,36 @@ public class GoodreadsSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId {
 
-    private static final String SITE_URL = "https://www.goodreads.com";
-    private static final String BOOK_URL = "https://www.goodreads.com/book/show/%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.goodreads.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "goodreads";
+
     static final String AUTHOR_URL = "https://www.goodreads.com/author/show/%s";
-    private static final String SERIES_URL = "https://www.goodreads.com/series/%s";
 
     /**
      * Fetch the Goodreads id.
      * Param 1: isbn
      */
-    private static final String GET_GOODREADS_ID = "/book/auto_complete?format=json&q=%s";
+    private static final String GET_GOODREADS_ID =
+            HOST_URL + "/book/auto_complete?format=json&q=%s";
 
     /**
      * Search by text.
      * <p>
      * Param 1: url encoded keywords
      */
-    private static final String BY_TEXT = "/search?search_type=books&search[query]=%s";
+    private static final String BY_TEXT =
+            HOST_URL + "/search?search_type=books&search[query]=%s";
     /**
      * Search by Goodreads id.
      * <p>
      * Param 1: sid
      */
-    private static final String BY_GOODREADS_ID = "/book/show/%s";
+    private static final String BY_GOODREADS_ID =
+            HOST_URL + "/book/show/%s";
 
     /**
      * The site uses milliseconds from the epoch for timestamps.
@@ -124,9 +131,11 @@ public class GoodreadsSearchEngine
     private static final Pattern PARAMS_BOOK_ID_PATTERN = Pattern.compile("(\\d+).*");
 
     private static final Pattern LANG_SPLITTER = Pattern.compile("[,;]");
+    
     /** Example: {@code "https://www.goodreads.com/author/show/40652983.Nuanxed"}. */
     private static final Pattern AUTHOR_WEB_URL_ID = Pattern.compile(
             "https://www.goodreads.com/author/show/(\\d+)\\..*");
+
     /**
      * The language field is checked to <strong>contain</strong> the key.
      * When found, the value == iso3 is used.
@@ -138,6 +147,7 @@ public class GoodreadsSearchEngine
             Map.entry("Greek, Modern", "ell"),
             Map.entry("Nynorsk", "nno")
     );
+
     private final RatingParser ratingParser;
     private final AuthorRoleMapper authorRoleMapper;
     private final AuthorResolverHelper authorResolverHelper;
@@ -174,12 +184,12 @@ public class GoodreadsSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("goodreads",
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_goodreads,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog),
-                                    "https://www.goodreads.com",
-                                    Locale.US)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(GoodreadsPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_GOODREADS)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_GOODREADS)
@@ -201,27 +211,25 @@ public class GoodreadsSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_goodreads);
+        final String site = "https://www.goodreads.com";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_GOODREADS,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.goodreads.com/book/show/%s",
                                "P2969"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_GOODREADS,
-                               name,
-                               SITE_URL,
+                               name, site,
                                AUTHOR_URL,
                                "P2963"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_GOODREADS,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://www.goodreads.com/series/%s",
                                "P6947")
         );
     }
@@ -243,7 +251,7 @@ public class GoodreadsSearchEngine
                                     @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, StorageException {
 
-        final String url = getHostUrl() + String.format(BY_GOODREADS_ID, externalId);
+        final String url = String.format(BY_GOODREADS_ID, externalId);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -299,7 +307,7 @@ public class GoodreadsSearchEngine
         if (queryParams.length() == 0) {
             return book;
         }
-        final String url = getHostUrl() + String.format(BY_TEXT, queryParams);
+        final String url = String.format(BY_TEXT, queryParams);
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
@@ -342,7 +350,7 @@ public class GoodreadsSearchEngine
                                 @NonNull final String validIsbn)
             throws StorageException, SearchException {
 
-        final String url = getHostUrl() + String.format(GET_GOODREADS_ID, validIsbn);
+        final String url = String.format(GET_GOODREADS_ID, validIsbn);
         httpGet = createGetDocumentRequest(context);
 
         try {
@@ -422,7 +430,8 @@ public class GoodreadsSearchEngine
             return null;
         }
 
-        return getHostUrl() + url;
+        // url is relative, prefix with host
+        return HOST_URL + url;
     }
 
     @VisibleForTesting

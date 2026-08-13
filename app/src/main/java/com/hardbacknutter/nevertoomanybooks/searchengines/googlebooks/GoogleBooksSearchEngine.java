@@ -99,13 +99,17 @@ public class GoogleBooksSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.CoverByEdition {
 
-    private static final String SITE_URL = "https://books.google.com";
-    // TODO: 2024-12-30: google has a new link as beta:
-    //  "https://www.google.com/books/edition/_/" + externalId;
-    private static final String BOOK_URL = "https://books.google.co.uk/books?id=%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.googleapis.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "googlebooks";
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
-    private static final String SEARCH = "/books/v1/volumes?q=";
+
+    private static final String SEARCH_URL = HOST_URL + "/books/v1/volumes?q=";
+
     private final RatingParser ratingParser;
     @Nullable
     private FutureHttp<String> httpGet;
@@ -138,12 +142,12 @@ public class GoogleBooksSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("googlebooks",
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_google_books,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog),
-                                    "https://www.googleapis.com",
-                                    Locale.US)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(GoogleBooksPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_GOOGLE)
                 .setMultipleCoverSizes(true);
@@ -164,13 +168,15 @@ public class GoogleBooksSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_google_books);
+        final String site = "https://books.google.com";
+        // TODO: 2024-12-30: google has a new link as beta:
+        //  "https://www.google.com/books/edition/_/" + externalId;
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Text,
                                Identifier.SID_GOOGLE,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://books.google.co.uk/books?id=%s",
                                "P675")
         );
     }
@@ -184,7 +190,7 @@ public class GoogleBooksSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         // %3A  :
-        final String url = getHostUrl() + SEARCH + "isbn%3A" + codeStr;
+        final String url = SEARCH_URL + "isbn%3A" + codeStr;
 
         final Book book = new Book();
         fetchBook(context, url, criteria.getFetchCovers(), book);
@@ -237,7 +243,7 @@ public class GoogleBooksSearchEngine
         }
 
         // %3A  :
-        final String url = getHostUrl() + SEARCH + args;
+        final String url = SEARCH_URL + args;
         fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;
     }

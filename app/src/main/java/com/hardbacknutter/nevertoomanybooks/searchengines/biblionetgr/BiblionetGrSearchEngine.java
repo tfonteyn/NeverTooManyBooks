@@ -84,27 +84,31 @@ public class BiblionetGrSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
-    private static final String SITE_URL = "https://biblionet.gr";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://biblionet.gr";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("el", "GR");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "biblionetgr";
 
     private static final String TAG = "BiblionetGrSearchEngine";
-
-    private static final Locale SITE_LOCALE = new Locale("el", "GR");
-
-    private static final String PREFERENCE_KEY = "biblionetgr";
 
     /**
      * Subject tags on the site have a code prefixed. By default, we drop this
      * but the user can enable this in the settings.
      */
-    static final String PK_TAG_PREFIX_NUMBER = PREFERENCE_KEY + ".search.tag.prefix_number";
+    static final String PK_TAG_PREFIX_NUMBER = HOST_PREF_KEY + ".search.tag.prefix_number";
 
     /**
      * Encoded text is:  σύνθετη αναζήτηση = “advanced search”.
      * Append the ISBN code as-is to search.
      */
-    private static final String SEARCH = "/%CF%83%CF%85%CE%BD%CE%B8%CE%B5%CF%84"
-                                         + "%CE%B7-%CE%B1%CE%BD%CE%B1%CE%B6%CE%B7"
-                                         + "%CF%84%CE%B7%CF%83%CE%B7?q=";
+    private static final String SEARCH_URL =
+            HOST_URL
+            + "/%CF%83%CF%85%CE%BD%CE%B8%CE%B5%CF%84"
+            + "%CE%B7-%CE%B1%CE%BD%CE%B1%CE%B6%CE%B7"
+            + "%CF%84%CE%B7%CF%83%CE%B7?q=";
+
     private static final Pattern SUBJECT_BADGE_PATTERN =
             Pattern.compile("\\[.*]\\s*(.*)");
 
@@ -147,12 +151,12 @@ public class BiblionetGrSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_biblionet_gr,
                                     List.of(R.string.site_description_greek,
                                             R.string.site_description_catalog),
-                                    SITE_URL,
-                                    SITE_LOCALE)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BiblionetGrPreferencesFragment.class)
                 .setAuthorResolverSupplier(BiblionetGrAuthorResolver::create)
                 .setConfig(cb -> cb
@@ -177,7 +181,7 @@ public class BiblionetGrSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
 
-        final String url = getHostUrl() + SEARCH + codeStr;
+        final String url = SEARCH_URL + codeStr;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -241,7 +245,7 @@ public class BiblionetGrSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }
@@ -756,7 +760,7 @@ public class BiblionetGrSearchEngine
         String url = cover.attr("src");
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return saveImage(context, url, null, bookId, cIdx, null);
     }

@@ -30,8 +30,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -84,14 +84,18 @@ public class BertrandPtSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.SearchOnSite {
 
-    private static final String PREFERENCE_KEY = "bertrandpt";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.bertrand.pt";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("pt", "PT");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "bertrandpt";
 
-    /** Website character encoding. */
-    private static final String CHARSET = "UTF-8";
+    private static final String TAG = "BertrandPtSearchEngine";
 
     /** Search url. Just concat whatever 'words' (or isbn) we're searching for. */
-    private static final String SEARCH = "/pesquisa/";
-    private static final String TAG = "BertrandPtSearchEngine";
+    private static final String SEARCH_URL = HOST_URL + "/pesquisa/";
+
     private final Map<String, String> extraRequestProperties;
 
     /**
@@ -109,7 +113,7 @@ public class BertrandPtSearchEngine
         super(appContext, config);
         // based on wget experimentation
         extraRequestProperties = Map.of(
-                HttpConstants.REFERER, getHostUrl(),
+                HttpConstants.REFERER, HOST_URL,
                 HttpConstants.SEC_FETCH_SITE, HttpConstants.SEC_FETCH_MODE_SAME_ORIGIN);
     }
 
@@ -124,12 +128,12 @@ public class BertrandPtSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_bertrand_pt,
                                     List.of(R.string.site_description_portuguese_and_more,
                                             R.string.site_description_shop),
-                                    "https://www.bertrand.pt",
-                                    new Locale("pt", "PT"))
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BertrandPtPreferencesFragment.class)
                 .setConfig(cb -> cb
                         .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
@@ -145,7 +149,7 @@ public class BertrandPtSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
 
-        final String url = getHostUrl() + SEARCH + codeStr;
+        final String url = SEARCH_URL + codeStr;
         final Document document = loadDocument(context, url, extraRequestProperties);
 
         final Book book = new Book();
@@ -180,7 +184,7 @@ public class BertrandPtSearchEngine
             return book;
         }
 
-        final String url = getHostUrl() + SEARCH + words;
+        final String url = SEARCH_URL + words;
         final Document document = loadDocument(context, url, extraRequestProperties);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -243,7 +247,7 @@ public class BertrandPtSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }
@@ -470,7 +474,7 @@ public class BertrandPtSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = HOST_PREF_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         if (prefs.contains(key)) {
@@ -497,11 +501,7 @@ public class BertrandPtSearchEngine
             final String cAuthor = SearchEngineUtils
                     .encodeSearchString(author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
-                try {
-                    fields.add(URLEncoder.encode(cAuthor, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add(URLEncoder.encode(cAuthor, StandardCharsets.UTF_8));
             }
         }
 
@@ -509,14 +509,10 @@ public class BertrandPtSearchEngine
             final String cSeries = SearchEngineUtils
                     .encodeSearchString(series.getTitle());
             if (!cSeries.isEmpty()) {
-                try {
-                    fields.add(URLEncoder.encode(cSeries, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add(URLEncoder.encode(cSeries, StandardCharsets.UTF_8));
             }
         }
 
-        return getHostUrl() + SEARCH + fields;
+        return SEARCH_URL + fields;
     }
 }

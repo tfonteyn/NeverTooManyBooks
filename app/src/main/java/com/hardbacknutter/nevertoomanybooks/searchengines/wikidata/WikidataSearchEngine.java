@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -64,17 +65,12 @@ public class WikidataSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIssn {
 
-    private static final String TAG = "WikidataSearchEngine";
-
-    private static final String SITE_URL = "https://www.wikidata.org";
-    private static final String BOOK_URL = "https://www.wikidata.org/wiki/%s";
-    private static final String AUTHOR_URL = "https://www.wikidata.org/wiki/%s";
-    private static final String SERIES_URL = "https://www.wikidata.org/wiki/%s";
-
-    private static final String PREFERENCE_KEY = "wikidata";
-
-    /** Website character encoding. */
-    private static final String CHARSET = "UTF-8";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.wikidata.org";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "wikidata";
 
     /**
      * Search for an ISSN and fetch standard metadata along
@@ -193,12 +189,12 @@ public class WikidataSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_wikidata,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog),
-                                    "https://www.wikidata.org",
-                                    Locale.US)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(WikidataPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_WIKIDATA)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_WIKIDATA)
@@ -220,27 +216,25 @@ public class WikidataSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_wikidata);
+        final String site = "https://www.wikidata.org";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Text,
                                Identifier.SID_WIKIDATA,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.wikidata.org/wiki/%s",
                                null),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Text,
                                Identifier.SID_WIKIDATA,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://www.wikidata.org/wiki/%s",
                                "P50"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Text,
                                Identifier.SID_WIKIDATA,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://www.wikidata.org/wiki/%s",
                                "P179")
         );
     }
@@ -266,7 +260,8 @@ public class WikidataSearchEngine
         final Book book = new Book();
         final JSONObject document;
         try {
-            final String url = String.format(ISSN_SEARCH_URL, URLEncoder.encode(sparql, CHARSET));
+            final String url = String.format(ISSN_SEARCH_URL,
+                                             URLEncoder.encode(sparql, StandardCharsets.UTF_8));
 
             final OkHttpClient httpClient = createHttpClient();
             httpCall = HttpCallFactory.create(httpClient, getEngineId());

@@ -80,12 +80,12 @@ public class DnbSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId {
 
-    /** Main site, but NOT the search site. */
-    private static final String SITE_URL = "https://www.dnb.de";
-    private static final String BOOK_URL = "https://d-nb.info/%s";
-    private static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
-
-    private static final String PREFERENCE_KEY = "dnb";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://services.dnb.de";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.GERMANY;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "dnb";
 
     private static final String SRU_DNB = "dnb";
     private static final String SRU_ZDB = "zdb";
@@ -96,7 +96,7 @@ public class DnbSearchEngine
      * <p>
      * Hardcoded to return a single result for now.
      */
-    private static final String SEARCH_URL = "https://services.dnb.de/sru/%1$s?"
+    private static final String SEARCH_URL = HOST_URL + "/sru/%1$s?"
                                              + "version=1.1"
                                              + "&operation=searchRetrieve"
                                              + "&query=%2$s"
@@ -190,12 +190,12 @@ public class DnbSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_dnb_de,
                                     List.of(R.string.site_description_german,
                                             R.string.site_description_catalog),
-                                    SITE_URL,
-                                    Locale.GERMANY)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(DnbPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DNB)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_DNB)
@@ -217,20 +217,19 @@ public class DnbSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_dnb);
+        final String site = "https://www.dnb.de";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Text,
                                Identifier.SID_DNB,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://d-nb.info/%s",
                                "P1292"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Text,
                                Identifier.SID_DNB,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://d-nb.info/gnd/%s",
                                "P7902")
         );
     }

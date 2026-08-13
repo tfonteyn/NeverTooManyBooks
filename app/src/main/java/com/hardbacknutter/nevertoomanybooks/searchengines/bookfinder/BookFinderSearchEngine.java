@@ -37,12 +37,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -75,9 +75,19 @@ public class BookFinderSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.bookfinder.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.US;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "bookfinder";
+
     private static final String TAG = "BookFinderSearchEngine";
 
-    private static final String BY_ISBN = "/search_s/?st=sr&ac=qr&mode=basic"
+    private static final String BY_ISBN = HOST_URL + "/search_s/?"
+                                          + "st=sr"
+                                          + "&ac=qr"
+                                          + "&mode=basic"
                                           + "&author="
                                           + "&title="
                                           + "&isbn=%1$s"
@@ -122,12 +132,12 @@ public class BookFinderSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("bookfinder",
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_bookfinder,
                                     List.of(R.string.site_description_various_languages,
                                             R.string.site_description_shop),
-                                    "https://www.bookfinder.com",
-                                    Locale.US)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BookFinderPreferencesFragment.class);
     }
 
@@ -140,7 +150,7 @@ public class BookFinderSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
 
-        final String url = getHostUrl() + String.format(BY_ISBN, codeStr);
+        final String url = String.format(BY_ISBN, codeStr);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();

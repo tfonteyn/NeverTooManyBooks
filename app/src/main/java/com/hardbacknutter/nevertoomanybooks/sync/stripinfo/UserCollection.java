@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -155,12 +156,14 @@ class UserCollection {
                    @NonNull final String userId,
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
-        hostUrl = searchEngine.getHostUrl();
 
-        @SuppressWarnings("DataFlowIssue")
-        final boolean enableLog = EngineId.StripInfoBe.getConfig().isLogHttpGetRequests();
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+
+        //noinspection DataFlowIssue
+        hostUrl = config.getHostUrl();
 
         final FutureHttp<Document> request = searchEngine.createGetDocumentRequest(context);
+        final boolean enableLog = config.isLogHttpGetRequests();
         jsoupLoader = new JsoupLoader(request, enableLog);
 
         formParser = new CollectionParser(context, bookshelfMapper);

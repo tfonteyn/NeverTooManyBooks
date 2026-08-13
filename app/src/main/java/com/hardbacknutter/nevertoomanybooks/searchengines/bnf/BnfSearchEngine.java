@@ -66,20 +66,19 @@ public class BnfSearchEngine
                    SearchEngine.ByBarcode,
                    SearchEngine.ByText {
 
-    private static final String SITE_URL = "https://www.bnf.fr";
-    private static final String BOOK_URL = "https://catalogue.bnf.fr/ark:/12148/cb%s";
-    private static final String AUTHOR_URL = "https://catalogue.bnf.fr/ark:/12148/cb%s";
-
-    // also used as the identifier value
-    private static final String PREFERENCE_KEY = "bnf";
-    private static final Locale SITE_LOCALE = Locale.FRANCE;
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://catalogue.bnf.fr";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.FRANCE;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "bnf";
 
     /**
      * Param 1: SRU query.
      * <p>
      * Hardcoded to return a single result for now.
      */
-    private static final String SEARCH_URL = "https://catalogue.bnf.fr/api/SRU?"
+    private static final String SEARCH_URL = HOST_URL + "/api/SRU?"
                                              + "version=1.2"
                                              + "&operation=searchRetrieve"
                                              + "&query=%1$s"
@@ -99,7 +98,7 @@ public class BnfSearchEngine
      * + "&hauteur=400&largeur=400"
      * For now, get hires.
      */
-    private static final String COVER_URL = "https://catalogue.bnf.fr/couverture?"
+    private static final String COVER_URL = HOST_URL + "/couverture?"
                                             + "appName=NE"
                                             + "&idImage=%1$s"
                                             + "&couverture=1";
@@ -134,12 +133,12 @@ public class BnfSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_bnf_fr,
                                     List.of(R.string.site_description_french,
                                             R.string.site_description_catalog),
-                                    "https://catalogue.bnf.fr",
-                                    SITE_LOCALE)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BnfPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BNF)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BNF)
@@ -163,20 +162,20 @@ public class BnfSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_bnf);
+        final String site = "https://www.bnf.fr";
+        //noinspection CheckStyle
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Text,
                                Identifier.SID_BNF,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://catalogue.bnf.fr/ark:/12148/cb%s",
                                "P268"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Text,
                                Identifier.SID_BNF,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://catalogue.bnf.fr/ark:/12148/cb%s",
                                "P268")
         );
     }

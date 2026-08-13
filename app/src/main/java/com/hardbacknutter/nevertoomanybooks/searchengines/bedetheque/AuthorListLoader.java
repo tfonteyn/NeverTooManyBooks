@@ -65,7 +65,7 @@ class AuthorListLoader {
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
-        hostUrl = searchEngine.getHostUrl();
+        hostUrl = searchEngine.getConfig().getHostUrl();
 
         bedethequeCacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
     }

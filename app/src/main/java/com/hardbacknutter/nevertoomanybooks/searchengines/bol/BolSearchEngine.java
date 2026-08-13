@@ -31,9 +31,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -115,15 +115,15 @@ public class BolSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.SearchOnSite {
 
-    private static final String PREFERENCE_KEY = "bol";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.bol.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("nl", "NL");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "bol";
 
-    /** one of {"","be","nl"}. */
-    static final String PK_BOL_COUNTRY = PREFERENCE_KEY + ".country";
-
-    /** Website character encoding. */
-    private static final String CHARSET = "UTF-8";
-
-    private static final String TAG = "BolSearchEngine";
+    /** One of {@code "","be","nl"}. */
+    static final String PK_BOL_COUNTRY = HOST_PREF_KEY + ".country";
 
     /**
      * Search using a text-string.
@@ -131,21 +131,21 @@ public class BolSearchEngine
      * param 1: the country "be" or "nl"
      * param 2: words, separated by spaces
      */
-    private static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
+    private static final String BY_TEXT = HOST_URL + "/%1$s/nl/s/?searchtext=%2$s";
     /**
      * Search using the ISBN.
      * <p>
      * param 1: the country "be" or "nl"
      * param 2: the isbn
      */
-    private static final String BY_ISBN = "/%1$s/nl/s/?searchtext=+%2$s+";
+    private static final String BY_ISBN = HOST_URL + "/%1$s/nl/s/?searchtext=+%2$s+";
 
     /**
      * The referer for an initial connect.
      * <p>
      * Param 1: the country "be" or "nl"
      */
-    private static final String ROOT_REFERER = "/%s/nl/";
+    private static final String ROOT_REFERER = HOST_URL + "/%s/nl/";
 
     // Local mapping for the types in the json data
     private static final Map<String, Integer> FORMAT_MAPPING = Map.of(
@@ -180,12 +180,12 @@ public class BolSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_bol_com,
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_shop),
-                                    "https://www.bol.com",
-                                    new Locale("nl", "NL"))
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BolPreferencesFragment.class)
                 .setConfig(cb -> cb
                         .setTagsToIgnore(Set.of("Boeken", "Livres"))
@@ -237,7 +237,7 @@ public class BolSearchEngine
             throws SearchException {
         final FutureHttp<Boolean> httpHead = createHeadRequest();
         try {
-            httpHead.head(getHostUrl(), con -> true);
+            httpHead.head(HOST_URL, con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -252,11 +252,10 @@ public class BolSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
 
-        final String hostUrl = getHostUrl();
         final String country = getCountry();
-        final String url = hostUrl + String.format(BY_ISBN, country, codeStr);
+        final String url = String.format(BY_ISBN, country, codeStr);
         final Document document = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
+                HttpConstants.REFERER, String.format(ROOT_REFERER, country)));
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -296,11 +295,10 @@ public class BolSearchEngine
             return book;
         }
 
-        final String hostUrl = getHostUrl();
         final String country = getCountry();
-        final String url = hostUrl + String.format(BY_TEXT, country, words);
+        final String url = String.format(BY_TEXT, country, words);
         final Document document = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
+                HttpConstants.REFERER, String.format(ROOT_REFERER, country)));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             multiResult(context, productCode, document, criteria.getFetchCovers(), book);
@@ -377,7 +375,7 @@ public class BolSearchEngine
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl() + url;
+            url = HOST_URL + url;
         }
         return url;
     }
@@ -928,7 +926,7 @@ public class BolSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = HOST_PREF_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         if (prefs.contains(key)) {
@@ -957,11 +955,7 @@ public class BolSearchEngine
             final String cAuthor = SearchEngineUtils
                     .encodeSearchString(author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
-                try {
-                    fields.add(URLEncoder.encode(cAuthor, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add(URLEncoder.encode(cAuthor, StandardCharsets.UTF_8));
             }
         }
 
@@ -969,14 +963,10 @@ public class BolSearchEngine
             final String cSeries = SearchEngineUtils
                     .encodeSearchString(series.getTitle());
             if (!cSeries.isEmpty()) {
-                try {
-                    fields.add(URLEncoder.encode(cSeries, CHARSET));
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
+                fields.add(URLEncoder.encode(cSeries, StandardCharsets.UTF_8));
             }
         }
 
-        return getHostUrl() + String.format(BY_TEXT, getCountry(), fields);
+        return String.format(BY_TEXT, getCountry(), fields);
     }
 }

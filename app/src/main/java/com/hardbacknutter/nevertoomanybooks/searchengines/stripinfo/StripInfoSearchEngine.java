@@ -112,27 +112,29 @@ public class StripInfoSearchEngine
                    SearchEngine.ByBarcode,
                    SearchEngine.Login {
 
-    private static final String SITE_URL = "https://stripinfo.be";
-    private static final String BOOK_URL = "https://stripinfo.be/reeks/strip/%s";
-    private static final String AUTHOR_URL = "https://stripinfo.be/auteur/index/%s";
-    private static final String SERIES_URL = "https://stripinfo.be/reeks/index/%s";
-    private static final String COLLECTION_URL = "https://stripinfo.be/lijst.php?collectie=%s";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.stripinfo.be";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = new Locale("nl", "BE");
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "stripinfo";
 
-    private static final String PREFERENCE_KEY = "stripinfo";
+    /** Preference key - Type: {@code boolean}, whether to login to the site before searches. */
+    static final String PK_LOGIN_TO_SEARCH =
+            HOST_PREF_KEY + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
 
-    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY
-                                             + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
+
     /** Colour string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
 
     /** Param 1: external book ID; really a 'long'. */
-    private static final String BY_EXTERNAL_ID = "/reeks/strip/%1$s";
+    private static final String BY_SID = HOST_URL + "/reeks/strip/%1$s";
     /** Param 1: ISBN. */
-    private static final String BY_ISBN = "/zoek/zoek?zoekstring=%1$s";
+    private static final String BY_ISBN = HOST_URL + "/zoek/zoek?zoekstring=%1$s";
 
-    public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
+    public static final String COLLECTION_FORM_URL = HOST_URL + "/ajax_collectie.php";
 
     /** The description contains h4 tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
@@ -147,6 +149,7 @@ public class StripInfoSearchEngine
      * (Dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
+
     /** The site specific 'no cover' image. Correct 2019-12-19. */
     private static final int NO_COVER_FILE_LEN = 15779;
     /** The site specific 'no cover' image. Correct 2019-12-19. */
@@ -155,6 +158,7 @@ public class StripInfoSearchEngine
             (byte) 0x09, (byte) 0x16, (byte) 0xd8, (byte) 0x93,
             (byte) 0xe4, (byte) 0xb5, (byte) 0x32, (byte) 0xcf,
             (byte) 0x3d, (byte) 0x7d, (byte) 0xa9, (byte) 0x37};
+
     /** The site specific 'mature' image. Correct 2019-12-19. */
     private static final int MATURE_FILE_LEN = 21578;
     /** The site specific 'mature' image. Correct 2019-12-19. */
@@ -163,8 +167,10 @@ public class StripInfoSearchEngine
             (byte) 0x8b, (byte) 0xba, (byte) 0x3e, (byte) 0xee,
             (byte) 0x4a, (byte) 0x65, (byte) 0x68, (byte) 0xc9,
             (byte) 0x46, (byte) 0x54, (byte) 0x59, (byte) 0x4b};
+
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
+
     /** Delegate common Element handling. */
     private final JSoupParserHelper jSoupParserHelper = new JSoupParserHelper();
 
@@ -207,13 +213,13 @@ public class StripInfoSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_stripinfo_be,
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_catalog,
                                             R.string.site_description_eu_comics),
-                                    "https://www.stripinfo.be",
-                                    new Locale("nl", "BE"))
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(StripInfoBePreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_STRIP_INFO)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_STRIP_INFO)
@@ -240,34 +246,31 @@ public class StripInfoSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_stripinfo_be);
+        final String site = "https://stripinfo.be";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_STRIP_INFO,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://stripinfo.be/reeks/strip/%s",
                                null),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_STRIP_INFO,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://stripinfo.be/auteur/index/%s",
                                null),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_STRIP_INFO,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://stripinfo.be/reeks/index/%s",
                                null),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_STRIP_INFO_COLLECTION,
-                               name,
-                               SITE_URL,
-                               COLLECTION_URL,
+                               name, site,
+                               "https://stripinfo.be/lijst.php?collectie=%s",
                                null)
         );
     }
@@ -331,7 +334,7 @@ public class StripInfoSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = String.format(BY_SID, externalId);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -354,7 +357,7 @@ public class StripInfoSearchEngine
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
-        final String url = getHostUrl() + String.format(BY_ISBN, codeStr);
+        final String url = String.format(BY_ISBN, codeStr);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();

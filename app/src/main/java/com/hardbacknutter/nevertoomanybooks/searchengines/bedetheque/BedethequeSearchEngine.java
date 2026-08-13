@@ -91,12 +91,12 @@ public class BedethequeSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId {
 
-    private static final String SITE_URL = "https://www.bedetheque.com";
-    private static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
-    private static final String AUTHOR_URL = "https://www.bedetheque.com/auteur-%s-BD-x.html";
-    private static final String SERIES_URL = "https://www.bedetheque.com/serie-%s-BD-x.html";
-
-    private static final String PREFERENCE_KEY = "bedetheque";
+    /** {@link SearchEngineConfig#getHostUrl()}. */
+    private static final String HOST_URL = "https://www.bedetheque.com";
+    /** {@link EngineId#getDefaultLocale()}. */
+    private static final Locale HOST_LOCALE = Locale.FRANCE;
+    /** {@link EngineId#getPreferenceKey()}. */
+    private static final String HOST_PREF_KEY = "bedetheque";
 
     /** Get the id from an Author url. */
     private static final Pattern AUTHOR_ID = Pattern.compile(".*/auteur-(\\d+)-");
@@ -124,7 +124,7 @@ public class BedethequeSearchEngine
 
     /** Whether we can map as usual, or (true) if we want to keep the French format names. */
     static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES =
-            PREFERENCE_KEY + ".resolve.formats";
+            HOST_PREF_KEY + ".resolve.formats";
 
     /** These are generic author names which are really the colour. */
     private static final List<String> AUTHOR_NAME_COLOR =
@@ -143,7 +143,7 @@ public class BedethequeSearchEngine
 
     private static final String COOKIE_NAME = "csrf_cookie_bel";
     private static final String COOKIE_DOMAIN = ".bedetheque.com";
-    private static final String SEARCH_URL = "/search";
+    private static final String SEARCH_URL = HOST_URL + "/search";
 
     /**
      * Search.
@@ -179,7 +179,7 @@ public class BedethequeSearchEngine
      * 'x' is normally the title, which the site will ignore.
      * The site recognises the url by the prefix 'BD-' and the last '-' followed by the sid
      */
-    private static final String BY_EXTERNAL_ID = "/BD-x-%s.html";
+    private static final String BY_SID = HOST_URL + "/BD-x-%s.html";
 
     private final Map<String, String> extraRequestProperties;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
@@ -200,7 +200,7 @@ public class BedethequeSearchEngine
     public BedethequeSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + SEARCH_URL);
+        extraRequestProperties = Map.of(HttpConstants.REFERER, SEARCH_URL);
 
         authorResolverHelper = new AuthorResolverHelper();
     }
@@ -216,13 +216,13 @@ public class BedethequeSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder(PREFERENCE_KEY,
+        return new EngineId.Builder(HOST_PREF_KEY,
                                     R.string.site_bedetheque,
                                     List.of(R.string.site_description_french,
                                             R.string.site_description_catalog,
                                             R.string.site_description_eu_comics),
-                                    "https://www.bedetheque.com",
-                                    Locale.FRANCE)
+                                    HOST_URL,
+                                    HOST_LOCALE)
                 .setPreferenceFragmentClazz(BedethequePreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BEDETHEQUE)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BEDETHEQUE)
@@ -249,27 +249,25 @@ public class BedethequeSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_bedetheque);
+        final String site = "https://www.bedetheque.com";
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
                                Identifier.SID_BEDETHEQUE,
-                               name,
-                               SITE_URL,
-                               BOOK_URL,
+                               name, site,
+                               "https://www.bedetheque.com/BD-x-%s.html",
                                null),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Number,
                                Identifier.SID_BEDETHEQUE,
-                               name,
-                               SITE_URL,
-                               AUTHOR_URL,
+                               name, site,
+                               "https://www.bedetheque.com/auteur-%s-BD-x.html",
                                "P5491"),
                 new Identifier(Identifier.EntityType.Series,
                                Identifier.Type.Number,
                                Identifier.SID_BEDETHEQUE,
-                               name,
-                               SITE_URL,
-                               SERIES_URL,
+                               name, site,
+                               "https://www.bedetheque.com/serie-%s-BD-x.html",
                                "P8619")
         );
     }
@@ -291,7 +289,7 @@ public class BedethequeSearchEngine
                 final FutureHttp<HttpCookie> httpHead = createHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                sessionCookie = httpHead.head(getHostUrl() + SEARCH_URL, response ->
+                sessionCookie = httpHead.head(SEARCH_URL, response ->
                         ServiceLocator.getInstance().getCookieManager()
                                       .getCookieStore()
                                       .getCookies()
@@ -322,8 +320,7 @@ public class BedethequeSearchEngine
         final String codeStr = productCode.getFormatted(getEngineId());
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
-        final String url = getHostUrl() + String.format(
-                BY_ISBN, ensureCookie(context), codeStr);
+        final String url = String.format(BY_ISBN, ensureCookie(context), codeStr);
 
         final Document document = loadDocument(context, url, extraRequestProperties);
 
@@ -342,7 +339,7 @@ public class BedethequeSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = String.format(BY_SID, externalId);
         final Document document = loadDocument(context, url, extraRequestProperties);
 
         final Book book = new Book();
