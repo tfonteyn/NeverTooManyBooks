@@ -166,7 +166,7 @@ public class BedethequeAuthorResolver
         // load the details-page from the site, and parse it.
         final String url = bdtAuthor.getUrl();
         if (url != null && !url.isEmpty()) {
-            final Document document = searchEngine.loadDocument(context, url, null);
+            final Document document = searchEngine.loadHtml(context, url, null);
             if (!searchEngine.isCancelled()) {
                 final Author found = parse(context, document);
                 // We handle the check for name equality and the subsequent

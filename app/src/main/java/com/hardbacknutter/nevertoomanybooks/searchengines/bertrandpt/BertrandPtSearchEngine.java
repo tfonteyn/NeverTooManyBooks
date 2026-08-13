@@ -150,7 +150,7 @@ public class BertrandPtSearchEngine
         final String codeStr = productCode.getFormatted(getEngineId());
 
         final String url = SEARCH_URL + codeStr;
-        final Document document = loadDocument(context, url, extraRequestProperties);
+        final Document document = loadHtml(context, url, extraRequestProperties);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -185,7 +185,7 @@ public class BertrandPtSearchEngine
         }
 
         final String url = SEARCH_URL + words;
-        final Document document = loadDocument(context, url, extraRequestProperties);
+        final Document document = loadHtml(context, url, extraRequestProperties);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             multiResult(context, document, criteria.getFetchCovers(), book);
@@ -218,7 +218,7 @@ public class BertrandPtSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, extraRequestProperties);
+        final Document redirected = loadHtml(context, url, extraRequestProperties);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }

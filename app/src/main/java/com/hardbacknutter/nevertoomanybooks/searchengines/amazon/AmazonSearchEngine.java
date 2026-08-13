@@ -515,7 +515,7 @@ public class AmazonSearchEngine
                                @NonNull final String url,
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         checkCaptcha(context, url, document);
 
@@ -539,7 +539,7 @@ public class AmazonSearchEngine
             final String codeStr = productCode.getFormatted(getEngineId());
 
             final String url = getHostUrl() + String.format(BY_PRODUCT_ID, codeStr);
-            final Document document = loadDocument(context, url, null);
+            final Document document = loadHtml(context, url, null);
 
             checkCaptcha(context, url, document);
 

@@ -273,7 +273,7 @@ public class BnfSearchEngine
                         @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, StorageException {
 
-        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+        final Document document = loadXml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {

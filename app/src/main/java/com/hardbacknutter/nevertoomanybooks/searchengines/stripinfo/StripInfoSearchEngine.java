@@ -335,7 +335,7 @@ public class StripInfoSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = String.format(BY_SID, externalId);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -358,7 +358,7 @@ public class StripInfoSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = String.format(BY_ISBN, codeStr);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -416,7 +416,7 @@ public class StripInfoSearchEngine
             return;
         }
 
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             // prevent looping.
             if (!isMultiResult(redirected)) {

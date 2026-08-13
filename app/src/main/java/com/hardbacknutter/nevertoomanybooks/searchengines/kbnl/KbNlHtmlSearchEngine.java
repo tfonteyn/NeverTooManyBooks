@@ -150,12 +150,12 @@ public class KbNlHtmlSearchEngine
 
     @NonNull
     @Override
-    public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @Nullable final Map<String, String> requestProperties)
+    public Document loadHtml(@NonNull final Context context,
+                             @NonNull final String url,
+                             @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
 
-        final Document document = super.loadDocument(context, url, requestProperties);
+        final Document document = super.loadHtml(context, url, requestProperties);
 
         final Element base = document.selectFirst("head > base");
         // <base href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=1/TTL=1/">
@@ -200,7 +200,7 @@ public class KbNlHtmlSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = String.format(SEARCH_URL, dbVersion, setNr, codeStr);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -246,7 +246,7 @@ public class KbNlHtmlSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             parse(redirected, book);
         }

@@ -212,7 +212,7 @@ public class DoubanSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = String.format(SEARCH_URL, codeStr);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -253,7 +253,7 @@ public class DoubanSearchEngine
         }
 
         final String url = String.format(SEARCH_URL, words);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             multiResult(context, document, criteria.getFetchCovers(), book);
@@ -284,7 +284,7 @@ public class DoubanSearchEngine
 
         final String url = parseMultiResult(document);
         if (url != null) {
-            final Document redirected = loadDocument(context, url, null);
+            final Document redirected = loadHtml(context, url, null);
             if (!isCancelled()) {
                 parse(context, redirected, fetchCovers, book);
             }
@@ -829,7 +829,7 @@ public class DoubanSearchEngine
 
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = String.format(SEARCH_URL, codeStr);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
         if (!isCancelled()) {
             final Optional<JSONArray> oItems = extractItemList(document);
             if (oItems.isPresent()) {
@@ -869,7 +869,7 @@ public class DoubanSearchEngine
 
             final String bookUrl = edition.getBookUrl();
             if (bookUrl != null && !bookUrl.isEmpty()) {
-                final Document document = loadDocument(context, bookUrl, null);
+                final Document document = loadHtml(context, bookUrl, null);
                 if (!isCancelled()) {
                     return parseCover(context, document, String.valueOf(edition.getSid()), cIdx)
                             // let the system resolve any path variations
@@ -883,7 +883,7 @@ public class DoubanSearchEngine
             final String codeStr = productCode.getFormatted(getEngineId());
 
             final String url = String.format(SEARCH_URL, codeStr);
-            final Document document = loadDocument(context, url, null);
+            final Document document = loadHtml(context, url, null);
             if (!isCancelled()) {
                 return parseCover(context, document, codeStr, cIdx)
                         // let the system resolve any path variations

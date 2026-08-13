@@ -252,7 +252,7 @@ public class GoodreadsSearchEngine
             throws SearchException, CredentialsException, StorageException {
 
         final String url = String.format(BY_GOODREADS_ID, externalId);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -308,7 +308,7 @@ public class GoodreadsSearchEngine
             return book;
         }
         final String url = String.format(BY_TEXT, queryParams);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         if (!isCancelled()) {
             if (document.head().select("meta").stream().anyMatch(
@@ -401,7 +401,7 @@ public class GoodreadsSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }

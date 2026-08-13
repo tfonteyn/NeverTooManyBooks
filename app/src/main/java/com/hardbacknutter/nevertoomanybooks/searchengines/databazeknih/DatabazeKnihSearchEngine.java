@@ -239,7 +239,7 @@ public class DatabazeKnihSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = String.format(BY_SID, externalId);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -291,7 +291,7 @@ public class DatabazeKnihSearchEngine
         }
 
         final String url = String.format(SEARCH_URL, queryParams);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         if (!isCancelled()) {
             if (isMultiResult(document)) {
@@ -328,7 +328,7 @@ public class DatabazeKnihSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             // sanity check
             if (!isMultiResult(redirected)) {
@@ -459,7 +459,7 @@ public class DatabazeKnihSearchEngine
         if (sid != null && !sid.isEmpty()) {
             // fetch the "more details" and parse
             final String url = String.format(MORE_DETAILS_URL, sid);
-            final Document d2 = loadDocument(context, url, null);
+            final Document d2 = loadHtml(context, url, null);
             parseLabelValueTable(d2, book);
         }
 
@@ -472,7 +472,7 @@ public class DatabazeKnihSearchEngine
                 if (!url.isEmpty()) {
                     // url is relative, prefix the host
                     url = HOST_URL + url;
-                    final Document d2 = loadDocument(context, url, null);
+                    final Document d2 = loadHtml(context, url, null);
                     parseToc(context, d2, book);
                 }
             }

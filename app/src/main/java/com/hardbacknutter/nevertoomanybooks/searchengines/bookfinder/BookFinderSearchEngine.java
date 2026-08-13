@@ -151,7 +151,7 @@ public class BookFinderSearchEngine
         final String codeStr = productCode.getFormatted(getEngineId());
 
         final String url = String.format(BY_ISBN, codeStr);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {

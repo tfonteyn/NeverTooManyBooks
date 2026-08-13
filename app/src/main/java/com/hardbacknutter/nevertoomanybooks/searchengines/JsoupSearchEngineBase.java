@@ -73,11 +73,20 @@ public abstract class JsoupSearchEngineBase
 
     @WorkerThread
     @NonNull
-    public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @Nullable final Map<String, String> requestProperties)
+    public Document loadHtml(@NonNull final Context context,
+                             @NonNull final String url,
+                             @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
         return loadDocument(context, Parser.htmlParser(), url, requestProperties);
+    }
+
+    @WorkerThread
+    @NonNull
+    public Document loadXml(@NonNull final Context context,
+                            @NonNull final String url,
+                            @Nullable final Map<String, String> requestProperties)
+            throws SearchException, CredentialsException {
+        return loadDocument(context, Parser.xmlParser(), url, requestProperties);
     }
 
     /**
@@ -95,7 +104,7 @@ public abstract class JsoupSearchEngineBase
      */
     @WorkerThread
     @NonNull
-    public Document loadDocument(@NonNull final Context context,
+    private Document loadDocument(@NonNull final Context context,
                                  @NonNull final Parser parser,
                                  @NonNull final String url,
                                  @Nullable final Map<String, String> requestProperties)

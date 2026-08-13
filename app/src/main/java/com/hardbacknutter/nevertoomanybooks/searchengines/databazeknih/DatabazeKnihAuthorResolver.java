@@ -164,7 +164,7 @@ public final class DatabazeKnihAuthorResolver
             throws SearchException, CredentialsException {
 
         final String url = String.format(DatabazeKnihSearchEngine.AUTHOR_URL, sid);
-        final Document document = searchEngine.loadDocument(context, url, null);
+        final Document document = searchEngine.loadHtml(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parse(context, document, sid);
         }

@@ -182,7 +182,7 @@ public class BiblionetGrSearchEngine
         final String codeStr = productCode.getFormatted(getEngineId());
 
         final String url = SEARCH_URL + codeStr;
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -217,7 +217,7 @@ public class BiblionetGrSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }

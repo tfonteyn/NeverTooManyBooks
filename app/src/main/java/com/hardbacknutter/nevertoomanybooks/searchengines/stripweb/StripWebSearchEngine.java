@@ -211,7 +211,7 @@ public class StripWebSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = String.format(SEARCH_URL, codeStr);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -246,7 +246,7 @@ public class StripWebSearchEngine
         }
 
         final String url = String.format(SEARCH_URL, words);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             multiResult(context, document, criteria.getFetchCovers(), book);
@@ -279,7 +279,7 @@ public class StripWebSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }

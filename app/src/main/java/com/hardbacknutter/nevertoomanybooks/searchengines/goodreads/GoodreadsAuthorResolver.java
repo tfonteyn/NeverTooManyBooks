@@ -148,7 +148,7 @@ public final class GoodreadsAuthorResolver
         }
 
         final String url = String.format(GoodreadsSearchEngine.AUTHOR_URL, oIv.get());
-        final Document document = searchEngine.loadDocument(context, url, null);
+        final Document document = searchEngine.loadHtml(context, url, null);
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);
             if (found != null) {

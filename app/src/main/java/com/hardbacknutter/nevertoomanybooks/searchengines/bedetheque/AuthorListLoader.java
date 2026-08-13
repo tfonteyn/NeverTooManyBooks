@@ -88,7 +88,7 @@ class AuthorListLoader {
             throws SearchException, CredentialsException {
 
         final String url = hostUrl + "/liste_auteurs_BD_" + c1 + ".html";
-        final Document document = searchEngine.loadDocument(context, url, null);
+        final Document document = searchEngine.loadHtml(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parseAuthorList(document);
         }

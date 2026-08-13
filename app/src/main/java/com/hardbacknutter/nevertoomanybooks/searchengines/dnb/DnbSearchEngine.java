@@ -243,7 +243,7 @@ public class DnbSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = createSearchUrl(SRU_DNB, SEARCH_INDEX_IDN + "=" + externalId);
-        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+        final Document document = loadXml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -261,7 +261,7 @@ public class DnbSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = createSearchUrl(SRU_DNB, SEARCH_INDEX_NUM + "=" + codeStr);
-        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+        final Document document = loadXml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -279,7 +279,7 @@ public class DnbSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getDashFormattedIssn8(getEngineId());
         final String url = createSearchUrl(SRU_ZDB, SEARCH_INDEX_ISS + "=" + codeStr);
-        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+        final Document document = loadXml(context, url, null);
 
         final Book book = new Book();
 
@@ -331,7 +331,7 @@ public class DnbSearchEngine
         }
 
         final String url = createSearchUrl(sru, query.toString());
-        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+        final Document document = loadXml(context, url, null);
 
         if (!isCancelled()) {
             parse(context, document, codeStr, criteria.getFetchCovers(), book);

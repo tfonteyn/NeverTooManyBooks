@@ -322,7 +322,7 @@ public class BedethequeSearchEngine
         //The site is very "defensive". We must specify the full url and set the "Referer".
         final String url = String.format(BY_ISBN, ensureCookie(context), codeStr);
 
-        final Document document = loadDocument(context, url, extraRequestProperties);
+        final Document document = loadHtml(context, url, extraRequestProperties);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -340,7 +340,7 @@ public class BedethequeSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = String.format(BY_SID, externalId);
-        final Document document = loadDocument(context, url, extraRequestProperties);
+        final Document document = loadHtml(context, url, extraRequestProperties);
 
         final Book book = new Book();
         parse(context, document, criteria.getFetchCovers(), null, book);
@@ -375,7 +375,7 @@ public class BedethequeSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, extraRequestProperties);
+        final Document redirected = loadHtml(context, url, extraRequestProperties);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, searchedIsbn, book);
         }

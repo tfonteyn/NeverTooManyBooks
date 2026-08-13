@@ -159,7 +159,7 @@ public final class IsfdbAuthorResolver
             throws SearchException, CredentialsException {
         // the user can delete it...
         final String url = String.format(IsfdbSearchEngine.AUTHOR_URL, sid);
-        final Document document = searchEngine.loadDocument(context, url, null);
+        final Document document = searchEngine.loadHtml(context, url, null);
         if (!searchEngine.isCancelled()) {
             // sanity check, we SHOULD always have a single result page
             final String pageUrl = document.location();
@@ -180,7 +180,7 @@ public final class IsfdbAuthorResolver
 
         final String formattedName = author.getFormattedName(true);
         final String url = String.format(authorSearchUrl, formattedName);
-        final Document document = searchEngine.loadDocument(context, url, null);
+        final Document document = searchEngine.loadHtml(context, url, null);
         if (!searchEngine.isCancelled()) {
             final String pageUrl = document.location();
             if (pageUrl.contains(EA_CGI)) {

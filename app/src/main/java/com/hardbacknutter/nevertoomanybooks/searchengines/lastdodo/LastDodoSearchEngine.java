@@ -315,7 +315,7 @@ public class LastDodoSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = String.format(BY_SID, externalId);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -335,7 +335,7 @@ public class LastDodoSearchEngine
         // Reformat 10 or 13 digit codes to the site-required format,
         // whether they are valid ISBN or not.
         final String url = String.format(SEARCH_URL, formatIsbnWithDashes(codeStr));
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -377,7 +377,7 @@ public class LastDodoSearchEngine
         }
 
         final String url = String.format(SEARCH_URL, words);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             multiResult(context, document, criteria.getFetchCovers(), book);
@@ -410,7 +410,7 @@ public class LastDodoSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }

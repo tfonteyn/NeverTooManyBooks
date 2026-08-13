@@ -229,7 +229,7 @@ public class BibliotecePlSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = HOST_URL + '/' + externalId;
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -267,7 +267,7 @@ public class BibliotecePlSearchEngine
 
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = SEARCH_URL + searchPrefix + codeStr;
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         // force the product code  here as the result (single book) can contain multiple
@@ -319,7 +319,7 @@ public class BibliotecePlSearchEngine
         }
 
         final String url = SEARCH_URL + words;
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             multiResult(context, document, criteria.getFetchCovers(), book);
@@ -352,7 +352,7 @@ public class BibliotecePlSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, null);
+        final Document redirected = loadHtml(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }
@@ -792,7 +792,7 @@ public class BibliotecePlSearchEngine
         if (isCancelled()) {
             return;
         }
-        final Element element = loadDocument(context, url, null)
+        final Element element = loadHtml(context, url, null)
                 .selectFirst("div.summary");
         if (element != null) {
             final String text = SearchEngineUtils.cleanText(element);

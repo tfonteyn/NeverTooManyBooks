@@ -126,7 +126,7 @@ public final class DnbAuthorResolver
                 .encode(query, StandardCharsets.UTF_8)
                 .replace("+", "%20"));
 
-        final Document document = searchEngine.loadDocument(context, Parser.xmlParser(), url, null);
+        final Document document = searchEngine.loadXml(context, url, null);
 
         if (!searchEngine.isCancelled()) {
             final Author found = parse(document);

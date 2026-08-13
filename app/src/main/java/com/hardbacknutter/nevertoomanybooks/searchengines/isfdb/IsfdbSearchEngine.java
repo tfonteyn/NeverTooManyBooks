@@ -431,7 +431,7 @@ public class IsfdbSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = String.format(CGI_BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -1575,7 +1575,7 @@ public class IsfdbSearchEngine
                                                 @Nullable final ProductCode searchCode)
             throws SearchException, CredentialsException {
 
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadHtml(context, url, null);
 
         final Element restricted = document.selectFirst(RESTRICTED_TO_REGISTERED_USERS);
         if (restricted != null) {
@@ -1603,7 +1603,7 @@ public class IsfdbSearchEngine
 
         // go get it.
         final String url = String.format(CGI_BY_EXTERNAL_ID, edition.getSid());
-        return loadDocument(context, url, null);
+        return loadHtml(context, url, null);
     }
 
     /**

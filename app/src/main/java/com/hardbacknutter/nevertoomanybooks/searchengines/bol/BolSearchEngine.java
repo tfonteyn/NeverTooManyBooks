@@ -254,7 +254,7 @@ public class BolSearchEngine
 
         final String country = getCountry();
         final String url = String.format(BY_ISBN, country, codeStr);
-        final Document document = loadDocument(context, url, Map.of(
+        final Document document = loadHtml(context, url, Map.of(
                 HttpConstants.REFERER, String.format(ROOT_REFERER, country)));
 
         final Book book = new Book();
@@ -297,7 +297,7 @@ public class BolSearchEngine
 
         final String country = getCountry();
         final String url = String.format(BY_TEXT, country, words);
-        final Document document = loadDocument(context, url, Map.of(
+        final Document document = loadHtml(context, url, Map.of(
                 HttpConstants.REFERER, String.format(ROOT_REFERER, country)));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -334,7 +334,7 @@ public class BolSearchEngine
         if (url == null) {
             return;
         }
-        final Document redirected = loadDocument(context, url, Map.of(
+        final Document redirected = loadHtml(context, url, Map.of(
                 HttpConstants.REFERER, document.location()));
         if (!isCancelled()) {
             parse(context, searchedCode, redirected, fetchCovers, book);
