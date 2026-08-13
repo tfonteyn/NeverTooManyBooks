@@ -228,7 +228,7 @@ public class BookParserHelper {
         }
 
         // Log this as we need to understand WHY it failed.
-        LoggerFactory.getLogger().w(config.getEngineId().toString(),
+        LoggerFactory.getLogger().w(config.getEngineId().name(),
                                     "processPriceListed failed priceStr=" + priceStr);
     }
 

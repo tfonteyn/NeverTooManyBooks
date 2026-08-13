@@ -76,7 +76,7 @@ final class SearchTask
                        @NonNull final SearchEngine.SearchBy searchBy,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
-        super(taskId, TAG + ' ' + searchEngine.getEngineId(), taskListener);
+        super(taskId, TAG + ' ' + searchEngine.getEngineId().name(), taskListener);
         this.searchId = searchId;
         this.searchEngine = searchEngine;
         this.criteria = criteria;
@@ -210,7 +210,7 @@ final class SearchTask
             default: {
                 // we should never get here...
                 throw new IllegalArgumentException("SearchEngine "
-                                                   + searchEngine.getEngineId().getName(context)
+                                                   + searchEngine.getEngineId().name()
                                                    + " does not implement " + searchBy);
             }
         }
@@ -222,7 +222,7 @@ final class SearchTask
     @NonNull
     public String toString() {
         return "SearchTask{"
-               + "searchEngine=" + searchEngine.getEngineId()
+               + "searchEngine=" + searchEngine.getEngineId().name()
                + ", searchId=" + searchId
                + ", searchBy=" + searchBy
                + ", criteria=`" + criteria + '`'

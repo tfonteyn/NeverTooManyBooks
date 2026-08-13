@@ -97,9 +97,7 @@ public final class HttpCallFactory {
         }
 
         if (enableLog) {
-            // use the app context, it's the non-translatable name used as a log tag
-            final String tag = engineId.getName(ServiceLocator.getInstance().getAppContext());
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(tag));
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(engineId.name()));
         }
 
         return builder.build();

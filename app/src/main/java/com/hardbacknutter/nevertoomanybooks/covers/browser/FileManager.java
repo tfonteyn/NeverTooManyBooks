@@ -171,7 +171,7 @@ class FileManager {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|SEARCHING",
-                                            "searchEngine=" + se.getEngineId().getName(context),
+                                            "searchEngine=" + se.getEngineId().name(),
                                             "edition=" + edition,
                                             "cIdx=" + cIdx,
                                             "size=" + size);
@@ -202,7 +202,7 @@ class FileManager {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                                     LoggerFactory.getLogger().d(
                                             TAG, "search|SUCCESS",
-                                            "searchEngine=" + se.getEngineId().getName(context),
+                                            "searchEngine=" + se.getEngineId().name(),
                                             "imageFileInfo=" + imageFileInfo);
                                 }
                                 // abort search, we got an image
@@ -216,14 +216,14 @@ class FileManager {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                                 LoggerFactory.getLogger().d(
                                         TAG, "search|FAILED",
-                                        "searchEngine=" + se.getEngineId().getName(context), e);
+                                        "searchEngine=" + se.getEngineId().name(), e);
                             }
                         }
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                             LoggerFactory.getLogger().d(
                                     TAG, "search|NO FILE",
-                                    "searchEngine=" + se.getEngineId().getName(context),
+                                    "searchEngine=" + se.getEngineId().name(),
                                     "edition=" + edition,
                                     "cIdx=" + cIdx,
                                     "size=" + size);

@@ -113,7 +113,7 @@ public class SearchEditionsTask
                 // Silently ignore individual failures,
                 // we'll return what we get from the sites that worked.
                 LoggerFactory.getLogger().e(TAG, e, "searchEngine="
-                                                    + searchEngine.getEngineId().getName(context));
+                                                    + searchEngine.getEngineId().name());
             }
         }
         return editions;

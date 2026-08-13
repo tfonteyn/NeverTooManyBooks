@@ -177,7 +177,7 @@ public class SearchBookByExternalIdFragment
         final int keyboardIcon;
         final int inputType;
         final Identifier identifier = vm.getIdentifier(engineId).orElseThrow(
-                () -> new IllegalStateException("No Identifier: " + engineId));
+                () -> new IllegalStateException("No Identifier: " + engineId.name()));
         if (identifier.getType() == Identifier.Type.Text) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.keyboard_24px;

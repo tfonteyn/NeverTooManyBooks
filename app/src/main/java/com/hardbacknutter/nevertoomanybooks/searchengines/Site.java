@@ -187,7 +187,11 @@ public final class Site
     @Override
     @NonNull
     public String toString() {
-        return "Site{" + "engineId=" + engineId + ", type=" + type + ", active=" + active + '}';
+        return "Site{"
+               + "engineId=" + engineId.name()
+               + ", type=" + type
+               + ", active=" + active
+               + '}';
     }
 
     /**

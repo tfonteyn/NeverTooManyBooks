@@ -199,9 +199,9 @@ public class ImageFileInfo {
         return "ImageFileInfo{"
                + "edition=`" + edition + '`'
                + ", size=" + size
-               + ", engineId=" + engineId
+               + ", engineId=" + (engineId != null ? engineId.name() : null)
                + ", fileSpec=`"
-               + (fileSpec == null ? "" : fileSpec.substring(fileSpec.lastIndexOf('/')))
+               + (fileSpec != null ? fileSpec.substring(fileSpec.lastIndexOf('/')) : "")
                + '`'
                + '}';
     }

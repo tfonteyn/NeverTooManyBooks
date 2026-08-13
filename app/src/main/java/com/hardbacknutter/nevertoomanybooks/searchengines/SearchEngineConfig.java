@@ -299,6 +299,7 @@ public class SearchEngineConfig {
     @Override
     public String toString() {
         return "SearchEngineConfig{"
+               // Dump the full engine data, not just the name
                + "engineId=" + engineId
                + ", connectTimeoutMs=" + connectTimeoutMs
                + ", readTimeoutMs=" + readTimeoutMs
