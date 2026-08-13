@@ -63,7 +63,6 @@ final class SearchTask
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param taskId       a unique task identifier, returned with each message
      * @param searchId     a unique search identifier, to which this task belongs
      * @param searchEngine the search site engine
@@ -71,14 +70,13 @@ final class SearchTask
      * @param criteria     to use
      * @param taskListener for the results
      */
-    private SearchTask(@NonNull final Context context,
-                       final int taskId,
+    private SearchTask(final int taskId,
                        final int searchId,
                        @NonNull final SearchEngine searchEngine,
                        @NonNull final SearchEngine.SearchBy searchBy,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
-        super(taskId, TAG + ' ' + searchEngine.getEngineId().getName(context), taskListener);
+        super(taskId, TAG + ' ' + searchEngine.getEngineId(), taskListener);
         this.searchId = searchId;
         this.searchEngine = searchEngine;
         this.criteria = criteria;
@@ -88,7 +86,6 @@ final class SearchTask
     /**
      * Constructor. Will search according to passed {@link BookSearchCriteria}.
      *
-     * @param context      Current context
      * @param searchId     a unique search identifier, to which this task will belong
      * @param searchEngine the search site engine
      * @param searchBy     how to search
@@ -98,14 +95,13 @@ final class SearchTask
      * @return task
      */
     @NonNull
-    static SearchTask createSearchTask(@NonNull final Context context,
-                                       final int searchId,
+    static SearchTask createSearchTask(final int searchId,
                                        @NonNull final SearchEngine searchEngine,
                                        @NonNull final SearchEngine.SearchBy searchBy,
                                        @NonNull final BookSearchCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
 
-        final SearchTask task = new SearchTask(context, TASK_ID.incrementAndGet(),
+        final SearchTask task = new SearchTask(TASK_ID.incrementAndGet(),
                                                searchId, searchEngine, searchBy, criteria,
                                                taskListener);
         task.setExecutor(ASyncExecutor.NETWORK);

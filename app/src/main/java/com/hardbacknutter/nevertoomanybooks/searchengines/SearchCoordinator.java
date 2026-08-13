@@ -740,12 +740,12 @@ public class SearchCoordinator
             return false;
         }
 
-        final SearchTask task = SearchTask.createSearchTask(context,
-                                                            bookSearch.getId(),
-                                                            searchEngine,
-                                                            searchBy,
-                                                            bookSearch.getCriteria(),
-                                                            searchTaskListener);
+        final SearchTask task = SearchTask.createSearchTask(
+                bookSearch.getId(),
+                searchEngine,
+                searchBy,
+                bookSearch.getCriteria(),
+                searchTaskListener);
 
         if (BuildConfig.DEBUG /* always */) {
             bookSearch.debugSearchTaskStarting(engineId, task.getTaskId(), waitForIsbnOrCode);
