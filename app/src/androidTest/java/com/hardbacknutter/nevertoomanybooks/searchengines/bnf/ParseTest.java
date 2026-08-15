@@ -72,9 +72,9 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Bnf.getConfig().setLogHttpGetRequests(true);
         searchEngine = (BnfSearchEngine) EngineId.Bnf.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-                searchEngine.getConfig().setLogHttpGetRequests(true);
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);

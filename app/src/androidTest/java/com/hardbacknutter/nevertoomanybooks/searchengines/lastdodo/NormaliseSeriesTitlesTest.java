@@ -48,10 +48,12 @@ class NormaliseSeriesTitlesTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        book = new Book();
+        EngineId.LastDodoNl.getConfig().setLogHttpGetRequests(true);
         searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);    }
+
+        book = new Book();
+    }
 
     /** Dutch test data using site locale Dutch. */
     @Test

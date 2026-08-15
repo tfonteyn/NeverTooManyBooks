@@ -60,9 +60,10 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Isfdb.getConfig().setLogHttpGetRequests(true);
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
+
         resolver = new IsfdbAuthorResolver(context, searchEngine);
 
         final SharedPreferences preferences = ServiceLocator.getInstance().getSharedPreferences();

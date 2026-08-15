@@ -71,9 +71,9 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Goodreads.getConfig().setLogHttpGetRequests(true);
         searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-                searchEngine.getConfig().setLogHttpGetRequests(true);
 
         ratingNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
 

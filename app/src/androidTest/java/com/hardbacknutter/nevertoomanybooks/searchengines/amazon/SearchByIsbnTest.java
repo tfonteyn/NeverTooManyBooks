@@ -57,9 +57,10 @@ class SearchByIsbnTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Amazon.getConfig().setLogHttpGetRequests(true);
         searchEngine = EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);    }
+    }
 
     @Test
     void Isbn0702315516()

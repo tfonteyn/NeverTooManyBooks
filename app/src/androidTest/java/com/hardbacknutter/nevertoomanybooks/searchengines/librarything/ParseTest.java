@@ -58,9 +58,9 @@ class ParseTest
             throw new IllegalArgumentException("TOKEN NOT SET");
         }
 
+        EngineId.LibraryThing.getConfig().setLogHttpGetRequests(true);
         searchEngine = (LibraryThingSearchEngine) EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
 
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()

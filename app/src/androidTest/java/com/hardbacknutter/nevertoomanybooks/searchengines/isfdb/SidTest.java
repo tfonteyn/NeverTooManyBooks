@@ -45,9 +45,10 @@ class SidTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Isfdb.getConfig().setLogHttpGetRequests(true);
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);    }
+    }
 
     @Test
     void amazon() {

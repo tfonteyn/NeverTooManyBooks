@@ -70,9 +70,10 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.StripWebBe.getConfig().setLogHttpGetRequests(true);
         searchEngine = (StripWebSearchEngine) EngineId.StripWebBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
+
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
         ratingNumberParser = new RealNumberParser(allLocales);

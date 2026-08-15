@@ -57,10 +57,10 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Goodreads.getConfig().setLogHttpGetRequests(true);
         final GoodreadsSearchEngine searchEngine = (GoodreadsSearchEngine)
                 EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-                searchEngine.getConfig().setLogHttpGetRequests(true);
 
         resolver = new GoodreadsAuthorResolver(context, searchEngine);
     }

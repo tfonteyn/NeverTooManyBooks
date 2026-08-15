@@ -52,9 +52,9 @@ class AltEditionsTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Douban.getConfig().setLogHttpGetRequests(true);
         searchEngine = (DoubanSearchEngine) EngineId.Douban.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-                searchEngine.getConfig().setLogHttpGetRequests(true);
     }
 
     @Test

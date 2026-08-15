@@ -49,9 +49,10 @@ class AltEditionsTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.OpenLibrary.getConfig().setLogHttpGetRequests(true);
         searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);    }
+    }
 
     @Test
     void searchAlternativeEditionsTest()

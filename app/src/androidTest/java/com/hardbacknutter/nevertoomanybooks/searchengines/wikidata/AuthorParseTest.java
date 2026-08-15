@@ -57,10 +57,11 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Wikidata.getConfig().setLogHttpGetRequests(true);
         final WikidataSearchEngine searchEngine =
                 (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
+
         resolver = new WikidataAuthorResolver(context, searchEngine);
         authorParser = new WikidataAuthorParser(context, searchEngine);
     }

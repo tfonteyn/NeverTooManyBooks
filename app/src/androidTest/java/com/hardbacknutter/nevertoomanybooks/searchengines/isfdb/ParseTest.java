@@ -70,9 +70,10 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.Isfdb.getConfig().setLogHttpGetRequests(true);
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
+
         final SharedPreferences preferences = ServiceLocator.getInstance().getSharedPreferences();
         // Override the default 'false'
         preferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();

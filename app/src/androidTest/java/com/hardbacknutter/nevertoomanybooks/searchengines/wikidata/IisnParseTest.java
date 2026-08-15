@@ -61,10 +61,10 @@ class IisnParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine =
-                (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
+        EngineId.Wikidata.getConfig().setLogHttpGetRequests(true);
+        searchEngine = (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);    }
+    }
 
     @Test
     void mfsf()

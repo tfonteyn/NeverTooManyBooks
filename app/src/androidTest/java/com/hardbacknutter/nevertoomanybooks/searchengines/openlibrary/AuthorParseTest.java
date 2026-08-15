@@ -57,10 +57,11 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.OpenLibrary.getConfig().setLogHttpGetRequests(true);
         final OpenLibrarySearchEngine searchEngine = (OpenLibrarySearchEngine)
                 EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
+
         resolver = new OpenLibraryAuthorResolver(context, searchEngine);
         authorParser = new AuthorParser(context, searchEngine);
     }

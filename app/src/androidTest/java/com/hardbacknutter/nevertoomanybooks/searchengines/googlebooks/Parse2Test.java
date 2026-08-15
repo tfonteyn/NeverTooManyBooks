@@ -64,9 +64,10 @@ class Parse2Test
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        EngineId.GoogleBooks.getConfig().setLogHttpGetRequests(true);
         searchEngine = (GoogleBooksSearchEngine) EngineId.GoogleBooks.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        searchEngine.getConfig().setLogHttpGetRequests(true);
+
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
         moneyParser = new MoneyParser(siteLocale, allLocales);
