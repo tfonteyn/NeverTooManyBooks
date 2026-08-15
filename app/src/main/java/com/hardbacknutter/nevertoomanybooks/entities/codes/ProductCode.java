@@ -91,7 +91,6 @@ public interface ProductCode {
      */
     @NonNull
     default String getFormatted(@NonNull final EngineId engineId) {
-        //noinspection DataFlowIssue
         if (engineId.getConfig().prefersIsbn10() && this.isIsbn10Compat()) {
             return this.asText(ProductCodeType.Isbn10);
         } else {

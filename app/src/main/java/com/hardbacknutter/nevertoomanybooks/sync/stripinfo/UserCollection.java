@@ -160,7 +160,6 @@ class UserCollection {
 
         final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
 
-        //noinspection DataFlowIssue
         hostUrl = config.getHostUrl();
 
         final FutureHttp<Document> request = searchEngine.createGetDocumentRequest(context);

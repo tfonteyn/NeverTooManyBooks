@@ -471,7 +471,6 @@ public class Identifier
     public String getSiteUrl() {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
-            //noinspection DataFlowIssue
             return EngineId.Amazon.getConfig().getHostUrl();
         }
 

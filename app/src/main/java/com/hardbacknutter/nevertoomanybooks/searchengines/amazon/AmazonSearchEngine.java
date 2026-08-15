@@ -411,13 +411,11 @@ public class AmazonSearchEngine
     public static Optional<String> getIdentifierUri(@NonNull final Identifier.EntityType eType) {
         switch (eType) {
             case Book:
-                //noinspection DataFlowIssue
                 return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
                                    + "/dp/%s");
             case Author:
                 // according to wikidata, there is another url which can be used for authors:
                 //   https://amazon.com/wd/e/%s
-                //noinspection DataFlowIssue
                 return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
                                    + "/stores/author/%s");
         }

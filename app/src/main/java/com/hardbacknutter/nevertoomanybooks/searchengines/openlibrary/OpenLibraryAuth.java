@@ -193,7 +193,6 @@ public class OpenLibraryAuth
 
         final SearchEngineConfig config = EngineId.OpenLibrary.getConfig();
 
-        //noinspection DataFlowIssue
         final String url = config.getHostUrl() + USER_LOGIN_URL;
         final String postBody = new StringJoiner("&")
                 .add("username=" + URLEncoder.encode(username, StandardCharsets.UTF_8))

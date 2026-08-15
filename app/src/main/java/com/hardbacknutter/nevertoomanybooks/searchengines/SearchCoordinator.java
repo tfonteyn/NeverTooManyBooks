@@ -719,12 +719,6 @@ public class SearchCoordinator
             return false;
         }
 
-        final SearchEngineConfig config = engineId.getConfig();
-        // Sanity check; should not happen when we get here... flw
-        if (config == null) {
-            return false;
-        }
-
         final SearchEngine searchEngine = engineId.createSearchEngine(context);
 
         // Preserve the locales for use by the results-accumulator

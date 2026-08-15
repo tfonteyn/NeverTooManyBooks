@@ -55,7 +55,6 @@ public final class HttpCallFactory {
     @NonNull
     public static <R> FutureHttp<R> create(@NonNull final EngineId engineId) {
         final SearchEngineConfig config = engineId.getConfig();
-        @SuppressWarnings("DataFlowIssue")
         final Throttler throttler = config.getThrottler();
         final boolean enableLog = config.isLogHttpGetRequests();
 
@@ -79,7 +78,6 @@ public final class HttpCallFactory {
     public static OkHttpClient createHttpClient(@NonNull final EngineId engineId,
                                                 @Nullable final SSLContext sslContext) {
         final SearchEngineConfig config = engineId.getConfig();
-        //noinspection DataFlowIssue
         final Throttler throttler = config.getThrottler();
         final boolean enableLog = config.isLogHttpGetRequests();
 
@@ -119,7 +117,6 @@ public final class HttpCallFactory {
                                                       .getCookieStore();
         final SearchEngineConfig config = engineId.getConfig();
 
-        //noinspection DataFlowIssue
         return new HttpCall(httpClient, cookieStore,
                             engineId.getLabelResId(),
                             config.isLogHttpGetRequests());

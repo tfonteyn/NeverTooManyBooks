@@ -571,9 +571,9 @@ public enum EngineId
      *
      * @return {@link SearchEngineConfig}
      */
-    @Nullable
+    @NonNull
     public SearchEngineConfig getConfig() {
-        return config;
+        return Objects.requireNonNull(config);
     }
 
     /**
