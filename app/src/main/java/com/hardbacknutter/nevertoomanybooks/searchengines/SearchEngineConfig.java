@@ -94,13 +94,6 @@ public class SearchEngineConfig {
     public static final String PK_HOST_PASSWORD = "host.password";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * The set of Tags an engine will ignore when parsing a book.
-     *
-     * @see #getTagsToIgnore()
-     */
-    private static final String PK_TAGS_IGNORE = "tags.ignore";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
      * Whether to search by using the ISBN10 value or the original {@link DBKey#ISBN}.
      * <p>
      * {@code boolean}
@@ -112,8 +105,16 @@ public class SearchEngineConfig {
      * <p>
      * {@code boolean}
      */
-    static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
-    private static final int TO_MILLIS = 1000;
+    public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * The set of Tags an engine will ignore when parsing a book.
+     *
+     * @see #getTagsToIgnore()
+     */
+    private static final String PK_TAGS_IGNORE = "tags.ignore";
+    /** Multiplier. */
+    private static final int SECONDS_TO_MILLIS = 1000;
 
     @NonNull
     private final EngineId engineId;
@@ -180,7 +181,7 @@ public class SearchEngineConfig {
         // The value from prefs is in SECONDS
         if (seconds > 0) {
             // convert to milliseconds
-            return seconds * TO_MILLIS;
+            return seconds * SECONDS_TO_MILLIS;
         } else {
             return defValueInMs;
         }
