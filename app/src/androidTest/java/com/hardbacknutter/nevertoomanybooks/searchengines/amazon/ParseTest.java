@@ -65,7 +65,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Amazon.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
+        searchEngine = EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

@@ -82,7 +82,7 @@ public final class DnbAuthorResolver
     @VisibleForTesting
     private DnbAuthorResolver(@NonNull final Context context,
                               @Nullable final Cancellable caller) {
-        this((DnbSearchEngine) EngineId.Dnb.createSearchEngine(context));
+        this(EngineId.Dnb.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

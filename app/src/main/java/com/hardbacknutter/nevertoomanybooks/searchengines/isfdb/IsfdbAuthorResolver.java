@@ -95,7 +95,7 @@ public final class IsfdbAuthorResolver
      */
     private IsfdbAuthorResolver(@NonNull final Context context,
                                 @Nullable final Cancellable caller) {
-        this(context, (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context));
+        this(context, EngineId.Isfdb.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

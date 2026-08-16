@@ -68,7 +68,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Bol.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (BolSearchEngine) EngineId.Bol.createSearchEngine(context);
+        searchEngine = EngineId.Bol.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         // test data is pulled from the BE website

@@ -58,8 +58,7 @@ class AuthorParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Wikidata.getConfig().setLogHttpGetRequests(true);
-        final WikidataSearchEngine searchEngine =
-                (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
+        final WikidataSearchEngine searchEngine = EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         resolver = new WikidataAuthorResolver(context, searchEngine);

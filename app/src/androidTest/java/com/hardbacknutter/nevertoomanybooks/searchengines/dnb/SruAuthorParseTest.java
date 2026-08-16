@@ -57,7 +57,7 @@ class SruAuthorParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Dnb.getConfig().setLogHttpGetRequests(true);
-        final DnbSearchEngine searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
+        final DnbSearchEngine searchEngine = EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         resolver = new DnbAuthorResolver(searchEngine);

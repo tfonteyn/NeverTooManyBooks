@@ -131,8 +131,7 @@ public class SiteSearchMenuHandler
             final EngineId engineId = entry.getKey();
             final Integer engineMenuId = entry.getValue();
 
-            final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
-                    engineId.createSearchEngine(context);
+            final SearchEngine.SearchOnSite searchEngine = engineId.createSearchEngine(context);
             engines.put(engineId, searchEngine);
 
             final MenuItem engineMenu = menu.findItem(engineMenuId);

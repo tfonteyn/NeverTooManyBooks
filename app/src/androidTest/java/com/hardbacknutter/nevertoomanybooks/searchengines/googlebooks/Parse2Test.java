@@ -65,7 +65,7 @@ class Parse2Test
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.GoogleBooks.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (GoogleBooksSearchEngine) EngineId.GoogleBooks.createSearchEngine(context);
+        searchEngine = EngineId.GoogleBooks.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

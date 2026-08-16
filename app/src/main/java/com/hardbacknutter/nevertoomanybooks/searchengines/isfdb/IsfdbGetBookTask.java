@@ -112,7 +112,7 @@ public class IsfdbGetBookTask
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // create a new instance just for our own use
-        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
+        searchEngine = EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(this);
 
         final boolean[] fetchCovers = new boolean[DBKey.NR_OF_BOOK_COVERS];

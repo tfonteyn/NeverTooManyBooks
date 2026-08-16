@@ -58,7 +58,7 @@ class AuthorParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.OpenLibrary.getConfig().setLogHttpGetRequests(true);
-        final OpenLibrarySearchEngine searchEngine = (OpenLibrarySearchEngine)
+        final OpenLibrarySearchEngine searchEngine =
                 EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

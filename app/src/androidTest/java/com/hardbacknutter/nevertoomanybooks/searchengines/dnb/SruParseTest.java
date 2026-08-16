@@ -71,7 +71,7 @@ class SruParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Dnb.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
+        searchEngine = EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

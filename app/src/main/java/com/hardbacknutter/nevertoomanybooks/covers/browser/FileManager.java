@@ -162,7 +162,7 @@ class FileManager {
                         SearchEngine.CoverByEdition se = (SearchEngine.CoverByEdition)
                                 engineCache.get(engineId);
                         if (se == null) {
-                            se = (SearchEngine.CoverByEdition) engineId.createSearchEngine(context);
+                            se = engineId.createSearchEngine(context);
                             // caller is the FetchImageTask
                             se.setCaller(progressListener);
                             engineCache.put(engineId, se);

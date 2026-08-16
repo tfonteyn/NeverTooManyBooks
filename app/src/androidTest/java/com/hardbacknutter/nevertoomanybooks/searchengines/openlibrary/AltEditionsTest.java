@@ -50,7 +50,7 @@ class AltEditionsTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.OpenLibrary.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
+        searchEngine = EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

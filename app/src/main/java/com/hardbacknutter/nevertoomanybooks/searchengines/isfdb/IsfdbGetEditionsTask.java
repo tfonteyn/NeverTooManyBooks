@@ -109,7 +109,7 @@ public class IsfdbGetEditionsTask
         }
 
         // create a new instance just for our own use
-        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
+        searchEngine = EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(this);
 
         // can we reach the site ?

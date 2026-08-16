@@ -80,7 +80,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.DatabazeKnih.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (DatabazeKnihSearchEngine) EngineId.DatabazeKnih.createSearchEngine(context);
+        searchEngine = EngineId.DatabazeKnih.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         ServiceLocator.getInstance().getSharedPreferences()

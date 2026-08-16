@@ -101,7 +101,7 @@ public final class GoodreadsAuthorResolver
     @VisibleForTesting
     private GoodreadsAuthorResolver(@NonNull final Context context,
                                     @Nullable final Cancellable caller) {
-        this(context, (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context));
+        this(context, EngineId.Goodreads.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

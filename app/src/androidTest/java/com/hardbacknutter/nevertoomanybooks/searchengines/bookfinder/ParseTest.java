@@ -66,7 +66,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.BookFinder.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (BookFinderSearchEngine) EngineId.BookFinder.createSearchEngine(context);
+        searchEngine = EngineId.BookFinder.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

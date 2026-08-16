@@ -114,7 +114,7 @@ public class BedethequeAuthorResolver
     @VisibleForTesting
     public BedethequeAuthorResolver(@NonNull final Context context,
                                     @Nullable final Cancellable caller) {
-        this(context, (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context));
+        this(context, EngineId.Bedetheque.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

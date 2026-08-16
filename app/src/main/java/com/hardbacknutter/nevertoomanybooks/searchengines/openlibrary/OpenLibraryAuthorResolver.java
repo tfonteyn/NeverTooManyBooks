@@ -91,7 +91,7 @@ public final class OpenLibraryAuthorResolver
     @VisibleForTesting
     private OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @Nullable final Cancellable caller) {
-        this(context, (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context));
+        this(context, EngineId.OpenLibrary.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

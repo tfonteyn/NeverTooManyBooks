@@ -61,7 +61,7 @@ class AuthorParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Isfdb.getConfig().setLogHttpGetRequests(true);
-        final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
+        final IsfdbSearchEngine searchEngine = EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         resolver = new IsfdbAuthorResolver(context, searchEngine);

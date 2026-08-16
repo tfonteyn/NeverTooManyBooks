@@ -73,7 +73,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Bnf.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (BnfSearchEngine) EngineId.Bnf.createSearchEngine(context);
+        searchEngine = EngineId.Bnf.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

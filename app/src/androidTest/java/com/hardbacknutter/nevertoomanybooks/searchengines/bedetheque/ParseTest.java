@@ -67,7 +67,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Bedetheque.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
+        searchEngine = EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

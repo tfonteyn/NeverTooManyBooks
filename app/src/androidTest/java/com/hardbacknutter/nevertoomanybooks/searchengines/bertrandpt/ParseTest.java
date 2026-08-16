@@ -66,7 +66,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.BertrandPt.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (BertrandPtSearchEngine) EngineId.BertrandPt.createSearchEngine(context);
+        searchEngine = EngineId.BertrandPt.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

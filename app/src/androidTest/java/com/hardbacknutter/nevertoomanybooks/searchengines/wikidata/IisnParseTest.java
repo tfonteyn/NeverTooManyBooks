@@ -62,7 +62,7 @@ class IisnParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Wikidata.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
+        searchEngine = EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

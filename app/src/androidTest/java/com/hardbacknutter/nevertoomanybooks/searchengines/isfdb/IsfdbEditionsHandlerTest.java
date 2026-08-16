@@ -58,7 +58,7 @@ class IsfdbEditionsHandlerTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Isfdb.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
+        searchEngine = EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

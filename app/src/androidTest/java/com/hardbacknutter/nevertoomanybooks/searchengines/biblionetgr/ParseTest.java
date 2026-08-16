@@ -71,7 +71,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.BiblionetGr.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (BiblionetGrSearchEngine) EngineId.BiblionetGr.createSearchEngine(context);
+        searchEngine = EngineId.BiblionetGr.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         ServiceLocator.getInstance().getSharedPreferences()

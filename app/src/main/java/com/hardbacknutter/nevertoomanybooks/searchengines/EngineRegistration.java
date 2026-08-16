@@ -88,8 +88,7 @@ public class EngineRegistration {
         if (!engineIds.isEmpty()) {
             final EngineId engineId = engineIds.poll();
             //noinspection DataFlowIssue
-            final SearchEngine.UserRegistration searchEngine =
-                    (SearchEngine.UserRegistration) engineId.createSearchEngine(context);
+            final SearchEngine.UserRegistration searchEngine = engineId.createSearchEngine(context);
 
             showRegistrationDialog(context, searchEngine, action -> {
                 switch (action) {

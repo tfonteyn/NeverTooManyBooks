@@ -98,7 +98,7 @@ public final class DatabazeKnihAuthorResolver
     @VisibleForTesting
     private DatabazeKnihAuthorResolver(@NonNull final Context context,
                                        @Nullable final Cancellable caller) {
-        this(context, (DatabazeKnihSearchEngine) EngineId.DatabazeKnih.createSearchEngine(context));
+        this(context, EngineId.DatabazeKnih.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

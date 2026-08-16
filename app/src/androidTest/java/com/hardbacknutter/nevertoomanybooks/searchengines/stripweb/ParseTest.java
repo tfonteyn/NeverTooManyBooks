@@ -71,7 +71,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.StripWebBe.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (StripWebSearchEngine) EngineId.StripWebBe.createSearchEngine(context);
+        searchEngine = EngineId.StripWebBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final Locale siteLocale = searchEngine.getLocale(context);

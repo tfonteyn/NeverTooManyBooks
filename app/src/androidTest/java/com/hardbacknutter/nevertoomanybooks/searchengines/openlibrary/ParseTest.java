@@ -64,7 +64,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.OpenLibrary.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
+        searchEngine = EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         // 2024-11-07: this is not functional yet... the username/password are not stored

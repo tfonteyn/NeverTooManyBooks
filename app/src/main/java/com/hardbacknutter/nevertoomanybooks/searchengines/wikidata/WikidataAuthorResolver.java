@@ -108,7 +108,7 @@ public final class WikidataAuthorResolver
     @VisibleForTesting
     private WikidataAuthorResolver(@NonNull final Context context,
                                    @Nullable final Cancellable caller) {
-        this(context, (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context));
+        this(context, EngineId.Wikidata.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 

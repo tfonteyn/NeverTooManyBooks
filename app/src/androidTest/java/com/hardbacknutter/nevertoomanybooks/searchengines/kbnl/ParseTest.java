@@ -136,7 +136,7 @@ class ParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.KbNl.getConfig().setLogHttpGetRequests(true);
-        searchEngine = (KbNlSearchEngine) EngineId.KbNl.createSearchEngine(context);
+        searchEngine = EngineId.KbNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         try {
