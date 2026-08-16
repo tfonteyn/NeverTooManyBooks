@@ -213,8 +213,13 @@ public class MultiChoiceSetting
     /**
      * Get the summary.
      * <p>
-     * Source: the 'not-set' from the constructor,
-     * or the selected entry entry text.
+     * Source:
+     * <ol>
+     *     <li>The summary provider</li>
+     *     <li>The not-set summary; this can be {@code null}</li>
+     *     <li>The value; can be empty or can be {@code null}</li>
+     * </ol>
+     * Note that both summary resource id/text are IGNORED.
      *
      * @param context Current context
      *
@@ -223,6 +228,7 @@ public class MultiChoiceSetting
     @Nullable
     @Override
     public CharSequence getSummary(@NonNull final Context context) {
+        // The provider ALWAYS wins.
         if (summaryProvider != null) {
             return summaryProvider.apply(context);
         }

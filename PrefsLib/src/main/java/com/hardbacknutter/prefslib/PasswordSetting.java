@@ -48,8 +48,11 @@ public class PasswordSetting
      * <p>
      * Source:
      * <ol>
-     *     <li>Value is {@code null} or empty: The super class</li>
+     *     <li>The summary provider</li>
      *     <li>The mask</li>
+     *     <li>The summary resource id</li>
+     *     <li>The summary fixed text</li>
+     *     <li>{@code null}</li>
      * </ol>
      *
      * @param context Current context
@@ -59,16 +62,18 @@ public class PasswordSetting
     @Override
     @Nullable
     public CharSequence getSummary(@NonNull final Context context) {
+        // The provider ALWAYS wins.
         if (summaryProvider != null) {
             return summaryProvider.apply(context);
         }
 
         @Nullable
         final String value = getValue();
-        if (value == null || value.isEmpty()) {
-            return super.getSummary(context);
-        } else {
+        if (value != null && !value.isEmpty()) {
             return MASK;
         }
+
+        // fallback to the fixed summary if any.
+        return super.getSummary(context);
     }
 }

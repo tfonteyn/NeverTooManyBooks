@@ -154,10 +154,11 @@ public class StringSetting
      * <p>
      * Source:
      * <ol>
-     *     <li>Value is {@code null}: The super class</li>
-     *     <li>The value; can be empty</li>
-     *     <li>{@code null}</li>
+     *     <li>The summary provider</li>
+     *     <li>The not-set summary; this can be {@code null}</li>
+     *     <li>The value; can be empty or can be {@code null}</li>
      * </ol>
+     * Note that both summary resource id/text are IGNORED.
      *
      * @param context Current context
      *
@@ -166,6 +167,7 @@ public class StringSetting
     @Override
     @Nullable
     public CharSequence getSummary(@NonNull final Context context) {
+        // The provider ALWAYS wins.
         if (summaryProvider != null) {
             return summaryProvider.apply(context);
         }

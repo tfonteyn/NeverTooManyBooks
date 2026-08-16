@@ -81,9 +81,12 @@ public class BooleanSetting
      * <p>
      * Source:
      * <ol>
+     *     <li>The summary provider</li>
      *     <li>The {@code true} or {@code false} summary texts
-     *      * as given in the constructor</li>
-     *      <li>{@code null} if those are not provided</li>
+     *         as given in the constructor</li>
+     *     <li>The summary resource id</li>
+     *     <li>The summary fixed text</li>
+     *     <li>{@code null}</li>
      * </ol>
      *
      * @param context Current context
@@ -93,17 +96,18 @@ public class BooleanSetting
     @Override
     @Nullable
     public CharSequence getSummary(@NonNull final Context context) {
+        // The provider ALWAYS wins.
         if (summaryProvider != null) {
             return summaryProvider.apply(context);
         }
 
-        if (summaryFalse == null && !checked) {
-            return null;
+        // If one ot both is set, return it. Can return 'null' if only one is set.
+        if (summaryFalse != null || summaryTrue != null) {
+            return checked ? summaryTrue : summaryFalse;
         }
-        if (summaryTrue == null && checked) {
-            return null;
-        }
-        return checked ? summaryTrue : summaryFalse;
+
+        // fallback to the fixed summary if any.
+        return super.getSummary(context);
     }
 
     @Override

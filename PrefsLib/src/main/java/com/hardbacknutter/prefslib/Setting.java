@@ -95,8 +95,9 @@ public abstract class Setting {
      * <p>
      * Source:
      * <ol>
-     *     <li>The summary provider </li>
+     *     <li>The summary provider</li>
      *     <li>The summary resource id</li>
+     *     <li>The summary fixed text</li>
      *     <li>{@code null}</li>
      * </ol>
      *
@@ -106,6 +107,7 @@ public abstract class Setting {
      */
     @Nullable
     public CharSequence getSummary(@NonNull final Context context) {
+        // The provider ALWAYS wins.
         if (summaryProvider != null) {
             return summaryProvider.apply(context);
         }
