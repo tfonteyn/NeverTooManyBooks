@@ -83,8 +83,10 @@ public class BedethequeAuthorResolver
     @NonNull
     private final BedethequeSearchEngine searchEngine;
     @NonNull
-    private final Locale locale;
+    private final Locale siteLocale;
+    @NonNull
     private final BedethequeCacheDao cacheDao;
+    @NonNull
     private final TextNormaliser textNormaliser;
 
     /**
@@ -96,7 +98,7 @@ public class BedethequeAuthorResolver
     private BedethequeAuthorResolver(@NonNull final Context context,
                                      @NonNull final BedethequeSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        locale = searchEngine.getLocale(context);
+        siteLocale = searchEngine.getLocale(context);
 
         cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
         textNormaliser = new TextNormaliser();
@@ -203,7 +205,7 @@ public class BedethequeAuthorResolver
             if (!realName.equals(bdtAuthor.getRealName())) {
                 bdtAuthor.setRealName(realName);
                 try {
-                    cacheDao.update(bdtAuthor, locale);
+                    cacheDao.update(bdtAuthor, siteLocale);
                 } catch (@NonNull final DaoWriteException e) {
                     // log, but ignore - should never happen unless disk full
                     LoggerFactory.getLogger().e(TAG, e);
@@ -233,7 +235,7 @@ public class BedethequeAuthorResolver
 
         // Check if we have the author in the cache
         final String name = author.getFormattedName(false);
-        BdtAuthor bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
+        BdtAuthor bdtAuthor = cacheDao.findByName(name, siteLocale).orElse(null);
         if (bdtAuthor == null) {
             // If not resolved / not found,
             final AuthorListLoader pageLoader = new AuthorListLoader(context, searchEngine);
@@ -243,7 +245,7 @@ public class BedethequeAuthorResolver
                 // go fetch the list-page on which the author should/could be
                 if (pageLoader.fetch(c1)) {
                     // If the author was on the list page, we should find it in the cache now.
-                    bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
+                    bdtAuthor = cacheDao.findByName(name, siteLocale).orElse(null);
                 }
             }
         }
@@ -264,7 +266,7 @@ public class BedethequeAuthorResolver
         if (normalised.isEmpty()) {
             return '0';
         }
-        final char c1 = normalised.toUpperCase(locale).charAt(0);
+        final char c1 = normalised.toUpperCase(siteLocale).charAt(0);
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 
