@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -65,16 +66,18 @@ class UserCollectionTest
     private final Bookshelf wishlistBookshelf = new Bookshelf(
             "wishlist", BuiltinStyle.HARD_DEFAULT_UUID);
     private BookshelfMapper bookshelfMapper;
-    private StripInfoSearchEngine searchEngine;
     private MoneyParser moneyParser;
+    private HttpFutureFactory httpFutureFactory;
 
     @BeforeEach
     void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
+        final StripInfoSearchEngine searchEngine = EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+
+        httpFutureFactory = searchEngine.getHttpFutureFactory();
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
@@ -93,7 +96,7 @@ class UserCollectionTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
-        final UserCollection uc = new UserCollection(context, searchEngine, userId,
+        final UserCollection uc = new UserCollection(context, httpFutureFactory, userId,
                                                      bookshelfMapper);
 
         final List<Book> collection = uc.parseDocument(document, 1, logger);
@@ -137,7 +140,7 @@ class UserCollectionTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
-        final UserCollection uc = new UserCollection(context, searchEngine, userId,
+        final UserCollection uc = new UserCollection(context, httpFutureFactory, userId,
                                                      bookshelfMapper);
 
         final List<Book> collection = uc.parseDocument(document, 3, logger);

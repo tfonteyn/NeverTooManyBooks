@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -126,8 +127,7 @@ public class StripInfoReader
         coversForNewBooks = new boolean[]{doCovers, doCovers, doCovers, doCovers};
 
         // create a new instance just for our own use
-        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
-
+        searchEngine = EngineId.StripInfoBe.createSearchEngine(context);
 
         final ServiceLocator locator = ServiceLocator.getInstance();
         bookDao = locator.getBookDao();
@@ -156,15 +156,15 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        final SiteAuthModule siteAuthModule =
-                new StripInfoAuth(searchEngine.getHttpFutureFactory());
-        final String userId = siteAuthModule.login(context);
+        final HttpFutureFactory httpFutureFactory = searchEngine.getHttpFutureFactory();
 
+        final SiteAuthModule siteAuthModule = new StripInfoAuth(httpFutureFactory);
+        final String userId = siteAuthModule.login(context);
         searchEngine.setAuthModule(siteAuthModule);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
-        final UserCollection uc = new UserCollection(context, searchEngine, userId,
+        final UserCollection uc = new UserCollection(context, httpFutureFactory, userId,
                                                      new BookshelfMapper());
 
         results = new ReaderResults();

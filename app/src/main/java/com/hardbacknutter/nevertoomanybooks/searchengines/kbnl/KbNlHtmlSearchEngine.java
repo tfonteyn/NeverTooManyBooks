@@ -35,7 +35,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -109,7 +108,8 @@ public class KbNlHtmlSearchEngine
      * param 2: the set number (part of the site session params)
      * Param 3: the SHW part of the url as found in a multi-result
      */
-    private static final String BOOK_URL = KbNlSearchEngine.HOST_URL + "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
+    private static final String BOOK_URL = KbNlSearchEngine.HOST_URL
+                                           + "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
     @Nullable
     private String tmpSeriesNr;
@@ -155,7 +155,7 @@ public class KbNlHtmlSearchEngine
     public Document loadHtml(@NonNull final Context context,
                              @NonNull final String url,
                              @Nullable final Map<String, String> requestProperties)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         final Document document = super.loadHtml(context, url, requestProperties);
 

@@ -38,11 +38,11 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -146,14 +146,14 @@ class UserCollection {
     /**
      * Constructor.
      *
-     * @param context         Current context
-     * @param searchEngine    to use
-     * @param userId          as extracted from the auth Cookie.
-     * @param bookshelfMapper mapper for the wishlist/owned flags
+     * @param context           Current context
+     * @param httpFutureFactory to use
+     * @param userId            as extracted from the auth Cookie.
+     * @param bookshelfMapper   mapper for the wishlist/owned flags
      */
     @AnyThread
     UserCollection(@NonNull final Context context,
-                   @NonNull final StripInfoSearchEngine searchEngine,
+                   @NonNull final HttpFutureFactory httpFutureFactory,
                    @NonNull final String userId,
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
@@ -162,8 +162,7 @@ class UserCollection {
 
         hostUrl = config.getHostUrl();
 
-        final FutureHttp<Document> request = searchEngine.getHttpFutureFactory()
-                                                         .createGetDocumentRequest();
+        final FutureHttp<Document> request = httpFutureFactory.createGetDocumentRequest();
         final boolean enableLog = config.isLogHttpGetRequests();
         jsoupLoader = new JsoupLoader(request, enableLog);
 

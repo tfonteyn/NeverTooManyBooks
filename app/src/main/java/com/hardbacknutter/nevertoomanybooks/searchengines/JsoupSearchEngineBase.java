@@ -29,7 +29,7 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 
 import org.jsoup.nodes.Document;
@@ -73,21 +73,43 @@ public abstract class JsoupSearchEngineBase
         this.charSetName = charSetName;
     }
 
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an HTML parser.
+     *
+     * @param context           Current context
+     * @param url               to load
+     * @param requestProperties (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
     @WorkerThread
     @NonNull
     public Document loadHtml(@NonNull final Context context,
                              @NonNull final String url,
                              @Nullable final Map<String, String> requestProperties)
-            throws SearchException, CredentialsException {
+            throws SearchException {
         return loadDocument(context, Parser.htmlParser(), url, requestProperties);
     }
 
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an XML parser.
+     *
+     * @param context           Current context
+     * @param url               to load
+     * @param requestProperties (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
     @WorkerThread
     @NonNull
     public Document loadXml(@NonNull final Context context,
                             @NonNull final String url,
                             @Nullable final Map<String, String> requestProperties)
-            throws SearchException, CredentialsException {
+            throws SearchException {
         return loadDocument(context, Parser.xmlParser(), url, requestProperties);
     }
 
@@ -102,7 +124,6 @@ public abstract class JsoupSearchEngineBase
      * @return the document
      *
      * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -110,10 +131,11 @@ public abstract class JsoupSearchEngineBase
                                  @NonNull final Parser parser,
                                  @NonNull final String url,
                                  @Nullable final Map<String, String> requestProperties)
-            throws SearchException, CredentialsException {
+            throws SearchException {
         try {
+            final FutureHttp<Document> request = httpFutureFactory.createGetDocumentRequest();
             final boolean logEnabled = getConfig().isLogHttpGetRequests();
-            jsoupLoader = new JsoupLoader(httpFutureFactory.createGetDocumentRequest(), logEnabled);
+            jsoupLoader = new JsoupLoader(request, logEnabled);
             jsoupLoader.setCharSetName(charSetName);
 
             return jsoupLoader.loadDocument(context, parser, url, requestProperties);
