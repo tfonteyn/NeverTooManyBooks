@@ -163,6 +163,12 @@ public final class CalibreContentServer
     public static final String PREFERENCE_KEY = "calibre";
 
     static final String PK_HOST_URL = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
+    /**
+     * Whether to use a Throttler. Default is {@code true}.
+     *
+     * @see #THROTTLER_DELAY_IN_MILLIS
+     */
+    static final String PK_USE_THROTTLER = PREFERENCE_KEY + ".throttler";
 
     private static final String PK_HOST_USER = PREFERENCE_KEY
                                                + '.' + SearchEngineConfig.PK_HOST_USER;
@@ -173,7 +179,7 @@ public final class CalibreContentServer
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
-    private static final String PK_ENABLE_HTTP_LOGGING = PREFERENCE_KEY + '.' + "logging.http";
+    /** The local download folder. */
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
     /** Log tag. */
@@ -304,11 +310,12 @@ public final class CalibreContentServer
     private static final String RESPONSE_TAG_LIBRARY_DETAILS = "library_details";
 
     /**
-     * While a Calibre server is typically a private in-house setup, we still
-     * apply a Throttler to accomodate using weak hardware (e.g. raspberry-pi)
-     * The 200 millis was arbitrarily chosen
-     * <p>
-     * FIXME: make the use of a throttler optional via a user-setting
+     * While a Calibre server is typically a private in-house setup, we still,
+     * by default, apply a Throttler to accomodate using weak hardware (e.g. raspberry-pi)
+     * The 200 millis was arbitrarily chosen.
+     * This can be switched off by the user.
+     *
+     * @see #PK_USE_THROTTLER
      */
     private static final int THROTTLER_DELAY_IN_MILLIS = 200;
 
@@ -332,6 +339,7 @@ public final class CalibreContentServer
     private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
     private final boolean httpLogEnabled;
+    @Nullable
     private final Throttler throttler;
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
@@ -385,17 +393,25 @@ public final class CalibreContentServer
 
         cookieStore = serviceLocator.getCookieManager().getCookieStore();
 
-        httpLogEnabled = serviceLocator.getSharedPreferences()
-                                       .getBoolean(PK_ENABLE_HTTP_LOGGING, false);
+        httpLogEnabled = serviceLocator.getSharedPreferences().getBoolean(
+                PREFERENCE_KEY + '.' + SearchEngineConfig.PK_ENABLE_HTTP_LOGGING,
+                false);
 
-        throttler = new Throttler(THROTTLER_DELAY_IN_MILLIS);
+        final boolean useThrottler = serviceLocator.getSharedPreferences()
+                                                   .getBoolean(PK_USE_THROTTLER, true);
+
+        throttler = useThrottler ? new Throttler(THROTTLER_DELAY_IN_MILLIS) : null;
+
         final OkHttpClient.Builder builder = serviceLocator
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS)
-                .addInterceptor(new ThrottlingInterceptor(throttler))
-                .addInterceptor(new RateLimitInterceptor(throttler, httpLogEnabled));
+                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
+
+        if (useThrottler) {
+            builder.addInterceptor(new ThrottlingInterceptor(throttler))
+                   .addInterceptor(new RateLimitInterceptor(throttler, httpLogEnabled));
+        }
 
         if (sslContext != null && x509TrustManager != null) {
             builder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);

@@ -109,8 +109,7 @@ public class CalibrePreferencesFragment
                        this::onPickFolder, p -> {
                     p.setIcon(R.drawable.folder_24px);
                     p.setSummaryProvider(this::getDownloadFolderSummary);
-                }
-        );
+                });
 
         factory.text(CalibreContentServer.PK_HOST_URL,
                      R.string.lbl_website_address, null, p -> {
@@ -125,8 +124,13 @@ public class CalibrePreferencesFragment
                        this::onPickCA, p -> {
                     p.setIcon(R.drawable.security_24px);
                     p.setSummaryProvider(this::getCaSummary);
-                }
-        );
+                });
+
+        factory.bool(CalibreContentServer.PK_USE_THROTTLER,
+                     R.string.lbl_limit_request_speed,
+                     null, p -> {
+                    p.setSummary(R.string.lbl_limit_request_speed_info);
+                });
 
         final String pk = CalibreContentServer.PREFERENCE_KEY;
         CommonSettingsFactory.credentials(factory, pk);

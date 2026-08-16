@@ -2148,6 +2148,18 @@
     <string name="lbl_read_timeout">Read timeout (seconds)</string>
     <!-- Website connection setting - preference category title. -->
     <string name="lbl_timeouts">Timeouts</string>
+    <!-- User setting: whether a particular site can be accessed at maximum speed
+         or if a throttler should be used to restrict the amount of connections
+         over a set timespan.
+
+         Currently on the Calibre server can be operated without a throttler.
+         External websites ALWAYS get throttled to comply to their rate limits,
+         or just general fair use.
+         -->
+    <string name="lbl_limit_request_speed">Limit request speed</string>
+    <!-- See "lbl_throttle". This is the subtitle with more details. -->
+    <string name="lbl_limit_request_speed_info">Adds short delays between requests to prevent server overload and IP blocks.</string>
+
     <!-- Website connection setting -->
     <string name="lbl_website_address">Site address (URL)</string>
     <!-- Whether to use the user credentials to login at a site before doing a search.
