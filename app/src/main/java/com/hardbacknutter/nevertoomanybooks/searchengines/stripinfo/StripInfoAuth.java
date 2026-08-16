@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
@@ -96,13 +96,19 @@ public class StripInfoAuth
      * </pre>
      */
     private static final String COOKIE_USERDATA = "si_userdata";
+
+    @NonNull
+    private final HttpFutureFactory httpFutureFactory;
     @Nullable
     private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
+     *
+     * @param httpFutureFactory to use
      */
-    public StripInfoAuth() {
+    public StripInfoAuth(@NonNull final HttpFutureFactory httpFutureFactory) {
+        this.httpFutureFactory = httpFutureFactory;
     }
 
     /**
@@ -211,7 +217,7 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        httpPost = HttpCallFactory.create(EngineId.StripInfoBe);
+        httpPost = httpFutureFactory.createRequest();
         httpPost.setHeader(HttpConstants.CONTENT_TYPE,
                            HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
                 .post(url, postBody, null);

@@ -156,7 +156,8 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        final SiteAuthModule siteAuthModule = new StripInfoAuth();
+        final SiteAuthModule siteAuthModule =
+                new StripInfoAuth(searchEngine.getHttpFutureFactory());
         final String userId = siteAuthModule.login(context);
 
         searchEngine.setAuthModule(siteAuthModule);

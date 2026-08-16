@@ -415,7 +415,7 @@ public class IsfdbSearchEngine
         // Depending on if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
-            siteAuthModule = new IsfdbAuth();
+            siteAuthModule = new IsfdbAuth(httpFutureFactory);
             try {
                 siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {

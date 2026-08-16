@@ -288,7 +288,7 @@ public class OpenLibrarySearchEngine
         // Depending on if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
-            siteAuthModule = new OpenLibraryAuth();
+            siteAuthModule = new OpenLibraryAuth(httpFutureFactory);
             try {
                 siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {

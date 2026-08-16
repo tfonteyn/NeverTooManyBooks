@@ -29,9 +29,13 @@ import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuth;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuth;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 
 final class ConnectionValidatorFactory {
@@ -62,15 +66,21 @@ final class ConnectionValidatorFactory {
 
         if (siteResId == R.string.site_isfdb) {
             // The auth module login IS the validation
-            return new IsfdbAuth();
+            final IsfdbSearchEngine searchEngine =
+                    EngineId.Isfdb.createSearchEngine(context);
+            return new IsfdbAuth(searchEngine.getHttpFutureFactory());
 
         } else if (siteResId == R.string.site_open_library) {
             // The auth module login IS the validation
-            return new OpenLibraryAuth();
+            final OpenLibrarySearchEngine searchEngine =
+                    EngineId.OpenLibrary.createSearchEngine(context);
+            return new OpenLibraryAuth(searchEngine.getHttpFutureFactory());
 
         } else if (siteResId == R.string.site_stripinfo_be) {
             // The auth module login IS the validation
-            return new StripInfoAuth();
+            final StripInfoSearchEngine searchEngine =
+                    EngineId.StripInfoBe.createSearchEngine(context);
+            return new StripInfoAuth(searchEngine.getHttpFutureFactory());
         }
 
         // The error message is slightly misleading but will have to do.
