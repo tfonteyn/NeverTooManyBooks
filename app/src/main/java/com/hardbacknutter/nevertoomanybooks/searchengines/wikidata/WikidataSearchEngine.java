@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -50,8 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
-
-import okhttp3.OkHttpClient;
 
 /**
  * The structured database of Wikipedia.
@@ -265,9 +262,8 @@ public class WikidataSearchEngine
             final String url = String.format(ISSN_SEARCH_URL,
                                              URLEncoder.encode(sparql, StandardCharsets.UTF_8));
 
-            final OkHttpClient httpClient = createHttpClient();
-            httpCall = HttpCallFactory.create(httpClient, getEngineId());
-            final String response = httpCall.getAsString(url, getLocale(context), userLocale, null);
+            httpCall = httpCallFactory.createCall();
+            final String response = httpCall.getAsString(url, null);
             document = new JSONObject(response);
 
             if (!isCancelled()) {
