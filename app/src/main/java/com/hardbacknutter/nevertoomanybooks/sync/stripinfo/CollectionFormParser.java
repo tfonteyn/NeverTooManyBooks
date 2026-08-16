@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 
 import org.jsoup.Jsoup;
@@ -43,7 +42,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -86,7 +84,7 @@ public class CollectionFormParser {
     private static final String SIDE_FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
     @NonNull
-    private final OkHttpClient httpClient;
+    private final HttpCallFactory httpCallFactory;
     @NonNull
     private final String postUrl;
 
@@ -99,15 +97,15 @@ public class CollectionFormParser {
      * Constructor.
      *
      * @param context         Current context
-     * @param httpClient      to use
+     * @param httpCallFactory      to use
      * @param bookshelfMapper mapper for the wishlist/owned flags
      */
     @AnyThread
     public CollectionFormParser(@NonNull final Context context,
-                                @NonNull final OkHttpClient httpClient,
+                                @NonNull final HttpCallFactory httpCallFactory,
                                 @NonNull final BookshelfMapper bookshelfMapper) {
 
-        this.httpClient = httpClient;
+        this.httpCallFactory = httpCallFactory;
 
         postUrl = StripInfoSearchEngine.COLLECTION_FORM_URL;
 
@@ -140,7 +138,7 @@ public class CollectionFormParser {
                 // no "frmName" used here
                 .build();
 
-        httpCall = HttpCallFactory.create(httpClient, EngineId.StripInfoBe);
+        httpCall = httpCallFactory.createCall();
         final Request request = new Request.Builder()
                 .url(postUrl)
                 .post(postBody)

@@ -55,7 +55,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -98,7 +97,7 @@ class CollectionFormUploader {
     @NonNull
     private final MoneyParser moneyParser;
     @NonNull
-    private final OkHttpClient httpClient;
+    private final HttpCallFactory httpCallFactory;
     @Nullable
     private HttpCall httpCall;
 
@@ -110,9 +109,8 @@ class CollectionFormUploader {
     @AnyThread
     CollectionFormUploader(@NonNull final Context context) {
 
-        final StripInfoSearchEngine searchEngine =
-                (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
-        httpClient = searchEngine.createHttpClient();
+        final StripInfoSearchEngine searchEngine = EngineId.StripInfoBe.createSearchEngine(context);
+        httpCallFactory = searchEngine.getHttpCallFactory();
 
         postUrl = StripInfoSearchEngine.COLLECTION_FORM_URL;
 
@@ -431,7 +429,7 @@ class CollectionFormUploader {
     private Document doPost(@NonNull final RequestBody postBody)
             throws IOException {
 
-        httpCall = HttpCallFactory.create(httpClient, EngineId.StripInfoBe);
+        httpCall = httpCallFactory.createCall();
         final Request request = new Request.Builder()
                 .url(postUrl)
                 .post(postBody)
