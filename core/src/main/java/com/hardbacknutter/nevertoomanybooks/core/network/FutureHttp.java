@@ -61,6 +61,7 @@ import javax.net.ssl.SSLContext;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.xml.sax.SAXException;
@@ -83,7 +84,6 @@ public class FutureHttp<R> {
     private static final String LOG_ATTEMPT = "attempt=";
     private static final String LOG_REQUEST_URL = "requestUrlStr=";
     private static final String LOG_REDIRECT_COUNT = "redirectCount=";
-    private static final String LOG_CHECK_RESPONSE_CODE = "checkResponseCode";
     private static final String LOG_REQUEST_URL_STR = "requestUrlStr=`";
     private static final String LOG_RECOVERABLE_ERROR = "doGetConnect|recoverable error";
 
@@ -158,99 +158,40 @@ public class FutureHttp<R> {
                 response.getHeaderField(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
     }
 
-    /**
-     * If already connected, simply check the response code.
-     * Otherwise, implicitly connect by getting the response code.
-     *
-     * @param request to check
-     *
-     * @throws IOException                  on connect
-     * @throws HttpUnauthorizedException    401: Unauthorized.
-     * @throws HttpForbiddenException       403: Forbidden
-     * @throws HttpNotFoundException        404: Not Found.
-     * @throws SocketTimeoutException       408: Request Time-Out.
-     * @throws HttpTooManyRequestsException 429: Too Many Requests.
-     * @throws HttpStatusException          on any other HTTP failures
-     */
-    @WorkerThread
-    private void checkResponseCode(@NonNull final HttpURLConnection request)
-            throws IOException,
-                   HttpUnauthorizedException,
-                   HttpNotFoundException,
-                   SocketTimeoutException,
-                   HttpTooManyRequestsException,
-                   HttpStatusException {
+    private static void logRequest(final int attempt,
+                                   @NonNull final HttpURLConnection request) {
 
-        final int responseCode = request.getResponseCode();
+        final String headers = request
+                .getHeaderFields()
+                .entrySet()
+                .stream()
+                .map(es -> "Request Header: " + es.getKey() + '='
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
 
-        if (enableLog) {
-            LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE,
-                                        responseCode + " " + request.getURL().toString());
-        }
-
-        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-            return;
-        }
-
-        if (enableLog) {
-            final String msg = request
-                    .getHeaderFields()
-                    .entrySet()
-                    .stream()
-                    .map(es -> "Response Header: " + es.getKey() + '='
-                               + String.join("|", es.getValue()))
-                    .collect(Collectors.joining("\n"));
-
-            LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE, "\n" + msg);
-        }
-
-        @Nullable
-        final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
-
-        switch (responseCode) {
-            case HttpURLConnection.HTTP_UNAUTHORIZED: {
-                throw new HttpUnauthorizedException(siteResId,
-                                                    request.getResponseMessage(),
-                                                    request.getURL(),
-                                                    location);
-            }
-            // 403 if we're 100% blocked.
-            // 405 if we hit a wall like
-            // https://anubis.techaro.lol/docs/design/how-anubis-works/
-            case HttpURLConnection.HTTP_FORBIDDEN:
-            case HttpURLConnection.HTTP_BAD_METHOD: {
-                throw new HttpForbiddenException(siteResId,
-                                                 request.getResponseMessage(),
-                                                 request.getURL(),
-                                                 location);
-            }
-            case HttpURLConnection.HTTP_NOT_FOUND: {
-                throw new HttpNotFoundException(siteResId,
-                                                request.getResponseMessage(),
-                                                request.getURL(),
-                                                location);
-            }
-            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
-                // for easier reporting issues to the user, map a 408 to an STE
-                throw new SocketTimeoutException("408 " + request.getResponseMessage());
-            }
-            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
-                throw new HttpTooManyRequestsException(
-                        siteResId,
-                        request.getHeaderField(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
-                        request.getResponseMessage(),
-                        request.getURL(),
-                        location);
-            }
-            default: {
-                throw new HttpStatusException(siteResId,
-                                              responseCode,
-                                              request.getResponseMessage(),
-                                              request.getURL(),
-                                              location);
-            }
-        }
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "attempt: " + attempt);
+        logger.d(TAG, "url: " + request.getURL());
+        logger.d(TAG, "headers", "\n" + headers);
     }
+
+    private static void logResponse(@NonNull final HttpURLConnection response)
+            throws IOException {
+        final String headers = response
+                .getHeaderFields()
+                .entrySet()
+                .stream()
+                .map(es -> "Response Header: " + es.getKey() + '='
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "url: ", response.getURL());
+        logger.d(TAG, "responseCode: " + response.getResponseCode());
+        logger.d(TAG, "responseMsg: " + response.getResponseMessage());
+        logger.d(TAG, "headers", "\n" + headers);
+    }
+
 
     /**
      * Set the optional connect-timeout.
@@ -412,8 +353,9 @@ public class FutureHttp<R> {
     /**
      * Create a new unconnected {@link HttpURLConnection}.
      *
-     * @param url    to connect to
-     * @param method one of {@link #GET} or {@link #HEAD}.
+     * @param url     to connect to
+     * @param method  one of {@link #GET} or {@link #HEAD}.
+     * @param attempt for logging only
      *
      * @return request
      *
@@ -421,7 +363,8 @@ public class FutureHttp<R> {
      */
     @NonNull
     private HttpURLConnection createRequest(@NonNull final URL url,
-                                            @NonNull final String method)
+                                            @NonNull final String method,
+                                            final int attempt)
             throws IOException {
 
         final HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -464,15 +407,7 @@ public class FutureHttp<R> {
         }
 
         if (enableLog) {
-            final String msg = request
-                    .getRequestProperties()
-                    .entrySet()
-                    .stream()
-                    .map(es -> "Request Header: " + es.getKey() + "="
-                               + String.join("|", es.getValue()))
-                    .collect(Collectors.joining("\n"));
-
-            LoggerFactory.getLogger().d(TAG, "createRequest", "\n" + msg);
+            logRequest(attempt, request);
         }
 
         return request;
@@ -718,6 +653,87 @@ public class FutureHttp<R> {
     }
 
     /**
+     * If already connected, simply check the response code.
+     * Otherwise, implicitly connect by getting the response code.
+     *
+     * @param request to check
+     *
+     * @throws IOException                  on connect
+     * @throws HttpUnauthorizedException    401: Unauthorized.
+     * @throws HttpForbiddenException       403: Forbidden
+     * @throws HttpNotFoundException        404: Not Found.
+     * @throws SocketTimeoutException       408: Request Time-Out.
+     * @throws HttpTooManyRequestsException 429: Too Many Requests.
+     * @throws HttpStatusException          on any other HTTP failures
+     */
+    @WorkerThread
+    private void checkResponseCode(@NonNull final HttpURLConnection request)
+            throws IOException,
+                   HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   SocketTimeoutException,
+                   HttpTooManyRequestsException,
+                   HttpStatusException {
+
+        if (enableLog) {
+            logResponse(request);
+        }
+
+        final int responseCode = request.getResponseCode();
+
+        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            return;
+        }
+
+        @Nullable
+        final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
+
+        switch (responseCode) {
+            case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                throw new HttpUnauthorizedException(siteResId,
+                                                    request.getResponseMessage(),
+                                                    request.getURL(),
+                                                    location);
+            }
+            // 403 if we're 100% blocked.
+            // 405 if we hit a wall like
+            // https://anubis.techaro.lol/docs/design/how-anubis-works/
+            case HttpURLConnection.HTTP_FORBIDDEN:
+            case HttpURLConnection.HTTP_BAD_METHOD: {
+                throw new HttpForbiddenException(siteResId,
+                                                 request.getResponseMessage(),
+                                                 request.getURL(),
+                                                 location);
+            }
+            case HttpURLConnection.HTTP_NOT_FOUND: {
+                throw new HttpNotFoundException(siteResId,
+                                                request.getResponseMessage(),
+                                                request.getURL(),
+                                                location);
+            }
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
+                // for easier reporting issues to the user, map a 408 to an STE
+                throw new SocketTimeoutException("408 " + request.getResponseMessage());
+            }
+            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
+                throw new HttpTooManyRequestsException(
+                        siteResId,
+                        request.getHeaderField(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
+                        request.getResponseMessage(),
+                        request.getURL(),
+                        location);
+            }
+            default: {
+                throw new HttpStatusException(siteResId,
+                                              responseCode,
+                                              request.getResponseMessage(),
+                                              request.getURL(),
+                                              location);
+            }
+        }
+    }
+
+    /**
      * Perform the actual opening of the connection.
      * <p>
      * If the site fails to connect, we will attempt up to {@link #RETRY_COUNT}.
@@ -744,7 +760,7 @@ public class FutureHttp<R> {
         // start at 1 to make the logs clear.
         int attempt = 1;
 
-        final HttpURLConnection initialRequest = createRequest(url, method);
+        final HttpURLConnection initialRequest = createRequest(url, method, attempt);
         // Preserve for a potential manual redirect
         String requestUrlStr = initialRequest.getURL().toString();
 
@@ -752,9 +768,7 @@ public class FutureHttp<R> {
 
         while (attempt <= retryCount) {
             if (enableLog) {
-                LoggerFactory.getLogger().d(TAG, "doGetConnect|connect",
-                                            LOG_ATTEMPT + attempt,
-                                            LOG_REQUEST_URL + requestUrlStr);
+                logRequest(attempt, request);
             }
 
             //noinspection OverlyBroadCatchBlock
@@ -770,6 +784,8 @@ public class FutureHttp<R> {
                     final String responseUrlStr = responseUrl.toString();
 
                     if (enableLog) {
+                        // checkResponseCode will do full logging.
+                        // but we want to log which attempt this is
                         LoggerFactory.getLogger()
                                      .d(TAG, "doGetConnect|response",
                                         LOG_ATTEMPT + attempt,
@@ -787,7 +803,7 @@ public class FutureHttp<R> {
                         // follow the redirect
                         redirectCount++;
                         request.disconnect();
-                        request = createRequest(responseUrl, request.getRequestMethod());
+                        request = createRequest(responseUrl, request.getRequestMethod(), attempt);
                         // Preserve for potential retry
                         requestUrlStr = responseUrlStr;
 
@@ -940,7 +956,7 @@ public class FutureHttp<R> {
                     if (enableLog) {
                         LoggerFactory.getLogger().d(TAG, "post|createRequest");
                     }
-                    request = createRequest(url, POST);
+                    request = createRequest(url, POST, 1);
 
                     throttler.waitUntilRequestAllowed();
                     try (OutputStream os = request.getOutputStream();
