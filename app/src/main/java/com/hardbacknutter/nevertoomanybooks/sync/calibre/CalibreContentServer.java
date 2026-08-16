@@ -307,6 +307,8 @@ public final class CalibreContentServer
      * While a Calibre server is typically a private in-house setup, we still
      * apply a Throttler to accomodate using weak hardware (e.g. raspberry-pi)
      * The 200 millis was arbitrarily chosen
+     * <p>
+     * FIXME: make the use of a throttler optional via a user-setting
      */
     private static final int THROTTLER_DELAY_IN_MILLIS = 200;
 
@@ -330,6 +332,7 @@ public final class CalibreContentServer
     private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
     private final boolean httpLogEnabled;
+    private final Throttler throttler;
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
     private volatile ImageDownloader imageDownloader;
@@ -385,7 +388,7 @@ public final class CalibreContentServer
         httpLogEnabled = serviceLocator.getSharedPreferences()
                                        .getBoolean(PK_ENABLE_HTTP_LOGGING, false);
 
-        final Throttler throttler = new Throttler(THROTTLER_DELAY_IN_MILLIS);
+        throttler = new Throttler(THROTTLER_DELAY_IN_MILLIS);
         final OkHttpClient.Builder builder = serviceLocator
                 .getOkHttpClient()
                 .newBuilder()
@@ -1688,7 +1691,7 @@ public final class CalibreContentServer
                 instance = imageDownloader;
                 if (instance == null) {
                     instance = new ImageDownloader(httpClient,
-                                                   null,
+                                                   throttler,
                                                    R.string.site_calibre,
                                                    false);
                     imageDownloader = instance;
