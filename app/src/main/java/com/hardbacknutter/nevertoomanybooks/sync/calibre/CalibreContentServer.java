@@ -93,6 +93,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -324,8 +325,9 @@ public final class CalibreContentServer
     private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
     private final boolean httpLogEnabled;
+    /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
-    private ImageDownloader imageDownloader;
+    private volatile ImageDownloader imageDownloader;
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary defaultLibrary;
@@ -846,7 +848,7 @@ public final class CalibreContentServer
 
     private void loadCustomFieldDefinitions(@NonNull final CalibreLibrary library,
                                             final int bookId)
-            throws StorageException, IOException, JSONException {
+            throws IOException, JSONException {
 
         final Set<CalibreCustomField> fields = new HashSet<>();
         final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
@@ -1408,22 +1410,13 @@ public final class CalibreContentServer
     @NonNull
     Optional<File> getCover(final int calibreId,
                             @NonNull final String coverUrl)
-            throws IOException, StorageException {
-
-        synchronized (this) {
-            if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader(httpClient,
-                                                      null,
-                                                      R.string.site_calibre,
-                                                      false);
-            }
-        }
+            throws IOException, CoverStorageException {
 
         final String tempFilename = ImageFileInfo.getTempFilename(
                 FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
         final Request imageRequest = createImageRequest(serverUri + coverUrl);
-        return imageDownloader.fetch(imageRequest, tempFilename);
+        return getImageDownloader().fetch(imageRequest, tempFilename);
     }
 
     /**
@@ -1669,8 +1662,9 @@ public final class CalibreContentServer
             if (fileFetchCall != null) {
                 fileFetchCall.cancel();
             }
-            if (imageDownloader != null) {
-                imageDownloader.cancel();
+            final ImageDownloader downloader = imageDownloader;
+            if (downloader != null) {
+                downloader.cancel();
             }
             if (postCall != null) {
                 postCall.cancel();
@@ -1678,6 +1672,23 @@ public final class CalibreContentServer
         }
     }
 
+    @NonNull
+    private ImageDownloader getImageDownloader() {
+        ImageDownloader instance = imageDownloader;
+        if (instance == null) {
+            synchronized (this) {
+                instance = imageDownloader;
+                if (instance == null) {
+                    instance = new ImageDownloader(httpClient,
+                                                   null,
+                                                   R.string.site_calibre,
+                                                   false);
+                    imageDownloader = instance;
+                }
+            }
+        }
+        return instance;
+    }
 
     public static class Builder {
 

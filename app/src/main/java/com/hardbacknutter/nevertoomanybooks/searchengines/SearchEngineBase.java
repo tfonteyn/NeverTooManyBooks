@@ -48,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -75,8 +75,9 @@ public abstract class SearchEngineBase
 
     @Nullable
     private SSLContext sslContext;
+    /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
-    private ImageDownloader imageDownloader;
+    private volatile ImageDownloader imageDownloader;
     @Nullable
     private Cancellable caller;
 
@@ -237,8 +238,9 @@ public abstract class SearchEngineBase
     public void cancel() {
         cancelRequested.set(true);
         synchronized (this) {
-            if (imageDownloader != null) {
-                imageDownloader.cancel();
+            final ImageDownloader downloader = imageDownloader;
+            if (downloader != null) {
+                downloader.cancel();
             }
         }
     }
@@ -426,7 +428,7 @@ public abstract class SearchEngineBase
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -436,24 +438,15 @@ public abstract class SearchEngineBase
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 3) final int cIdx,
                                       @Nullable final ImageWebSize size)
-            throws StorageException {
+            throws CoverStorageException {
 
-        synchronized (this) {
-            if (imageDownloader == null) {
-                final OkHttpClient httpClient = createHttpClient();
-                imageDownloader = new ImageDownloader(httpClient,
-                                                      config.getThrottler(),
-                                                      config.getEngineId().getLabelResId(),
-                                                      config.isLogHttpGetRequests());
-            }
-        }
         final String tempFilename = ImageFileInfo.getTempFilename(
                 config.getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {
             final Request imageRequest = createImageRequest(context, url, requestProperties);
-            return imageDownloader.fetch(imageRequest, tempFilename)
-                                  .map(File::getAbsolutePath);
+            return getImageDownloader().fetch(imageRequest, tempFilename)
+                                       .map(File::getAbsolutePath);
 
         } catch (@NonNull final IOException e) {
             // we swallow IOExceptions, even when the disk is full.
@@ -461,5 +454,24 @@ public abstract class SearchEngineBase
             // as handling it in each call here would become [bleep] fast.
             return Optional.empty();
         }
+    }
+
+    @NonNull
+    private ImageDownloader getImageDownloader() {
+        ImageDownloader instance = imageDownloader;
+        if (instance == null) {
+            synchronized (this) {
+                instance = imageDownloader;
+                if (instance == null) {
+                    final OkHttpClient httpClient = createHttpClient();
+                    instance = new ImageDownloader(httpClient,
+                                                   config.getThrottler(),
+                                                   config.getEngineId().getLabelResId(),
+                                                   config.isLogHttpGetRequests());
+                    imageDownloader = instance;
+                }
+            }
+        }
+        return instance;
     }
 }
