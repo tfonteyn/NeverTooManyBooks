@@ -605,18 +605,20 @@ public enum EngineId
      * {@link SearchEngine#setCaller(Cancellable)}.
      * Check other places in the code to know for sure.</strong>
      *
-     * @param context Application context
+     * @param context Current context
+     * @param <S>     the expected Engine class
      *
      * @return a new instance
      *
      * @throws IllegalStateException on any error
      */
     @NonNull
-    public SearchEngine createSearchEngine(@NonNull final Context context) {
+    public <S extends SearchEngine> S createSearchEngine(@NonNull final Context context) {
         try {
             final Constructor<? extends SearchEngine> c =
                     clazz.getConstructor(Context.class, SearchEngineConfig.class);
-            return c.newInstance(context.getApplicationContext(), config);
+            //noinspection unchecked
+            return (S) c.newInstance(context, config);
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                                 | InstantiationException | InvocationTargetException e) {

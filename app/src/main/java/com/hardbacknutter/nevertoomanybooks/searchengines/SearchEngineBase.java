@@ -83,13 +83,14 @@ public abstract class SearchEngineBase
     /**
      * Constructor.
      *
-     * @param appContext The <strong>application</strong> context.
-     *                   NOT stored.
-     * @param config     the search engine configuration
+     * @param context Current context. NOT stored.
+     * @param config  the search engine configuration
+     *
+     * @see EngineId#createSearchEngine(Context)
      */
-    protected SearchEngineBase(@NonNull final Context appContext,
+    protected SearchEngineBase(@NonNull final Context context,
                                @NonNull final SearchEngineConfig config) {
-        this(appContext, config, new BookParserHelper(config));
+        this(context, config, new BookParserHelper(config));
     }
 
     SearchEngineBase(@NonNull final Context appContext,

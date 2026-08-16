@@ -148,13 +148,15 @@ public class KbNlSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @param appContext The <strong>application</strong> context
-     * @param config     the search engine configuration
+     * @param context Current context. NOT stored.
+     * @param config  the search engine configuration
+     *
+     * @see EngineId#createSearchEngine(Context)
      */
     @Keep
-    public KbNlSearchEngine(@NonNull final Context appContext,
+    public KbNlSearchEngine(@NonNull final Context context,
                             @NonNull final SearchEngineConfig config) {
-        super(appContext, config);
+        super(context, config);
         // We MUST bootstrap it here to ensure it's active before the first http request send
         // No further interaction with it is needed.
         ServiceLocator.getInstance().getCookieManager();

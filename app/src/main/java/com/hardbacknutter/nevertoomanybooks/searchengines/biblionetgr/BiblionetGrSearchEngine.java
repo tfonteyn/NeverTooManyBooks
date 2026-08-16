@@ -128,13 +128,15 @@ public class BiblionetGrSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @param appContext The <strong>application</strong> context
-     * @param config     the search engine configuration
+     * @param context Current context. NOT stored.
+     * @param config  the search engine configuration
+     *
+     * @see EngineId#createSearchEngine(Context)
      */
     @Keep
-    public BiblionetGrSearchEngine(@NonNull final Context appContext,
+    public BiblionetGrSearchEngine(@NonNull final Context context,
                                    @NonNull final SearchEngineConfig config) {
-        super(appContext, config);
+        super(context, config);
         bookParserHelper.setMoneyParserLocaleResolver(MoneyParserLocaleResolver.INSTANCE);
 
         authorResolverHelper = new AuthorResolverHelper();

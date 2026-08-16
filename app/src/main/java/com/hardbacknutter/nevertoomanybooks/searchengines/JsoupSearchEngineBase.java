@@ -51,12 +51,14 @@ public abstract class JsoupSearchEngineBase
     /**
      * Constructor.
      *
-     * @param appContext The <strong>application</strong> context
-     * @param config     the search engine configuration
+     * @param context Current context. NOT stored.
+     * @param config  the search engine configuration
+     *
+     * @see EngineId#createSearchEngine(Context)
      */
-    protected JsoupSearchEngineBase(@NonNull final Context appContext,
+    protected JsoupSearchEngineBase(@NonNull final Context context,
                                     @NonNull final SearchEngineConfig config) {
-        super(appContext, config);
+        super(context, config);
     }
 
     /**
