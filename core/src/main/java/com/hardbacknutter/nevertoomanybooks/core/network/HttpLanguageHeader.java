@@ -24,24 +24,19 @@ import androidx.annotation.NonNull;
 
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Set;
 import java.util.StringJoiner;
 
+/**
+ * Currently using q values specific for Firefox.
+ */
 public final class HttpLanguageHeader {
-
-    /** Helper to randomise some urls to avoid fingerprinting by the servers. */
-    @SuppressWarnings("TypeMayBeWeakened")
-    @NonNull
-    private static final Random RANDOM = new Random();
 
     private HttpLanguageHeader() {
     }
 
     /**
      * Create a suitable "Accept-Language" header with site and user languages.
-     * The site locale is sent first.
-     * The priorities (q) will be a little randomised to help prevent fingerprinting.
      *
      * @param siteLocale for the primary language tag
      * @param userLocale for the secondary language tag
@@ -54,47 +49,34 @@ public final class HttpLanguageHeader {
     public static String create(@NonNull final Locale siteLocale,
                                 @NonNull final Locale userLocale) {
         final Set<String> noDups = new HashSet<>();
-        final int offset = RANDOM.nextInt(2);
-
         final StringJoiner accept = new StringJoiner(",");
 
-        // use 0.8 or 0.7
-        accept.add(addLangTag(siteLocale.toLanguageTag(), siteLocale.getLanguage(),
-                              8 + offset, noDups));
-        // use 0.5 or 0.4
-        // Always add English if not there already.
-        accept.add(addLangTag(userLocale.toLanguageTag(), userLocale.getLanguage(),
-                              4 + offset, noDups));
-        // use 0.3 or 0.2
-        accept.add(addLangTag("en", "en-GB", 2 + offset, noDups));
+        int q = 10;
+        q = addLocale(siteLocale, q, noDups, accept);
+        q = addLocale(userLocale, q, noDups, accept);
+        // Always add English (no country) if not there already.
+        q = addLocale(Locale.ENGLISH, q, noDups, accept);
 
         return accept.toString();
     }
 
-    @NonNull
-    private static CharSequence addLangTag(@NonNull final String languageTag,
-                                           @NonNull final String language,
-                                           final int q,
-                                           @NonNull final Set<String> noDups) {
-
-        final StringJoiner accept = new StringJoiner(",");
-        boolean addQ = false;
-        if (!noDups.contains(languageTag)) {
-            accept.add(languageTag);
-            noDups.add(languageTag);
-            addQ = true;
-        }
-        if (!noDups.contains(language)) {
-            accept.add(language);
-            noDups.add(language);
-            addQ = true;
+    private static int addLocale(@NonNull final Locale locale,
+                                 final int qIn,
+                                 @NonNull final Set<String> noDups,
+                                 @NonNull final StringJoiner accept) {
+        int q = qIn;
+        final String languageTag = locale.toLanguageTag();
+        if (noDups.add(languageTag)) {
+            accept.add(q >= 10 ? languageTag : languageTag + ";q=0." + q);
+            q--;
         }
 
-        // only add q if we actually added a value.
-        if (addQ) {
-            return accept + ";q=0." + q;
-        } else {
-            return accept.toString();
+        final String language = locale.getLanguage();
+        if (noDups.add(language)) {
+            accept.add(q >= 10 ? language : language + ";q=0." + q);
+            q--;
         }
+
+        return q;
     }
 }
