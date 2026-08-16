@@ -42,7 +42,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,7 +61,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class HttpCall {
 
@@ -83,6 +81,8 @@ public class HttpCall {
     @NonNull
     private final OkHttpClient httpClient;
     private final boolean logEnabled;
+    @NonNull
+    private final String acceptLanguageHeader;
     @StringRes
     private final int siteResId;
 
@@ -98,20 +98,23 @@ public class HttpCall {
     /**
      * Constructor.
      *
-     * @param httpClient  the one
-     * @param cookieStore for logging <strong>all</strong> cookies as desired
-     * @param siteResId   string resource representing the caller
-     *                    Used for exceptions, and read from the exception-to-usermessage
-     *                    convertor.
-     * @param logEnabled  flag
+     * @param httpClient           the one
+     * @param cookieStore          for logging <strong>all</strong> cookies as desired
+     * @param acceptLanguageHeader to use
+     * @param siteResId            string resource representing the caller
+     *                             Used for exceptions, and read from the exception-to-usermessage
+     *                             convertor.
+     * @param logEnabled           flag
      */
     public HttpCall(@NonNull final OkHttpClient httpClient,
                     @NonNull final CookieStore cookieStore,
+                    @NonNull final String acceptLanguageHeader,
                     @StringRes final int siteResId,
                     final boolean logEnabled) {
 
         this.httpClient = httpClient;
         this.cookieStore = cookieStore;
+        this.acceptLanguageHeader = acceptLanguageHeader;
         this.siteResId = siteResId;
         this.logEnabled = logEnabled;
     }
@@ -157,28 +160,21 @@ public class HttpCall {
      * Create a suitable {@code HEAD} request.
      *
      * @param url        to fetch
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
-     *
      * @return new {@link Request} instance
      *
      * @throws MalformedURLException on url errors
      */
     @NonNull
     @EmptySuper
-    private Request createHeadRequest(@NonNull final String url,
-                                      @NonNull final Locale siteLocale,
-                                      @NonNull final Locale userLocale)
+    private Request createHeadRequest(@NonNull final String url)
             throws MalformedURLException {
-        return createDocumentRequest(HEAD, new URL(url), siteLocale, userLocale, null, null);
+        return createDocumentRequest(HEAD, new URL(url), null, null);
     }
 
     /**
      * Create a suitable {@code GET} request.
      *
      * @param url        to fetch
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
      * @param headers    (optional) extra headers to add/override
      *
      * @return new {@link Request} instance
@@ -188,11 +184,9 @@ public class HttpCall {
     @NonNull
     @EmptySuper
     private Request createGetRequest(@NonNull final String url,
-                                     @NonNull final Locale siteLocale,
-                                     @NonNull final Locale userLocale,
                                      @Nullable final Map<String, String> headers)
             throws MalformedURLException {
-        return createDocumentRequest(GET, new URL(url), siteLocale, userLocale, headers, null);
+        return createDocumentRequest(GET, new URL(url), headers, null);
     }
 
     /**
@@ -202,8 +196,6 @@ public class HttpCall {
      * or other cookie/redirect issues.
      *
      * @param url        to fetch
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
      * @param headers    (optional) extra headers to add/override
      * @param body       (optional) to post
      *
@@ -212,12 +204,10 @@ public class HttpCall {
      * @throws MalformedURLException on url errors
      */
     private Request createPostRequest(@NonNull final String url,
-                                      @NonNull final Locale siteLocale,
-                                      @NonNull final Locale userLocale,
                                       @Nullable final Map<String, String> headers,
                                       @Nullable final RequestBody body)
             throws MalformedURLException {
-        return createDocumentRequest(POST, new URL(url), siteLocale, userLocale, headers, body);
+        return createDocumentRequest(POST, new URL(url), headers, body);
     }
 
     /**
@@ -227,8 +217,6 @@ public class HttpCall {
      *
      * @param method     "GET", "HEAD", "POST"
      * @param url        to use
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
      * @param headers    (optional) extra headers to add/override
      * @param body       (optional) the body to send when using a "POST"
      *
@@ -237,8 +225,6 @@ public class HttpCall {
     @NonNull
     private Request createDocumentRequest(@NonNull final String method,
                                           @NonNull final URL url,
-                                          @NonNull final Locale siteLocale,
-                                          @NonNull final Locale userLocale,
                                           @Nullable final Map<String, String> headers,
                                           @Nullable final RequestBody body) {
 
@@ -267,7 +253,7 @@ public class HttpCall {
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
-                        HttpLanguageHeader.create(siteLocale, userLocale))
+                        acceptLanguageHeader)
                 .header(HttpConstants.ACCEPT_ENCODING,
                         HttpConstants.ACCEPT_ENCODING_GZIP)
 
@@ -303,16 +289,11 @@ public class HttpCall {
      * Send a {@code HEAD} request.
      *
      * @param url        to fetch
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
-     *
      * @throws IOException on generic/other IO failures
      */
-    public void head(@NonNull final String url,
-                     @NonNull final Locale siteLocale,
-                     @NonNull final Locale userLocale)
+    public void head(@NonNull final String url)
             throws IOException {
-        final Request request = createHeadRequest(url, siteLocale, userLocale);
+        final Request request = createHeadRequest(url);
         head(request);
     }
 
@@ -333,8 +314,6 @@ public class HttpCall {
      * Send a {@code GET} request.
      *
      * @param url               to fetch
-     * @param siteLocale        for the primary language tag
-     * @param userLocale        for the secondary language tag
      * @param headers           (optional) extra headers to add/override
      * @param responseProcessor (optional) receives the response/InputStream
      * @param <R>               type of the result
@@ -345,12 +324,10 @@ public class HttpCall {
      */
     @Nullable
     public <R> R get(@NonNull final String url,
-                     @NonNull final Locale siteLocale,
-                     @NonNull final Locale userLocale,
                      @Nullable final Map<String, String> headers,
                      @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
-        final Request request = createGetRequest(url, siteLocale, userLocale, headers);
+        final Request request = createGetRequest(url, headers);
         return get(request, responseProcessor);
     }
 
@@ -401,12 +378,10 @@ public class HttpCall {
 
     @Nullable
     public <R> R getWithRedirectHandling(@NonNull final String url,
-                                         @NonNull final Locale siteLocale,
-                                         @NonNull final Locale userLocale,
                                          @Nullable final Map<String, String> headers,
                                          @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
-        final Request request = createGetRequest(url, siteLocale, userLocale, headers);
+        final Request request = createGetRequest(url, headers);
         return getWithRedirectHandling(request, responseProcessor);
     }
 
@@ -478,8 +453,6 @@ public class HttpCall {
      * as needed.
      *
      * @param url               to fetch
-     * @param siteLocale        for the primary language tag
-     * @param userLocale        for the secondary language tag
      * @param headers           (optional) extra headers to add/override
      * @param body              (optional) to post
      * @param responseProcessor (optional) receives the response/InputStream
@@ -488,19 +461,17 @@ public class HttpCall {
      * @return the processed response; can be {@code null} if there was no response body.
      *
      * @throws IOException on generic/other IO failures
-     * @see #createPostRequest(String, Locale, Locale, Map, RequestBody)
+     * @see #createPostRequest(String, Map, RequestBody)
      * @see #postWithRedirectHandling(Request, ResponseProcessor)
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public <R> R postAuthenticationForm(@NonNull final String url,
-                                        @NonNull final Locale siteLocale,
-                                        @NonNull final Locale userLocale,
                                         @Nullable final Map<String, String> headers,
                                         @Nullable final RequestBody body,
                                         @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
-        final Request request = createPostRequest(url, siteLocale, userLocale, headers, body);
+        final Request request = createPostRequest(url, headers, body);
         return postWithRedirectHandling(request, responseProcessor);
     }
 
@@ -518,7 +489,7 @@ public class HttpCall {
      * @return the processed response; can be {@code null} if there was no response body.
      *
      * @throws IOException on generic/other IO failures
-     * @see #postAuthenticationForm(String, Locale, Locale, Map, RequestBody, ResponseProcessor)
+     * @see #postAuthenticationForm(String, Map, RequestBody, ResponseProcessor)
      */
     @Nullable
     private <R> R postWithRedirectHandling(@NonNull final Request request,
@@ -580,8 +551,6 @@ public class HttpCall {
      * Send a {@code GET} request and return the response as a single string.
      *
      * @param url        to fetch
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
      * @param headers    (optional) extra headers to add/override
      *
      * @return the response page as a single {@code String}
@@ -590,11 +559,9 @@ public class HttpCall {
      */
     @NonNull
     public String getAsString(@NonNull final String url,
-                              @NonNull final Locale siteLocale,
-                              @NonNull final Locale userLocale,
                               @Nullable final Map<String, String> headers)
             throws IOException {
-        final Request request = createGetRequest(url, siteLocale, userLocale, headers);
+        final Request request = createGetRequest(url, headers);
         return getAsString(request);
     }
 
@@ -633,8 +600,6 @@ public class HttpCall {
      * The handler should provide the result.
      *
      * @param url        to fetch
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
      * @param headers    (optional) extra headers to add/override
      * @param parser     SAX parser
      * @param handler    SAX handler
@@ -642,13 +607,11 @@ public class HttpCall {
      * @throws IOException on generic/other IO failures
      */
     public void get(@NonNull final String url,
-                    @NonNull final Locale siteLocale,
-                    @NonNull final Locale userLocale,
                     @Nullable final Map<String, String> headers,
                     @NonNull final SAXParser parser,
                     @NonNull final DefaultHandler handler)
             throws IOException {
-        get(url, siteLocale, userLocale, headers, (response, is) -> {
+        get(url, headers, (response, is) -> {
             // The InputStream is already unzipped as needed.
             try {
                 parser.parse(is, handler);
@@ -685,17 +648,14 @@ public class HttpCall {
                            @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
         if (responseProcessor != null) {
-            final ResponseBody body = response.body();
-            if (body != null) {
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        body.byteStream(), bufferSize)) {
-                    if (isZipped(response)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            return responseProcessor.apply(response, gzs);
-                        }
-                    } else {
-                        return responseProcessor.apply(response, bis);
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    response.body().byteStream(), bufferSize)) {
+                if (isZipped(response)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                        return responseProcessor.apply(response, gzs);
                     }
+                } else {
+                    return responseProcessor.apply(response, bis);
                 }
             }
         }
@@ -745,11 +705,11 @@ public class HttpCall {
                    HttpTooManyRequestsException,
                    HttpStatusException {
 
-        final int responseCode = response.code();
-
         if (logEnabled) {
             logResponse(response);
         }
+
+        final int responseCode = response.code();
 
         if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
             return;
