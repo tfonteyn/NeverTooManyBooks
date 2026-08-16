@@ -90,14 +90,8 @@ public abstract class SearchEngineBase
      */
     protected SearchEngineBase(@NonNull final Context context,
                                @NonNull final SearchEngineConfig config) {
-        this(context, config, new BookParserHelper(config));
-    }
-
-    SearchEngineBase(@NonNull final Context appContext,
-                     @NonNull final SearchEngineConfig config,
-                     @NonNull final BookParserHelper bookParserHelper) {
         this.config = config;
-        this.bookParserHelper = bookParserHelper;
+        this.bookParserHelper = new BookParserHelper(config);
     }
 
     @NonNull
