@@ -48,13 +48,13 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RequestFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 
 import okhttp3.Request;
 
@@ -175,6 +175,7 @@ public class DnbSearchEngine
     public DnbSearchEngine(@NonNull final Context context,
                            @NonNull final SearchEngineConfig config) {
         super(context, config);
+        setImageRequestFactory(DnbImageRequestFactory.INSTANCE);
 
         authorResolverHelper = new AuthorResolverHelper();
     }
@@ -439,23 +440,22 @@ public class DnbSearchEngine
     /**
      * Bypass the <a href="https://anubis.techaro.lol/docs/design/how-anubis-works/">Anubis</a>
      * filter by pretending to be {@code wget}.
-     *
-     * @param context           Current context
-     * @param urlStr            to use
-     * @param requestProperties (optional) extra headers to add/override
-     *
-     * @return request
      */
-    @NonNull
-    @Override
-    protected Request createImageRequest(@NonNull final Context context,
-                                         @NonNull final String urlStr,
-                                         @Nullable final Map<String, String> requestProperties) {
-        return new Request.Builder()
-                .url(urlStr)
-                .header(HttpConstants.USER_AGENT, "Wget/1.25.0")
-                .header(HttpConstants.ACCEPT, "*/*")
-                .header(HttpConstants.CONNECTION, HttpConstants.CONNECTION_KEEP_ALIVE)
-                .build();
+    private static final class DnbImageRequestFactory
+            implements RequestFactory {
+
+        private static final RequestFactory INSTANCE = new DnbImageRequestFactory();
+
+        @NonNull
+        @Override
+        public Request createRequest(@NonNull final String urlStr,
+                                     @Nullable final Map<String, String> requestProperties) {
+            return new Request.Builder()
+                    .url(urlStr)
+                    .header(HttpConstants.USER_AGENT, "Wget/1.25.0")
+                    .header(HttpConstants.ACCEPT, "*/*")
+                    .header(HttpConstants.CONNECTION, HttpConstants.CONNECTION_KEEP_ALIVE)
+                    .build();
+        }
     }
 }

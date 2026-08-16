@@ -273,11 +273,11 @@ public class ImageDownloader {
             HttpTooManyRequestsException,
             HttpStatusException {
 
-        final int responseCode = response.code();
-
         if (logEnabled) {
             logResponse(response);
         }
+
+        final int responseCode = response.code();
 
         if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
             return;

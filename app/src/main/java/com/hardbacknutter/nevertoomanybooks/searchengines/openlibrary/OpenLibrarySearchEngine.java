@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RequestFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -198,6 +199,7 @@ public class OpenLibrarySearchEngine
     public OpenLibrarySearchEngine(@NonNull final Context context,
                                    @NonNull final SearchEngineConfig config) {
         super(context, config);
+        setImageRequestFactory(OpenLibraryImageRequestFactory.INSTANCE);
     }
 
     /**
@@ -1786,13 +1788,18 @@ public class OpenLibrarySearchEngine
         return request;
     }
 
-    @NonNull
-    @Override
-    protected Request createImageRequest(@NonNull final Context context,
-                                         @NonNull final String urlStr,
-                                         @Nullable final Map<String, String> requestProperties) {
+    private static final class OpenLibraryImageRequestFactory
+            implements RequestFactory {
 
-        // DO NOT ADD ANY HEADERS.... OL only works with the defaults ?!
-        return new Request.Builder().url(urlStr).build();
+        private static final RequestFactory INSTANCE = new OpenLibraryImageRequestFactory();
+
+        @NonNull
+        @Override
+        public Request createRequest(@NonNull final String urlStr,
+                                     @Nullable final Map<String, String> requestProperties) {
+
+            // DO NOT ADD ANY HEADERS.... OL only works with the defaults ?!
+            return new Request.Builder().url(urlStr).build();
+        }
     }
 }

@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -78,6 +77,14 @@ public abstract class SearchEngineBase
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
     private volatile ImageDownloader imageDownloader;
+    /**
+     * Either set from a child constructor with
+     * {@link #setImageRequestFactory(ImageRequestFactory)}
+     * or lazy created in {@link #getImageRequestFactory(Context)}.
+     */
+    @Nullable
+    private volatile ImageRequestFactory imageRequestFactory;
+
     @Nullable
     private Cancellable caller;
 
@@ -150,6 +157,16 @@ public abstract class SearchEngineBase
         headers.put(HttpConstants.CONNECTION,
                     HttpConstants.CONNECTION_KEEP_ALIVE);
         return headers;
+    }
+
+    /**
+     * Override the default.
+     * This method <strong>must</strong> be called from the child constructor.
+     *
+     * @param imageRequestFactory to use
+     */
+    protected void setImageRequestFactory(@NonNull final ImageRequestFactory imageRequestFactory) {
+        this.imageRequestFactory = imageRequestFactory;
     }
 
     @NonNull
@@ -326,97 +343,6 @@ public abstract class SearchEngineBase
     }
 
     /**
-     * Convenience method to create a suitable {@code GET} {@link Request}.
-     * <p>
-     * Overridable for sites requiring quirks...
-     *
-     * @param context           Current context
-     * @param urlStr            to use
-     * @param requestProperties (optional) extra headers to add/override
-     *
-     * @return new {@code GET} request instance
-     *
-     * @throws MalformedURLException on url errors
-     * @see #createGetDocumentRequest(Context)
-     */
-    @NonNull
-    @EmptySuper
-    protected Request createImageRequest(@NonNull final Context context,
-                                         @NonNull final String urlStr,
-                                         @Nullable final Map<String, String> requestProperties)
-            throws MalformedURLException {
-
-        // GET /devrel-devsite/prod/v63ff991b83776932202eabe7967909a8dae574de15846bab934768a76bf6c589/android/images/lockup.png HTTP/1.1
-        // Host: www.gstatic.com
-        // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
-        // Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5
-        // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
-        // Accept-Encoding: gzip, deflate, br, zstd
-        // Referer: https://developer.android.com/
-        // Sec-Fetch-Storage-Access: none
-        // DNT: 1
-        // Sec-GPC: 1
-        // Sec-Fetch-Dest: image
-        // Sec-Fetch-Mode: no-cors
-        // Sec-Fetch-Site: cross-site
-        //C onnection: keep-alive
-
-        final Request.Builder builder = new Request.Builder()
-                .url(urlStr)
-                .header(HttpConstants.HOST, new URL(urlStr).getHost())
-                .header(HttpConstants.USER_AGENT,
-                        HttpConstants.USER_AGENT_FIREFOX)
-
-                .header(HttpConstants.ACCEPT,
-                        HttpConstants.ACCEPT_IMAGE)
-                .header(HttpConstants.ACCEPT_LANGUAGE,
-                        createAcceptLanguageHeader(context))
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-
-                .header(HttpConstants.SEC_FETCH_STORAGE_ACCESS,
-                        HttpConstants.SEC_FETCH_STORAGE_ACCESS_NONE)
-
-                .header(HttpConstants.DNT, "1")
-                .header(HttpConstants.SEC_GPC, "1")
-
-                //We want a generic image
-                .header(HttpConstants.SEC_FETCH_DEST,
-                        HttpConstants.SEC_FETCH_DEST_IMAGE)
-                .header(HttpConstants.SEC_FETCH_MODE,
-                        HttpConstants.SEC_FETCH_MODE_NO_CORS)
-                // same site... might need to use SEC_FETCH_SITE_CROSS_SITE ?
-                .header(HttpConstants.SEC_FETCH_SITE,
-                        HttpConstants.SEC_FETCH_SITE_NONE)
-
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE);
-
-        // add or override
-        if (requestProperties != null) {
-            requestProperties.forEach(builder::header);
-        }
-
-        return builder.build();
-    }
-
-    /**
-     * Create a suitable "Accept-Language" with user and site language.
-     * The priorities will be a little randomised to help prevent fingerprinting
-     *
-     * @param context Current context
-     *
-     * @return header string
-     */
-    @NonNull
-    private String createAcceptLanguageHeader(@NonNull final Context context) {
-        final Locale siteLocale = getLocale(context);
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        return HttpLanguageHeader.create(siteLocale, userLocale);
-    }
-
-    /**
      * Convenience method to save an image using the engines specific network configuration.
      *
      * @param context           Current context
@@ -444,7 +370,9 @@ public abstract class SearchEngineBase
                 config.getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {
-            final Request imageRequest = createImageRequest(context, url, requestProperties);
+            final Request imageRequest = getImageRequestFactory(context)
+                    .createRequest(url, requestProperties);
+
             return getImageDownloader().fetch(imageRequest, tempFilename)
                                        .map(File::getAbsolutePath);
 
@@ -454,6 +382,25 @@ public abstract class SearchEngineBase
             // as handling it in each call here would become [bleep] fast.
             return Optional.empty();
         }
+    }
+
+    @NonNull
+    private ImageRequestFactory getImageRequestFactory(@NonNull final Context context) {
+        ImageRequestFactory instance = imageRequestFactory;
+        if (instance == null) {
+            synchronized (this) {
+                instance = imageRequestFactory;
+                if (instance == null) {
+                    final Locale siteLocale = getLocale(context);
+                    final Locale userLocale = context.getResources()
+                                                     .getConfiguration()
+                                                     .getLocales().get(0);
+                    instance = new ImageRequestFactoryDefault(siteLocale, userLocale);
+                    imageRequestFactory = instance;
+                }
+            }
+        }
+        return instance;
     }
 
     @NonNull
