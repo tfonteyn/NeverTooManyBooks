@@ -287,23 +287,23 @@ public class BedethequeSearchEngine
     private String ensureCookie(@NonNull final Context context)
             throws SearchException {
         if (sessionCookie == null || sessionCookie.hasExpired()) {
+            final FutureHttp<Boolean> httpHead = httpFutureFactory.createHeadRequest();
             try {
-                final FutureHttp<HttpCookie> httpHead = httpFutureFactory.createHeadRequest();
-                // Reminder: the "request" will be connected and the response code will be OK,
-                // so just extract the cookie we need for the next request
-                sessionCookie = httpHead.head(SEARCH_URL, response ->
-                        ServiceLocator.getInstance().getCookieManager()
+                httpHead.head(SEARCH_URL, response -> true);
+            } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
+                throw new SearchException(getEngineId(), e);
+            }
+        }
+
+        sessionCookie = ServiceLocator.getInstance().getCookieManager()
                                       .getCookieStore()
                                       .getCookies()
                                       .stream()
                                       .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
                                                    && COOKIE_NAME.equals(c.getName()))
                                       .findFirst()
-                                      .orElse(new HttpCookie(COOKIE_NAME, "")));
-            } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
-                throw new SearchException(getEngineId(), e);
-            }
-        }
+                                      .orElse(null);
+
         if (sessionCookie == null || sessionCookie.getValue().isEmpty()) {
             throw new SearchException(getEngineId(), "no sessionCookie",
                                       context.getString(R.string.httpError));
