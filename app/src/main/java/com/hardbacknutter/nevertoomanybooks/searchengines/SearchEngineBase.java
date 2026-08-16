@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
-import androidx.annotation.EmptySuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,30 +34,28 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-public abstract class SearchEngineBase
+public class SearchEngineBase
         implements SearchEngine {
 
     @NonNull
@@ -71,19 +68,22 @@ public abstract class SearchEngineBase
 
     @NonNull
     protected final BookParserHelper bookParserHelper;
+    @NonNull
+    protected final HttpFutureFactory httpFutureFactory;
+    @NonNull
+    protected final HttpCallFactory httpCallFactory;
+    private final String languageHeader;
 
-    @Nullable
-    private SSLContext sslContext;
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
     private volatile ImageDownloader imageDownloader;
     /**
      * Either set from a child constructor with
-     * {@link #setImageRequestFactory(ImageRequestFactory)}
-     * or lazy created in {@link #getImageRequestFactory(Context)}.
+     * {@link #setImageRequestFactory(RequestFactory)}
+     * or lazy created in {@link #getImageRequestFactory()}.
      */
     @Nullable
-    private volatile ImageRequestFactory imageRequestFactory;
+    private volatile RequestFactory imageRequestFactory;
 
     @Nullable
     private Cancellable caller;
@@ -100,63 +100,16 @@ public abstract class SearchEngineBase
                                @NonNull final SearchEngineConfig config) {
         this.config = config;
         this.bookParserHelper = new BookParserHelper(config);
+
+        languageHeader = createLanguageHeader(context);
+        httpFutureFactory = new HttpFutureFactory(config, null, languageHeader);
+        httpCallFactory = new HttpCallFactory(config, null, languageHeader);
     }
 
-    @NonNull
-    private static Map<String, String> createHeadersForGET(@NonNull final Locale siteLocale,
-                                                           @NonNull final Locale userLocale) {
-        final String acceptLanguageHeader = HttpLanguageHeader.create(siteLocale, userLocale);
-        // Improve compatibility by sending standard headers.
-
-        // Example of a Firefox request to https://developer.android.com
-
-        // GET / HTTP/1.1
-        // Host: developer.android.com
-        // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
-        // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-        // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
-        // Accept-Encoding: gzip, deflate, br, zstd
-        // DNT: 1
-        // Sec-GPC: 1
-        // Upgrade-Insecure-Requests: 1
-        // Sec-Fetch-Dest: document
-        // Sec-Fetch-Mode: navigate
-        // Sec-Fetch-Site: none
-        // Sec-Fetch-User: ?1
-        // Connection: keep-alive
-
-        // ordered list.
-        final Map<String, String> headers = new LinkedHashMap<>();
-        // Host & User-Agent are prefixed to the below in {@link FutureHttp#execute}
-
-        headers.put(HttpConstants.ACCEPT,
-                    HttpConstants.ACCEPT_KITCHEN_SINK);
-        headers.put(HttpConstants.ACCEPT_LANGUAGE,
-                    acceptLanguageHeader);
-        headers.put(HttpConstants.ACCEPT_ENCODING,
-                    HttpConstants.ACCEPT_ENCODING_GZIP);
-
-        headers.put(HttpConstants.DNT, "1");
-        headers.put(HttpConstants.SEC_GPC, "1");
-
-        headers.put(HttpConstants.UPGRADE_INSECURE_REQUESTS,
-                    HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
-
-        // We want a generic document, e.g. html, xml, json, ...
-        headers.put(HttpConstants.SEC_FETCH_DEST,
-                    HttpConstants.SEC_FETCH_DEST_DOCUMENT);
-        // The request is initiated by navigation between HTML documents.
-        headers.put(HttpConstants.SEC_FETCH_MODE,
-                    HttpConstants.SEC_FETCH_MODE_NAVIGATE);
-
-        // The request was sent by a "user" (our app) and not some auto/link/etc...
-        headers.put(HttpConstants.SEC_FETCH_SITE,
-                    HttpConstants.SEC_FETCH_SITE_NONE);
-        headers.put(HttpConstants.SEC_FETCH_USER, "?1");
-
-        headers.put(HttpConstants.CONNECTION,
-                    HttpConstants.CONNECTION_KEEP_ALIVE);
-        return headers;
+    private String createLanguageHeader(@NonNull final Context context) {
+        final Locale siteLocale = getLocale(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        return HttpLanguageHeader.create(siteLocale, userLocale);
     }
 
     /**
@@ -165,7 +118,7 @@ public abstract class SearchEngineBase
      *
      * @param imageRequestFactory to use
      */
-    protected void setImageRequestFactory(@NonNull final ImageRequestFactory imageRequestFactory) {
+    protected void setImageRequestFactory(@NonNull final RequestFactory imageRequestFactory) {
         this.imageRequestFactory = imageRequestFactory;
     }
 
@@ -249,6 +202,16 @@ public abstract class SearchEngineBase
         return bookParserHelper;
     }
 
+    @NonNull
+    public HttpFutureFactory getHttpFutureFactory() {
+        return httpFutureFactory;
+    }
+
+    @NonNull
+    public HttpCallFactory getHttpCallFactory() {
+        return httpCallFactory;
+    }
+
     @Override
     @AnyThread
     @CallSuper
@@ -275,15 +238,6 @@ public abstract class SearchEngineBase
         return cancelRequested.get() || caller == null || caller.isCancelled();
     }
 
-    @Nullable
-    protected SSLContext getSslContext() {
-        return sslContext;
-    }
-
-    protected void setSslContext(@Nullable final SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-
     /**
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@code HEAD} request.
@@ -295,9 +249,9 @@ public abstract class SearchEngineBase
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public <T> FutureHttp<T> createHeadRequest() {
-        final FutureHttp<T> httpHead = HttpCallFactory.create(config.getEngineId());
-        httpHead.setSSLContext(sslContext);
-        return httpHead;
+        final FutureHttp<T> request = httpFutureFactory.createRequest();
+        request.setHeaders(httpFutureFactory.createHeadersForGETorHEAD());
+        return request;
     }
 
     /**
@@ -313,33 +267,9 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-
-        final Locale siteLocale = getLocale(context);
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        final Map<String, String> headers = createHeadersForGET(siteLocale, userLocale);
-
-        final FutureHttp<T> httpGet = HttpCallFactory.create(config.getEngineId());
-        httpGet.setSSLContext(sslContext);
-        httpGet.setHeaders(headers);
-
-        return httpGet;
-    }
-
-    /**
-     * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link OkHttpClient}.
-     * <p>
-     * Overridable for sites requiring quirks...
-     *
-     * @return new {@link OkHttpClient} instance
-     *
-     * @see #createGetDocumentRequest(Context)
-     */
-    @NonNull
-    @EmptySuper
-    public OkHttpClient createHttpClient() {
-        return HttpCallFactory.createHttpClient(config.getEngineId(), sslContext);
+        final FutureHttp<T> request = httpFutureFactory.createRequest();
+        request.setHeaders(httpFutureFactory.createHeadersForGETorHEAD());
+        return request;
     }
 
     /**
@@ -370,7 +300,7 @@ public abstract class SearchEngineBase
                 config.getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {
-            final Request imageRequest = getImageRequestFactory(context)
+            final Request imageRequest = getImageRequestFactory()
                     .createRequest(url, requestProperties);
 
             return getImageDownloader().fetch(imageRequest, tempFilename)
@@ -385,17 +315,13 @@ public abstract class SearchEngineBase
     }
 
     @NonNull
-    private ImageRequestFactory getImageRequestFactory(@NonNull final Context context) {
-        ImageRequestFactory instance = imageRequestFactory;
+    private RequestFactory getImageRequestFactory() {
+        RequestFactory instance = imageRequestFactory;
         if (instance == null) {
             synchronized (this) {
                 instance = imageRequestFactory;
                 if (instance == null) {
-                    final Locale siteLocale = getLocale(context);
-                    final Locale userLocale = context.getResources()
-                                                     .getConfiguration()
-                                                     .getLocales().get(0);
-                    instance = new ImageRequestFactoryDefault(siteLocale, userLocale);
+                    instance = new ImageRequestFactoryDefault(languageHeader);
                     imageRequestFactory = instance;
                 }
             }
@@ -410,7 +336,7 @@ public abstract class SearchEngineBase
             synchronized (this) {
                 instance = imageDownloader;
                 if (instance == null) {
-                    final OkHttpClient httpClient = createHttpClient();
+                    final OkHttpClient httpClient = httpCallFactory.getHttpClient();
                     instance = new ImageDownloader(httpClient,
                                                    config.getThrottler(),
                                                    config.getEngineId().getLabelResId(),
