@@ -28,12 +28,10 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 
@@ -41,45 +39,83 @@ import okhttp3.OkHttpClient;
 
 public final class HttpCallFactory {
 
-    private HttpCallFactory() {
+    @NonNull
+    private final SearchEngineConfig config;
+    private final boolean enableLog;
+
+    @NonNull
+    private final CookieStore cookieStore;
+    @Nullable
+    private final SSLContext sslContext;
+    @NonNull
+    private final String acceptLanguageHeader;
+
+    /** Lazy created in {@link #getHttpClient()}. */
+    @Nullable
+    private volatile OkHttpClient httpClient;
+
+    public HttpCallFactory(@NonNull final SearchEngineConfig config,
+                           @Nullable final SSLContext sslContext,
+                           @NonNull final String acceptLanguageHeader) {
+        this.config = config;
+        this.enableLog = config.isLogHttpGetRequests();
+        this.sslContext = sslContext;
+        this.acceptLanguageHeader = acceptLanguageHeader;
+
+        cookieStore = ServiceLocator.getInstance()
+                                    .getCookieManager()
+                                    .getCookieStore();
     }
 
     /**
-     * Create a {@link FutureHttp} based on the given engine configuration.
-     *
-     * @param engineId to use
-     * @param <R>      the type of the return value for the request
+     * Get/create the {@link OkHttpClient}.
      *
      * @return new instance
      */
     @NonNull
-    public static <R> FutureHttp<R> create(@NonNull final EngineId engineId) {
-        final SearchEngineConfig config = engineId.getConfig();
-        final Throttler throttler = config.getThrottler();
-        final boolean enableLog = config.isLogHttpGetRequests();
-
-        final FutureHttp<R> request = new FutureHttp<>(engineId.getLabelResId(),
-                                                       throttler, enableLog);
-        request.setConnectTimeout(config.getConnectTimeoutInMs())
-               .setReadTimeout(config.getReadTimeoutInMs());
-
-        return request;
+    public OkHttpClient getHttpClient() {
+        OkHttpClient instance = httpClient;
+        if (instance == null) {
+            synchronized (this) {
+                instance = httpClient;
+                if (instance == null) {
+                    instance = createOkHttpClient();
+                    httpClient = instance;
+                }
+            }
+        }
+        return instance;
     }
 
     /**
-     * Create an {@link OkHttpClient} based on the given engine configuration.
+     * Create an {@link HttpCall}.
      *
-     * @param engineId   to use
-     * @param sslContext (optional) to use
-     *
-     * @return new {@link OkHttpClient} instance
+     * @return new instance
      */
     @NonNull
-    public static OkHttpClient createHttpClient(@NonNull final EngineId engineId,
-                                                @Nullable final SSLContext sslContext) {
-        final SearchEngineConfig config = engineId.getConfig();
+    public HttpCall createCall() {
+        return new HttpCall(getHttpClient(), cookieStore, acceptLanguageHeader,
+                            config.getEngineId().getLabelResId(),
+                            config.isLogHttpGetRequests());
+    }
+
+    /**
+     * Create an {@link HttpCall}.
+     *
+     * @param httpClient the client
+     *
+     * @return new instance
+     */
+    @NonNull
+    public HttpCall createCall(@NonNull final OkHttpClient httpClient) {
+        return new HttpCall(httpClient, cookieStore, acceptLanguageHeader,
+                            config.getEngineId().getLabelResId(),
+                            config.isLogHttpGetRequests());
+    }
+
+    @NonNull
+    private OkHttpClient createOkHttpClient() {
         final Throttler throttler = config.getThrottler();
-        final boolean enableLog = config.isLogHttpGetRequests();
 
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
@@ -95,30 +131,10 @@ public final class HttpCallFactory {
         }
 
         if (enableLog) {
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(engineId.name()));
+            builder.addNetworkInterceptor(
+                    OkHttpLoggerFactory.getLogger(config.getEngineId().name()));
         }
 
         return builder.build();
-    }
-
-    /**
-     * Create an {@link HttpCall} based on the given engine configuration.
-     *
-     * @param httpClient the client
-     * @param engineId   to use
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static HttpCall create(@NonNull final OkHttpClient httpClient,
-                                  @NonNull final EngineId engineId) {
-        final CookieStore cookieStore = ServiceLocator.getInstance()
-                                                      .getCookieManager()
-                                                      .getCookieStore();
-        final SearchEngineConfig config = engineId.getConfig();
-
-        return new HttpCall(httpClient, cookieStore,
-                            engineId.getLabelResId(),
-                            config.isLogHttpGetRequests());
     }
 }
