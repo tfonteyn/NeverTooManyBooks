@@ -141,27 +141,31 @@ public class OpenLibraryAuth
                                            && COOKIE_USERDATA.equals(c.getName()))
                               .findFirst();
 
-        if (oCookie.isPresent()) {
-            final HttpCookie cookie = oCookie.get();
-            if (!cookie.hasExpired()) {
-                final String value = cookie.getValue();
-                if (value != null && !value.isEmpty()) {
-                    //noinspection CheckStyle
-                    try {
-                        final String cookieValue = URLDecoder.decode(value,
-                                                                     StandardCharsets.UTF_8);
-                        final String[] parts = cookieValue.split(",");
-                        final String userId = parts[0];
-                        if (userId != null && userId.startsWith("/people/")) {
-                            return Optional.of(userId.substring(8));
-                        }
-                    } catch (@NonNull final RuntimeException e) {
-                        if (BuildConfig.DEBUG /* always */) {
-                            LoggerFactory.getLogger()
-                                         .e(TAG, e, "cookie.getValue()=" + value);
-                        }
-                    }
-                }
+        if (oCookie.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final HttpCookie cookie = oCookie.get();
+        if (cookie.hasExpired()) {
+            return Optional.empty();
+        }
+
+        final String value = cookie.getValue();
+        if (value == null || value.isEmpty()) {
+            return Optional.empty();
+        }
+
+        //noinspection CheckStyle
+        try {
+            final String cookieValue = URLDecoder.decode(value, StandardCharsets.UTF_8);
+            final String[] parts = cookieValue.split(",");
+            final String userId = parts[0];
+            if (userId != null && userId.startsWith("/people/")) {
+                return Optional.of(userId.substring(8));
+            }
+        } catch (@NonNull final RuntimeException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().e(TAG, e, "cookie.getValue()=" + value);
             }
         }
         return Optional.empty();

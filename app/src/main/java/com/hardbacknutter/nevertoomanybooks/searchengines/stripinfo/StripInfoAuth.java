@@ -151,27 +151,31 @@ public class StripInfoAuth
                                            && COOKIE_USERDATA.equals(c.getName()))
                               .findFirst();
 
-        if (oCookie.isPresent()) {
-            final HttpCookie cookie = oCookie.get();
-            if (!cookie.hasExpired()) {
-                final String value = cookie.getValue();
-                if (value != null && !value.isEmpty()) {
-                    try {
-                        final String cookieValue = URLDecoder.decode(value,
-                                                                     StandardCharsets.UTF_8);
-                        // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
-                        final JSONObject jsonCookie = new JSONObject(cookieValue);
-                        final String userId = jsonCookie.optString("userid");
-                        if (!userId.isEmpty()) {
-                            return Optional.of(userId);
-                        }
-                    } catch (@NonNull final JSONException e) {
-                        if (BuildConfig.DEBUG /* always */) {
-                            LoggerFactory.getLogger()
-                                         .e(TAG, e, "cookie.getValue()=" + value);
-                        }
-                    }
-                }
+        if (oCookie.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final HttpCookie cookie = oCookie.get();
+        if (cookie.hasExpired()) {
+            return Optional.empty();
+        }
+
+        final String value = cookie.getValue();
+        if (value == null || value.isEmpty()) {
+            return Optional.empty();
+        }
+
+        try {
+            final String cookieValue = URLDecoder.decode(value, StandardCharsets.UTF_8);
+            // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
+            final JSONObject jsonCookie = new JSONObject(cookieValue);
+            final String userId = jsonCookie.optString("userid");
+            if (!userId.isEmpty()) {
+                return Optional.of(userId);
+            }
+        } catch (@NonNull final JSONException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().e(TAG, e, "cookie.getValue()=" + value);
             }
         }
         return Optional.empty();
@@ -237,5 +241,4 @@ public class StripInfoAuth
             }
         }
     }
-
 }
