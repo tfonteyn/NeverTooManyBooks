@@ -65,8 +65,6 @@ public class JsoupLoader {
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String charSetName;
-    @Nullable
-    private SSLContext sslContext;
 
     /**
      * Constructor.
@@ -88,15 +86,6 @@ public class JsoupLoader {
      */
     public void setCharSetName(@Nullable final String charSetName) {
         this.charSetName = charSetName;
-    }
-
-    /**
-     * Set a custom SSLContext.
-     *
-     * @param sslContext to use
-     */
-    public void setSslContext(@Nullable final SSLContext sslContext) {
-        this.sslContext = sslContext;
     }
 
     /**
@@ -156,8 +145,6 @@ public class JsoupLoader {
             }
 
             try {
-                httpGet.setSSLContext(sslContext);
-
                 if (headers != null) {
                     httpGet.setHeaders(headers);
                 }

@@ -115,7 +115,6 @@ public abstract class JsoupSearchEngineBase
             final boolean logEnabled = getConfig().isLogHttpGetRequests();
             jsoupLoader = new JsoupLoader(createGetDocumentRequest(context), logEnabled);
             jsoupLoader.setCharSetName(charSetName);
-            jsoupLoader.setSslContext(getSslContext());
 
             return jsoupLoader.loadDocument(context, parser, url, requestProperties);
 
