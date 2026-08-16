@@ -172,7 +172,8 @@ public final class WikidataAuthorResolver
 
         final String url = String.format(AUTHOR_SEARCH_BY_SID, sid);
 
-        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.getHttpFutureFactory()
+                                                       .createGetDocumentRequest();
         try {
             final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
@@ -190,7 +191,8 @@ public final class WikidataAuthorResolver
                                 @NonNull final String names)
             throws SearchException {
 
-        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.getHttpFutureFactory()
+                                                       .createGetDocumentRequest();
         try {
             final String url = String.format(AUTHOR_SEARCH_BY_NAME, langCode,
                                              URLEncoder.encode(names, CHARSET));

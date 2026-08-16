@@ -260,7 +260,7 @@ public class LibraryThingSearchEngine
         }
 
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
-        httpGet = createGetDocumentRequest(context);
+        httpGet = httpFutureFactory.createGetDocumentRequest();
         try {
             httpGet.get(url, (con, is) -> {
                 parser.parse(is, handler);

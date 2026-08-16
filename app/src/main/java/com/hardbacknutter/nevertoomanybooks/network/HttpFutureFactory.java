@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.network;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -77,7 +79,7 @@ public class HttpFutureFactory {
     }
 
     @NonNull
-    public Map<String, String> createHeadersForGETorHEAD() {
+    private Map<String, String> createHeadersForGETorHEAD() {
         // Improve compatibility by sending standard headers.
 
         // Example of a Firefox request to https://developer.android.com
@@ -129,5 +131,37 @@ public class HttpFutureFactory {
         headers.put(HttpConstants.CONNECTION,
                     HttpConstants.CONNECTION_KEEP_ALIVE);
         return headers;
+    }
+
+    /**
+     * Convenience method to create a suitable {@code HEAD} request.
+     *
+     * @param <T> return type
+     *
+     * @return new {@code HEAD} request instance
+     */
+    @SuppressWarnings("WeakerAccess")
+    @NonNull
+    public <T> FutureHttp<T> createHeadRequest() {
+        final FutureHttp<T> request = createRequest();
+        request.setHeaders(createHeadersForGETorHEAD());
+        return request;
+    }
+
+
+    /**
+     * Convenience method to create a suitable {@code GET} request.
+     * <p>
+     * The headers are set to the defaults as used by Firefox to request a "document"
+     *
+     * @param <T> return type
+     *
+     * @return new {@code GET} request instance
+     */
+    @NonNull
+    public <T> FutureHttp<T> createGetDocumentRequest() {
+        final FutureHttp<T> request = createRequest();
+        request.setHeaders(createHeadersForGETorHEAD());
+        return request;
     }
 }

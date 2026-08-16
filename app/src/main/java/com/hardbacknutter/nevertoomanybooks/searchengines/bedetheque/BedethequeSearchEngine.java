@@ -288,7 +288,7 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (sessionCookie == null || sessionCookie.hasExpired()) {
             try {
-                final FutureHttp<HttpCookie> httpHead = createHeadRequest();
+                final FutureHttp<HttpCookie> httpHead = httpFutureFactory.createHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
                 sessionCookie = httpHead.head(SEARCH_URL, response ->

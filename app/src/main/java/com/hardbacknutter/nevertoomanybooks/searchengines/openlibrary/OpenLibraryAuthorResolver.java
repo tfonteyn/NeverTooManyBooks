@@ -168,7 +168,7 @@ public final class OpenLibraryAuthorResolver
 
         final String url = String.format(OpenLibrarySearchEngine.AUTHOR_URL, sid) + ".json";
 
-        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest();
         try {
             final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
@@ -197,7 +197,7 @@ public final class OpenLibraryAuthorResolver
                                 @NonNull final String names)
             throws SearchException {
 
-        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest();
         try {
             final String url = AUTHOR_SEARCH + URLEncoder.encode(names, CHARSET);
 

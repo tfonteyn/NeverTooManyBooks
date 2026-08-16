@@ -41,7 +41,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
@@ -236,40 +235,6 @@ public class SearchEngineBase
         // caller being null should only happen when we check if we're cancelled
         // before a search was started.
         return cancelRequested.get() || caller == null || caller.isCancelled();
-    }
-
-    /**
-     * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@code HEAD} request.
-     *
-     * @param <T> return type
-     *
-     * @return new {@code HEAD} request instance
-     */
-    @SuppressWarnings("WeakerAccess")
-    @NonNull
-    public <T> FutureHttp<T> createHeadRequest() {
-        final FutureHttp<T> request = httpFutureFactory.createRequest();
-        request.setHeaders(httpFutureFactory.createHeadersForGETorHEAD());
-        return request;
-    }
-
-    /**
-     * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@code GET} request.
-     * <p>
-     * The headers are set to the defaults as used by Firefox to request a "document"
-     *
-     * @param context Current context
-     * @param <T>     return type
-     *
-     * @return new {@code GET} request instance
-     */
-    @NonNull
-    public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttp<T> request = httpFutureFactory.createRequest();
-        request.setHeaders(httpFutureFactory.createHeadersForGETorHEAD());
-        return request;
     }
 
     /**

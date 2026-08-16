@@ -113,7 +113,7 @@ public abstract class JsoupSearchEngineBase
             throws SearchException, CredentialsException {
         try {
             final boolean logEnabled = getConfig().isLogHttpGetRequests();
-            jsoupLoader = new JsoupLoader(createGetDocumentRequest(context), logEnabled);
+            jsoupLoader = new JsoupLoader(httpFutureFactory.createGetDocumentRequest(), logEnabled);
             jsoupLoader.setCharSetName(charSetName);
 
             return jsoupLoader.loadDocument(context, parser, url, requestProperties);

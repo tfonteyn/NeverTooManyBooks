@@ -1831,7 +1831,7 @@ public class IsfdbSearchEngine
             throw new IllegalStateException(e);
         }
 
-        httpGet = createGetDocumentRequest(context);
+        httpGet = httpFutureFactory.createGetDocumentRequest();
         try {
             httpGet.get(url, (con, is) -> {
                 try {

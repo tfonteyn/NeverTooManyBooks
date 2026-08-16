@@ -162,7 +162,8 @@ class UserCollection {
 
         hostUrl = config.getHostUrl();
 
-        final FutureHttp<Document> request = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<Document> request = searchEngine.getHttpFutureFactory()
+                                                         .createGetDocumentRequest();
         final boolean enableLog = config.isLogHttpGetRequests();
         jsoupLoader = new JsoupLoader(request, enableLog);
 

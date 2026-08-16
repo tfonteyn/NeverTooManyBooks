@@ -271,7 +271,7 @@ public class GoodreadsSearchEngine
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
-        final long sid = getGoodreadsId(context, codeStr);
+        final long sid = getGoodreadsId(codeStr);
         if (sid > 0) {
             return searchByExternalId(context, String.valueOf(sid), criteria.getFetchCovers());
         }
@@ -340,7 +340,6 @@ public class GoodreadsSearchEngine
      * ]
      * </pre>
      *
-     * @param context   Current context
      * @param validIsbn to search for, <strong>must</strong> be valid.
      *
      * @return goodreads sid; or {@code 0} when not found
@@ -348,12 +347,11 @@ public class GoodreadsSearchEngine
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
      */
-    private long getGoodreadsId(@NonNull final Context context,
-                                @NonNull final String validIsbn)
+    private long getGoodreadsId(@NonNull final String validIsbn)
             throws StorageException, SearchException {
 
         final String url = String.format(GET_GOODREADS_ID, validIsbn);
-        httpGet = createGetDocumentRequest(context);
+        httpGet = httpFutureFactory.createGetDocumentRequest();
 
         try {
             // get and store the result into a string.

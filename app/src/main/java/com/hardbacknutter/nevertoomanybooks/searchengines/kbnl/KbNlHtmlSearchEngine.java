@@ -183,7 +183,7 @@ public class KbNlHtmlSearchEngine
      */
     private void ensureCookie()
             throws SearchException {
-        final FutureHttp<Boolean> httpHead = createHeadRequest();
+        final FutureHttp<Boolean> httpHead = httpFutureFactory.createHeadRequest();
         try {
             httpHead.head(KbNlSearchEngine.HOST_URL + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {

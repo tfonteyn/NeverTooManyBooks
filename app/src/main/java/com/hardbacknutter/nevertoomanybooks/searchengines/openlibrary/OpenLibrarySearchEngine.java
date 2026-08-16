@@ -322,7 +322,7 @@ public class OpenLibrarySearchEngine
         final String url = String.format(BY_SID, externalId);
         final Book book = new Book();
         try {
-            final String response = loadDocument(context, url);
+            final String response = loadDocument(url);
             parse(context, new JSONObject(response), criteria.getFetchCovers(), book);
 
         } catch (@NonNull final IOException | JSONException e) {
@@ -380,10 +380,10 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    private String loadDocument(@NonNull final Context context,
-                                @NonNull final String url)
+    private String loadDocument(@NonNull final String url)
             throws StorageException, SearchException {
-        httpGet = createGetDocumentRequest(context);
+
+        httpGet = createGetDocumentRequest();
         try {
             return httpGet.getAsString(url, (con, s) -> s);
         } catch (@NonNull final IOException e) {
@@ -412,7 +412,7 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        String response = loadDocument(context, url);
+        String response = loadDocument(url);
 
         try {
             final JSONObject jsonObject = new JSONObject(response);
@@ -459,7 +459,7 @@ public class OpenLibrarySearchEngine
 
             // "/books/OL22853304M.json"
             final String editionUrl = HOST_URL + key + ".json";
-            response = loadDocument(context, editionUrl);
+            response = loadDocument(editionUrl);
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
@@ -648,7 +648,7 @@ public class OpenLibrarySearchEngine
             final String work = works.getJSONObject(0).optString("key");
             if (!work.isEmpty()) {
                 final String editionUrl = HOST_URL + work + ".json";
-                final String workResponse = loadDocument(context, editionUrl);
+                final String workResponse = loadDocument(editionUrl);
                 workDocument = new JSONObject(workResponse);
             }
         }
@@ -853,7 +853,7 @@ public class OpenLibrarySearchEngine
         // "series" contains structured Series data
         a = work.optJSONArray("series");
         if (a != null && !a.isEmpty()) {
-            parseSeriesFromWork(context, a, book);
+            parseSeriesFromWork(a, book);
         }
 
         // "by_statement" contains NON-structured author data:
@@ -1008,7 +1008,7 @@ public class OpenLibrarySearchEngine
         }
 
         final String authorUrl = HOST_URL + key + ".json";
-        final String response = loadDocument(context, authorUrl);
+        final String response = loadDocument(authorUrl);
         final JSONObject document = new JSONObject(response);
         final Author author = authorParser.parse(context, document);
         if (author != null) {
@@ -1065,15 +1065,13 @@ public class OpenLibrarySearchEngine
      *   ]
      * </pre>
      *
-     * @param context Current context
      * @param a       array with series elements
      * @param book    destination
      *
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
      */
-    private void parseSeriesFromWork(@NonNull final Context context,
-                                     @NonNull final JSONArray a,
+    private void parseSeriesFromWork(@NonNull final JSONArray a,
                                      @NonNull final Book book)
             throws StorageException, SearchException {
         JSONObject element;
@@ -1086,7 +1084,7 @@ public class OpenLibrarySearchEngine
                     final String nr = position == Integer.MIN_VALUE ? null
                                                                     : String.valueOf(position);
                     final String key = series.optString("key", null);
-                    fetchAndParseSeries(context, key, nr, book);
+                    fetchAndParseSeries(key, nr, book);
                 }
             }
         }
@@ -1115,7 +1113,6 @@ public class OpenLibrarySearchEngine
      * }
      * </pre>
      *
-     * @param context Current context
      * @param key     to fetch
      * @param nr      in the series; {@code null} for none
      * @param book    destination
@@ -1123,8 +1120,7 @@ public class OpenLibrarySearchEngine
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
      */
-    private void fetchAndParseSeries(@NonNull final Context context,
-                                     @Nullable final String key,
+    private void fetchAndParseSeries(@Nullable final String key,
                                      @Nullable final String nr,
                                      @NonNull final Book book)
             throws StorageException, SearchException {
@@ -1133,7 +1129,7 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = HOST_URL + key + ".json";
-        final String response = loadDocument(context, url);
+        final String response = loadDocument(url);
         final JSONObject document = new JSONObject(response);
 
         final String title = document.optString("name");
@@ -1448,7 +1444,7 @@ public class OpenLibrarySearchEngine
             //   ],
             //   ...
             // }
-            String response = loadDocument(context, url);
+            String response = loadDocument(url);
 
             final JSONObject jsonObject = new JSONObject(response);
             final JSONArray works = jsonObject.optJSONArray("works");
@@ -1456,7 +1452,7 @@ public class OpenLibrarySearchEngine
                 // Now fetch: https://openlibrary.org/works/OL5725956W/editions.json
                 final String worksKey = works.getJSONObject(0).optString("key");
                 url = HOST_URL + worksKey + "/editions.json";
-                response = loadDocument(context, url);
+                response = loadDocument(url);
                 return parseEditions(new JSONObject(response));
             }
         } catch (@NonNull final StorageException | JSONException e) {
@@ -1780,9 +1776,8 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    @Override
-    public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttp<T> request = super.createGetDocumentRequest(context);
+    public <T> FutureHttp<T> createGetDocumentRequest() {
+        final FutureHttp<T> request = httpFutureFactory.createGetDocumentRequest();
         request.setEnable404Redirect(true);
 
         return request;

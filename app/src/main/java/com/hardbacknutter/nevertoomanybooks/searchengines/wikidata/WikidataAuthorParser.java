@@ -228,7 +228,8 @@ class WikidataAuthorParser {
             final String encodeFilename = URLEncoder.encode(filename, CHARSET);
 
             final String url = String.format(IMAGE_INFO, encodeFilename);
-            final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
+            final FutureHttp<String> httpGet = searchEngine.getHttpFutureFactory()
+                                                           .createGetDocumentRequest();
             final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {

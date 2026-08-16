@@ -270,7 +270,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        httpGet = createGetDocumentRequest(context);
+        httpGet = httpFutureFactory.createGetDocumentRequest();
 
         try {
             // get and store the result into a string.

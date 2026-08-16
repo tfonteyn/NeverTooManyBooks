@@ -223,7 +223,7 @@ public class KbNlSearchEngine
      */
     private void ensureCookie()
             throws SearchException {
-        final FutureHttp<Boolean> httpHead = createHeadRequest();
+        final FutureHttp<Boolean> httpHead = httpFutureFactory.createHeadRequest();
         try {
             httpHead.head(HOST_URL + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
@@ -239,7 +239,7 @@ public class KbNlSearchEngine
 
         final String externalId = criteria.requireSid(getEngineId());
         final String url = String.format(PERMALINK_URL, dbVersion, externalId);
-        final Book book = getBook(context, url);
+        final Book book = getBook(url);
         if (isCancelled()) {
             return book;
         }
@@ -257,7 +257,7 @@ public class KbNlSearchEngine
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getFormatted(getEngineId());
         final String url = String.format(SEARCH_URL, dbVersion, setNr, codeStr);
-        final Book book = getBook(context, url);
+        final Book book = getBook(url);
         if (isCancelled()) {
             return book;
         }
@@ -276,8 +276,7 @@ public class KbNlSearchEngine
     }
 
     @NonNull
-    private Book getBook(@NonNull final Context context,
-                         @NonNull final String url)
+    private Book getBook(@NonNull final String url)
             throws SearchException, StorageException {
 
         ensureCookie();
@@ -293,7 +292,7 @@ public class KbNlSearchEngine
             throw new IllegalStateException(e);
         }
 
-        httpGet = createGetDocumentRequest(context);
+        httpGet = httpFutureFactory.createGetDocumentRequest();
         try {
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
             httpGet.get(url, (con, is) -> handleResponse(is, parser, handler, book));
