@@ -237,9 +237,8 @@ public class BolSearchEngine
      */
     private void ensureCookie()
             throws SearchException {
-        final FutureHttp<Boolean> httpHead = httpFutureFactory.createHeadRequest();
         try {
-            httpHead.head(HOST_URL, con -> true);
+            httpFutureFactory.head(HOST_URL);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }

@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
@@ -30,6 +31,7 @@ import javax.net.ssl.SSLContext;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 
@@ -132,20 +134,20 @@ public class HttpFutureFactory {
     }
 
     /**
-     * Convenience method to create a suitable {@code HEAD} request.
+     * Convenience method to send a suitable {@code HEAD} request.
      *
-     * @param <T> return type
+     * @param url to send the request to.
      *
-     * @return new {@code HEAD} request instance
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException N/A
      */
-    @SuppressWarnings("WeakerAccess")
-    @NonNull
-    public <T> FutureHttp<T> createHeadRequest() {
-        final FutureHttp<T> request = createRequest();
-        request.setHeaders(createHeadersForGETorHEAD());
-        return request;
-    }
+    public void head(@NonNull final String url)
+            throws IOException, StorageException {
 
+        final FutureHttp<Boolean> request = createRequest();
+        request.setHeaders(createHeadersForGETorHEAD());
+        request.head(url, response -> true);
+    }
 
     /**
      * Convenience method to create a suitable {@code GET} request.

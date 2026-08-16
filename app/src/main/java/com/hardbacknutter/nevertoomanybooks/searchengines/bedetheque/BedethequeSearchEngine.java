@@ -287,9 +287,8 @@ public class BedethequeSearchEngine
     private String ensureCookie(@NonNull final Context context)
             throws SearchException {
         if (sessionCookie == null || sessionCookie.hasExpired()) {
-            final FutureHttp<Boolean> httpHead = httpFutureFactory.createHeadRequest();
             try {
-                httpHead.head(SEARCH_URL, response -> true);
+                httpFutureFactory.head(SEARCH_URL);
             } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
                 throw new SearchException(getEngineId(), e);
             }
