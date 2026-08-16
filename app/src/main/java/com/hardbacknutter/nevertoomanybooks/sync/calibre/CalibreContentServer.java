@@ -310,6 +310,11 @@ public final class CalibreContentServer
      */
     private static final int THROTTLER_DELAY_IN_MILLIS = 200;
 
+    /**
+     * Ignored by the server.
+     */
+    private static final String ACCEPT_LANGUAGE_HEADER = "en";
+
     @NonNull
     private final Uri serverUri;
     /** As read from the Content Server. */
@@ -1434,7 +1439,8 @@ public final class CalibreContentServer
                          final int buffer)
             throws IOException {
 
-        jsonFetchCall = new HttpCall(httpClient, cookieStore, R.string.site_calibre,
+        jsonFetchCall = new HttpCall(httpClient, cookieStore, ACCEPT_LANGUAGE_HEADER,
+                                     R.string.site_calibre,
                                      httpLogEnabled);
         jsonFetchCall.setBufferSize(buffer);
         return jsonFetchCall.getAsString(createGetRequest(url));
@@ -1480,7 +1486,8 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        fileFetchCall = new HttpCall(httpClient, cookieStore, R.string.site_calibre,
+        fileFetchCall = new HttpCall(httpClient, cookieStore, ACCEPT_LANGUAGE_HEADER,
+                                     R.string.site_calibre,
                                      httpLogEnabled);
         fileFetchCall.setBufferSize(BUFFER_FILE);
         final Uri uri = fileFetchCall.get(createGetRequest(url), (response, is) -> {
@@ -1649,7 +1656,8 @@ public final class CalibreContentServer
                 jsonBody,
                 MediaType.parse("application/json; charset=utf-8"));
 
-        postCall = new HttpCall(httpClient, cookieStore, R.string.site_calibre,
+        postCall = new HttpCall(httpClient, cookieStore, ACCEPT_LANGUAGE_HEADER,
+                                R.string.site_calibre,
                                 httpLogEnabled);
         postCall.post(createPostRequest(url, body), null);
     }
