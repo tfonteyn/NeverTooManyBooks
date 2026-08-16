@@ -25,11 +25,9 @@ import androidx.annotation.Nullable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 
 import okhttp3.Request;
 
@@ -37,20 +35,15 @@ public class ImageRequestFactoryDefault
         implements RequestFactory {
 
     @NonNull
-    private final Locale siteLocale;
-    @NonNull
-    private final Locale userLocale;
+    private final String acceptLanguageHeader;
 
     /**
      * Constructor.
      *
-     * @param siteLocale the locale of the site to access
-     * @param userLocale of the user
+     * @param acceptLanguageHeader to use
      */
-    public ImageRequestFactoryDefault(@NonNull final Locale siteLocale,
-                                      @NonNull final Locale userLocale) {
-        this.siteLocale = siteLocale;
-        this.userLocale = userLocale;
+    ImageRequestFactoryDefault(@NonNull final String acceptLanguageHeader) {
+        this.acceptLanguageHeader = acceptLanguageHeader;
     }
 
     /**
@@ -82,9 +75,6 @@ public class ImageRequestFactoryDefault
         // Sec-Fetch-Mode: no-cors
         // Sec-Fetch-Site: cross-site
         // Connection: keep-alive
-
-        // Randomizes the header, so must always be recreated.
-        final String acceptLanguageHeader = HttpLanguageHeader.create(siteLocale, userLocale);
 
         final Request.Builder builder = new Request.Builder()
                 .url(urlStr)
