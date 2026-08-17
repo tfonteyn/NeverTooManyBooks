@@ -25,6 +25,7 @@ import android.util.Log;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -44,8 +45,7 @@ class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
-    /** THIS TOKEN NEEDS TO BE TEMPORARILY FILLED IN - BUT NEVER COMMIT IT TO GIT! */
-    private static final String TOKEN = "";
+    private static final String TOKEN = BuildConfig.LIBRARYTHINK_API_TOKEN;
 
     private LibraryThingSearchEngine searchEngine;
 

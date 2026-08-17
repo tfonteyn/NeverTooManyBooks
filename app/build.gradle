@@ -118,7 +118,11 @@ android {
 
         // Under development; disabled for release builds in buildTypes.release
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
+
         buildConfigField("boolean", "ENABLE_LIBRARYTHING", "true")
+        def apiToken = project.hasProperty('LIBRARYTHINK_API_TOKEN')
+                ? "\"${LIBRARYTHINK_API_TOKEN}\"" : '""'
+        buildConfigField("String", "LIBRARYTHINK_API_TOKEN", apiToken)
 
         buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
