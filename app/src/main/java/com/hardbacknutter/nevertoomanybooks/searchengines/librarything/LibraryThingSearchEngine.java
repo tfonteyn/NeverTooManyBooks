@@ -44,11 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -89,7 +88,7 @@ public class LibraryThingSearchEngine
     private static final String ALT_EDITIONS_URL = HOST_URL + "/api/%1$s/thingISBN/%2$s";
 
     @Nullable
-    private FutureHttp<Boolean> httpCall;
+    private HttpCall httpCall;
 
     /**
      * Constructor.
@@ -221,8 +220,9 @@ public class LibraryThingSearchEngine
     @WorkerThread
     @NonNull
     @Override
-    public List<AltEditionProductCode> searchAlternativeEditions(@NonNull final Context context,
-                                                                 @NonNull final ProductCode productCode)
+    public List<AltEditionProductCode> searchAlternativeEditions(
+            @NonNull final Context context,
+            @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
 
         if (!productCode.isIsbn()) {
@@ -257,14 +257,11 @@ public class LibraryThingSearchEngine
         }
 
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
-        httpCall = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpCallFactory.createCall();
         try {
-            httpCall.get(url, (con, is) -> {
-                parser.parse(is, handler);
-                return true;
-            });
+            httpCall.get(url, null, parser, handler);
 
-        } catch (@NonNull final StorageException | IOException e) {
+        } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
             httpCall = null;
