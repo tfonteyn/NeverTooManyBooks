@@ -1011,4 +1011,6 @@
         <item quantity="many">%1$d раз в год</item>
         <item quantity="other">%1$d раза в год</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Ограничение скорости запросов</string>
+    <string name="lbl_limit_request_speed_info">Добавляет короткие задержки между запросами, чтобы предотвратить перегрузку сервера и блокировку IP-адресов.</string>
 </resources>
