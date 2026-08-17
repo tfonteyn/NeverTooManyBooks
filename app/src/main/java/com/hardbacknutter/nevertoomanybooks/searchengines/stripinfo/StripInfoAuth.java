@@ -222,10 +222,14 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        httpPost = httpCallFactory.createRequest(
-                Map.of(HttpConstants.CONTENT_TYPE,
-                       HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
-        httpPost.post(url, postBody, null);
+        try {
+            httpPost = httpCallFactory.createRequest(
+                    Map.of(HttpConstants.CONTENT_TYPE,
+                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
+            httpPost.post(url, postBody, null);
+        } finally {
+            httpPost = null;
+        }
 
         userId = getUserId().orElseThrow(
                 () -> new CredentialsException(R.string.site_stripinfo_be, "login failed"));
