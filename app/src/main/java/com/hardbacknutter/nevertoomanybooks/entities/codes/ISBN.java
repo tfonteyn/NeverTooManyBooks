@@ -839,7 +839,6 @@ public final class ISBN
         private void invalidate() {
             layout.setStartIconVisible(false);
             layout.setStartIconOnClickListener(null);
-            LoggerFactory.getLogger().d(TAG, "invalidate");
         }
 
         /**
@@ -882,7 +881,6 @@ public final class ISBN
                 // ISBN-10, which can always be converted to ISBN-13
                 altIsbn = productCode.asText(ProductCodeType.Isbn13);
                 layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                LoggerFactory.getLogger().d(TAG, productCode.getType());
                 return;
             }
 
@@ -892,11 +890,9 @@ public final class ISBN
                     // can be converted to ISBN-10
                     altIsbn = productCode.asText(ProductCodeType.Isbn10);
                     layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                    LoggerFactory.getLogger().d(TAG, productCode.getType());
                 } else {
                     // cannot be converted
                     layout.setStartIconOnClickListener(null);
-                    LoggerFactory.getLogger().d(TAG, productCode.getType());
                 }
                 return;
             }
@@ -910,7 +906,6 @@ public final class ISBN
             // We're not in strict mode, just show validity status
             layout.setStartIconVisible(productCode.getType() != ProductCodeType.Invalid);
             layout.setStartIconOnClickListener(null);
-            LoggerFactory.getLogger().d(TAG, productCode.getType());
         }
     }
 }
