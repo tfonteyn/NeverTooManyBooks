@@ -1013,5 +1013,6 @@
         <item quantity="many">%1$dkrát ročně</item>
         <item quantity="other">%1$dkrát ročně</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Omezení rychlosti požadavků</string>
+    <string name="lbl_limit_request_speed_info">Vkládá krátká zpoždění mezi požadavky, aby se zabránilo přetížení serveru a blokování IP adres.</string>
 </resources>
-
