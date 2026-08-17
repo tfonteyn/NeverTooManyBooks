@@ -430,17 +430,16 @@ class CollectionFormUploader {
             throws IOException {
 
         httpCall = httpCallFactory.createCall();
+        // Host, Connection, Accept-Encoding are added by OkHttp
         final Request request = new Request.Builder()
                 .url(postUrl)
                 .post(postBody)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE)
                 .build();
 
-        return Objects.requireNonNull(httpCall.post(request, (response, bis) ->
-                Jsoup.parse(bis, null, postUrl)));
+        final Document document = httpCall.post(request, (response, bis) ->
+                Jsoup.parse(bis, null, postUrl));
+
+        return Objects.requireNonNull(document);
     }
 
     /**

@@ -46,6 +46,7 @@ public final class HttpConstants {
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer">
      * Referer</a>
      */
+    // URGENT: review REFERER usage + coordinate with SEC_FETCH_SITE
     public static final String REFERER = "Referer";
 
     /**

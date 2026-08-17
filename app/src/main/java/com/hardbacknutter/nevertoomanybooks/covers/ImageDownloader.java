@@ -38,7 +38,6 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -144,11 +143,6 @@ public class ImageDownloader {
         logger.d(TAG, "headers", "\n" + msg);
     }
 
-    private static boolean isZipped(@NonNull final Response response) {
-        return "gzip".equalsIgnoreCase(response.header(
-                HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
-    }
-
     /**
      * Given a URL, get an image and save to the given file.
      * Must be called from a background task.
@@ -209,13 +203,7 @@ public class ImageDownloader {
                     }
 
                     try (InputStream source = response.body().byteStream()) {
-                        if (isZipped(response)) {
-                            try (GZIPInputStream gzipInputStream = new GZIPInputStream(source)) {
-                                savedFile = coverStorage.persist(gzipInputStream, destFile);
-                            }
-                        } else {
-                            savedFile = coverStorage.persist(source, destFile);
-                        }
+                        savedFile = coverStorage.persist(source, destFile);
                     }
                 }
             }

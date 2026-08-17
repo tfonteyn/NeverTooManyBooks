@@ -1793,7 +1793,7 @@ public class OpenLibrarySearchEngine
         public Request createRequest(@NonNull final String urlStr,
                                      @Nullable final Map<String, String> requestProperties) {
 
-            // DO NOT ADD ANY HEADERS.... OL only works with the defaults ?!
+            // Host, Connection, Accept-Encoding are added by OkHttp
             return new Request.Builder().url(urlStr).build();
         }
     }

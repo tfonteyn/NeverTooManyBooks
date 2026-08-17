@@ -139,13 +139,10 @@ public class CollectionFormParser {
                 .build();
 
         httpCall = httpCallFactory.createCall();
+        // Host, Connection, Accept-Encoding are added by OkHttp
         final Request request = new Request.Builder()
                 .url(postUrl)
                 .post(postBody)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE)
                 .build();
 
         final Document document = Objects.requireNonNull(

@@ -27,12 +27,9 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
@@ -40,12 +37,10 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.SAXParser;
 
 import com.hardbacknutter.util.logger.Logger;
@@ -233,6 +228,7 @@ public class HttpCall {
     }
 
     @Nullable
+    // URGENT: TEST HEADERS
     private <R> R getWithRedirectHandling(@NonNull final Request request,
                                           @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
@@ -340,6 +336,7 @@ public class HttpCall {
      * @see #postAuthenticationForm(String, Map, RequestBody, ResponseProcessor)
      */
     @Nullable
+    // URGENT: TEST HEADERS
     private <R> R postWithRedirectHandling(@NonNull final Request request,
                                            @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
@@ -366,34 +363,35 @@ public class HttpCall {
             }
         }
 
-        if (redirectedUrl != null) {
-            final Request.Builder requestBuilder = new Request.Builder()
-                    .url(redirectedUrl)
-                    // POST + redirect => GET
-                    // Sidenote: read the specs on 301/302/307/308
-                    // and sigh deeply...
-                    // but in reality, this method swap works.
-                    .method(GET, null);
+        if (redirectedUrl == null) {
+            return null;
+        }
 
-            // Copy headers safely
-            for (final String name : headers.names()) {
-                if (!name.equalsIgnoreCase(HttpConstants.RESPONSE_HEADER_CONTENT_LENGTH)) {
-                    final String value = headers.get(name);
-                    if (value != null) {
-                        requestBuilder.header(name, value);
-                    }
+        final Request.Builder requestBuilder = new Request.Builder()
+                .url(redirectedUrl)
+                // POST + redirect => GET
+                // Sidenote: read the specs on 301/302/307/308
+                // and sigh deeply...
+                // but in reality, this method swap works.
+                .method(GET, null);
+
+        // Copy headers safely
+        for (final String name : headers.names()) {
+            if (!name.equalsIgnoreCase(HttpConstants.RESPONSE_HEADER_CONTENT_LENGTH)) {
+                final String value = headers.get(name);
+                if (value != null) {
+                    requestBuilder.header(name, value);
                 }
-            }
-            final Request redirectedRequest = requestBuilder.build();
-            call = httpClient.newCall(redirectedRequest);
-            try (Response response = getResponse(request)) {
-                return readBody(response, responseProcessor);
             }
         }
 
-        return null;
-    }
+        final Request redirectedRequest = requestBuilder.build();
+        call = httpClient.newCall(redirectedRequest);
+        try (Response response = getResponse(request)) {
+            return readBody(response, responseProcessor);
+        }
 
+    }
 
     /**
      * Send a {@code GET} request and return the response as a single string.
@@ -428,16 +426,7 @@ public class HttpCall {
 
         call = httpClient.newCall(request);
         try (Response response = getResponse(request)) {
-            // This code SHOULD have worked, but it does not unzip correctly!?
-            // response.body().string();
-            //noinspection DataFlowIssue
-            return readBody(response, (r, is) -> {
-                try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-                    try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
-                        return reader.lines().collect(Collectors.joining());
-                    }
-                }
-            });
+             return response.body().string();
         }
     }
 
@@ -596,19 +585,14 @@ public class HttpCall {
     private <R> R readBody(@NonNull final Response response,
                            @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
-        if (responseProcessor != null) {
-            try (BufferedInputStream bis = new BufferedInputStream(
-                    response.body().byteStream(), bufferSize)) {
-                if (isZipped(response)) {
-                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                        return responseProcessor.apply(response, gzs);
-                    }
-                } else {
-                    return responseProcessor.apply(response, bis);
-                }
-            }
+        if (responseProcessor == null) {
+            return null;
         }
-        return null;
+
+        try (BufferedInputStream bis = new BufferedInputStream(response.body().byteStream(),
+                                                               bufferSize)) {
+                return responseProcessor.apply(response, bis);
+        }
     }
 
     /**
@@ -689,6 +673,7 @@ public class HttpCall {
 
         // Example of a Firefox request to https://developer.android.com
 
+        // Host: developer.android.com
         // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
         // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
         // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
@@ -702,21 +687,16 @@ public class HttpCall {
         // Sec-Fetch-User: ?1
         // Connection: keep-alive
 
+        // Host, Connection, Accept-Encoding are added by OkHttp
         final Request.Builder builder = new Request.Builder()
                 .url(url)
                 .method(method, body)
-                .header(HttpConstants.HOST, url.getHost())
                 .header(HttpConstants.USER_AGENT,
                         HttpConstants.USER_AGENT_FIREFOX)
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
                         acceptLanguageHeader)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE)
 
                 .header(HttpConstants.DNT, "1")
                 .header(HttpConstants.SEC_GPC, "1")
@@ -742,18 +722,6 @@ public class HttpCall {
         }
 
         return builder.build();
-    }
-
-    /**
-     * Check if the response headers indicate the encoding is gzip.
-     *
-     * @param response connection to check
-     *
-     * @return {@code true} if the content-encoding was "gzip"
-     */
-    private boolean isZipped(@NonNull final Response response) {
-        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
-                response.header(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
     }
 
     /**

@@ -76,18 +76,15 @@ public class ImageRequestFactoryDefault
         // Sec-Fetch-Site: cross-site
         // Connection: keep-alive
 
+        // Host, Connection, Accept-Encoding are added by OkHttp
         final Request.Builder builder = new Request.Builder()
                 .url(urlStr)
-                .header(HttpConstants.HOST, new URL(urlStr).getHost())
                 .header(HttpConstants.USER_AGENT,
                         HttpConstants.USER_AGENT_FIREFOX)
-
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
                         acceptLanguageHeader)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
 
                 .header(HttpConstants.SEC_FETCH_STORAGE_ACCESS,
                         HttpConstants.SEC_FETCH_STORAGE_ACCESS_NONE)
@@ -102,10 +99,7 @@ public class ImageRequestFactoryDefault
                         HttpConstants.SEC_FETCH_MODE_NO_CORS)
                 // same site... might need to use SEC_FETCH_SITE_CROSS_SITE ?
                 .header(HttpConstants.SEC_FETCH_SITE,
-                        HttpConstants.SEC_FETCH_SITE_NONE)
-
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE);
+                        HttpConstants.SEC_FETCH_SITE_NONE);
 
         // add or override
         if (requestProperties != null) {

@@ -43,8 +43,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.CookieStore;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -601,27 +599,18 @@ public final class CalibreContentServer
     }
 
     @NonNull
-    private Request createImageRequest(@NonNull final String urlStr)
-            throws MalformedURLException {
+    private Request createImageRequest(@NonNull final String urlStr) {
 
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
 
-        final Request.Builder builder = new Request.Builder()
+        // Host, Connection, Accept-Encoding are added by OkHttp
+        return new Request.Builder()
                 .url(urlStr)
-                .header(HttpConstants.HOST, new URL(urlStr).getHost())
                 .header(HttpConstants.USER_AGENT,
                         HttpConstants.USER_AGENT_FIREFOX)
-
                 .header(HttpConstants.ACCEPT,
-                        HttpConstants.ACCEPT_IMAGE)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE);
-
-        return builder.build();
+                        HttpConstants.ACCEPT_IMAGE).build();
     }
 
     @NonNull
@@ -630,26 +619,17 @@ public final class CalibreContentServer
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
 
-        final Request.Builder builder = new Request.Builder()
-                .url(url)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE);
-
-        return builder.build();
+        // Host, Connection, Accept-Encoding are added by OkHttp
+        return new Request.Builder().url(url).build();
     }
 
     @NonNull
     private Request createPostRequest(@NonNull final String url,
                                       @NonNull final RequestBody body) {
+        // Host, Connection, Accept-Encoding are added by OkHttp
         final Request.Builder builder = new Request.Builder()
                 .url(url)
                 .post(body)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE)
                 .header(HttpConstants.CONTENT_TYPE,
                         HttpConstants.CONTENT_TYPE_JSON);
 

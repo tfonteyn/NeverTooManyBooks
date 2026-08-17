@@ -450,11 +450,11 @@ public class DnbSearchEngine
         @Override
         public Request createRequest(@NonNull final String urlStr,
                                      @Nullable final Map<String, String> requestProperties) {
+            // Host, Connection, Accept-Encoding are added by OkHttp
             return new Request.Builder()
                     .url(urlStr)
                     .header(HttpConstants.USER_AGENT, "Wget/1.25.0")
                     .header(HttpConstants.ACCEPT, "*/*")
-                    .header(HttpConstants.CONNECTION, HttpConstants.CONNECTION_KEEP_ALIVE)
                     .build();
         }
     }
