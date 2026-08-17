@@ -977,4 +977,6 @@
         <item quantity="other">%1$d all\'anno</item>
     </plurals>
     <string name="lbl_edition_info">Informazioni dell\'edizione</string>
+    <string name="lbl_limit_request_speed_info">Aggiunge un breve ritardo tra le richieste per evitare un sovraccarico del server e blocchi IP.</string>
+    <string name="lbl_limit_request_speed">Limite velocità della richiesta</string>
 </resources>
