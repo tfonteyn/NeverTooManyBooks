@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -70,20 +70,17 @@ public class LibraryThingSearchEngine
         implements SearchEngine.AlternativeEditions<AltEditionProductCode>,
                    SearchEngine.UserRegistration {
 
+    /** Exact length of the API token. */
+    static final int TOKEN_LEN = 32;
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.librarything.com";
     /** {@link EngineId#getDefaultLocale()}. */
     private static final Locale HOST_LOCALE = Locale.US;
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "librarything";
-
-    private static final String TAG = "LibraryThingSearchEngin";
-
-    /** Exact length of the API token. */
-    static final int TOKEN_LEN = 32;
     /** Preference key, stores the token. */
     static final String PK_API_TOKEN = HOST_PREF_KEY + ".api.token";
-
+    private static final String TAG = "LibraryThingSearchEngin";
     /**
      * Search for alternative editions.
      * Param 1: the API token
