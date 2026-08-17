@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -172,15 +171,14 @@ public final class WikidataAuthorResolver
 
         final String url = String.format(AUTHOR_SEARCH_BY_SID, sid);
 
-        final FutureHttp<String> httpCall = searchEngine.getHttpFutureFactory()
-                                                        .createGetDocumentRequest();
+        final HttpCall httpCall = searchEngine.getHttpCallFactory().createCall();
         try {
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, null);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 return authorParser.parse(context, langCode, document, sid);
             }
-        } catch (@NonNull final StorageException | IOException | JSONException e) {
+        } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
         }
         return null;
@@ -191,13 +189,12 @@ public final class WikidataAuthorResolver
                                 @NonNull final String names)
             throws SearchException {
 
-        final FutureHttp<String> httpCall = searchEngine.getHttpFutureFactory()
-                                                        .createGetDocumentRequest();
+        final HttpCall httpCall = searchEngine.getHttpCallFactory().createCall();
         try {
             final String url = String.format(AUTHOR_SEARCH_BY_NAME, langCode,
                                              URLEncoder.encode(names, CHARSET));
 
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, null);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final JSONArray docs = document.optJSONArray("search");
@@ -209,7 +206,7 @@ public final class WikidataAuthorResolver
                     }
                 }
             }
-        } catch (@NonNull final StorageException | IOException | JSONException e) {
+        } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
         }
         return null;

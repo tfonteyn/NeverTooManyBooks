@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -151,7 +151,8 @@ class WikidataAuthorParser {
                      .flatMap(Optional::stream)
                      .forEach(v -> author.setIdentifierValue(v.getKey(), v.getSid()));
 
-        parseImage(context, claims).ifPresent(url -> {
+        parseImage(claims).ifPresent(url -> {
+            //noinspection OverlyBroadCatchBlock
             try {
                 searchEngine.saveImage(context, url, null, sid, 0, null)
                             .ifPresent(fileSpec -> {
@@ -211,14 +212,14 @@ class WikidataAuthorParser {
     }
 
     @NonNull
-    private Optional<String> parseImage(@NonNull final Context context,
-                                        @NonNull final JSONObject claims)
+    private Optional<String> parseImage(@NonNull final JSONObject claims)
             throws JSONException {
 
         final JSONArray p = claims.optJSONArray(P_IMAGE);
         if (p == null || p.isEmpty()) {
             return Optional.empty();
         }
+
         try {
             final String filename = p.getJSONObject(0)
                                      .getJSONObject("mainsnak")
@@ -228,9 +229,8 @@ class WikidataAuthorParser {
             final String encodeFilename = URLEncoder.encode(filename, CHARSET);
 
             final String url = String.format(IMAGE_INFO, encodeFilename);
-            final FutureHttp<String> httpCall = searchEngine.getHttpFutureFactory()
-                                                            .createGetDocumentRequest();
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final HttpCall httpCall = searchEngine.getHttpCallFactory().createCall();
+            final String response = httpCall.getAsString(url, null);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final JSONObject pages = document.getJSONObject("query")
@@ -251,7 +251,7 @@ class WikidataAuthorParser {
                     }
                 }
             }
-        } catch (@NonNull final StorageException | IOException ignore) {
+        } catch (@NonNull final IOException ignore) {
             // ignore
         }
 
