@@ -1002,4 +1002,6 @@
         <item quantity="many">%1$d-krát ročne</item>
         <item quantity="other">%1$d-krát ročne</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Obmedzenie rýchlosti požiadaviek</string>
+    <string name="lbl_limit_request_speed_info">Pridáva krátke oneskorenia medzi požiadavkami, aby sa predišlo preťaženiu servera a blokovaniu IP adries.</string>
 </resources>
