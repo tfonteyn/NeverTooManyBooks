@@ -948,4 +948,6 @@
     <plurals name="freq_ordinal_yearly">
         <item quantity="other">每年 %1$d 次</item>
     </plurals>
+    <string name="lbl_limit_request_speed">限制請求速度</string>
+    <string name="lbl_limit_request_speed_info">在請求之間新增短暫延遲，以防止伺服器過載與 IP 封鎖。</string>
 </resources>

@@ -349,4 +349,6 @@
         <item quantity="one">%1$d vez por ano</item>
         <item quantity="other">%1$d vezes por ano</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Limitar velocidade das requisições</string>
+    <string name="lbl_limit_request_speed_info">Adiciona pequenos atrasos entre as requisições para evitar sobrecarga no servidor e bloqueios de IP.</string>
 </resources>

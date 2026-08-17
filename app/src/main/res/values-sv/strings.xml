@@ -966,4 +966,6 @@
         <item quantity="one">Årligen</item>
         <item quantity="other">%1$d gånger om året</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Begränsa förfrågningshastighet</string>
+    <string name="lbl_limit_request_speed_info">Lägger till korta fördröjningar mellan förfrågningar för att förhindra serveröverbelastning och IP-blockeringar.</string>
 </resources>

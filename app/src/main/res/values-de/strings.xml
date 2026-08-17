@@ -963,4 +963,6 @@
         <item quantity="one">Jährlich</item>
         <item quantity="other">%1$d-mal jährlich</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Anfragegeschwindigkeit begrenzen</string>
+    <string name="lbl_limit_request_speed_info">Fügt kurze Verzögerungen zwischen Anfragen ein, um eine Serverüberlastung und IP-Sperren zu verhindern.</string>
 </resources>

@@ -963,4 +963,6 @@
         <item quantity="one">Jaarlijks</item>
         <item quantity="other">%1$d keer per jaar</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Verzoeksnelheid begrenzen</string>
+    <string name="lbl_limit_request_speed_info">Voegt korte vertragingen toe tussen verzoeken om serveroverbelasting en IP-blokkades te voorkomen.</string>
 </resources>

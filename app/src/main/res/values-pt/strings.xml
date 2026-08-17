@@ -974,4 +974,6 @@
         <item quantity="one">%1$d vez por ano</item>
         <item quantity="other">%1$d por ano</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Limitar velocidade dos pedidos</string>
+    <string name="lbl_limit_request_speed_info">Adiciona breves atrasos entre pedidos para evitar a sobrecarga do servidor e bloqueios de IP.</string>
 </resources>
