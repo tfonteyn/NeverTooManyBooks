@@ -99,56 +99,30 @@ public class HttpCall {
      * Constructor.
      *
      * @param httpClient           the one
-     * @param cookieStore          for logging <strong>all</strong> cookies as desired
      * @param acceptLanguageHeader to use
      * @param siteResId            string resource representing the caller
-     *                             Used for exceptions, and read from the exception-to-usermessage
-     *                             convertor.
+     *                             Used for exceptions, and read from the
+     *                             exception-to-usermessage convertor.
      * @param logEnabled           flag
+     * @param cookieStore          for logging <strong>all</strong> cookies as desired
      */
     public HttpCall(@NonNull final OkHttpClient httpClient,
-                    @NonNull final CookieStore cookieStore,
                     @NonNull final String acceptLanguageHeader,
                     @StringRes final int siteResId,
-                    final boolean logEnabled) {
+                    final boolean logEnabled,
+                    @NonNull final CookieStore cookieStore) {
 
         this.httpClient = httpClient;
-        this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
         this.siteResId = siteResId;
         this.logEnabled = logEnabled;
-    }
-
-    /**
-     * Check if the response headers indicate the encoding is gzip.
-     *
-     * @param response connection to check
-     *
-     * @return {@code true} if the content-encoding was "gzip"
-     */
-    private boolean isZipped(@NonNull final Response response) {
-        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
-                response.header(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
-    }
-
-    /**
-     * See <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-redirection-3xx">
-     * Redirect codes</a>.
-     *
-     * @param code to check
-     *
-     * @return flag
-     */
-    private boolean isRedirect(final int code) {
-        return code == HttpURLConnection.HTTP_MOVED_PERM
-               || code == HttpURLConnection.HTTP_MOVED_TEMP
-               || code == HttpURLConnection.HTTP_SEE_OTHER
-               || code == HTTP_TEMPORARY_REDIRECT
-               || code == HTTP_PERMANENT_REDIRECT;
+        this.cookieStore = cookieStore;
     }
 
     /**
      * Set the buffer size to use for the input stream.
+     * <p>
+     * Default: {@link #DEFAULT_BUFFER_SIZE}.
      *
      * @param bufferSize in bytes
      */
@@ -157,143 +131,17 @@ public class HttpCall {
     }
 
     /**
-     * Create a suitable {@code HEAD} request.
-     *
-     * @param url        to fetch
-     * @return new {@link Request} instance
-     *
-     * @throws MalformedURLException on url errors
-     */
-    @NonNull
-    @EmptySuper
-    private Request createHeadRequest(@NonNull final String url)
-            throws MalformedURLException {
-        return createDocumentRequest(HEAD, new URL(url), null, null);
-    }
-
-    /**
-     * Create a suitable {@code GET} request.
-     *
-     * @param url        to fetch
-     * @param headers    (optional) extra headers to add/override
-     *
-     * @return new {@link Request} instance
-     *
-     * @throws MalformedURLException on url errors
-     */
-    @NonNull
-    @EmptySuper
-    private Request createGetRequest(@NonNull final String url,
-                                     @Nullable final Map<String, String> headers)
-            throws MalformedURLException {
-        return createDocumentRequest(GET, new URL(url), headers, null);
-    }
-
-    /**
-     * Create a suitable {@code POST} request.
-     * Redirects are automatic and might miss cookies.
-     * Use {@link #postWithRedirectHandling(Request, ResponseProcessor)} for authentication
-     * or other cookie/redirect issues.
-     *
-     * @param url        to fetch
-     * @param headers    (optional) extra headers to add/override
-     * @param body       (optional) to post
-     *
-     * @return new {@link Request} instance
-     *
-     * @throws MalformedURLException on url errors
-     */
-    private Request createPostRequest(@NonNull final String url,
-                                      @Nullable final Map<String, String> headers,
-                                      @Nullable final RequestBody body)
-            throws MalformedURLException {
-        return createDocumentRequest(POST, new URL(url), headers, body);
-    }
-
-    /**
-     * Convenience method to create a suitable {@code GET} {@link Request}.
-     * <p>
-     * The headers are set to the defaults as used by Firefox to request a "document"
-     *
-     * @param method     "GET", "HEAD", "POST"
-     * @param url        to use
-     * @param headers    (optional) extra headers to add/override
-     * @param body       (optional) the body to send when using a "POST"
-     *
-     * @return new {@code GET} request instance
-     */
-    @NonNull
-    private Request createDocumentRequest(@NonNull final String method,
-                                          @NonNull final URL url,
-                                          @Nullable final Map<String, String> headers,
-                                          @Nullable final RequestBody body) {
-
-        // Example of a Firefox request to https://developer.android.com
-
-        //Host: developer.android.com
-        //User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
-        //Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-        //Accept-Language: en-GB,en;q=0.8,nl-BE;q=0.5,de-DE;q=0.3
-        //Accept-Encoding: gzip, deflate, br, zstd
-        //DNT: 1
-        //Sec-GPC: 1
-        //Upgrade-Insecure-Requests: 1
-        //Sec-Fetch-Dest: document
-        //Sec-Fetch-Mode: navigate
-        //Sec-Fetch-Site: none
-        //Sec-Fetch-User: ?1
-        //Connection: keep-alive
-
-        final Request.Builder builder = new Request.Builder()
-                .url(url)
-                .method(method, body)
-                .header(HttpConstants.HOST, url.getHost())
-                .header(HttpConstants.USER_AGENT,
-                        HttpConstants.USER_AGENT_FIREFOX)
-                .header(HttpConstants.ACCEPT,
-                        HttpConstants.ACCEPT_KITCHEN_SINK)
-                .header(HttpConstants.ACCEPT_LANGUAGE,
-                        acceptLanguageHeader)
-                .header(HttpConstants.ACCEPT_ENCODING,
-                        HttpConstants.ACCEPT_ENCODING_GZIP)
-
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE)
-
-                .header(HttpConstants.DNT, "1")
-                .header(HttpConstants.SEC_GPC, "1")
-
-                .header(HttpConstants.UPGRADE_INSECURE_REQUESTS,
-                        HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE)
-                // We want a generic document, e.g. html, xml, json, ...
-                .header(HttpConstants.SEC_FETCH_DEST,
-                        HttpConstants.SEC_FETCH_DEST_DOCUMENT)
-                // The request is initiated by navigation between HTML documents.
-                .header(HttpConstants.SEC_FETCH_MODE,
-                        HttpConstants.SEC_FETCH_MODE_NAVIGATE)
-
-                // The request was sent by a "user" (our app) and not some auto/link/etc...
-                .header(HttpConstants.SEC_FETCH_SITE,
-                        HttpConstants.SEC_FETCH_SITE_NONE)
-                .header(HttpConstants.SEC_FETCH_USER, "?1");
-
-        // add or override
-        if (headers != null) {
-            headers.forEach(builder::header);
-        }
-
-        return builder.build();
-    }
-
-    /**
      * Send a {@code HEAD} request.
      *
-     * @param url        to fetch
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
+     *
      * @throws IOException on generic/other IO failures
      */
-    public void head(@NonNull final String url)
+    public void head(@NonNull final String url,
+                     @Nullable final Map<String, String> headers)
             throws IOException {
-        final Request request = createHeadRequest(url);
+        final Request request = createHeadRequest(url, headers);
         head(request);
     }
 
@@ -334,7 +182,7 @@ public class HttpCall {
     /**
      * Send a {@code GET} request.
      *
-     * @param request           execute
+     * @param request           to execute
      * @param responseProcessor (optional) receives the response/InputStream
      * @param <R>               type of the result
      *
@@ -360,7 +208,7 @@ public class HttpCall {
      * @param responseProcessor (optional) receives the response/InputStream
      * @param <R>               type of the result
      *
-     * @return the processed response; can be {@code null} if there was no response body.
+     * @return the processed response
      *
      * @throws IOException on generic/other IO failures
      */
@@ -374,7 +222,6 @@ public class HttpCall {
             return readBody(response, responseProcessor);
         }
     }
-
 
     @Nullable
     public <R> R getWithRedirectHandling(@NonNull final String url,
@@ -449,18 +296,19 @@ public class HttpCall {
     }
 
     /**
-     * Create a request, and {@code POST} it; handles redirects manually capturing cookies
-     * as needed.
+     * Create a request, and {@code POST} it.
+     * Handles redirects manually capturing cookies as needed.
      *
      * @param url               to fetch
      * @param headers           (optional) extra headers to add/override
-     * @param body              (optional) to post
+     * @param body              to post
      * @param responseProcessor (optional) receives the response/InputStream
      * @param <R>               type of the result
      *
-     * @return the processed response; can be {@code null} if there was no response body.
+     * @return the processed response
      *
      * @throws IOException on generic/other IO failures
+     *
      * @see #createPostRequest(String, Map, RequestBody)
      * @see #postWithRedirectHandling(Request, ResponseProcessor)
      */
@@ -468,7 +316,7 @@ public class HttpCall {
     @Nullable
     public <R> R postAuthenticationForm(@NonNull final String url,
                                         @Nullable final Map<String, String> headers,
-                                        @Nullable final RequestBody body,
+                                        @NonNull final RequestBody body,
                                         @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
         final Request request = createPostRequest(url, headers, body);
@@ -486,7 +334,7 @@ public class HttpCall {
      * @param responseProcessor (optional) receives the response/InputStream
      * @param <R>               type of the result
      *
-     * @return the processed response; can be {@code null} if there was no response body.
+     * @return the processed response
      *
      * @throws IOException on generic/other IO failures
      * @see #postAuthenticationForm(String, Map, RequestBody, ResponseProcessor)
@@ -550,10 +398,10 @@ public class HttpCall {
     /**
      * Send a {@code GET} request and return the response as a single string.
      *
-     * @param url        to fetch
-     * @param headers    (optional) extra headers to add/override
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
      *
-     * @return the response page as a single {@code String}
+     * @return the response as a single {@code String}
      *
      * @throws IOException on generic/other IO failures
      */
@@ -568,9 +416,9 @@ public class HttpCall {
     /**
      * Send a {@code GET} request and return the response as a single string.
      *
-     * @param request execute
+     * @param request to execute
      *
-     * @return the response page as a single {@code String}
+     * @return the response as a single {@code String}
      *
      * @throws IOException on generic/other IO failures
      */
@@ -599,10 +447,10 @@ public class HttpCall {
      * <p>
      * The handler should provide the result.
      *
-     * @param url        to fetch
-     * @param headers    (optional) extra headers to add/override
-     * @param parser     SAX parser
-     * @param handler    SAX handler
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
+     * @param parser  SAX parser
+     * @param handler SAX handler
      *
      * @throws IOException on generic/other IO failures
      */
@@ -630,36 +478,6 @@ public class HttpCall {
                 throw new IOException(e);
             }
         });
-    }
-
-    /**
-     * Read the response body, and unzip as required.
-     *
-     * @param response          to read/unzip
-     * @param responseProcessor to process the resulting stream
-     * @param <R>               type of the result
-     *
-     * @return the processed response
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    @Nullable
-    private <R> R readBody(@NonNull final Response response,
-                           @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
-        if (responseProcessor != null) {
-            try (BufferedInputStream bis = new BufferedInputStream(
-                    response.body().byteStream(), bufferSize)) {
-                if (isZipped(response)) {
-                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                        return responseProcessor.apply(response, gzs);
-                    }
-                } else {
-                    return responseProcessor.apply(response, bis);
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -761,6 +579,197 @@ public class HttpCall {
                                               location);
             }
         }
+    }
+
+    /**
+     * Read the response body, and unzip as required.
+     *
+     * @param response          to read/unzip
+     * @param responseProcessor to process the resulting stream
+     * @param <R>               type of the result
+     *
+     * @return the processed response
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @Nullable
+    private <R> R readBody(@NonNull final Response response,
+                           @Nullable final ResponseProcessor<R> responseProcessor)
+            throws IOException {
+        if (responseProcessor != null) {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    response.body().byteStream(), bufferSize)) {
+                if (isZipped(response)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                        return responseProcessor.apply(response, gzs);
+                    }
+                } else {
+                    return responseProcessor.apply(response, bis);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Create a suitable {@code HEAD} request.
+     *
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return new {@link Request} instance
+     *
+     * @throws MalformedURLException on url errors
+     */
+    @NonNull
+    @EmptySuper
+    private Request createHeadRequest(@NonNull final String url,
+                                      @Nullable final Map<String, String> headers)
+            throws MalformedURLException {
+        return createRequest(HEAD, new URL(url), headers, null);
+    }
+
+    /**
+     * Create a suitable {@code GET} request.
+     *
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return new {@link Request} instance
+     *
+     * @throws MalformedURLException on url errors
+     */
+    @NonNull
+    @EmptySuper
+    private Request createGetRequest(@NonNull final String url,
+                                     @Nullable final Map<String, String> headers)
+            throws MalformedURLException {
+        return createRequest(GET, new URL(url), headers, null);
+    }
+
+    /**
+     * Create a suitable {@code POST} request.
+     * Redirects are automatic and might miss cookies.
+     * Use {@link #postWithRedirectHandling(Request, ResponseProcessor)} for authentication
+     * or other cookie/redirect issues.
+     *
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
+     * @param body    to post
+     *
+     * @return new {@link Request} instance
+     *
+     * @throws MalformedURLException on url errors
+     */
+    private Request createPostRequest(@NonNull final String url,
+                                      @Nullable final Map<String, String> headers,
+                                      @NonNull final RequestBody body)
+            throws MalformedURLException {
+        return createRequest(POST, new URL(url), headers, body);
+    }
+
+    /**
+     * Convenience method to create a suitable {@link Request}.
+     * <p>
+     * The headers are set to the defaults as used by Firefox to request a "document"
+     *
+     * @param method  {@code GET} / {@code HEAD} / {@code POST}
+     * @param url     to use
+     * @param headers (optional) extra headers to add/override
+     * @param body    {@code POST}: mandatory body to send
+     *                {@code GET} / {@code HEAD}: mandatory {@code null}
+     *
+     * @return new {@code GET} request instance
+     */
+    @NonNull
+    private Request createRequest(@NonNull final String method,
+                                  @NonNull final URL url,
+                                  @Nullable final Map<String, String> headers,
+                                  @Nullable final RequestBody body) {
+
+        // Example of a Firefox request to https://developer.android.com
+
+        // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
+        // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
+        // Accept-Encoding: gzip, deflate, br, zstd
+        // DNT: 1
+        // Sec-GPC: 1
+        // Upgrade-Insecure-Requests: 1
+        // Sec-Fetch-Dest: document
+        // Sec-Fetch-Mode: navigate
+        // Sec-Fetch-Site: none
+        // Sec-Fetch-User: ?1
+        // Connection: keep-alive
+
+        final Request.Builder builder = new Request.Builder()
+                .url(url)
+                .method(method, body)
+                .header(HttpConstants.HOST, url.getHost())
+                .header(HttpConstants.USER_AGENT,
+                        HttpConstants.USER_AGENT_FIREFOX)
+                .header(HttpConstants.ACCEPT,
+                        HttpConstants.ACCEPT_KITCHEN_SINK)
+                .header(HttpConstants.ACCEPT_LANGUAGE,
+                        acceptLanguageHeader)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE)
+
+                .header(HttpConstants.DNT, "1")
+                .header(HttpConstants.SEC_GPC, "1")
+
+                .header(HttpConstants.UPGRADE_INSECURE_REQUESTS,
+                        HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE)
+                // We want a generic document, e.g. html, xml, json, ...
+                .header(HttpConstants.SEC_FETCH_DEST,
+                        HttpConstants.SEC_FETCH_DEST_DOCUMENT)
+                // The request is initiated by navigation between HTML documents.
+                .header(HttpConstants.SEC_FETCH_MODE,
+                        HttpConstants.SEC_FETCH_MODE_NAVIGATE)
+
+                // The request was sent by a "user" (our app) and not some auto/link/etc...
+                .header(HttpConstants.SEC_FETCH_SITE,
+                        HttpConstants.SEC_FETCH_SITE_NONE)
+                .header(HttpConstants.SEC_FETCH_USER, "?1");
+
+        // add, override, delete
+        if (headers != null) {
+            // One-by-one, so null values DELETE a header!
+            headers.forEach(builder::header);
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Check if the response headers indicate the encoding is gzip.
+     *
+     * @param response connection to check
+     *
+     * @return {@code true} if the content-encoding was "gzip"
+     */
+    private boolean isZipped(@NonNull final Response response) {
+        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
+                response.header(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
+    }
+
+    /**
+     * See <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-redirection-3xx">
+     * Redirect codes</a>.
+     *
+     * @param code to check
+     *
+     * @return flag
+     */
+    private boolean isRedirect(final int code) {
+        return code == HttpURLConnection.HTTP_MOVED_PERM
+               || code == HttpURLConnection.HTTP_MOVED_TEMP
+               || code == HttpURLConnection.HTTP_SEE_OTHER
+               || code == HTTP_TEMPORARY_REDIRECT
+               || code == HTTP_PERMANENT_REDIRECT;
     }
 
     public void cancel() {

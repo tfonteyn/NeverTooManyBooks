@@ -38,8 +38,11 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -106,6 +109,8 @@ public class FutureHttp<R> {
     private final Throttler throttler;
     @Nullable
     private final RateLimitInterceptor rateLimiter;
+    @NonNull
+    private final CookieStore cookieStore;
     /** Log {@code GET} and {@code HEAD} related url,responseCode and redirects. */
     private final boolean enableLog;
     /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
@@ -132,66 +137,35 @@ public class FutureHttp<R> {
     /**
      * Constructor.
      *
-     * @param siteResId for logging
-     * @param throttler to use
-     * @param enableLog flag
+     * @param throttler   to use
+     * @param siteResId   string resource representing the caller
+     *                    Used for exceptions, and read from the
+     *                    exception-to-usermessage convertor.
+     * @param enableLog   flag
+     * @param cookieStore for logging <strong>all</strong> cookies as desired
      */
-    public FutureHttp(@StringRes final int siteResId,
-                      @NonNull final Throttler throttler,
-                      final boolean enableLog) {
+    public FutureHttp(@NonNull final Throttler throttler,
+                      @StringRes final int siteResId,
+                      final boolean enableLog,
+                      @NonNull final CookieStore cookieStore) {
         this.siteResId = siteResId;
         this.throttler = throttler;
         this.enableLog = enableLog;
+        this.cookieStore = cookieStore;
 
         rateLimiter = new RateLimitInterceptor(throttler, enableLog);
     }
 
     /**
-     * Check if the response headers indicate the encoding is gzip.
+     * Set the buffer size to use for the input stream.
+     * <p>
+     * Default: {@link #DEFAULT_BUFFER_SIZE}.
      *
-     * @param response connection to check
-     *
-     * @return {@code true} if the content-encoding was "gzip"
+     * @param bufferSize in bytes
      */
-    private static boolean isZipped(@NonNull final HttpURLConnection response) {
-        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
-                response.getHeaderField(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
+    public void setBufferSize(final int bufferSize) {
+        this.bufferSize = bufferSize;
     }
-
-    private static void logRequest(final int attempt,
-                                   @NonNull final HttpURLConnection request) {
-
-        final String headers = request
-                .getHeaderFields()
-                .entrySet()
-                .stream()
-                .map(es -> "Request Header: " + es.getKey() + '='
-                           + String.join("|", es.getValue()))
-                .collect(Collectors.joining("\n"));
-
-        final Logger logger = LoggerFactory.getLogger();
-        logger.d(TAG, "attempt: " + attempt);
-        logger.d(TAG, "url: " + request.getURL());
-        logger.d(TAG, "headers", "\n" + headers);
-    }
-
-    private static void logResponse(@NonNull final HttpURLConnection response)
-            throws IOException {
-        final String headers = response
-                .getHeaderFields()
-                .entrySet()
-                .stream()
-                .map(es -> "Response Header: " + es.getKey() + '='
-                           + String.join("|", es.getValue()))
-                .collect(Collectors.joining("\n"));
-
-        final Logger logger = LoggerFactory.getLogger();
-        logger.d(TAG, "url: ", response.getURL());
-        logger.d(TAG, "responseCode: " + response.getResponseCode());
-        logger.d(TAG, "responseMsg: " + response.getResponseMessage());
-        logger.d(TAG, "headers", "\n" + headers);
-    }
-
 
     /**
      * Set the optional connect-timeout.
@@ -255,15 +229,6 @@ public class FutureHttp<R> {
     public void setEnable404Redirect(final boolean enable404Redirect) {
         this.enable404Redirect = enable404Redirect;
         redirectCount = 0;
-    }
-
-    /**
-     * Set the buffer size to use for the input stream.
-     *
-     * @param bufferSize in bytes
-     */
-    public void setBufferSize(final int bufferSize) {
-        this.bufferSize = bufferSize;
     }
 
     /**
@@ -346,144 +311,10 @@ public class FutureHttp<R> {
         return this;
     }
 
-    private int getFutureTimeout() {
-        return connectTimeoutInMs + readTimeoutInMs + 10;
-    }
-
-    /**
-     * Create a new unconnected {@link HttpURLConnection}.
-     *
-     * @param url     to connect to
-     * @param method  one of {@link #GET} or {@link #HEAD}.
-     * @param attempt for logging only
-     *
-     * @return request
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    @NonNull
-    private HttpURLConnection createRequest(@NonNull final URL url,
-                                            @NonNull final String method,
-                                            final int attempt)
-            throws IOException {
-
-        final HttpURLConnection request = (HttpURLConnection) url.openConnection();
-
-        request.setRequestMethod(method);
-        request.setDoOutput(POST.equals(method));
-
-        // Don't trust the caches; they have proven to be cumbersome.
-        request.setUseCaches(false);
-
-        if (followRedirects != null) {
-            request.setInstanceFollowRedirects(followRedirects);
-        }
-
-        request.setRequestProperty(HttpConstants.HOST, url.getHost());
-        request.setRequestProperty(HttpConstants.USER_AGENT,
-                                   HttpConstants.USER_AGENT_FIREFOX);
-
-        requestProperties.forEach(request::setRequestProperty);
-
-        if (connectTimeoutInMs >= 0) {
-            request.setConnectTimeout(connectTimeoutInMs);
-        } else {
-            request.setConnectTimeout(CONNECT_TIMEOUT_MS);
-        }
-
-        if (readTimeoutInMs >= 0) {
-            request.setReadTimeout(readTimeoutInMs);
-        } else {
-            request.setReadTimeout(READ_TIMEOUT_MS);
-        }
-
-        if (sslContext != null) {
-            final HttpsURLConnection con = (HttpsURLConnection) request;
-            con.setSSLSocketFactory(sslContext.getSocketFactory());
-            // the hostnameVerifier is normally only set from tests
-            if (hostnameVerifier != null) {
-                con.setHostnameVerifier(hostnameVerifier);
-            }
-        }
-
-        if (enableLog) {
-            logRequest(attempt, request);
-        }
-
-        return request;
-    }
-
-    private void unpackExecutionException(@NonNull final ExecutionException e)
-            throws StorageException, IOException {
-        // TODO: maybe move away from this early interception? and let the ExecutionException
-        //  go all the way up and decode it in ExMsg ?
-
-        // TODO: in theory we no longer receive the Unchecked variants
-        //  due to using ActionFunction
-
-        final Throwable cause = e.getCause();
-
-        if (cause instanceof UncheckedStorageException) {
-            //noinspection DataFlowIssue
-            throw (StorageException) cause.getCause();
-
-        } else if (cause instanceof StorageException) {
-            throw (StorageException) cause;
-
-        } else if (cause instanceof UncheckedIOException) {
-            //noinspection DataFlowIssue
-            throw (IOException) cause.getCause();
-
-        } else if (cause instanceof IOException) {
-            throw (IOException) cause;
-
-        } else if (cause instanceof UncheckedSAXException) {
-            final SAXException saxException = Objects.requireNonNull(
-                    ((UncheckedSAXException) cause).getCause());
-            unpackSAXException(saxException);
-
-        } else if (cause instanceof SAXException) {
-            final SAXException saxException = (SAXException) cause;
-            unpackSAXException(saxException);
-        }
-
-        // An unexpected exception, let the caller deal with it.
-        throw new IOException(cause);
-    }
-
-    private void unpackSAXException(@NonNull final SAXException saxException)
-            throws IOException, StorageException {
-        // First try unwrapping with SAXException#getException() !
-        Throwable saxCause = saxException.getException();
-        if (saxCause == null) {
-            // try the standard getCause() instead
-            saxCause = saxException.getCause();
-        }
-        if (saxCause == null) {
-            // We have an actual SAXException which is not wrapping anything.
-            // This indicates a parser failure somewhere usually caused
-            // by the server response not matching the expectations.
-            // Wrap it into an IOException and let the caller deal with it.
-            throw new IOException(saxException);
-        }
-
-        // The SAXException was caused by a wrapped exception. Unwrap if we can.
-        if (saxCause instanceof IOException) {
-            throw (IOException) saxCause;
-        } else if (saxCause instanceof StorageException) {
-            throw (StorageException) saxCause;
-        }
-        // Some other wrapped exception, re-wrap and let the caller deal with it.
-        throw new IOException(saxCause);
-    }
-
     /**
      * Send a {@code HEAD} request.
      *
      * @param url               to connect to
-     * @param responseProcessor which will receive the response InputStream
-     *
-     * @return the processed response
      *
      * @throws CancellationException  if the user cancelled us
      * @throws SocketTimeoutException if the timeout expires before
@@ -491,15 +322,13 @@ public class FutureHttp<R> {
      * @throws IOException            on generic/other IO failures
      * @throws StorageException       The covers directory is not available
      */
-    @NonNull
-    public R head(@NonNull final String url,
-                  @NonNull final ActionFunction<HttpURLConnection, R> responseProcessor)
+    public void head(@NonNull final String url)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(doGetExecute(url, HEAD, responseProcessor));
+        doGet(url, HEAD, null);
     }
 
     /**
@@ -526,7 +355,7 @@ public class FutureHttp<R> {
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(doGetExecute(url, GET, connection -> {
+        return Objects.requireNonNull(doGet(url, GET, connection -> {
             try (BufferedInputStream bis = new BufferedInputStream(
                     connection.getInputStream(), bufferSize)) {
                 if (isZipped(connection)) {
@@ -564,7 +393,7 @@ public class FutureHttp<R> {
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(doGetExecute(url, GET, connection -> {
+        return Objects.requireNonNull(doGet(url, GET, connection -> {
 
             try (InputStream is = connection.getInputStream()) {
                 final String page;
@@ -593,8 +422,8 @@ public class FutureHttp<R> {
      * Create a request and execute it using a {@link Future} so we can use a timeout.
      *
      * @param urlStr to connect to
-     * @param method {@code GET}, {@code POST}, {@code HEAD}
-     * @param action callback to give the request to
+     * @param method {@code GET}, {@code HEAD}
+     * @param action (optional) callback to give the request to
      *
      * @return result of the callback method
      *
@@ -605,9 +434,9 @@ public class FutureHttp<R> {
      * @throws StorageException       The covers directory is not available
      */
     @Nullable
-    private R doGetExecute(@NonNull final String urlStr,
-                           @NonNull final String method,
-                           @NonNull final ActionFunction<HttpURLConnection, R> action)
+    private R doGet(@NonNull final String urlStr,
+                    @NonNull final String method,
+                    @Nullable final ActionFunction<HttpURLConnection, R> action)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
@@ -621,7 +450,11 @@ public class FutureHttp<R> {
                         LoggerFactory.getLogger().d(TAG, "doGetExecute|doGetConnect");
                     }
                     request = doGetConnect(url, method);
-                    return action.apply(request);
+                    if (action != null) {
+                        return action.apply(request);
+                    } else {
+                        return null;
+                    }
                 } finally {
                     if (request != null) {
                         if (enableLog) {
@@ -649,87 +482,6 @@ public class FutureHttp<R> {
 
         } finally {
             futureHttp = null;
-        }
-    }
-
-    /**
-     * If already connected, simply check the response code.
-     * Otherwise, implicitly connect by getting the response code.
-     *
-     * @param request to check
-     *
-     * @throws IOException                  on connect
-     * @throws HttpUnauthorizedException    401: Unauthorized.
-     * @throws HttpForbiddenException       403: Forbidden
-     * @throws HttpNotFoundException        404: Not Found.
-     * @throws SocketTimeoutException       408: Request Time-Out.
-     * @throws HttpTooManyRequestsException 429: Too Many Requests.
-     * @throws HttpStatusException          on any other HTTP failures
-     */
-    @WorkerThread
-    private void checkResponseCode(@NonNull final HttpURLConnection request)
-            throws IOException,
-                   HttpUnauthorizedException,
-                   HttpNotFoundException,
-                   SocketTimeoutException,
-                   HttpTooManyRequestsException,
-                   HttpStatusException {
-
-        if (enableLog) {
-            logResponse(request);
-        }
-
-        final int responseCode = request.getResponseCode();
-
-        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-            return;
-        }
-
-        @Nullable
-        final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
-
-        switch (responseCode) {
-            case HttpURLConnection.HTTP_UNAUTHORIZED: {
-                throw new HttpUnauthorizedException(siteResId,
-                                                    request.getResponseMessage(),
-                                                    request.getURL(),
-                                                    location);
-            }
-            // 403 if we're 100% blocked.
-            // 405 if we hit a wall like
-            // https://anubis.techaro.lol/docs/design/how-anubis-works/
-            case HttpURLConnection.HTTP_FORBIDDEN:
-            case HttpURLConnection.HTTP_BAD_METHOD: {
-                throw new HttpForbiddenException(siteResId,
-                                                 request.getResponseMessage(),
-                                                 request.getURL(),
-                                                 location);
-            }
-            case HttpURLConnection.HTTP_NOT_FOUND: {
-                throw new HttpNotFoundException(siteResId,
-                                                request.getResponseMessage(),
-                                                request.getURL(),
-                                                location);
-            }
-            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
-                // for easier reporting issues to the user, map a 408 to an STE
-                throw new SocketTimeoutException("408 " + request.getResponseMessage());
-            }
-            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
-                throw new HttpTooManyRequestsException(
-                        siteResId,
-                        request.getHeaderField(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
-                        request.getResponseMessage(),
-                        request.getURL(),
-                        location);
-            }
-            default: {
-                throw new HttpStatusException(siteResId,
-                                              responseCode,
-                                              request.getResponseMessage(),
-                                              request.getURL(),
-                                              location);
-            }
         }
     }
 
@@ -900,31 +652,8 @@ public class FutureHttp<R> {
         throw new NetworkException(message);
     }
 
-    private void checkAttempt(@IntRange(from = 1) final int attempt,
-                              @NonNull final HttpURLConnection request,
-                              @NonNull final IOException e)
-            throws IOException {
-        if (attempt > retryCount) {
-            if (enableLog) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "doGetConnect|all attempts failed|disconnecting");
-            }
-            request.disconnect();
-            throw e;
-        }
-    }
-
-    private int calculateRetryAfterInMs(final int attempt,
-                                        @Nullable final String retryHeader) {
-        if (rateLimiter != null) {
-            return rateLimiter.getRetryAfterInMs(attempt, retryHeader);
-        } else {
-            return 2 * throttler.getDelayInMillis();
-        }
-    }
-
     /**
-     * Send the POST.
+     * Send a {@code POST} request.
      *
      * @param urlStr            to use
      * @param postBody          to send
@@ -1013,12 +742,299 @@ public class FutureHttp<R> {
     }
 
     /**
+     * Create a new unconnected {@link HttpURLConnection}.
+     *
+     * @param url     to connect to
+     * @param method  one of {@link #GET} or {@link #HEAD}.
+     * @param attempt for logging only
+     *
+     * @return request
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @NonNull
+    private HttpURLConnection createRequest(@NonNull final URL url,
+                                            @NonNull final String method,
+                                            final int attempt)
+            throws IOException {
+
+        final HttpURLConnection request = (HttpURLConnection) url.openConnection();
+
+        request.setRequestMethod(method);
+        request.setDoOutput(POST.equals(method));
+
+        // Don't trust the caches; they have proven to be cumbersome.
+        request.setUseCaches(false);
+
+        if (followRedirects != null) {
+            request.setInstanceFollowRedirects(followRedirects);
+        }
+
+        request.setRequestProperty(HttpConstants.HOST, url.getHost());
+        request.setRequestProperty(HttpConstants.USER_AGENT,
+                                   HttpConstants.USER_AGENT_FIREFOX);
+
+        requestProperties.forEach(request::setRequestProperty);
+
+        if (connectTimeoutInMs >= 0) {
+            request.setConnectTimeout(connectTimeoutInMs);
+        } else {
+            request.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        }
+
+        if (readTimeoutInMs >= 0) {
+            request.setReadTimeout(readTimeoutInMs);
+        } else {
+            request.setReadTimeout(READ_TIMEOUT_MS);
+        }
+
+        if (sslContext != null) {
+            final HttpsURLConnection con = (HttpsURLConnection) request;
+            con.setSSLSocketFactory(sslContext.getSocketFactory());
+            // the hostnameVerifier is normally only set from tests
+            if (hostnameVerifier != null) {
+                con.setHostnameVerifier(hostnameVerifier);
+            }
+        }
+
+        if (enableLog) {
+            logRequest(attempt, request);
+        }
+
+        return request;
+    }
+
+    /**
+     * If already connected, simply check the response code.
+     * Otherwise, implicitly connect by getting the response code.
+     *
+     * @param request to check
+     *
+     * @throws IOException                  on connect
+     * @throws HttpUnauthorizedException    401: Unauthorized.
+     * @throws HttpForbiddenException       403: Forbidden
+     * @throws HttpNotFoundException        404: Not Found.
+     * @throws SocketTimeoutException       408: Request Time-Out.
+     * @throws HttpTooManyRequestsException 429: Too Many Requests.
+     * @throws HttpStatusException          on any other HTTP failures
+     */
+    @WorkerThread
+    private void checkResponseCode(@NonNull final HttpURLConnection request)
+            throws IOException,
+                   HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   SocketTimeoutException,
+                   HttpTooManyRequestsException,
+                   HttpStatusException {
+
+        if (enableLog) {
+            logResponse(request);
+        }
+
+        final int responseCode = request.getResponseCode();
+
+        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            return;
+        }
+
+        @Nullable
+        final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
+
+        switch (responseCode) {
+            case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                throw new HttpUnauthorizedException(siteResId,
+                                                    request.getResponseMessage(),
+                                                    request.getURL(),
+                                                    location);
+            }
+            // 403 if we're 100% blocked.
+            // 405 if we hit a wall like
+            // https://anubis.techaro.lol/docs/design/how-anubis-works/
+            case HttpURLConnection.HTTP_FORBIDDEN:
+            case HttpURLConnection.HTTP_BAD_METHOD: {
+                throw new HttpForbiddenException(siteResId,
+                                                 request.getResponseMessage(),
+                                                 request.getURL(),
+                                                 location);
+            }
+            case HttpURLConnection.HTTP_NOT_FOUND: {
+                throw new HttpNotFoundException(siteResId,
+                                                request.getResponseMessage(),
+                                                request.getURL(),
+                                                location);
+            }
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
+                // for easier reporting issues to the user, map a 408 to an STE
+                throw new SocketTimeoutException("408 " + request.getResponseMessage());
+            }
+            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
+                throw new HttpTooManyRequestsException(
+                        siteResId,
+                        request.getHeaderField(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
+                        request.getResponseMessage(),
+                        request.getURL(),
+                        location);
+            }
+            default: {
+                throw new HttpStatusException(siteResId,
+                                              responseCode,
+                                              request.getResponseMessage(),
+                                              request.getURL(),
+                                              location);
+            }
+        }
+    }
+
+    private void checkAttempt(@IntRange(from = 1) final int attempt,
+                              @NonNull final HttpURLConnection request,
+                              @NonNull final IOException e)
+            throws IOException {
+        if (attempt > retryCount) {
+            if (enableLog) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "doGetConnect|all attempts failed|disconnecting");
+            }
+            request.disconnect();
+            throw e;
+        }
+    }
+
+    private int getFutureTimeout() {
+        return connectTimeoutInMs + readTimeoutInMs + 10;
+    }
+
+    private int calculateRetryAfterInMs(final int attempt,
+                                        @Nullable final String retryHeader) {
+        if (rateLimiter != null) {
+            return rateLimiter.getRetryAfterInMs(attempt, retryHeader);
+        } else {
+            return 2 * throttler.getDelayInMillis();
+        }
+    }
+
+    /**
+     * Check if the response headers indicate the encoding is gzip.
+     *
+     * @param response connection to check
+     *
+     * @return {@code true} if the content-encoding was "gzip"
+     */
+    private boolean isZipped(@NonNull final HttpURLConnection response) {
+        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
+                response.getHeaderField(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
+    }
+
+    private void unpackExecutionException(@NonNull final ExecutionException e)
+            throws StorageException, IOException {
+        // TODO: maybe move away from this early interception? and let the ExecutionException
+        //  go all the way up and decode it in ExMsg ?
+
+        // TODO: in theory we no longer receive the Unchecked variants
+        //  due to using ActionFunction
+
+        final Throwable cause = e.getCause();
+
+        if (cause instanceof UncheckedStorageException) {
+            //noinspection DataFlowIssue
+            throw (StorageException) cause.getCause();
+
+        } else if (cause instanceof StorageException) {
+            throw (StorageException) cause;
+
+        } else if (cause instanceof UncheckedIOException) {
+            //noinspection DataFlowIssue
+            throw (IOException) cause.getCause();
+
+        } else if (cause instanceof IOException) {
+            throw (IOException) cause;
+
+        } else if (cause instanceof UncheckedSAXException) {
+            final SAXException saxException = Objects.requireNonNull(
+                    ((UncheckedSAXException) cause).getCause());
+            unpackSAXException(saxException);
+
+        } else if (cause instanceof SAXException) {
+            final SAXException saxException = (SAXException) cause;
+            unpackSAXException(saxException);
+        }
+
+        // An unexpected exception, let the caller deal with it.
+        throw new IOException(cause);
+    }
+
+    private void unpackSAXException(@NonNull final SAXException saxException)
+            throws IOException, StorageException {
+        // First try unwrapping with SAXException#getException() !
+        Throwable saxCause = saxException.getException();
+        if (saxCause == null) {
+            // try the standard getCause() instead
+            saxCause = saxException.getCause();
+        }
+        if (saxCause == null) {
+            // We have an actual SAXException which is not wrapping anything.
+            // This indicates a parser failure somewhere usually caused
+            // by the server response not matching the expectations.
+            // Wrap it into an IOException and let the caller deal with it.
+            throw new IOException(saxException);
+        }
+
+        // The SAXException was caused by a wrapped exception. Unwrap if we can.
+        if (saxCause instanceof IOException) {
+            throw (IOException) saxCause;
+        } else if (saxCause instanceof StorageException) {
+            throw (StorageException) saxCause;
+        }
+        // Some other wrapped exception, re-wrap and let the caller deal with it.
+        throw new IOException(saxCause);
+    }
+
+    /**
      * Request to cancel an ongoing http request.
      */
     public void cancel() {
         synchronized (this) {
             if (futureHttp != null) {
                 futureHttp.cancel(true);
+            }
+        }
+    }
+
+    private void logRequest(final int attempt,
+                            @NonNull final HttpURLConnection request) {
+
+        final String headers = request
+                .getHeaderFields()
+                .entrySet()
+                .stream()
+                .map(es -> "Request Header: " + es.getKey() + '='
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "attempt: " + attempt);
+        logger.d(TAG, "url: " + request.getURL());
+        logger.d(TAG, "headers", "\n" + headers);
+    }
+
+    private void logResponse(@NonNull final HttpURLConnection response)
+            throws IOException {
+        final String headers = response
+                .getHeaderFields()
+                .entrySet()
+                .stream()
+                .map(es -> "Response Header: " + es.getKey() + '='
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "url: ", response.getURL());
+        logger.d(TAG, "responseCode: " + response.getResponseCode());
+        logger.d(TAG, "responseMsg: " + response.getResponseMessage());
+        logger.d(TAG, "headers", "\n" + headers);
+
+        for (final URI uri : cookieStore.getURIs()) {
+            for (final HttpCookie cookie : cookieStore.get(uri)) {
+                logger.d(TAG, "Stored cookie → URI: " + uri + " | " + cookie);
             }
         }
     }
@@ -1047,6 +1063,39 @@ public class FutureHttp<R> {
          * @throws SAXException     on parser problems if a SAX parser was used
          */
         R2 apply(T t)
+                throws IOException,
+                       StorageException,
+                       SAXException;
+    }
+
+    /**
+     * Process the response to a GET method.
+     *
+     * @param <T> the response from the remote server
+     *            Typically passed in as a {@code String} or {@code InputStream}.
+     * @param <R> the resulting/parsed vale
+     */
+    @FunctionalInterface
+    public interface ResponseProcessor<T, R> {
+
+        /**
+         * Applies this function to the given arguments.
+         *
+         * @param con for getting headers, url,...
+         *            Do <strong>NOT</strong> call {@link HttpURLConnection#getInputStream()}!
+         *            This is (2025-04-20) only really needed by JSoup as
+         *            we need to access the final url and response headers.
+         * @param t   to read and parse
+         *
+         * @return the resulting {@code R}
+         *
+         * @throws IOException      on generic/other IO failures
+         * @throws StorageException The covers directory is not available
+         * @throws SAXException     on parser problems if a SAX parser was used
+         */
+        @Nullable
+        R apply(@NonNull HttpURLConnection con,
+                @NonNull T t)
                 throws IOException,
                        StorageException,
                        SAXException;

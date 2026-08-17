@@ -24,68 +24,78 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.net.CookieStore;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 
 public class HttpFutureFactory {
 
     @NonNull
     private final SearchEngineConfig config;
-    private final boolean enableLog;
-
     @Nullable
     private final SSLContext sslContext;
     @NonNull
+    private final CookieStore cookieStore;
+    @NonNull
     private final String acceptLanguageHeader;
+
+    private final boolean enableLog;
 
     public HttpFutureFactory(@NonNull final SearchEngineConfig config,
                              @Nullable final SSLContext sslContext,
+                             @NonNull final CookieStore cookieStore,
                              @NonNull final String acceptLanguageHeader) {
         this.config = config;
-        enableLog = config.isLogHttpGetRequests();
         this.sslContext = sslContext;
+        this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
+
+        enableLog = config.isLogHttpGetRequests();
     }
 
     /**
      * Create a {@link FutureHttp}.
-     * <p>
-     * <strong>NO</strong> headers added.
+     *
+     * @param headers (optional) extra headers to add/override
      *
      * @param <R> the type of the return value for the request
      *
      * @return new instance
      */
     @NonNull
-    public <R> FutureHttp<R> createRequest() {
-        final EngineId engineId = config.getEngineId();
-        final Throttler throttler = config.getThrottler();
+    public <R> FutureHttp<R> createRequest(@Nullable final Map<String, String> headers) {
+        final FutureHttp<R> request =
+                new FutureHttp<>(config.getThrottler(),
+                                 config.getEngineId().getLabelResId(),
+                                 enableLog, cookieStore);
 
-        final FutureHttp<R> request = new FutureHttp<>(engineId.getLabelResId(),
-                                                       throttler, enableLog);
         request.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
                .setSSLContext(sslContext);
+
+        request.setHeaders(defaultHeaders());
+
+        // add, override, delete
+        if (headers != null) {
+            // One-by-one, so null values DELETE a header!
+            headers.forEach(request::setHeader);
+        }
 
         return request;
     }
 
     @NonNull
-    private Map<String, String> createHeadersForGETorHEAD() {
+    private Map<String, String> defaultHeaders() {
         // Improve compatibility by sending standard headers.
 
         // Example of a Firefox request to https://developer.android.com
 
-        // GET / HTTP/1.1
-        // Host: developer.android.com
         // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
         // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
         // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
@@ -144,9 +154,8 @@ public class HttpFutureFactory {
     public void head(@NonNull final String url)
             throws IOException, StorageException {
 
-        final FutureHttp<Boolean> request = createRequest();
-        request.setHeaders(createHeadersForGETorHEAD());
-        request.head(url, response -> true);
+        final FutureHttp<Void> request = createRequest(null);
+        request.head(url);
     }
 
     /**
@@ -160,8 +169,6 @@ public class HttpFutureFactory {
      */
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest() {
-        final FutureHttp<T> request = createRequest();
-        request.setHeaders(createHeadersForGETorHEAD());
-        return request;
+        return createRequest(null);
     }
 }

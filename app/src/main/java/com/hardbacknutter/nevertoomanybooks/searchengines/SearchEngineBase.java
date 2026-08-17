@@ -31,6 +31,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.CookieStore;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -100,9 +101,12 @@ public class SearchEngineBase
         this.config = config;
         this.bookParserHelper = new BookParserHelper(config);
 
+        final CookieStore cookieStore = ServiceLocator.getInstance()
+                                                      .getCookieManager()
+                                                      .getCookieStore();
         languageHeader = createLanguageHeader(context);
-        httpFutureFactory = new HttpFutureFactory(config, null, languageHeader);
-        httpCallFactory = new HttpCallFactory(config, null, languageHeader);
+        httpFutureFactory = new HttpFutureFactory(config, null, cookieStore, languageHeader);
+        httpCallFactory = new HttpCallFactory(config, null, cookieStore, languageHeader);
     }
 
     private String createLanguageHeader(@NonNull final Context context) {

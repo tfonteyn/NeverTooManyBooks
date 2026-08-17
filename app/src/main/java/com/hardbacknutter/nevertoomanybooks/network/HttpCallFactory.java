@@ -41,14 +41,14 @@ public final class HttpCallFactory {
 
     @NonNull
     private final SearchEngineConfig config;
-    private final boolean enableLog;
-
-    @NonNull
-    private final CookieStore cookieStore;
     @Nullable
     private final SSLContext sslContext;
     @NonNull
+    private final CookieStore cookieStore;
+    @NonNull
     private final String acceptLanguageHeader;
+
+    private final boolean enableLog;
 
     /** Lazy created in {@link #getHttpClient()}. */
     @Nullable
@@ -56,15 +56,14 @@ public final class HttpCallFactory {
 
     public HttpCallFactory(@NonNull final SearchEngineConfig config,
                            @Nullable final SSLContext sslContext,
+                           @NonNull final CookieStore cookieStore,
                            @NonNull final String acceptLanguageHeader) {
         this.config = config;
-        this.enableLog = config.isLogHttpGetRequests();
         this.sslContext = sslContext;
+        this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
 
-        cookieStore = ServiceLocator.getInstance()
-                                    .getCookieManager()
-                                    .getCookieStore();
+        this.enableLog = config.isLogHttpGetRequests();
     }
 
     /**
@@ -94,9 +93,7 @@ public final class HttpCallFactory {
      */
     @NonNull
     public HttpCall createCall() {
-        return new HttpCall(getHttpClient(), cookieStore, acceptLanguageHeader,
-                            config.getEngineId().getLabelResId(),
-                            config.isLogHttpGetRequests());
+        return createCall(getHttpClient());
     }
 
     /**
@@ -108,9 +105,11 @@ public final class HttpCallFactory {
      */
     @NonNull
     public HttpCall createCall(@NonNull final OkHttpClient httpClient) {
-        return new HttpCall(httpClient, cookieStore, acceptLanguageHeader,
+        return new HttpCall(httpClient,
+                            acceptLanguageHeader,
                             config.getEngineId().getLabelResId(),
-                            config.isLogHttpGetRequests());
+                            config.isLogHttpGetRequests(), cookieStore
+        );
     }
 
     @NonNull

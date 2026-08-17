@@ -133,9 +133,8 @@ public abstract class JsoupSearchEngineBase
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException {
         try {
-            final FutureHttp<Document> request = httpFutureFactory.createGetDocumentRequest();
             final boolean logEnabled = getConfig().isLogHttpGetRequests();
-            jsoupLoader = new JsoupLoader(request, logEnabled);
+            jsoupLoader = new JsoupLoader(httpFutureFactory, logEnabled);
             jsoupLoader.setCharSetName(charSetName);
 
             return jsoupLoader.loadDocument(context, parser, url, requestProperties);

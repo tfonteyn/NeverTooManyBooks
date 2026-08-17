@@ -1458,9 +1458,8 @@ public final class CalibreContentServer
                          final int buffer)
             throws IOException {
 
-        jsonFetchCall = new HttpCall(httpClient, cookieStore, ACCEPT_LANGUAGE_HEADER,
-                                     R.string.site_calibre,
-                                     httpLogEnabled);
+        jsonFetchCall = new HttpCall(httpClient, ACCEPT_LANGUAGE_HEADER, R.string.site_calibre, httpLogEnabled, cookieStore
+        );
         jsonFetchCall.setBufferSize(buffer);
         return jsonFetchCall.getAsString(createGetRequest(url));
     }
@@ -1505,9 +1504,8 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        fileFetchCall = new HttpCall(httpClient, cookieStore, ACCEPT_LANGUAGE_HEADER,
-                                     R.string.site_calibre,
-                                     httpLogEnabled);
+        fileFetchCall = new HttpCall(httpClient, ACCEPT_LANGUAGE_HEADER, R.string.site_calibre, httpLogEnabled, cookieStore
+        );
         fileFetchCall.setBufferSize(BUFFER_FILE);
         final Uri uri = fileFetchCall.get(createGetRequest(url), (response, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
@@ -1675,9 +1673,8 @@ public final class CalibreContentServer
                 jsonBody,
                 MediaType.parse("application/json; charset=utf-8"));
 
-        postCall = new HttpCall(httpClient, cookieStore, ACCEPT_LANGUAGE_HEADER,
-                                R.string.site_calibre,
-                                httpLogEnabled);
+        postCall = new HttpCall(httpClient, ACCEPT_LANGUAGE_HEADER, R.string.site_calibre, httpLogEnabled, cookieStore
+        );
         postCall.post(createPostRequest(url, body), null);
     }
 

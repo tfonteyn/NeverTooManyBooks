@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Map;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLProtocolException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,8 +53,12 @@ public class JsoupLoader {
     private static final String TAG = "JsoupLoader";
 
     @NonNull
-    private final FutureHttp<Document> httpGet;
+    private final HttpFutureFactory httpFutureFactory;
     private final boolean logEnabled;
+
+    @Nullable
+    private FutureHttp<Document> httpGet;
+
     /** The downloaded and parsed web page. */
     @Nullable
     private Document document;
@@ -69,12 +72,12 @@ public class JsoupLoader {
     /**
      * Constructor.
      *
-     * @param httpGet   to use
-     * @param enableLog flag
+     * @param httpFutureFactory  to use
+     * @param enableLog          flag
      */
-    public JsoupLoader(@NonNull final FutureHttp<Document> httpGet,
+    public JsoupLoader(@NonNull final HttpFutureFactory httpFutureFactory,
                        final boolean enableLog) {
-        this.httpGet = httpGet;
+        this.httpFutureFactory = httpFutureFactory;
         this.logEnabled = enableLog;
     }
 
@@ -145,12 +148,10 @@ public class JsoupLoader {
             }
 
             try {
-                if (headers != null) {
-                    httpGet.setHeaders(headers);
-                }
+                httpGet = httpFutureFactory.createRequest(headers);
 
-                document = httpGet.get(requestUrl, (response, is) ->
-                        processResponse(response, is, parser));
+                document = httpGet.get(requestUrl, (response, is)
+                        -> processResponse(response, is, parser));
                 //noinspection DataFlowIssue
                 return document;
 
@@ -205,6 +206,8 @@ public class JsoupLoader {
                                                 "requestUrl=" + requestUrl);
                 }
                 throw e;
+            } finally {
+                httpGet = null;
             }
         }
 
@@ -265,8 +268,10 @@ public class JsoupLoader {
     }
 
     public void cancel() {
-        synchronized (httpGet) {
-            httpGet.cancel();
+        synchronized (this) {
+            if (httpGet != null) {
+                httpGet.cancel();
+            }
         }
     }
 }

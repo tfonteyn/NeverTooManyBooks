@@ -35,6 +35,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
@@ -248,10 +249,10 @@ public class IsfdbAuth
                 .add("argument=0")
                 .toString();
 
-        httpPost = httpFutureFactory.createRequest();
-        httpPost.setHeader(HttpConstants.CONTENT_TYPE,
-                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
-                .post(url, postBody, null);
+        httpPost = httpFutureFactory.createRequest(
+                Map.of(HttpConstants.CONTENT_TYPE,
+                       HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
+        httpPost.post(url, postBody, null);
 
         userId = getUserId().orElseThrow(
                 () -> new CredentialsException(R.string.site_isfdb, "login failed"));

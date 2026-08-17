@@ -34,7 +34,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -162,9 +161,8 @@ class UserCollection {
 
         hostUrl = config.getHostUrl();
 
-        final FutureHttp<Document> request = httpFutureFactory.createGetDocumentRequest();
         final boolean enableLog = config.isLogHttpGetRequests();
-        jsoupLoader = new JsoupLoader(request, enableLog);
+        jsoupLoader = new JsoupLoader(httpFutureFactory, enableLog);
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }
