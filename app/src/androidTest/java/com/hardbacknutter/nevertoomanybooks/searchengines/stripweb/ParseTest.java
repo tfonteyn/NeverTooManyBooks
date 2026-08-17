@@ -70,7 +70,7 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.StripWebBe.getConfig().setLogHttpGetRequests(true);
+        EngineId.StripWebBe.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.StripWebBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

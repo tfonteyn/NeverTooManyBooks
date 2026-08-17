@@ -161,7 +161,7 @@ class UserCollection {
 
         hostUrl = config.getHostUrl();
 
-        final boolean enableLog = config.isLogHttpGetRequests();
+        final boolean enableLog = config.isHttpLoggingEnabled();
         jsoupLoader = new JsoupLoader(httpFutureFactory, enableLog);
 
         formParser = new CollectionParser(context, bookshelfMapper);

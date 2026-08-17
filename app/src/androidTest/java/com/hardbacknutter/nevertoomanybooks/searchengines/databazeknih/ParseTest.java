@@ -79,7 +79,7 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.DatabazeKnih.getConfig().setLogHttpGetRequests(true);
+        EngineId.DatabazeKnih.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.DatabazeKnih.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

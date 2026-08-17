@@ -309,7 +309,7 @@ public class SearchEngineBase
                     instance = new ImageDownloader(httpClient,
                                                    config.getThrottler(),
                                                    config.getEngineId().getLabelResId(),
-                                                   config.isLogHttpGetRequests());
+                                                   config.isHttpLoggingEnabled());
                     imageDownloader = instance;
                 }
             }

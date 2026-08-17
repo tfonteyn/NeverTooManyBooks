@@ -101,6 +101,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
@@ -163,12 +164,6 @@ public final class CalibreContentServer
     public static final String PREFERENCE_KEY = "calibre";
 
     static final String PK_HOST_URL = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
-    /**
-     * Whether to use a Throttler. Default is {@code true}.
-     *
-     * @see #THROTTLER_DELAY_IN_MILLIS
-     */
-    static final String PK_USE_THROTTLER = PREFERENCE_KEY + ".throttler";
 
     private static final String PK_HOST_USER = PREFERENCE_KEY
                                                + '.' + SearchEngineConfig.PK_HOST_USER;
@@ -210,9 +205,6 @@ public final class CalibreContentServer
      * And a huge buffer to download the eBook files themselves.
      */
     private static final int BUFFER_FILE = 1_048_576;
-
-    private static final int CONNECT_TIMEOUT_IN_MS = 5_000;
-    private static final int READ_TIMEOUT_IN_MS = 3_000;
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "CL";
@@ -310,16 +302,6 @@ public final class CalibreContentServer
     private static final String RESPONSE_TAG_LIBRARY_DETAILS = "library_details";
 
     /**
-     * While a Calibre server is typically a private in-house setup, we still,
-     * by default, apply a Throttler to accomodate using weak hardware (e.g. raspberry-pi)
-     * The 200 millis was arbitrarily chosen.
-     * This can be switched off by the user.
-     *
-     * @see #PK_USE_THROTTLER
-     */
-    private static final int THROTTLER_DELAY_IN_MILLIS = 200;
-
-    /**
      * Ignored by the server.
      */
     private static final String ACCEPT_LANGUAGE_HEADER = "en";
@@ -332,15 +314,15 @@ public final class CalibreContentServer
     private final Set<CalibreCustomField> calibreCustomFields;
 
     @NonNull
+    private final NetworkConfig networkConfig;
+    @NonNull
     private final OkHttpClient httpClient;
     @NonNull
     private final CookieStore cookieStore;
 
     private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
-    private final boolean httpLogEnabled;
-    @Nullable
-    private final Throttler throttler;
+
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
     private volatile ImageDownloader imageDownloader;
@@ -375,13 +357,6 @@ public final class CalibreContentServer
 
         this.serverUri = uri;
 
-        final int connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
-                CONNECT_TIMEOUT_IN_MS);
-        final int readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
-                READ_TIMEOUT_IN_MS);
-
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         bookshelfDao = serviceLocator.getBookshelfDao();
@@ -393,24 +368,20 @@ public final class CalibreContentServer
 
         cookieStore = serviceLocator.getCookieManager().getCookieStore();
 
-        httpLogEnabled = serviceLocator.getSharedPreferences().getBoolean(
-                PREFERENCE_KEY + '.' + SearchEngineConfig.PK_ENABLE_HTTP_LOGGING,
-                false);
+        networkConfig = new CalibreNetworkConfig();
 
-        final boolean useThrottler = serviceLocator.getSharedPreferences()
-                                                   .getBoolean(PK_USE_THROTTLER, true);
-
-        throttler = useThrottler ? new Throttler(THROTTLER_DELAY_IN_MILLIS) : null;
 
         final OkHttpClient.Builder builder = serviceLocator
                 .getOkHttpClient()
                 .newBuilder()
-                .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
+                .connectTimeout(networkConfig.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
+                .readTimeout(networkConfig.getReadTimeoutInMs(), TimeUnit.MILLISECONDS);
 
-        if (useThrottler) {
+        final Throttler throttler = networkConfig.getThrottler();
+        if (throttler != null) {
             builder.addInterceptor(new ThrottlingInterceptor(throttler))
-                   .addInterceptor(new RateLimitInterceptor(throttler, httpLogEnabled));
+                   .addInterceptor(new RateLimitInterceptor(throttler,
+                                                            networkConfig.isHttpLoggingEnabled()));
         }
 
         if (sslContext != null && x509TrustManager != null) {
@@ -453,8 +424,8 @@ public final class CalibreContentServer
             builder.addInterceptor(authCacheInterceptor);
         }
 
-        if (httpLogEnabled) {
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(TAG));
+        if (networkConfig.isHttpLoggingEnabled()) {
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(networkConfig.getLogTag()));
         }
 
         httpClient = builder.build();
@@ -468,7 +439,9 @@ public final class CalibreContentServer
     @NonNull
     @AnyThread
     public static String getHostUrl() {
-        return ServiceLocator.getInstance().getSharedPreferences().getString(PK_HOST_URL, "");
+        return ServiceLocator.getInstance()
+                             .getSharedPreferences()
+                             .getString(PK_HOST_URL, "");
     }
 
     /**
@@ -1458,8 +1431,11 @@ public final class CalibreContentServer
                          final int buffer)
             throws IOException {
 
-        jsonFetchCall = new HttpCall(httpClient, ACCEPT_LANGUAGE_HEADER, R.string.site_calibre, httpLogEnabled, cookieStore
-        );
+        jsonFetchCall = new HttpCall(httpClient,
+                                     ACCEPT_LANGUAGE_HEADER,
+                                     R.string.site_calibre,
+                                     networkConfig.isHttpLoggingEnabled(),
+                                     cookieStore);
         jsonFetchCall.setBufferSize(buffer);
         return jsonFetchCall.getAsString(createGetRequest(url));
     }
@@ -1504,8 +1480,12 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        fileFetchCall = new HttpCall(httpClient, ACCEPT_LANGUAGE_HEADER, R.string.site_calibre, httpLogEnabled, cookieStore
-        );
+        fileFetchCall = new HttpCall(httpClient,
+                                     ACCEPT_LANGUAGE_HEADER,
+                                     R.string.site_calibre,
+                                     networkConfig.isHttpLoggingEnabled(),
+                                     cookieStore);
+
         fileFetchCall.setBufferSize(BUFFER_FILE);
         final Uri uri = fileFetchCall.get(createGetRequest(url), (response, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
@@ -1673,8 +1653,12 @@ public final class CalibreContentServer
                 jsonBody,
                 MediaType.parse("application/json; charset=utf-8"));
 
-        postCall = new HttpCall(httpClient, ACCEPT_LANGUAGE_HEADER, R.string.site_calibre, httpLogEnabled, cookieStore
-        );
+        postCall = new HttpCall(httpClient,
+                                ACCEPT_LANGUAGE_HEADER,
+                                R.string.site_calibre,
+                                networkConfig.isHttpLoggingEnabled(),
+                                cookieStore);
+
         postCall.post(createPostRequest(url, body), null);
     }
 
@@ -1704,7 +1688,7 @@ public final class CalibreContentServer
                 instance = imageDownloader;
                 if (instance == null) {
                     instance = new ImageDownloader(httpClient,
-                                                   throttler,
+                                                   networkConfig.getThrottler(),
                                                    R.string.site_calibre,
                                                    false);
                     imageDownloader = instance;

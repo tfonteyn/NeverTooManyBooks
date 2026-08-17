@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 
 import okhttp3.OkHttpClient;
@@ -40,7 +39,7 @@ import okhttp3.OkHttpClient;
 public final class HttpCallFactory {
 
     @NonNull
-    private final SearchEngineConfig config;
+    private final NetworkConfig config;
     @Nullable
     private final SSLContext sslContext;
     @NonNull
@@ -54,7 +53,7 @@ public final class HttpCallFactory {
     @Nullable
     private volatile OkHttpClient httpClient;
 
-    public HttpCallFactory(@NonNull final SearchEngineConfig config,
+    public HttpCallFactory(@NonNull final NetworkConfig config,
                            @Nullable final SSLContext sslContext,
                            @NonNull final CookieStore cookieStore,
                            @NonNull final String acceptLanguageHeader) {
@@ -63,7 +62,7 @@ public final class HttpCallFactory {
         this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
 
-        this.enableLog = config.isLogHttpGetRequests();
+        this.enableLog = config.isHttpLoggingEnabled();
     }
 
     /**
@@ -107,31 +106,35 @@ public final class HttpCallFactory {
     public HttpCall createCall(@NonNull final OkHttpClient httpClient) {
         return new HttpCall(httpClient,
                             acceptLanguageHeader,
-                            config.getEngineId().getLabelResId(),
-                            config.isLogHttpGetRequests(), cookieStore
+                            config.getLogStringRes(),
+                            config.isHttpLoggingEnabled(), cookieStore
         );
     }
 
     @NonNull
     private OkHttpClient createOkHttpClient() {
-        final Throttler throttler = config.getThrottler();
 
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new ThrottlingInterceptor(throttler))
-                .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
+                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS);
+
+        // For SearchEngines this will never be null.
+        // But for Calibre, it can be null.
+        final Throttler throttler = config.getThrottler();
+        if (throttler != null) {
+            builder.addInterceptor(new ThrottlingInterceptor(throttler))
+                   .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
+        }
 
         if (sslContext != null) {
             builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
         }
 
         if (enableLog) {
-            builder.addNetworkInterceptor(
-                    OkHttpLoggerFactory.getLogger(config.getEngineId().name()));
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(config.getLogTag()));
         }
 
         return builder.build();

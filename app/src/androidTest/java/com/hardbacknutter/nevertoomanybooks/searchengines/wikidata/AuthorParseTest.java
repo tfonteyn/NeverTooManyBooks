@@ -57,7 +57,7 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.Wikidata.getConfig().setLogHttpGetRequests(true);
+        EngineId.Wikidata.getConfig().setHttpLoggingEnabled(true);
         final WikidataSearchEngine searchEngine = EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

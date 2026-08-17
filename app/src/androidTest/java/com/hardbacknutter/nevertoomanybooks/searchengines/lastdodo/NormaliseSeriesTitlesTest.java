@@ -48,7 +48,7 @@ class NormaliseSeriesTitlesTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.LastDodoNl.getConfig().setLogHttpGetRequests(true);
+        EngineId.LastDodoNl.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.LastDodoNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

@@ -64,7 +64,7 @@ class Parse2Test
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.GoogleBooks.getConfig().setLogHttpGetRequests(true);
+        EngineId.GoogleBooks.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.GoogleBooks.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

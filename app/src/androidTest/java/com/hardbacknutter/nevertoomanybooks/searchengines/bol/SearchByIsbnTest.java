@@ -54,7 +54,7 @@ class SearchByIsbnTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.Bol.getConfig().setLogHttpGetRequests(true);
+        EngineId.Bol.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bol.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }

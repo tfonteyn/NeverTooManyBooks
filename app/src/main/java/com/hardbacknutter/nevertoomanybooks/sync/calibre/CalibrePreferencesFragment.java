@@ -126,7 +126,7 @@ public class CalibrePreferencesFragment
                     p.setSummaryProvider(this::getCaSummary);
                 });
 
-        factory.bool(CalibreContentServer.PK_USE_THROTTLER,
+        factory.bool(CalibreNetworkConfig.PK_USE_THROTTLER,
                      R.string.lbl_limit_request_speed,
                      null, p -> {
                     p.setSummary(R.string.lbl_limit_request_speed_info);

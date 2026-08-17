@@ -135,7 +135,7 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.KbNl.getConfig().setLogHttpGetRequests(true);
+        EngineId.KbNl.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.KbNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

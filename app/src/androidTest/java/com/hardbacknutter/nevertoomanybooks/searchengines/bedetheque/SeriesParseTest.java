@@ -85,7 +85,7 @@ class SeriesParseTest
 
         book = new Book();
 
-        EngineId.Bedetheque.getConfig().setLogHttpGetRequests(true);
+        EngineId.Bedetheque.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }

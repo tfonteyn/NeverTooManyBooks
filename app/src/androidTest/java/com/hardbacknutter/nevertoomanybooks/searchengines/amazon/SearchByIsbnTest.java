@@ -57,7 +57,7 @@ class SearchByIsbnTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.Amazon.getConfig().setLogHttpGetRequests(true);
+        EngineId.Amazon.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }

@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.prefslib.SettingsManager;
 
 public final class CommonSettingsFactory {
@@ -59,14 +60,14 @@ public final class CommonSettingsFactory {
     public static void timeouts(@NonNull final SettingsManager.Builder factory,
                                 @NonNull final String pk) {
         factory.header(R.string.lbl_timeouts);
-        factory.floatRange(pk + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
+        factory.floatRange(pk + '.' + NetworkConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                            R.string.lbl_connection_timeout,
                            3, 60, null, p -> {
                     p.setIcon(R.drawable.more_time_24px);
                     p.setValue(20);
                 });
 
-        factory.floatRange(pk + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
+        factory.floatRange(pk + '.' + NetworkConfig.PK_TIMEOUT_READ_IN_SECONDS,
                            R.string.lbl_read_timeout,
                            3, 120, null, p -> {
                     p.setIcon(R.drawable.more_time_24px);
@@ -85,7 +86,7 @@ public final class CommonSettingsFactory {
         factory.header(R.string.lbl_troubleshooting, p -> {
             p.setSummary(R.string.lbl_troubleshooting_warning);
         });
-        factory.bool(pk + '.' + SearchEngineConfig.PK_ENABLE_HTTP_LOGGING,
+        factory.bool(pk + '.' + NetworkConfig.PK_ENABLE_HTTP_LOGGING,
                      R.string.pt_enable_extra_logging, null, p -> {
                     p.setIcon(R.drawable.troubleshoot_24px);
                 });

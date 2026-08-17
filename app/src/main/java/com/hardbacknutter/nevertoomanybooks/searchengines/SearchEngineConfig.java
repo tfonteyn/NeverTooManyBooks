@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -44,7 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * @see SearchEngine
  * @see Site
  */
-public class SearchEngineConfig {
+public class SearchEngineConfig
+        implements NetworkConfig {
 
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
@@ -57,20 +59,6 @@ public class SearchEngineConfig {
      * @see SearchEngineConfig
      */
     public static final String PK_SEARCH_WEBSITE_MENU = "search.shopping.menu";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * HTTP socket connect timeout.
-     * <p>
-     * {@code int} in seconds
-     */
-    public static final String PK_TIMEOUT_CONNECT_IN_SECONDS = "timeout.connect";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * HTTP socket read timeout
-     * <p>
-     * {@code int} in seconds
-     */
-    public static final String PK_TIMEOUT_READ_IN_SECONDS = "timeout.read";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * A full url, including the http(s) part.
@@ -101,20 +89,11 @@ public class SearchEngineConfig {
     public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * HTTP GET/HEAD requests will log urls, response-codes and manual redirects.
-     * <p>
-     * {@code boolean}
-     */
-    public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
      * The set of Tags an engine will ignore when parsing a book.
      *
      * @see #getTagsToIgnore()
      */
     private static final String PK_TAGS_IGNORE = "tags.ignore";
-    /** Multiplier. */
-    private static final int SECONDS_TO_MILLIS = 1000;
 
     @NonNull
     private final EngineId engineId;
@@ -166,51 +145,30 @@ public class SearchEngineConfig {
         }
     }
 
-    /**
-     * Get the user-configured timeout value for the given key.
-     *
-     * @param key          to fetch
-     * @param defValueInMs default to use if not found
-     *
-     * @return timeout value in milliseconds
-     */
-    public static int getTimeoutValueInMs(@NonNull final String key,
-                                          final int defValueInMs) {
-        final int seconds = ServiceLocator.getInstance().getSharedPreferences()
-                                          .getInt(key, 0);
-        // The value from prefs is in SECONDS
-        if (seconds > 0) {
-            // convert to milliseconds
-            return seconds * SECONDS_TO_MILLIS;
-        } else {
-            return defValueInMs;
-        }
-    }
-
-    /**
-     * Whether all {@code HTTP GET} calls should be logged.
-     * This is a configuration setting the user can change.
-     *
-     * @return flag
-     *
-     * @see #setLogHttpGetRequests(boolean)
-     */
-    public boolean isLogHttpGetRequests() {
+    @Override
+    public boolean isHttpLoggingEnabled() {
         return ServiceLocator.getInstance().getSharedPreferences().getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
                 false);
     }
 
-    /**
-     * For tests only. The configuration is set by the user from a preference screen.
-     *
-     * @param flag value
-     */
+    @Override
     @VisibleForTesting
-    public void setLogHttpGetRequests(final boolean flag) {
+    public void setHttpLoggingEnabled(final boolean flag) {
         ServiceLocator.getInstance().getSharedPreferences().edit().putBoolean(
                               engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, flag)
                       .apply();
+    }
+
+    @NonNull
+    @Override
+    public String getLogTag() {
+        return engineId.name();
+    }
+
+    @Override
+    public int getLogStringRes() {
+        return engineId.getLabelResId();
     }
 
     /**
@@ -270,7 +228,7 @@ public class SearchEngineConfig {
      * @return milliseconds
      */
     public int getConnectTimeoutInMs() {
-        return getTimeoutValueInMs(
+        return NetworkConfig.getTimeoutValueInMs(
                 engineId.getPreferenceKey() + '.' + PK_TIMEOUT_CONNECT_IN_SECONDS,
                 connectTimeoutMs);
     }
@@ -281,7 +239,7 @@ public class SearchEngineConfig {
      * @return milliseconds
      */
     public int getReadTimeoutInMs() {
-        return getTimeoutValueInMs(
+        return NetworkConfig.getTimeoutValueInMs(
                 engineId.getPreferenceKey() + '.' + PK_TIMEOUT_READ_IN_SECONDS,
                 readTimeoutMs);
     }

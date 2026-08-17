@@ -75,7 +75,7 @@ class IsfdbXmlPublicationTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.Isfdb.getConfig().setLogHttpGetRequests(true);
+        EngineId.Isfdb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

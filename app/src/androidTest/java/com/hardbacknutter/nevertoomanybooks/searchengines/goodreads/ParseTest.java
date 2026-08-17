@@ -71,7 +71,7 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.Goodreads.getConfig().setLogHttpGetRequests(true);
+        EngineId.Goodreads.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 

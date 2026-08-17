@@ -27,17 +27,17 @@ import java.io.IOException;
 import java.net.CookieStore;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 
 public class HttpFutureFactory {
 
     @NonNull
-    private final SearchEngineConfig config;
+    private final NetworkConfig config;
     @Nullable
     private final SSLContext sslContext;
     @NonNull
@@ -47,7 +47,7 @@ public class HttpFutureFactory {
 
     private final boolean enableLog;
 
-    public HttpFutureFactory(@NonNull final SearchEngineConfig config,
+    public HttpFutureFactory(@NonNull final NetworkConfig config,
                              @Nullable final SSLContext sslContext,
                              @NonNull final CookieStore cookieStore,
                              @NonNull final String acceptLanguageHeader) {
@@ -56,7 +56,7 @@ public class HttpFutureFactory {
         this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
 
-        enableLog = config.isLogHttpGetRequests();
+        enableLog = config.isHttpLoggingEnabled();
     }
 
     /**
@@ -71,8 +71,8 @@ public class HttpFutureFactory {
     @NonNull
     public <R> FutureHttp<R> createRequest(@Nullable final Map<String, String> headers) {
         final FutureHttp<R> request =
-                new FutureHttp<>(config.getThrottler(),
-                                 config.getEngineId().getLabelResId(),
+                new FutureHttp<>(Objects.requireNonNull(config.getThrottler()),
+                                 config.getLogStringRes(),
                                  enableLog, cookieStore);
 
         request.setConnectTimeout(config.getConnectTimeoutInMs())

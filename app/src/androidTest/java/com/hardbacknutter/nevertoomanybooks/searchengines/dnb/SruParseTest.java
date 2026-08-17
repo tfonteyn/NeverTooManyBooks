@@ -70,7 +70,7 @@ class SruParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        EngineId.Dnb.getConfig().setLogHttpGetRequests(true);
+        EngineId.Dnb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
