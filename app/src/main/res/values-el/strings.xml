@@ -966,4 +966,6 @@ A question mark is written as the character semicolon: ';'
         <item quantity="other">%1$d φορές τον χρόνο</item>
     </plurals>
     <string name="lbl_edition_info">Πληροφορίες έκδοσης</string>
+    <string name="lbl_limit_request_speed">Περιορισμός συχνότητας αιτημάτων</string>
+    <string name="lbl_limit_request_speed_info">Προσθέτει μικρές καθυστερήσεις μεταξύ των αιτημάτων, ώστε να αποφεύγεται η υπερφόρτωση του διακομιστή και ο αποκλεισμός της IP.</string>
 </resources>
