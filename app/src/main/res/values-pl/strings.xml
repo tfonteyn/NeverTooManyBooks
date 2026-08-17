@@ -1004,4 +1004,6 @@
         <item quantity="many">%1$d razy w roku</item>
         <item quantity="other">%1$d raza w roku</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Ograniczanie szybkości żądań</string>
+    <string name="lbl_limit_request_speed_info">Dodaje krótkie opóźnienia między żądaniami, aby zapobiec przeciążeniu serwera i blokadom adresów IP.</string>
 </resources>
