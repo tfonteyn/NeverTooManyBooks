@@ -65,21 +65,21 @@ final class ConnectionValidatorFactory {
         }
 
         if (siteResId == R.string.site_isfdb) {
-            // The auth module login IS the validation
             final IsfdbSearchEngine searchEngine =
                     EngineId.Isfdb.createSearchEngine(context);
+            // The auth module login IS the validator
             return new IsfdbAuth(searchEngine.getHttpFutureFactory());
 
         } else if (siteResId == R.string.site_open_library) {
-            // The auth module login IS the validation
             final OpenLibrarySearchEngine searchEngine =
                     EngineId.OpenLibrary.createSearchEngine(context);
+            // The auth module login IS the validator
             return new OpenLibraryAuth(searchEngine.getHttpFutureFactory());
 
         } else if (siteResId == R.string.site_stripinfo_be) {
-            // The auth module login IS the validation
             final StripInfoSearchEngine searchEngine =
                     EngineId.StripInfoBe.createSearchEngine(context);
+            // The auth module login IS the validator
             return new StripInfoAuth(searchEngine.getHttpFutureFactory());
         }
 

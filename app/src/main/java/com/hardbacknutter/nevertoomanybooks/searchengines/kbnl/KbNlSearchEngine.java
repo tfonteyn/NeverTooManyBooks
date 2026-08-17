@@ -135,7 +135,7 @@ public class KbNlSearchEngine
             HOST_URL + "/cbs/DB=%1$s/XMLPRS=Y/PPN?PPN=%2$s";
 
     @Nullable
-    private FutureHttp<Boolean> httpGet;
+    private FutureHttp<Boolean> httpCall;
 
     @NonNull
     private String dbVersion = DEFAULT_DB_VERSION;
@@ -157,9 +157,6 @@ public class KbNlSearchEngine
     public KbNlSearchEngine(@NonNull final Context context,
                             @NonNull final SearchEngineConfig config) {
         super(context, config);
-        // We MUST bootstrap it here to ensure it's active before the first http request send
-        // No further interaction with it is needed.
-        ServiceLocator.getInstance().getCookieManager();
     }
 
     /**
@@ -291,10 +288,10 @@ public class KbNlSearchEngine
             throw new IllegalStateException(e);
         }
 
-        httpGet = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpFutureFactory.createGetDocumentRequest();
         try {
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            httpGet.get(url, (con, is) -> handleResponse(is, parser, handler, book));
+            httpCall.get(url, (con, is) -> handleResponse(is, parser, handler, book));
 
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
@@ -302,12 +299,12 @@ public class KbNlSearchEngine
             if (show != null && !show.isEmpty()) {
                 book.clearData();
                 final String url2 = String.format(MULTI_RESULT_BOOK_URL, dbVersion, setNr, show);
-                httpGet.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
+                httpCall.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
             }
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            httpGet = null;
+            httpCall = null;
         }
 
         return book;
@@ -427,8 +424,8 @@ public class KbNlSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
         }
     }

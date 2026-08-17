@@ -92,7 +92,7 @@ public class LibraryThingSearchEngine
     private static final String ALT_EDITIONS_URL = HOST_URL + "/api/%1$s/thingISBN/%2$s";
 
     @Nullable
-    private FutureHttp<Boolean> httpGet;
+    private FutureHttp<Boolean> httpCall;
 
     /**
      * Constructor.
@@ -209,8 +209,8 @@ public class LibraryThingSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
         }
     }
@@ -260,9 +260,9 @@ public class LibraryThingSearchEngine
         }
 
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
-        httpGet = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpFutureFactory.createGetDocumentRequest();
         try {
-            httpGet.get(url, (con, is) -> {
+            httpCall.get(url, (con, is) -> {
                 parser.parse(is, handler);
                 return true;
             });
@@ -270,7 +270,7 @@ public class LibraryThingSearchEngine
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            httpGet = null;
+            httpCall = null;
         }
 
         return handler.getResult();

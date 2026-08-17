@@ -146,13 +146,13 @@ class UserCollection {
      * Constructor.
      *
      * @param context           Current context
-     * @param httpFutureFactory to use
+     * @param httpCallFactory to use
      * @param userId            as extracted from the auth Cookie.
      * @param bookshelfMapper   mapper for the wishlist/owned flags
      */
     @AnyThread
     UserCollection(@NonNull final Context context,
-                   @NonNull final HttpFutureFactory httpFutureFactory,
+                   @NonNull final HttpFutureFactory httpCallFactory,
                    @NonNull final String userId,
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
@@ -162,7 +162,7 @@ class UserCollection {
         hostUrl = config.getHostUrl();
 
         final boolean enableLog = config.isHttpLoggingEnabled();
-        jsoupLoader = new JsoupLoader(httpFutureFactory, enableLog);
+        jsoupLoader = new JsoupLoader(httpCallFactory, enableLog);
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }

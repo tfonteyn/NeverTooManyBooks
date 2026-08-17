@@ -178,7 +178,7 @@ public class OpenLibrarySearchEngine
     private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
-    private FutureHttp<String> httpGet;
+    private FutureHttp<String> httpCall;
     @Nullable
     private SiteAuthModule siteAuthModule;
     @Nullable
@@ -303,8 +303,8 @@ public class OpenLibrarySearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
             if (siteAuthModule != null) {
                 siteAuthModule.cancel();
@@ -383,13 +383,13 @@ public class OpenLibrarySearchEngine
     private String loadDocument(@NonNull final String url)
             throws StorageException, SearchException {
 
-        httpGet = createGetDocumentRequest();
+        httpCall = createGetDocumentRequest();
         try {
-            return httpGet.getAsString(url, (con, s) -> s);
+            return httpCall.getAsString(url, (con, s) -> s);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            httpGet = null;
+            httpCall = null;
         }
     }
 

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 
 /**
@@ -39,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
  * This would need to be added AFTER calling {@link FutureHttp}#checkResponseCode
  * but before doing ANYTHING ELSE.
  * <p>
- * For now, the modification in {@link com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore}
+ * For now, the modification in {@link BiscuitStore}
  * works well enough.
  */
 public class IsfdbCookieSanitizer {

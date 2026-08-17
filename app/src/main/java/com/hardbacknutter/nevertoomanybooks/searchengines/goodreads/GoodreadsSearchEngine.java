@@ -131,7 +131,7 @@ public class GoodreadsSearchEngine
     private static final Pattern PARAMS_BOOK_ID_PATTERN = Pattern.compile("(\\d+).*");
 
     private static final Pattern LANG_SPLITTER = Pattern.compile("[,;]");
-    
+
     /** Example: {@code "https://www.goodreads.com/author/show/40652983.Nuanxed"}. */
     private static final Pattern AUTHOR_WEB_URL_ID = Pattern.compile(
             "https://www.goodreads.com/author/show/(\\d+)\\..*");
@@ -152,7 +152,7 @@ public class GoodreadsSearchEngine
     private final AuthorRoleMapper authorRoleMapper;
     private final AuthorResolverHelper authorResolverHelper;
     @Nullable
-    private FutureHttp<String> httpGet;
+    private FutureHttp<String> httpCall;
 
     /**
      * Constructor.
@@ -351,11 +351,10 @@ public class GoodreadsSearchEngine
             throws StorageException, SearchException {
 
         final String url = String.format(GET_GOODREADS_ID, validIsbn);
-        httpGet = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpFutureFactory.createGetDocumentRequest();
 
         try {
-            // get and store the result into a string.
-            final String response = httpGet.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, (con, s) -> s);
 
             final JSONArray responseArray = new JSONArray(response);
             if (!responseArray.isEmpty()) {
@@ -370,7 +369,7 @@ public class GoodreadsSearchEngine
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            httpGet = null;
+            httpCall = null;
         }
 
         return 0;
@@ -866,8 +865,8 @@ public class GoodreadsSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
         }
     }

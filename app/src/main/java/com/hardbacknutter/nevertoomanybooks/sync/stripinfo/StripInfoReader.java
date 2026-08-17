@@ -156,15 +156,15 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        final HttpFutureFactory httpFutureFactory = searchEngine.getHttpFutureFactory();
+        final HttpFutureFactory httpCallFactory = searchEngine.getHttpFutureFactory();
 
-        final SiteAuthModule siteAuthModule = new StripInfoAuth(httpFutureFactory);
+        final SiteAuthModule siteAuthModule = new StripInfoAuth(httpCallFactory);
         final String userId = siteAuthModule.login(context);
         searchEngine.setAuthModule(siteAuthModule);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
-        final UserCollection uc = new UserCollection(context, httpFutureFactory, userId,
+        final UserCollection uc = new UserCollection(context, httpCallFactory, userId,
                                                      new BookshelfMapper());
 
         results = new ReaderResults();

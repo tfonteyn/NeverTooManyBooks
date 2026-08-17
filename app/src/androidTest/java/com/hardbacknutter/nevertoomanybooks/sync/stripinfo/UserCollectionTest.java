@@ -67,7 +67,7 @@ class UserCollectionTest
             "wishlist", BuiltinStyle.HARD_DEFAULT_UUID);
     private BookshelfMapper bookshelfMapper;
     private MoneyParser moneyParser;
-    private HttpFutureFactory httpFutureFactory;
+    private HttpFutureFactory httpCallFactory;
 
     @BeforeEach
     void setup()
@@ -77,7 +77,7 @@ class UserCollectionTest
         final StripInfoSearchEngine searchEngine = EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
-        httpFutureFactory = searchEngine.getHttpFutureFactory();
+        httpCallFactory = searchEngine.getHttpFutureFactory();
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
@@ -96,7 +96,7 @@ class UserCollectionTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
-        final UserCollection uc = new UserCollection(context, httpFutureFactory, userId,
+        final UserCollection uc = new UserCollection(context, httpCallFactory, userId,
                                                      bookshelfMapper);
 
         final List<Book> collection = uc.parseDocument(document, 1, logger);
@@ -140,7 +140,7 @@ class UserCollectionTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
-        final UserCollection uc = new UserCollection(context, httpFutureFactory, userId,
+        final UserCollection uc = new UserCollection(context, httpCallFactory, userId,
                                                      bookshelfMapper);
 
         final List<Book> collection = uc.parseDocument(document, 3, logger);

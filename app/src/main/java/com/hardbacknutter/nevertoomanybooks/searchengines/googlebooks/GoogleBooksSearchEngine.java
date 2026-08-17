@@ -111,8 +111,9 @@ public class GoogleBooksSearchEngine
     private static final String SEARCH_URL = HOST_URL + "/books/v1/volumes?q=";
 
     private final RatingParser ratingParser;
+
     @Nullable
-    private FutureHttp<String> httpGet;
+    private FutureHttp<String> httpCall;
 
     /**
      * Constructor.
@@ -270,11 +271,10 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        httpGet = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpFutureFactory.createGetDocumentRequest();
 
         try {
-            // get and store the result into a string.
-            final String response = httpGet.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, (con, s) -> s);
 
             final JSONObject document = new JSONObject(response);
             // https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
@@ -299,7 +299,7 @@ public class GoogleBooksSearchEngine
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            httpGet = null;
+            httpCall = null;
         }
     }
 
@@ -660,8 +660,8 @@ public class GoogleBooksSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
         }
     }

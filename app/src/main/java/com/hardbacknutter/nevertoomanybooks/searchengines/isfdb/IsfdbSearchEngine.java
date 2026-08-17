@@ -298,9 +298,9 @@ public class IsfdbSearchEngine
     @Nullable
     private PartialDate firstPublicationYear;
     @Nullable
-    private FutureHttp<Boolean> httpGet;
-    @Nullable
     private SiteAuthModule siteAuthModule;
+    @Nullable
+    private FutureHttp<Boolean> httpCall;
 
     /**
      * Constructor.
@@ -1789,8 +1789,8 @@ public class IsfdbSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
             if (siteAuthModule != null) {
                 siteAuthModule.cancel();
@@ -1831,9 +1831,9 @@ public class IsfdbSearchEngine
             throw new IllegalStateException(e);
         }
 
-        httpGet = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpFutureFactory.createGetDocumentRequest();
         try {
-            httpGet.get(url, (con, is) -> {
+            httpCall.get(url, (con, is) -> {
                 try {
                     parser.parse(is, listHandler);
                     return true;
@@ -1852,7 +1852,7 @@ public class IsfdbSearchEngine
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            httpGet = null;
+            httpCall = null;
         }
     }
 

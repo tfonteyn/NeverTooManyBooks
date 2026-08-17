@@ -172,10 +172,10 @@ public final class WikidataAuthorResolver
 
         final String url = String.format(AUTHOR_SEARCH_BY_SID, sid);
 
-        final FutureHttp<String> httpGet = searchEngine.getHttpFutureFactory()
-                                                       .createGetDocumentRequest();
+        final FutureHttp<String> httpCall = searchEngine.getHttpFutureFactory()
+                                                        .createGetDocumentRequest();
         try {
-            final String response = httpGet.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 return authorParser.parse(context, langCode, document, sid);
@@ -191,13 +191,13 @@ public final class WikidataAuthorResolver
                                 @NonNull final String names)
             throws SearchException {
 
-        final FutureHttp<String> httpGet = searchEngine.getHttpFutureFactory()
-                                                       .createGetDocumentRequest();
+        final FutureHttp<String> httpCall = searchEngine.getHttpFutureFactory()
+                                                        .createGetDocumentRequest();
         try {
             final String url = String.format(AUTHOR_SEARCH_BY_NAME, langCode,
                                              URLEncoder.encode(names, CHARSET));
 
-            final String response = httpGet.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final JSONArray docs = document.optJSONArray("search");

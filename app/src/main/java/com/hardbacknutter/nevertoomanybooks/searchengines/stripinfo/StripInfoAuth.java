@@ -99,17 +99,17 @@ public class StripInfoAuth
     private static final String COOKIE_USERDATA = "si_userdata";
 
     @NonNull
-    private final HttpFutureFactory httpFutureFactory;
+    private final HttpFutureFactory httpCallFactory;
     @Nullable
     private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
      *
-     * @param httpFutureFactory to use
+     * @param httpCallFactory to use
      */
-    public StripInfoAuth(@NonNull final HttpFutureFactory httpFutureFactory) {
-        this.httpFutureFactory = httpFutureFactory;
+    public StripInfoAuth(@NonNull final HttpFutureFactory httpCallFactory) {
+        this.httpCallFactory = httpCallFactory;
     }
 
     /**
@@ -222,7 +222,7 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        httpPost = httpFutureFactory.createRequest(
+        httpPost = httpCallFactory.createRequest(
                 Map.of(HttpConstants.CONTENT_TYPE,
                        HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
         httpPost.post(url, postBody, null);

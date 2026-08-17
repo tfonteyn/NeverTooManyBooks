@@ -92,17 +92,17 @@ public class OpenLibraryAuth
     private static final String COOKIE_USERDATA = "session";
 
     @NonNull
-    private final HttpFutureFactory httpFutureFactory;
+    private final HttpFutureFactory httpCallFactory;
     @Nullable
     private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
      *
-     * @param httpFutureFactory to use
+     * @param httpCallFactory to use
      */
-    public OpenLibraryAuth(@NonNull final HttpFutureFactory httpFutureFactory) {
-        this.httpFutureFactory = httpFutureFactory;
+    public OpenLibraryAuth(@NonNull final HttpFutureFactory httpCallFactory) {
+        this.httpCallFactory = httpCallFactory;
     }
 
     /**
@@ -212,7 +212,7 @@ public class OpenLibraryAuth
                 .add("debug_token=")
                 .toString();
 
-        httpPost = httpFutureFactory.createRequest(
+        httpPost = httpCallFactory.createRequest(
                 Map.of(HttpConstants.CONTENT_TYPE,
                        HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
         httpPost.post(url, postBody, null);

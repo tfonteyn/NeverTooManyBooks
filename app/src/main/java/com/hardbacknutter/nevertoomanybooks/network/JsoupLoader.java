@@ -53,11 +53,11 @@ public class JsoupLoader {
     private static final String TAG = "JsoupLoader";
 
     @NonNull
-    private final HttpFutureFactory httpFutureFactory;
+    private final HttpFutureFactory httpCallFactory;
     private final boolean logEnabled;
 
     @Nullable
-    private FutureHttp<Document> httpGet;
+    private FutureHttp<Document> httpCall;
 
     /** The downloaded and parsed web page. */
     @Nullable
@@ -72,12 +72,12 @@ public class JsoupLoader {
     /**
      * Constructor.
      *
-     * @param httpFutureFactory  to use
-     * @param enableLog          flag
+     * @param httpCallFactory  to use
+     * @param enableLog        flag
      */
-    public JsoupLoader(@NonNull final HttpFutureFactory httpFutureFactory,
+    public JsoupLoader(@NonNull final HttpFutureFactory httpCallFactory,
                        final boolean enableLog) {
-        this.httpFutureFactory = httpFutureFactory;
+        this.httpCallFactory = httpCallFactory;
         this.logEnabled = enableLog;
     }
 
@@ -148,9 +148,8 @@ public class JsoupLoader {
             }
 
             try {
-                httpGet = httpFutureFactory.createRequest(headers);
-
-                document = httpGet.get(requestUrl, (response, is)
+                httpCall = httpCallFactory.createRequest(headers);
+                document = httpCall.get(requestUrl, (response, is)
                         -> processResponse(response, is, parser));
                 //noinspection DataFlowIssue
                 return document;
@@ -207,7 +206,7 @@ public class JsoupLoader {
                 }
                 throw e;
             } finally {
-                httpGet = null;
+                httpCall = null;
             }
         }
 
@@ -269,8 +268,8 @@ public class JsoupLoader {
 
     public void cancel() {
         synchronized (this) {
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
             }
         }
     }

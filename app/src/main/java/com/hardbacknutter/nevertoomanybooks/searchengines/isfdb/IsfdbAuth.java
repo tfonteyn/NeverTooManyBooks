@@ -85,17 +85,17 @@ public class IsfdbAuth
     private static final String COOKIE_USERDATA = "isfdbUserID";
 
     @NonNull
-    private final HttpFutureFactory httpFutureFactory;
+    private final HttpFutureFactory httpCallFactory;
     @Nullable
     private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
      *
-     * @param httpFutureFactory to use
+     * @param httpCallFactory to use
      */
-    public IsfdbAuth(@NonNull final HttpFutureFactory httpFutureFactory) {
-        this.httpFutureFactory = httpFutureFactory;
+    public IsfdbAuth(@NonNull final HttpFutureFactory httpCallFactory) {
+        this.httpCallFactory = httpCallFactory;
     }
 
     /**
@@ -249,7 +249,7 @@ public class IsfdbAuth
                 .add("argument=0")
                 .toString();
 
-        httpPost = httpFutureFactory.createRequest(
+        httpPost = httpCallFactory.createRequest(
                 Map.of(HttpConstants.CONTENT_TYPE,
                        HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
         httpPost.post(url, postBody, null);
