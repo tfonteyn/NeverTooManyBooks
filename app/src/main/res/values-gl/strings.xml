@@ -965,4 +965,6 @@
         <item quantity="one">Anual</item>
         <item quantity="other">%1$d ao ano</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Limitar a velocidade das solicitudes</string>
+    <string name="lbl_limit_request_speed_info">Engade demoras breves entre solicitudes para previr sobrecarga do servidor e bloqueos de IP.</string>
 </resources>
