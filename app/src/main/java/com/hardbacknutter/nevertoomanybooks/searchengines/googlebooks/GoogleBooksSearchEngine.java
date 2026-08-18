@@ -184,6 +184,63 @@ public class GoogleBooksSearchEngine
         );
     }
 
+    // {
+    //  "error": {
+    //    "code": 429,
+    //    "message": "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'books.googleapis.com' for consumer 'project_number:624717413613'.",
+    //    "errors": [
+    //      {
+    //        "message": "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'books.googleapis.com' for consumer 'project_number:624717413613'.",
+    //        "domain": "global",
+    //        "reason": "rateLimitExceeded"
+    //      }
+    //    ],
+    //    "status": "RESOURCE_EXHAUSTED",
+    //    "details": [
+    //      {
+    //        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+    //        "reason": "RATE_LIMIT_EXCEEDED",
+    //        "domain": "googleapis.com",
+    //        "metadata": {
+    //          "consumer": "projects/624717413613",
+    //          "quota_metric": "books.googleapis.com/default",
+    //          "quota_unit": "1/d/{project}",
+    //          "quota_limit_value": "0",
+    //          "quota_location": "global",
+    //          "quota_limit": "defaultPerDayPerProject",
+    //          "service": "books.googleapis.com"
+    //        }
+    //      },
+    //      {
+    //        "@type": "type.googleapis.com/google.rpc.Help",
+    //        "links": [
+    //          {
+    //            "description": "Request a higher quota limit.",
+    //            "url": "https://cloud.google.com/docs/quotas/help/request_increase"
+    //          }
+    //        ]
+    //      }
+    //    ]
+    //  }
+    //}
+    //    Create a Google Cloud Project:
+    //        Go to the Google Cloud Console.
+    //        Click Select a project at the top, then New Project.
+    //
+    //    Enable the Google Books API:
+    //        Go to APIs & Services > Library.
+    //        Search for Books API and click Enable.
+    //
+    //    Generate an API Key:
+    //        Go to APIs & Services > Credentials.
+    //        Click + Create Credentials at the top and select API key.
+    //        Copy the generated key.
+    //
+    //    Add the Key to Your API Call:
+    //        Append &key=YOUR_API_KEY to your request URL:
+    //
+    //        https://www.googleapis.com/books/v1/volumes?q=isbn:9780007499793&key=YOUR_API_KEY
+    //
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
