@@ -369,10 +369,14 @@ public enum ProductCodeType {
 
         // Legacy SBN with optional price digits.
         if (size == 9 || size == 12) {
-            final List<Integer> sbn = new ArrayList<>(digits.subList(0, 9));
-            sbn.add(0, 0);
-            if (Isbn10.checksum(sbn) == sbn.get(9)) {
-                return Sbn;
+            // Should NOT start with 97x;
+            // i.e. a 12 digit value starting with 97 is NOT an SBN.
+            if (digits.get(0) != 9 && digits.get(1) != 7) {
+                final List<Integer> sbn = new ArrayList<>(digits.subList(0, 9));
+                sbn.add(0, 0);
+                if (Isbn10.checksum(sbn) == sbn.get(9)) {
+                    return Sbn;
+                }
             }
         }
 

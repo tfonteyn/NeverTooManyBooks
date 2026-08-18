@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -254,5 +255,13 @@ class ISBNTest {
         final ProductCode productCode = ISBN.parse(issnStr);
         assertSame(ProductCodeType.Issn13, productCode.getType());
         assertEquals(expected, productCode.asText(ProductCodeType.Issn8));
+    }
+
+    @Test
+    void invalidSbn() {
+        // 12 digit incomplete ISBN, happens to have a valid Isbn10 checksum digit
+        // Make sure it's not incorrectly detected as SBN
+        final ProductCode productCode = ISBN.parse("978000749979");
+        assertSame(ProductCodeType.Invalid, productCode.getType());
     }
 }
