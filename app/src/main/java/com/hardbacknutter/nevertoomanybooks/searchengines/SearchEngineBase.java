@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.CookieStore;
 import java.net.MalformedURLException;
@@ -45,15 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 public class SearchEngineBase
         implements SearchEngine {
@@ -72,18 +66,6 @@ public class SearchEngineBase
     protected final HttpFutureFactory httpFutureFactory;
     @NonNull
     protected final HttpCallFactory httpCallFactory;
-    private final String languageHeader;
-
-    /** Lazy created in {@link #getImageDownloader()}. */
-    @Nullable
-    private volatile ImageDownloader imageDownloader;
-    /**
-     * Either set from a child constructor with
-     * {@link #setImageRequestFactory(RequestFactory)}
-     * or lazy created in {@link #getImageRequestFactory()}.
-     */
-    @Nullable
-    private volatile RequestFactory imageRequestFactory;
 
     @Nullable
     private Cancellable caller;
@@ -104,9 +86,12 @@ public class SearchEngineBase
         final CookieStore cookieStore = ServiceLocator.getInstance()
                                                       .getCookieManager()
                                                       .getCookieStore();
-        languageHeader = createLanguageHeader(context);
-        httpFutureFactory = new HttpFutureFactory(config, null, cookieStore, languageHeader);
-        httpCallFactory = new HttpCallFactory(config, null, cookieStore, languageHeader);
+        final String languageHeader = createLanguageHeader(context);
+        httpFutureFactory = new HttpFutureFactory(config, null, cookieStore,
+                                                  languageHeader);
+        httpCallFactory = new HttpCallFactory(config, null, cookieStore,
+                                              languageHeader,
+                                              config.getEngineId().getPreferenceKey());
     }
 
     private String createLanguageHeader(@NonNull final Context context) {
@@ -122,7 +107,7 @@ public class SearchEngineBase
      * @param imageRequestFactory to use
      */
     protected void setImageRequestFactory(@NonNull final RequestFactory imageRequestFactory) {
-        this.imageRequestFactory = imageRequestFactory;
+        httpCallFactory.setImageRequestFactory(imageRequestFactory);
     }
 
     @NonNull
@@ -220,12 +205,7 @@ public class SearchEngineBase
     @CallSuper
     public void cancel() {
         cancelRequested.set(true);
-        synchronized (this) {
-            final ImageDownloader downloader = imageDownloader;
-            if (downloader != null) {
-                downloader.cancel();
-            }
-        }
+        httpCallFactory.cancel();
     }
 
     @Override
@@ -259,61 +239,12 @@ public class SearchEngineBase
     @NonNull
     public Optional<String> saveImage(@NonNull final Context context,
                                       @NonNull final String url,
-                                      @Nullable final Map<String, String> requestProperties,
+                                      @Nullable final Map<String, String> headers,
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 3) final int cIdx,
                                       @Nullable final ImageWebSize size)
             throws CoverStorageException {
 
-        final String tempFilename = ImageFileInfo.getTempFilename(
-                config.getEngineId().getPreferenceKey(), bookId, cIdx, size);
-
-        try {
-            final Request imageRequest = getImageRequestFactory()
-                    .createRequest(url, requestProperties);
-
-            return getImageDownloader().fetch(imageRequest, tempFilename)
-                                       .map(File::getAbsolutePath);
-
-        } catch (@NonNull final IOException e) {
-            // we swallow IOExceptions, even when the disk is full.
-            // We're counting on that condition to be caught elsewhere...
-            // as handling it in each call here would become [bleep] fast.
-            return Optional.empty();
-        }
-    }
-
-    @NonNull
-    private RequestFactory getImageRequestFactory() {
-        RequestFactory instance = imageRequestFactory;
-        if (instance == null) {
-            synchronized (this) {
-                instance = imageRequestFactory;
-                if (instance == null) {
-                    instance = new ImageRequestFactoryDefault(languageHeader);
-                    imageRequestFactory = instance;
-                }
-            }
-        }
-        return instance;
-    }
-
-    @NonNull
-    private ImageDownloader getImageDownloader() {
-        ImageDownloader instance = imageDownloader;
-        if (instance == null) {
-            synchronized (this) {
-                instance = imageDownloader;
-                if (instance == null) {
-                    final OkHttpClient httpClient = httpCallFactory.getHttpClient();
-                    instance = new ImageDownloader(httpClient,
-                                                   config.getThrottler(),
-                                                   config.getEngineId().getLabelResId(),
-                                                   config.isHttpLoggingEnabled());
-                    imageDownloader = instance;
-                }
-            }
-        }
-        return instance;
+        return getHttpCallFactory().saveImage(url, headers, bookId, cIdx, size);
     }
 }
