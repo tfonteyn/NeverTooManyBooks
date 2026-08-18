@@ -328,16 +328,18 @@ public class GoodreadsSearchEngine
     /**
      * Call the site with the ISBN and get the Goodreads id back.
      * <pre>
-     *     Request for 9780062683250 returned:
-     * [
-     *   {
-     *     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1581368800i/49867186._SY75_.jpg",
-     *     "bookId": "49867186",
-     *     "workId": "67924695",
-     *     "bookUrl": "/book/show/49867186-the-left-handed-booksellers-of-london",
-     * SNIP
-     *   }
-     * ]
+     * Request for 9780062683250 returned:
+     * {@code
+     *   [
+     *     {
+     *       "imageUrl": "https://i.gr-assets.com/images/[SNIP]/49867186._SY75_.jpg",
+     *       "bookId": "49867186",
+     *       "workId": "67924695",
+     *       "bookUrl": "/book/show/49867186-the-left-handed-booksellers-of-london",
+     *       SNIP
+     *     }
+     *   ]
+     * }
      * </pre>
      *
      * @param validIsbn to search for, <strong>must</strong> be valid.
@@ -680,7 +682,7 @@ public class GoodreadsSearchEngine
      *             "__typename": "ContributorWorksConnection",
      *             "totalCount": 0
      *         },
-     *         "profileImageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/nophoto/user/u_700x933.png",
+     *         "profileImageUrl": "https://i.gr-assets.com/images/[SNIP]/u_700x933.png",
      *         "webUrl": "https://www.goodreads.com/author/show/13687877.Corinne_Maier_Anne_Simon",
      *         "viewerIsFollowing": null,
      *         "followers": {
