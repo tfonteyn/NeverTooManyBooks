@@ -361,9 +361,9 @@ public enum ProductCodeType {
         }
 
         // Legacy UPC_A codes.
-        // a UPC barcode might be longer than 12 characters due to allowed extensions.
-        // But only the first 12 characters are 'the' UPC_A code.
-        if (size >= 12 && UpcA.checksum(digits.subList(0, 12)) == digits.get(11)) {
+        // A UPC-A is 12 digits, or 12 + 2/5 extension digits.
+        if ((size == 12 || size == 14 || size == 17)
+            && UpcA.checksum(digits.subList(0, 12)) == digits.get(11)) {
             return UpcA;
         }
 
