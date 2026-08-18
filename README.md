@@ -88,15 +88,14 @@ Translations are editable on [Weblate](https://hosted.weblate.org/engage/neverto
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in Settings/Search/Websites...
 
-- **Amazon** with support for .com, .co.uk, .fr, .de, .nl, .com.be, .es sites.
-  Other sites *may* work.
-
-> *WARNING:* Amazon is increasingly blocking access.
-> If you see any Amazon specific errors, I suggest you switch off Amazon in
-> Settings/Search/Websites and log a
+> *WARNING:* Amazon and Goodreads are increasingly blocking access.
+> If you see any Amazon/Goodreads specific errors,
+> I suggest you switch off Amazon/Goodreads in Settings/Search/Websites and log a
 > GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
 > explaining what went wrong.
-
+> 
+- **Amazon** with support for .com, .co.uk, .fr, .de, .nl, .com.be, .es sites. 
+  Other sites *may* work.
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **Bertrand.pt** (Portuguese and more; Shop)
 - **Biblionet.gr** (Greek; Catalogue)
