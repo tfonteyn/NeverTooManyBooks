@@ -247,6 +247,7 @@
     <string name="httpErrorFile">无法访问该文件。</string>
     <string name="httpErrorFileNotFound">找不到请求的文件。</string>
     <string name="httpErrorTimeout">与服务器的连接超时。</string>
+    <string name="httpErrorRedirectLoop">该页面包含太多服务器重定向。</string>
     <string name="info_all_books_have_covers">这个书架上的所有书都有封面</string>
     <string name="info_authorized">已授权</string>
     <string name="info_backup_successful">备份成功</string>

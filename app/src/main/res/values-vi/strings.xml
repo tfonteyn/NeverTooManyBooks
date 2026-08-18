@@ -253,6 +253,7 @@
     <string name="httpErrorFile">Không thể truy cập tệp.</string>
     <string name="httpErrorFileNotFound">Không thể tìm thấy tệp được yêu cầu.</string>
     <string name="httpErrorTimeout">Kết nối tới máy chủ đã hết thời gian chờ.</string>
+    <string name="httpErrorRedirectLoop">Trang chứa quá nhiều chuyển hướng máy chủ.</string>
     <string name="info_all_books_have_covers">Tất cả sách trên kệ này đều có bìa</string>
     <string name="info_authorized">Được ủy quyền</string>
     <string name="info_backup_successful">Sao lưu thành công</string>

@@ -260,6 +260,7 @@ A question mark is written as the character semicolon: ';'
     <string name="httpErrorFile">Δεν ήταν δυνατή η πρόσβαση στο αρχείο.</string>
     <string name="httpErrorFileNotFound">Δεν ήταν δυνατή η εύρεση του αρχείου που ζητήθηκε.</string>
     <string name="httpErrorTimeout">Το όριο χρόνου της σύνδεσης στον διακομιστή έληξε.</string>
+    <string name="httpErrorRedirectLoop">Αυτή η σελίδα περιέχει πάρα πολλές ανακατευθύνσεις διακομιστή.</string>
     <string name="info_authorized">Εξουσιοδοτήθηκε</string>
     <string name="option_moving_covers_from_x_to_y">Μετακίνηση όλων των εξωφύλλων από «%1$s» σε «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Συμπλήρωση τίτλων (μόνο από ISFDB)</string>

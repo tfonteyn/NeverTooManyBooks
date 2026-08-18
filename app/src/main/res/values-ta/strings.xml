@@ -140,6 +140,7 @@
     <string name="httpError">பிணைய பிழை இருந்தது.</string>
     <string name="httpErrorFile">கோப்பை அணுக முடியவில்லை.</string>
     <string name="httpErrorFileNotFound">கோரப்பட்ட கோப்பைக் கண்டுபிடிக்க முடியவில்லை.</string>
+    <string name="httpErrorRedirectLoop">இந்தப் பக்கத்தில் சேவையகத் திசைதிருப்பங்கள் மிக அதிகமாக உள்ளன.</string>
     <string name="error_invalid_url">தவறான முகவரி (URL)</string>
     <string name="error_unexpected">எதிர்பாராத பிழை ஏற்பட்டது.</string>
     <string name="error_unexpected_long">எதிர்பாராத பிழை ஏற்பட்டது. சிக்கல் தொடர்ந்தால், அமைப்புகள் பக்கத்தின் கீழே உள்ள “%1$s” விருப்பம் வழியாக ஆதரவைத் தொடர்பு கொள்ளுங்கள்.</string>

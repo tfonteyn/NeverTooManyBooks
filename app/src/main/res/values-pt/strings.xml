@@ -136,6 +136,7 @@
     <string name="httpErrorFile">Não foi possível aceder ao ficheiro.</string>
     <string name="httpErrorFileNotFound">Não foi possível encontrar o arquivo solicitado.</string>
     <string name="httpErrorTimeout">O tempo de conexão ao servidor acabou.</string>
+    <string name="httpErrorRedirectLoop">A página contém muitos redirecionamentos do servidor.</string>
     <string name="lbl_available">Disponível</string>
     <string name="lbl_calibre_content_server">O servidor de conteúdos Calibre</string>
     <string name="lbl_certificate_ca">Certificado de CA</string>

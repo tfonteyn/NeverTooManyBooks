@@ -265,6 +265,7 @@
     <string name="httpErrorFile">"Det gick inte att öppna filen."</string>
     <string name="httpErrorFileNotFound">"Det gick inte att hitta den begärda filen."</string>
     <string name="httpErrorTimeout">Anslutningen till servern har kopplats ifrån.</string>
+    <string name="httpErrorRedirectLoop">Sidan innehåller för många serveromdirigeringar.</string>
     <string name="info_all_books_have_covers">Alla böcker på denna hylla har omslag</string>
     <string name="info_authorized">Auktoriserad</string>
     <string name="info_backup_successful">Säkerhetskopiering lyckades</string>

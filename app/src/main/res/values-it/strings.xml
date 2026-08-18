@@ -268,6 +268,7 @@
     <string name="httpErrorFile">Accesso al file non riuscito.</string>
     <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>
     <string name="httpErrorTimeout">Tempo esaurito per la connessione al server.</string>
+    <string name="httpErrorRedirectLoop">La pagina contiene troppi reindirizzamenti sul server.</string>
     <string name="info_authorized">Autorizzato</string>
     <string name="option_moving_covers_from_x_to_y">Sposta tutte le copertine da “%1$s” a “%2$s”</string>
     <string name="option_isfdb_menu_populate_toc">Inserisci titoli automaticamente (ISFDB)</string>

@@ -267,6 +267,7 @@
     <string name="httpErrorFile">No se ha podido acceder al archivo.</string>
     <string name="httpErrorFileNotFound">No se ha podido encontrar el archivo solicitado.</string>
     <string name="httpErrorTimeout">Se ha agotado el tiempo de espera de conexión con el servidor.</string>
+    <string name="httpErrorRedirectLoop">La página contiene demasiados redireccionamientos de servidor.</string>
     <string name="info_authorized">Autorizado</string>
     <string name="option_moving_covers_from_x_to_y">Mueva todas las cubiertas de «%1$s» a «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Actualización automática de títulos (ISFDB)</string>

@@ -255,6 +255,7 @@
     <string name="httpErrorFile">Dosyaya erişilemedi.</string>
     <string name="httpErrorFileNotFound">İstenen dosya bulunamadı.</string>
     <string name="httpErrorTimeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
+    <string name="httpErrorRedirectLoop">Sayfada çok fazla sunucu yeniden yönlendirmesi bulunuyor.</string>
     <string name="info_authorized">Yetkilendirildi</string>
     <string name="option_moving_covers_from_x_to_y">Tüm kapakları “%1$s”’den “%2$s”’ye taşıyın</string>
     <string name="option_isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (ISFDB)</string>

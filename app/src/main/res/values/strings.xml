@@ -236,6 +236,8 @@
     <string name="httpErrorFile">Couldn’t access the file.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn’t find the requested file.</string>
+    <!-- [VERIFIED] - Displayed when a web request failed because the site tried to redirect us one too many times -->
+    <string name="httpErrorRedirectLoop">The page contains too many server redirects.</string>
     <!-- In a few places in the app the user will be asked to enter an HTTPS://... address/url.
          This message is displayed if that address/url is invalid in some way. -->
     <string name="error_invalid_url">Invalid address (URL)</string>

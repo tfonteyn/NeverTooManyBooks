@@ -105,6 +105,7 @@
     <string name="httpError">Vyskytla sa chyba siete.</string>
     <string name="httpErrorFile">Nepodarilo sa získať prístup k súboru.</string>
     <string name="httpErrorFileNotFound">Nepodarilo sa nájsť požadovaný súbor.</string>
+    <string name="httpErrorRedirectLoop">Stránka obsahuje príliš veľa presmerovaní servera.</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
     <string name="error_unexpected">Vyskytla sa neočakávaná chyba.</string>
     <string name="error_upgrade_not_supported">Aktualizácia z verzií starších ako %1$s nie je podporovaná.</string>

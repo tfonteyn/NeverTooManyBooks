@@ -892,6 +892,7 @@
     <string name="httpErrorTooManyRequests">Tiek apstrādāts pārāk liels pieprasījumu skaits. Vēlāk mēģiniet vēlreiz.</string>
     <string name="httpErrorFile">Nevarēja piekļūt failam.</string>
     <string name="httpErrorFailedSslHandshake">Nevarēja izveidot drošu savienojumu.</string>
+    <string name="httpErrorRedirectLoop">Lapā ir pārāk daudz servera novirzīšanu.</string>
     <string name="warning_import_csv_bc">BRĪDINĀJUMS: Datu importēšana var atjaunināt esošos grāmatu ierakstus ar jaunu informāciju, ja nav iekļauta UUID kolonna un ID importa failā ir tāds pats kā jau esošajam ID. Tas parasti ir pieņemami, ja esat mainījis lauku eksportētā failā. Ja izveidojāt jaunu grāmatas ierakstu vai importējat citas personas grāmatas, pārliecinieties, ka UUID lauks ir iekļauts vai ID lauks ir tukšs.</string>
     <string name="warning_import_csv_unescaped_quote">Neatbilstoša pēdiņa rindā %1$d, pozīcijā %2$d</string>
     <string name="warning_import_failed_for_these_books">Importēšana neizdevās šīm grāmatām/rindām:</string>

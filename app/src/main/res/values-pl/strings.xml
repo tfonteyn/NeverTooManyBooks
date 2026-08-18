@@ -277,6 +277,7 @@
     <string name="httpErrorFile">Nie można uzyskać dostępu do pliku.</string>
     <string name="httpErrorFileNotFound">Nie można znaleźć żądanego pliku.</string>
     <string name="httpErrorTimeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
+    <string name="httpErrorRedirectLoop">Strona zawiera zbyt wiele przekierowań do serwerów.</string>
     <string name="info_authorized">Upoważniony</string>
     <string name="option_moving_covers_from_x_to_y">Przenieś wszystkie okładki z „%1$s” do „%2$s”</string>
     <string name="option_isfdb_menu_populate_toc">Automatycznie obsadź pozycje antologii(ISFDB)</string>

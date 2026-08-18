@@ -286,6 +286,7 @@
     <string name="httpErrorFile">Do souboru nelze získat přístup.</string>
     <string name="httpErrorFileNotFound">Požadovaný soubor nelze najít.</string>
     <string name="httpErrorTimeout">Časový limit připojení k serveru vypršel.</string>
+    <string name="httpErrorRedirectLoop">Stránka obsahuje příliš mnoho přesměrování serveru.</string>
     <string name="info_authorized">Autorizováno</string>
     <string name="option_moving_covers_from_x_to_y">Přesuout všechny obálky z „%1$s“ do „%2$s“</string>
     <string name="option_isfdb_menu_populate_toc">Automaticky naplnit tituly (ISFDB)</string>

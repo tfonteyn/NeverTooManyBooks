@@ -247,6 +247,7 @@
     <string name="httpErrorFile">無法存取檔案。</string>
     <string name="httpErrorFileNotFound">找不到所請求的檔案。</string>
     <string name="httpErrorTimeout">連線到伺服器逾時。</string>
+    <string name="httpErrorRedirectLoop">此網頁包含太多伺服器轉址。</string>
     <string name="info_story_in_single_book">「%1$s」 存在與一本書中：\n\n%2$s</string>
     <string name="info_all_books_have_covers">這個書架上的所有書都有封面</string>
     <string name="info_authorized">已授權</string>

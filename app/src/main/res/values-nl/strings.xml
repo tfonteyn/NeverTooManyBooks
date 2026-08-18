@@ -246,6 +246,7 @@
     <string name="httpErrorFile">Kan het bestand niet openen.</string>
     <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>
     <string name="httpErrorTimeout">Er is een time-out voor de serververbinding opgetreden.</string>
+    <string name="httpErrorRedirectLoop">De pagina bevat te veel serveromleidingen.</string>
     <string name="info_all_books_have_covers">Alle boeken op deze boekenplank hebben omslagen</string>
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_backup_successful">Back-up succesvol</string>

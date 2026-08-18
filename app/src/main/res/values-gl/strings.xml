@@ -196,6 +196,7 @@
     <string name="error_insufficient_storage">Non hai espazo de almacenamento suficiente.</string>
     <string name="httpError">Produciuse un erro na rede.</string>
     <string name="httpErrorTimeout">A conexión co servidor superou o tempo de espera.</string>
+    <string name="httpErrorRedirectLoop">A páxina contén demasiadas redireccións do servidor.</string>
     <string name="lbl_about">Acerca de</string>
     <string name="lbl_archive_format">Formato</string>
     <string name="lbl_available">Dispoñible</string>

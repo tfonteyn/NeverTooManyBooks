@@ -254,6 +254,7 @@
     <string name="httpErrorFile">Auf die Datei konnte nicht zugegriffen werden.</string>
     <string name="httpErrorFileNotFound">Die angeforderte Datei wurde nicht gefunden.</string>
     <string name="httpErrorTimeout">Zeitüberschreitung bei Serververbindung.</string>
+    <string name="httpErrorRedirectLoop">Die Seite enthält zu viele Server-Redirects.</string>
     <string name="info_authorized">Autorisiert</string>
     <string name="option_moving_covers_from_x_to_y">Verschiebe alle Cover von „%1$s“ nach „%2$s“</string>
     <string name="option_isfdb_menu_populate_toc">Automatisches Ausfüllen der Titel (nur ISFDB)</string>

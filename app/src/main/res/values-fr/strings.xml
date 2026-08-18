@@ -267,6 +267,7 @@
     <string name="httpErrorFile">Impossible d’accéder au fichier.</string>
     <string name="httpErrorFileNotFound">Le fichier demandé est introuvable.</string>
     <string name="httpErrorTimeout">Délai de connexion au serveur dépassé.</string>
+    <string name="httpErrorRedirectLoop">Cette page contient trop de redirections de serveurs.</string>
     <string name="info_authorized">Autorisé</string>
     <string name="option_moving_covers_from_x_to_y">Déplacer toutes les couvertures de « %1$s » vers « %2$s »</string>
     <string name="option_isfdb_menu_populate_toc">Renseigner les titres automatiquement (ISFDB)</string>

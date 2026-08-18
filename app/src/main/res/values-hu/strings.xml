@@ -160,6 +160,7 @@
     <string name="error_certificate_invalid">A tanúsítvány érvénytelen vagy elérhetetlen.</string>
     <string name="error_import_failed">Sikertelen importálás</string>
     <string name="httpErrorTimeout">Időtúllépés miatt megszakadt a kapcsolat a szerverrel.</string>
+    <string name="httpErrorRedirectLoop">Az oldal túl sok szerverátirányítást tartalmaz.</string>
     <string name="info_import_complete">Importálás befejezve</string>
     <string name="lbl_about">Névjegy</string>
     <string name="lbl_archive_format">Formátum</string>

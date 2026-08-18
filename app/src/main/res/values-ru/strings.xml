@@ -283,6 +283,7 @@
     <string name="httpErrorFile">Не удалось получить доступ к файлу.</string>
     <string name="httpErrorFileNotFound">Не удалось найти запрошенный файл.</string>
     <string name="httpErrorTimeout">Время ожидания соединения с сервером истекло.</string>
+    <string name="httpErrorRedirectLoop">Страница содержит слишком много перенаправлений сервера.</string>
     <string name="info_authorized">Авторизовано</string>
     <string name="option_moving_covers_from_x_to_y">Перенести все обложки из «%1$s» в «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Автоматически заполнить названия (ISFDB)</string>

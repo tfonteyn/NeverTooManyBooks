@@ -269,6 +269,9 @@ public final class ExMsg {
         } else if (e instanceof java.net.SocketTimeoutException) {
             return context.getString(R.string.httpErrorTimeout);
 
+        } else if (e instanceof java.net.ProtocolException) {
+            return context.getString(R.string.httpErrorRedirectLoop);
+
         } else if (e instanceof java.net.MalformedURLException
                    || e instanceof java.net.UnknownHostException) {
             return context.getString(R.string.error_unknown_host, e.getMessage())
