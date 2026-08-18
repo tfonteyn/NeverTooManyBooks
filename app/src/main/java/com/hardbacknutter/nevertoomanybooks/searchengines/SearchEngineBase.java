@@ -48,20 +48,20 @@ public class SearchEngineBase
         implements SearchEngine {
 
     @NonNull
-    private final SearchEngineConfig config;
-    /**
-     * Set by a client or from within the task.
-     * It's a <strong>request</strong> to cancel while running.
-     */
-    private final AtomicBoolean cancelRequested = new AtomicBoolean();
-
-    @NonNull
     protected final BookParserHelper bookParserHelper;
     @NonNull
     protected final HttpFutureFactory httpFutureFactory;
     @NonNull
     protected final HttpCallFactory httpCallFactory;
 
+    @NonNull
+    private final SearchEngineConfig config;
+    /**
+     * Set by a client or from within the task.
+     * It's a <strong>request</strong> to cancel while running.
+     */
+    private final AtomicBoolean cancelRequested = new AtomicBoolean();
+    /** Allows forwarding of cancellations. */
     @Nullable
     private Cancellable caller;
 
