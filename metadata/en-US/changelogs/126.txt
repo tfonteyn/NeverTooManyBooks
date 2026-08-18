@@ -3,11 +3,13 @@ NEW:
 - kb.nl supports ISSN searches
 - performance increase when swiping between books
 - Settings dialogs now follow user-settings for dialog/bottomsheet
+- the Calibre throttler can now be switched off
 
 FIXES:
 - fix the group book-count. This fixes in particular "Grouping on dates"
   and "Grouping on Series, then on Author" but is generic and valid
   for all similar situations.
+- fixed some minor ISBN/code validations
 - editing the bookshelves WHILE editing a book will now correctly
   rename/delete shelves on the book
 - popup menu/submenu on screen positioning fixed
