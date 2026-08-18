@@ -88,14 +88,15 @@ Translations are editable on [Weblate](https://hosted.weblate.org/engage/neverto
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in Settings/Search/Websites...
 
-> *WARNING:* Amazon and Goodreads are increasingly blocking access.
-> If you see any Amazon/Goodreads specific errors,
-> I suggest you switch off Amazon/Goodreads in Settings/Search/Websites and log a
+- **Amazon** with support for .com, .co.uk, .fr, .de, .nl, .com.be, .es sites.
+  Other sites *may* work.
+
+> *WARNING:* Amazon is increasingly blocking access.
+> If you see any Amazon specific errors, I suggest you switch off Amazon in
+> Settings/Search/Websites and log a
 > GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
 > explaining what went wrong.
-> 
-- **Amazon** with support for .com, .co.uk, .fr, .de, .nl, .com.be, .es sites. 
-  Other sites *may* work.
+
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **Bertrand.pt** (Portuguese and more; Shop)
 - **Biblionet.gr** (Greek; Catalogue)
@@ -105,7 +106,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **databazeknih.cz** (Czech and more; Catalogue)
 - **dnb.de** (German; Catalogue)
 - **Douban.com** (Chinese; Catalogue)
-- **Goodreads** (English and more; Catalogue)
+- ~~**Goodreads** (English and more; Catalogue)~~ is permanently blocking and will be removed in the next release.
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)

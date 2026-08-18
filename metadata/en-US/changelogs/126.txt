@@ -14,3 +14,6 @@ FIXES:
   rename/delete shelves on the book
 - popup menu/submenu on screen positioning fixed
 - tablets (10") display dialogs properly sized instead of too large / too small.
+
+REMOVED:
+- Goodreads. They use AWS WAF blocking. No solution.

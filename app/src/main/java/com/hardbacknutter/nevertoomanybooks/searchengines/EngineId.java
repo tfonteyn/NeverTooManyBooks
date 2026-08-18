@@ -144,7 +144,8 @@ public enum EngineId
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
     Dnb(DnbSearchEngine.class, true),
     Douban(DoubanSearchEngine.class, true),
-    Goodreads(GoodreadsSearchEngine.class, true),
+    // 2026-08-18: switched off due to AWS WAF blocks
+    Goodreads(GoodreadsSearchEngine.class, false),
     GoogleBooks(GoogleBooksSearchEngine.class, true),
     Isfdb(IsfdbSearchEngine.class, true),
     KbNl(KbNlSearchEngine.class, true),
