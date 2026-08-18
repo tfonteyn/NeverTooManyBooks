@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -776,7 +775,8 @@ public class BedethequeSearchEngine
                             @NonNull final Book book)
             throws StorageException {
         if (url != null && !url.isBlank()) {
-            saveImage(context, url, null, book.getRawProductCode(), cIdx, null).ifPresent(
+            final String bookId = book.getRawProductCode();
+            getHttpCallFactory().saveImage(url, null, bookId, cIdx, null).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));
         }
     }

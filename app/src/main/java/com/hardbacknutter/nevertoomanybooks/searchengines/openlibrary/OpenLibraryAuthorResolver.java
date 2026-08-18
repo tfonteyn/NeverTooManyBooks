@@ -128,7 +128,7 @@ public final class OpenLibraryAuthorResolver
         final Author found;
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         if (oIv.isPresent()) {
-            found = searchBySid(context, oIv.get());
+            found = searchBySid(oIv.get());
             if (found != null) {
                 boolean modified = author.merge(found, true);
                 if (author.isSameName(found) && !author.isIdenticalName(found)) {
@@ -139,7 +139,7 @@ public final class OpenLibraryAuthorResolver
                 return modified;
             }
         } else {
-            found = searchByName(context, author.getFormattedName(true));
+            found = searchByName(author.getFormattedName(true));
             // 2025-05-10: insist on case-sensitive name equality for now.
             // If this proves problematic, we'll change it later...
             if (found != null && author.isSameName(found)) {
@@ -154,7 +154,6 @@ public final class OpenLibraryAuthorResolver
      * As usual with OpenLibrary, the JSON returned here is (slightly) DIFFERENT
      * from the JSON returned in {@link #searchByName}. Sigh...
      *
-     * @param context Current context
      * @param sid     to search
      *
      * @return the {@link Author}; or {@code null} if not found
@@ -162,8 +161,7 @@ public final class OpenLibraryAuthorResolver
      * @throws SearchException on generic exceptions (wrapped) during search
      */
     @Nullable
-    private Author searchBySid(@NonNull final Context context,
-                               @NonNull final String sid)
+    private Author searchBySid(@NonNull final String sid)
             throws SearchException {
 
         final String url = String.format(OpenLibrarySearchEngine.AUTHOR_URL, sid) + ".json";
@@ -173,7 +171,7 @@ public final class OpenLibraryAuthorResolver
             final String response = httpCall.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
-                return authorParser.parse(context, document);
+                return authorParser.parse(document);
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
@@ -185,7 +183,6 @@ public final class OpenLibraryAuthorResolver
      * As usual with OpenLibrary, the JSON (docs[0]) returned here is (slightly) DIFFERENT
      * from the JSON returned in {@link #searchBySid}. Sigh...
      *
-     * @param context Current context
      * @param names   to search for
      *
      * @return the {@link Author}; or {@code null} if not found
@@ -193,8 +190,7 @@ public final class OpenLibraryAuthorResolver
      * @throws SearchException on generic exceptions (wrapped) during search
      */
     @Nullable
-    private Author searchByName(@NonNull final Context context,
-                                @NonNull final String names)
+    private Author searchByName(@NonNull final String names)
             throws SearchException {
 
         final FutureHttp<String> httpCall = searchEngine.createGetDocumentRequest();
@@ -210,7 +206,7 @@ public final class OpenLibraryAuthorResolver
                 }
                 final JSONArray docs = document.optJSONArray("docs");
                 if (docs != null && !docs.isEmpty()) {
-                    return authorParser.parse(context, docs.getJSONObject(0));
+                    return authorParser.parse(docs.getJSONObject(0));
                 }
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {

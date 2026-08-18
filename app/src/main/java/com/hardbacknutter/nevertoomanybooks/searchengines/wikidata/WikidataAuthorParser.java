@@ -110,8 +110,7 @@ class WikidataAuthorParser {
     }
 
     @Nullable
-    public Author parse(@NonNull final Context context,
-                        @NonNull final String langCode,
+    public Author parse(@NonNull final String langCode,
                         @NonNull final JSONObject document,
                         @NonNull final String sid)
             throws JSONException {
@@ -154,7 +153,9 @@ class WikidataAuthorParser {
         parseImage(claims).ifPresent(url -> {
             //noinspection OverlyBroadCatchBlock
             try {
-                searchEngine.saveImage(context, url, null, sid, 0, null)
+
+                searchEngine.getHttpCallFactory()
+                            .saveImage(url, null, sid, 0, null)
                             .ifPresent(fileSpec -> {
                                 author.setTmpPictureFileSpec(fileSpec);
                                 final Author realAuthor = author.getRealAuthor();

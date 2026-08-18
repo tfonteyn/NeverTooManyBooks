@@ -568,7 +568,7 @@ public class IsfdbSearchEngine
             if (isfdbId > 0) {
                 final Document document = loadDocumentByEdition(context, edition);
                 if (!isCancelled()) {
-                    return parseCover(context, document, String.valueOf(isfdbId), cIdx)
+                    return parseCover(document, String.valueOf(isfdbId), cIdx)
                             // let the system resolve any path variations
                             .map(fileSpec -> new File(fileSpec).getAbsolutePath());
                 }
@@ -1146,7 +1146,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
+            parseCover(document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -1341,7 +1341,6 @@ public class IsfdbSearchEngine
     /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context  Current context
      * @param document to parse
      * @param bookId   (optional) isbn or native id of the book,
      *                 will only be used for the temporary cover filename
@@ -1354,8 +1353,7 @@ public class IsfdbSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private Optional<String> parseCover(@NonNull final Context context,
-                                        @NonNull final Document document,
+    private Optional<String> parseCover(@NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                         @IntRange(from = 0, to = 0) final int cIdx)
@@ -1396,7 +1394,7 @@ public class IsfdbSearchEngine
             return Optional.empty();
         }
         final String url = img.attr("src");
-        return saveImage(context, url, null, bookId, cIdx, null);
+        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
     }
 
     /**
@@ -1568,14 +1566,13 @@ public class IsfdbSearchEngine
      * @return list of editions found, can be empty, but never {@code null}
      *
      * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
     private List<AltEditionIsfdb> fetchEditions(@NonNull final Context context,
                                                 @NonNull final String url,
                                                 @Nullable final ProductCode searchCode)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         final Document document = loadHtml(context, url, null);
 
@@ -1595,7 +1592,7 @@ public class IsfdbSearchEngine
     @NonNull
     private Document loadDocumentByEdition(@NonNull final Context context,
                                            @NonNull final AltEditionIsfdb edition)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         // check if we already got the page
         final Document document = edition.getDocument();
@@ -1817,7 +1814,8 @@ public class IsfdbSearchEngine
     private List<Book> fetchPublications(@NonNull final Context context,
                                          @NonNull final String url,
                                          @NonNull final boolean[] fetchCovers,
-                                         @SuppressWarnings("SameParameterValue") final int maxRecords)
+                                         @SuppressWarnings("SameParameterValue")
+                                             final int maxRecords)
             throws StorageException, SearchException {
 
         final IsfdbPublicationListHandler listHandler =

@@ -755,7 +755,7 @@ public class OpenLibrarySearchEngine
         // ]
         a = document.optJSONArray("covers");
         if (a != null && !a.isEmpty()) {
-            fetchCoverByCoverId(context, a, fetchCovers, book);
+            fetchCoverByCoverId(a, fetchCovers, book);
         }
     }
 
@@ -801,7 +801,7 @@ public class OpenLibrarySearchEngine
      *   ],
      *   "description": {
      *     "type": "/type/text",
-     *     "value": "We oftentimes look towards the outside world to find the roots of our problems. However, most of the times, we should be looking inwards. Our mind and our emotions determine our state of being in the present moment. If those aspects are left unchecked, we can get easily overwhelmed and are left feeling unfulfilled every single day. \r\n\r\nThis book contains two manuscripts designed to help you discover the best and most efficient way to control your thoughts and master your feelings.\r\n\r\nIn the first part of the bundle called Breaking Overthinking, you will discover:\r\n\r\nHow overthinking can be detrimental to your social life. \r\nThe hidden dangers of overthinking and what can happen to you if it’s left untreated. \r\nHow to declutter your mind from all the noise of the modern world. \r\nHow overthinking affects your body, your energy levels, and your everyday mood. \r\nHow your surroundings affect your state of mind, and what you NEED to do in order to break out of that state. \r\nBad habits we perform every day and don’t even realize are destroying our sanity (and how to overcome them properly). \r\nHow to cut out toxic people from your life, which cloud your judgment and make you feel miserable."
+     *     "value": "We oftentimes look towards the outside world to find ..."
      *   },
      *   "latest_revision": 13,
      *   "revision": 13,
@@ -878,7 +878,8 @@ public class OpenLibrarySearchEngine
                 // only grab the part before a comma
                 final String[] split = s.split(",");
                 if (split.length > 0) {
-                    bookParserHelper.addAuthor(Author.from(split[0]), AuthorRole.UNKNOWN, book, false);
+                    bookParserHelper.addAuthor(Author.from(split[0]),
+                                               AuthorRole.UNKNOWN, book, false);
                 }
             }
         }
@@ -1010,7 +1011,7 @@ public class OpenLibrarySearchEngine
         final String authorUrl = HOST_URL + key + ".json";
         final String response = loadDocument(authorUrl);
         final JSONObject document = new JSONObject(response);
-        final Author author = authorParser.parse(context, document);
+        final Author author = authorParser.parse(document);
         if (author != null) {
             bookParserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false);
         }
@@ -1393,8 +1394,7 @@ public class OpenLibrarySearchEngine
         }
     }
 
-    private void fetchCoverByCoverId(@NonNull final Context context,
-                                     @NonNull final JSONArray coverIds,
+    private void fetchCoverByCoverId(@NonNull final JSONArray coverIds,
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Book book)
             throws StorageException {
@@ -1405,7 +1405,7 @@ public class OpenLibrarySearchEngine
                 // We have seen cover id "-1", so check!
                 if (coverId > 0) {
                     final int finalCIdx = cIdx;
-                    searchBestCover(context, "id", String.valueOf(coverId), finalCIdx).ifPresent(
+                    searchBestCover("id", String.valueOf(coverId), finalCIdx).ifPresent(
                             fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
                 }
             }
@@ -1642,8 +1642,8 @@ public class OpenLibrarySearchEngine
      * <p>
      * {@inheritDoc}
      *
-     * @see #fetchImageByKey(Context, char, String, String, int, ImageWebSize)
-     * @see #searchBestCover(Context, String, String, int)
+     * @see #fetchImageByKey(char, String, String, int, ImageWebSize)
+     * @see #searchBestCover(String, String, int)
      */
     @SuppressWarnings("ChainOfInstanceofChecks")
     @Override
@@ -1660,7 +1660,7 @@ public class OpenLibrarySearchEngine
 
             // The cover should always be valid, but paranoia...
             if (covers.length >= cIdx && covers[cIdx] > 0) {
-                return fetchImageByKey(context, COVER_KEY_BOOK, "id",
+                return fetchImageByKey(COVER_KEY_BOOK, "id",
                                        String.valueOf(covers[cIdx]), cIdx, size);
             }
         } else if (altEdition instanceof AltEditionProductCode) {
@@ -1678,7 +1678,7 @@ public class OpenLibrarySearchEngine
             final String codeStr = productCode.getFormatted(getEngineId());
 
             // Frontcover only
-            return fetchImageByKey(context, COVER_KEY_BOOK, "isbn", codeStr, 0, size);
+            return fetchImageByKey(COVER_KEY_BOOK, "isbn", codeStr, 0, size);
         }
 
         return Optional.empty();
@@ -1687,7 +1687,6 @@ public class OpenLibrarySearchEngine
     /**
      * Search for the best cover using the given key/id values.
      *
-     * @param context Current context
      * @param key     to use for the search
      * @param id      value for the above key
      * @param cIdx    0..n image index
@@ -1697,19 +1696,18 @@ public class OpenLibrarySearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private Optional<String> searchBestCover(@NonNull final Context context,
-                                             @NonNull final String key,
+    private Optional<String> searchBestCover(@NonNull final String key,
                                              @NonNull final String id,
                                              @IntRange(from = 0, to = 3) final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
+        Optional<String> oFileSpec = fetchImageByKey(COVER_KEY_BOOK, key, id, cIdx,
                                                      ImageWebSize.Large);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
+            oFileSpec = fetchImageByKey(COVER_KEY_BOOK, key, id, cIdx,
                                         ImageWebSize.Medium);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
+                oFileSpec = fetchImageByKey(COVER_KEY_BOOK, key, id, cIdx,
                                             ImageWebSize.Small);
             }
         }
@@ -1719,7 +1717,6 @@ public class OpenLibrarySearchEngine
     /**
      * Common code to do the actual cover search.
      *
-     * @param context Current context
      * @param type    {@link #COVER_KEY_BOOK} for books, or {@link #COVER_KEY_AUTHOR} for authors
      *                There is NO check!
      * @param key     to use for the search
@@ -1732,8 +1729,7 @@ public class OpenLibrarySearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    Optional<String> fetchImageByKey(@NonNull final Context context,
-                                     final char type,
+    Optional<String> fetchImageByKey(final char type,
                                      @NonNull final String key,
                                      @NonNull final String id,
                                      @IntRange(from = 0, to = 3) final int cIdx,
@@ -1772,7 +1768,7 @@ public class OpenLibrarySearchEngine
         if ("isbn".equals(key)) {
             getConfig().getThrottler().waitUntilRequestAllowed(COVER_BY_ISBN_REQUEST_DELAY);
         }
-        return saveImage(context, url, null, id, cIdx, size);
+        return getHttpCallFactory().saveImage(url, null, id, cIdx, size);
     }
 
     @NonNull

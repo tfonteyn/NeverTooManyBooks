@@ -275,7 +275,7 @@ public class DnbSearchEngine
     @Override
     public Book searchByIssn(@NonNull final Context context,
                              @NonNull final BookSearchCriteria criteria)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         final ProductCode productCode = criteria.requireProductCode();
         final String codeStr = productCode.getDashFormattedIssn8(getEngineId());
@@ -389,7 +389,8 @@ public class DnbSearchEngine
         if (fetchCovers[0]) {
             final String url = COVER_URL + book.getRawProductCode();
             // No referer
-            saveImage(context, url, null, book.getRawProductCode(), 0, null)
+            final String bookId = book.getRawProductCode();
+            getHttpCallFactory().saveImage(url, null, bookId, 0, null)
                     .ifPresent(s -> CoverFileSpecArray.setFileSpec(book, 0, s));
         }
     }

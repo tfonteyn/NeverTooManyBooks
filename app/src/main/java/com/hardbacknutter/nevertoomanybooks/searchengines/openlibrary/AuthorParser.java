@@ -224,14 +224,12 @@ class AuthorParser {
      * }
      * </pre>
      *
-     * @param context  Current context
      * @param document to parse
      *
      * @return the author, or {@code null} on failure
      */
     @Nullable
-    Author parse(@NonNull final Context context,
-                 @NonNull final JSONObject document) {
+    Author parse(@NonNull final JSONObject document) {
         // As so often with OpenLibrary, the confusion starts at the very start...
 
         // This is seemingly the name as it would appear on a book
@@ -361,7 +359,7 @@ class AuthorParser {
         // We're NOT checking the "photos" key explicitly,
         // just try getting one using the OLID
         try {
-            searchEngine.fetchImageByKey(context, 'a', "OLID", sid, 0, null)
+            searchEngine.fetchImageByKey('a', "OLID", sid, 0, null)
                         .ifPresent(author::setTmpPictureFileSpec);
         } catch (@NonNull final StorageException ignore) {
             // ignore; keep in mind that OpenLibrary often fails to return images even

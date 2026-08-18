@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 
 /**
  * Bibliothèque nationale de France.
@@ -333,7 +332,7 @@ public class BnfSearchEngine
             if (fetchCovers[c]) {
                 final String url = String.format(COVER_URL, coverIds.get(c));
                 final int finalC = c;
-                saveImage(context, url, null, codeStr, c, null).ifPresent(
+                getHttpCallFactory().saveImage(url, null, codeStr, c, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, finalC, fileSpec));
             }
         }

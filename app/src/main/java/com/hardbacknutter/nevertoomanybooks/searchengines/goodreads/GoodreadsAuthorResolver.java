@@ -208,7 +208,9 @@ public final class GoodreadsAuthorResolver
             // will contain "/nophoto/" for none
             if (url.contains("/authors/")) {
                 try {
-                    searchEngine.saveImage(context, url, null, sid, 0, null)
+
+                    searchEngine.getHttpCallFactory()
+                                .saveImage(url, null, sid, 0, null)
                                 .ifPresent(author::setTmpPictureFileSpec);
                 } catch (@NonNull final StorageException ignore) {
                     // ignore

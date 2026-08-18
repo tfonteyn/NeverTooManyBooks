@@ -119,16 +119,16 @@ public class StripWebSearchEngine
      * Entries MUST all be lowercase.
      */
     private static final Set<String> TITLE_SUFFIXES =
-            Set.of( " - met ex libris - sc",
-                    " - met ex libris hc",
-                    " - met ex libris",
-                    " met ex libris sc",
-                    " + ex libris",
-                    " -vip club met ex libris",
-                    " + ex libris gesigneerd hc",
-                    // typo is from website!
-                    " + ex lbiris sc",
-                    " sc");
+            Set.of(" - met ex libris - sc",
+                   " - met ex libris hc",
+                   " - met ex libris",
+                   " met ex libris sc",
+                   " + ex libris",
+                   " -vip club met ex libris",
+                   " + ex libris gesigneerd hc",
+                   // typo is from website!
+                   " + ex lbiris sc",
+                   " sc");
 
     private static final String LANG_NLD = "nld";
     private static final String LANG_FRA = "fra";
@@ -485,7 +485,7 @@ public class StripWebSearchEngine
 
         if (fetchCovers[0]) {
             // start from 'main' !
-            parseCover(context, main, book.getRawProductCode(), 0).ifPresent(
+            parseCover(main, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -688,7 +688,6 @@ public class StripWebSearchEngine
     /**
      * Parses the given {@link Element} for the cover and fetches it when present.
      *
-     * @param context Current context
      * @param main    the "main.content" element to parse
      * @param bookId  (optional) isbn or native id of the book,
      *                will only be used for the temporary cover filename
@@ -700,8 +699,7 @@ public class StripWebSearchEngine
      */
     @WorkerThread
     @NonNull
-    private Optional<String> parseCover(@NonNull final Context context,
-                                        @NonNull final Element main,
+    private Optional<String> parseCover(@NonNull final Element main,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                             @IntRange(from = 0, to = 0) final int cIdx)
@@ -716,7 +714,7 @@ public class StripWebSearchEngine
         if (url.startsWith("/")) {
             url = HOST_URL + url;
         }
-        return saveImage(context, url, null, bookId, cIdx, null);
+        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
     }
 
     @Override

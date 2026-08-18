@@ -406,8 +406,9 @@ class IsfdbPublicationListHandler
                             imageUrl = "https:" + imageUrl.substring(5);
                         }
                         try {
-                            searchEngine.saveImage(context, imageUrl, null,
-                                                   book.getRawProductCode(), 0, null)
+                            final String bookId = book.getRawProductCode();
+                            searchEngine.getHttpCallFactory()
+                                        .saveImage(imageUrl, null, bookId, 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));
 

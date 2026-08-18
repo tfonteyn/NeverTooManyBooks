@@ -170,7 +170,7 @@ public class BedethequeAuthorResolver
         if (url != null && !url.isEmpty()) {
             final Document document = searchEngine.loadHtml(context, url, null);
             if (!searchEngine.isCancelled()) {
-                final Author found = parse(context, document);
+                final Author found = parse(document);
                 // We handle the check for name equality and the subsequent
                 // overwriting of the names different here as compared
                 // to other sites/resolvers.
@@ -273,15 +273,13 @@ public class BedethequeAuthorResolver
     /**
      * Parse the author details.
      *
-     * @param context  Current context
      * @param document to parse
      *
      * @return author, or {@code null} on failure
      */
     @VisibleForTesting
     @Nullable
-    Author parse(@NonNull final Context context,
-                 @NonNull final Document document) {
+    Author parse(@NonNull final Document document) {
 
         final Elements labels = document.select("div.auteur-infos ul.auteur-info label");
         if (labels.isEmpty()) {
@@ -382,7 +380,7 @@ public class BedethequeAuthorResolver
             realAuthor.setDeathDate(deathDate);
 
             @Nullable
-            final String pictureFileSpec = parseImage(context, document, sid).orElse(null);
+            final String pictureFileSpec = parseImage(document, sid).orElse(null);
             realAuthor.setTmpPictureFileSpec(pictureFileSpec);
 
             if (penName == null) {
@@ -462,7 +460,6 @@ public class BedethequeAuthorResolver
      *     }
      * </pre>
      *
-     * @param context  Current context
      * @param document to parse
      * @param bdtId    used for the temp filename
      *
@@ -470,16 +467,16 @@ public class BedethequeAuthorResolver
      */
     @WorkerThread
     @NonNull
-    private Optional<String> parseImage(@NonNull final Context context,
-                                        @NonNull final Document document,
+    private Optional<String> parseImage(@NonNull final Document document,
                                         final int bdtId) {
         final Element a = document.selectFirst("div.auteur-image a");
         if (a != null) {
             final String url = a.attr("href");
             if (!"https://www.bdgest.com/skin/nophoto.png".equals(url)) {
                 try {
-                    return searchEngine.saveImage(context, url, null,
-                                                  String.valueOf(bdtId), 0, null);
+                    final String bookId = String.valueOf(bdtId);
+                    return searchEngine.getHttpCallFactory()
+                                       .saveImage(url, null, bookId, 0, null);
                 } catch (@NonNull final StorageException ignore) {
                     // ignore
                 }

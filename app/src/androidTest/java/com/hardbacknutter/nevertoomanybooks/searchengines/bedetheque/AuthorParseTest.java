@@ -81,7 +81,7 @@ class AuthorParseTest
                 .R.raw.bedetheque_auteur_96_bd_leloup_roger;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Author author = resolver.parse(context, document);
+        final Author author = resolver.parse(document);
         assertNotNull(author);
         Log.d(TAG, author.toString());
         assertEquals("Leloup", author.getFamilyName());
@@ -106,7 +106,7 @@ class AuthorParseTest
                 .R.raw.bedetheque_auteur_97_bd_leo;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Author author = resolver.parse(context, document);
+        final Author author = resolver.parse(document);
         assertNotNull(author);
         assertEquals("Leo", author.getFamilyName());
         assertEquals("", author.getGivenNames());

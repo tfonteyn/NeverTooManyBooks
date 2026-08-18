@@ -23,11 +23,9 @@ import android.content.Context;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.net.CookieStore;
@@ -35,7 +33,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,8 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -219,32 +214,5 @@ public class SearchEngineBase
         // caller being null should only happen when we check if we're cancelled
         // before a search was started.
         return cancelRequested.get() || caller == null || caller.isCancelled();
-    }
-
-    /**
-     * Convenience method to save an image using the engines specific network configuration.
-     *
-     * @param context           Current context
-     * @param url               Image file URL
-     * @param requestProperties optional map
-     * @param bookId            more or less unique id; e.g. isbn or website native id, etc...
-     * @param cIdx              0..n image index
-     * @param size              (optional) size parameter for engines/sites which support one
-     *
-     * @return File fileSpec, or {@code Optional.empty()} on failure
-     *
-     * @throws CoverStorageException on storage related failures
-     */
-    @WorkerThread
-    @NonNull
-    public Optional<String> saveImage(@NonNull final Context context,
-                                      @NonNull final String url,
-                                      @Nullable final Map<String, String> headers,
-                                      @Nullable final String bookId,
-                                      @IntRange(from = 0, to = 3) final int cIdx,
-                                      @Nullable final ImageWebSize size)
-            throws CoverStorageException {
-
-        return getHttpCallFactory().saveImage(url, headers, bookId, cIdx, size);
     }
 }

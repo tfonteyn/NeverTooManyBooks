@@ -298,7 +298,7 @@ public final class IsfdbAuthorResolver
             }
         } else {
             // we're on a "real name" result page.
-            parseExtraData(context, root, author, sid);
+            parseExtraData(root, author, sid);
         }
 
         return author;
@@ -319,8 +319,7 @@ public final class IsfdbAuthorResolver
         return null;
     }
 
-    private void parseExtraData(@NonNull final Context context,
-                                @NonNull final Element root,
+    private void parseExtraData(@NonNull final Element root,
                                 @NonNull final Author author,
                                 @NonNull final String sid) {
 
@@ -334,7 +333,9 @@ public final class IsfdbAuthorResolver
         if (image != null) {
             final String imageUrl = image.attr("src");
             try {
-                searchEngine.saveImage(context, imageUrl, null, sid, 0, null)
+
+                searchEngine.getHttpCallFactory()
+                            .saveImage(imageUrl, null, sid, 0, null)
                             .ifPresent(author::setTmpPictureFileSpec);
             } catch (@NonNull final StorageException ignore) {
                 // ignore

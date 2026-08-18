@@ -263,7 +263,7 @@ public class BookFinderSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
+            parseCover(document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -288,7 +288,6 @@ public class BookFinderSearchEngine
     /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context  Current context
      * @param document to parse
      * @param bookId   (optional) isbn or native id of the book,
      *                 will only be used for the temporary cover filename
@@ -300,8 +299,7 @@ public class BookFinderSearchEngine
      */
     @WorkerThread
     @NonNull
-    private Optional<String> parseCover(@NonNull final Context context,
-                                        @NonNull final Document document,
+    private Optional<String> parseCover(@NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                             @IntRange(from = 0, to = 0) final int cIdx)
@@ -312,6 +310,6 @@ public class BookFinderSearchEngine
             return Optional.empty();
         }
         final String url = img.attr("src");
-        return saveImage(context, url, null, bookId, cIdx, null);
+        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
     }
 }

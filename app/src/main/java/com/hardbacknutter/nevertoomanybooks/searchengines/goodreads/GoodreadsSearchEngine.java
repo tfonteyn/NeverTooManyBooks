@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -156,7 +156,7 @@ public class GoodreadsSearchEngine
     private final AuthorRoleMapper authorRoleMapper;
     private final AuthorResolverHelper authorResolverHelper;
     @Nullable
-    private FutureHttp<String> httpCall;
+    private HttpCall httpCall;
 
     /**
      * Constructor.
@@ -357,10 +357,10 @@ public class GoodreadsSearchEngine
             throws StorageException, SearchException {
 
         final String url = String.format(GET_GOODREADS_ID, validIsbn);
-        httpCall = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpCallFactory.createCall();
 
         try {
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, null);
 
             final JSONArray responseArray = new JSONArray(response);
             if (!responseArray.isEmpty()) {
@@ -569,7 +569,8 @@ public class GoodreadsSearchEngine
         if (fetchCovers[0]) {
             final String url = o.optString("imageUrl");
             if (!url.isBlank()) {
-                saveImage(context, url, null, book.getRawProductCode(), 0, null).ifPresent(
+                final String bookId = book.getRawProductCode();
+                getHttpCallFactory().saveImage(url, null, bookId, 0, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
         }

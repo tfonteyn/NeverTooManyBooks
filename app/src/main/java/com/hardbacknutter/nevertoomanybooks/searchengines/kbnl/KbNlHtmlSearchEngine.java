@@ -640,7 +640,7 @@ public class KbNlHtmlSearchEngine
             final String codeStr = productCode.getFormatted(getEngineId());
 
             final String url = String.format(BASE_URL_COVERS, codeStr, sizeParam);
-            return saveImage(context, url, null, codeStr, cIdx, size);
+            return getHttpCallFactory().saveImage(url, null, codeStr, cIdx, size);
         }
         return Optional.empty();
     }

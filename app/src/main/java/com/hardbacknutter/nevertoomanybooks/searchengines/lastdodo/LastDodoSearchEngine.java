@@ -444,8 +444,7 @@ public class LastDodoSearchEngine
         return url;
     }
 
-    private void parseCovers(@NonNull final Context context,
-                             @NonNull final Document document,
+    private void parseCovers(@NonNull final Document document,
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
@@ -470,7 +469,8 @@ public class LastDodoSearchEngine
                 final String url = images.get(cIdx).attr("src")
                                          .replace("/ld_thumb1/", "/ld_medium/");
                 final int finalCIdx = cIdx;
-                saveImage(context, url, null, isbn, cIdx, null).ifPresent(
+
+                getHttpCallFactory().saveImage(url, null, isbn, cIdx, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
             }
         }
@@ -754,7 +754,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            parseCovers(context, document, book.getRawProductCode(), fetchCovers, book);
+            parseCovers(document, book.getRawProductCode(), fetchCovers, book);
         }
     }
 

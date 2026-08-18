@@ -679,7 +679,7 @@ public class DoubanSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
+            parseCover(document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -782,7 +782,6 @@ public class DoubanSearchEngine
     /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context  Current context
      * @param document to parse
      * @param bookId   (optional) isbn or native id of the book,
      *                 will only be used for the temporary cover filename
@@ -793,8 +792,7 @@ public class DoubanSearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private Optional<String> parseCover(@NonNull final Context context,
-                                        @NonNull final Document document,
+    private Optional<String> parseCover(@NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                             @IntRange(from = 0, to = 0) final int cIdx)
@@ -812,7 +810,8 @@ public class DoubanSearchEngine
         if (src.isEmpty()) {
             return Optional.empty();
         }
-        return saveImage(context, src, null, bookId, cIdx, null);
+
+        return getHttpCallFactory().saveImage(src, null, bookId, cIdx, null);
     }
 
     /**
@@ -864,7 +863,7 @@ public class DoubanSearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws SearchException, CredentialsException, StorageException {
+            throws SearchException, StorageException {
 
         if (altEdition instanceof AltEditionDouban) {
             final AltEditionDouban edition = (AltEditionDouban) altEdition;
@@ -873,7 +872,7 @@ public class DoubanSearchEngine
             if (bookUrl != null && !bookUrl.isEmpty()) {
                 final Document document = loadHtml(context, bookUrl, null);
                 if (!isCancelled()) {
-                    return parseCover(context, document, String.valueOf(edition.getSid()), cIdx)
+                    return parseCover(document, String.valueOf(edition.getSid()), cIdx)
                             // let the system resolve any path variations
                             .map(fileSpec -> new File(fileSpec).getAbsolutePath());
                 }
@@ -887,7 +886,7 @@ public class DoubanSearchEngine
             final String url = String.format(SEARCH_URL, codeStr);
             final Document document = loadHtml(context, url, null);
             if (!isCancelled()) {
-                return parseCover(context, document, codeStr, cIdx)
+                return parseCover(document, codeStr, cIdx)
                         // let the system resolve any path variations
                         .map(fileSpec -> new File(fileSpec).getAbsolutePath());
             }

@@ -73,7 +73,7 @@ class AuthorParseTest
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_author_ol20187a);
 
-        final Author author = authorParser.parse(context, document);
+        final Author author = authorParser.parse(document);
         assertNotNull(author);
         Log.d(TAG, author.toString());
 
@@ -108,7 +108,7 @@ class AuthorParseTest
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_author_ps_ol2677446a);
 
-        Author author = authorParser.parse(context, document);
+        Author author = authorParser.parse(document);
         assertNotNull(author);
         Log.d(TAG, author.toString());
 

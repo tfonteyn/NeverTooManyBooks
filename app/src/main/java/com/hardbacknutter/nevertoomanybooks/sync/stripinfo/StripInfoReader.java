@@ -329,7 +329,8 @@ public class StripInfoReader
             if (coversWanted[0]) {
                 final String url = dataToMerge.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
                 if (url != null && !url.isEmpty()) {
-                    searchEngine.saveImage(context, url, null, externalId, 0, null)
+                    searchEngine.getHttpCallFactory()
+                                .saveImage(url, null, externalId, 0, null)
                                 .ifPresent(fileSpec -> dataToMerge
                                         .putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec));
                 }

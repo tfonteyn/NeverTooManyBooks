@@ -161,19 +161,18 @@ public final class DatabazeKnihAuthorResolver
     @Nullable
     private Author searchBySid(@NonNull final Context context,
                                @NonNull final String sid)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         final String url = String.format(DatabazeKnihSearchEngine.AUTHOR_URL, sid);
         final Document document = searchEngine.loadHtml(context, url, null);
         if (!searchEngine.isCancelled()) {
-            return parse(context, document, sid);
+            return parse(document, sid);
         }
         return null;
     }
 
     @Nullable
-    private Author parse(@NonNull final Context context,
-                         @NonNull final Document document,
+    private Author parse(@NonNull final Document document,
                          @NonNull final String sid) {
         final Element section = document.selectFirst("div.gridMain");
         if (section == null) {
@@ -193,9 +192,9 @@ public final class DatabazeKnihAuthorResolver
         final Element pseudonymElement = section.selectFirst("h2");
         if (pseudonymElement != null) {
             final Element a = pseudonymElement.selectFirst("a[href^=/vydane-knihy-pseudonym/]");
-                if (a != null) {
-                    pseudonym = a.text();
-                }
+            if (a != null) {
+                pseudonym = a.text();
+            }
         }
 
         final Author author;
@@ -241,7 +240,8 @@ public final class DatabazeKnihAuthorResolver
                 final String url = parts[1];
                 if (!url.contains("empty-author") && !url.contains("antologie-kolektiv-autoru")) {
                     try {
-                        searchEngine.saveImage(context, url, null, sid, 0, null)
+                        searchEngine.getHttpCallFactory()
+                                    .saveImage(url, null, sid, 0, null)
                                     .ifPresent(fileSpec -> {
                                         author.setTmpPictureFileSpec(fileSpec);
                                         if (realAuthor != null) {

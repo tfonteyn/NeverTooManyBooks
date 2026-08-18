@@ -311,7 +311,8 @@ public class BertrandPtSearchEngine
                       .map(SearchEngineUtils::cleanName)
                       .filter(name -> !name.isBlank())
                       .map(Author::from)
-                      .forEach(author -> bookParserHelper.addAuthor(author, AuthorRole.UNKNOWN, book, false));
+                      .forEach(author -> bookParserHelper
+                              .addAuthor(author, AuthorRole.UNKNOWN, book, false));
 
         Element element;
 
@@ -438,7 +439,7 @@ public class BertrandPtSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCovers(context, document, book.getRawProductCode(), 0).ifPresent(
+            parseCovers(document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -446,7 +447,6 @@ public class BertrandPtSearchEngine
     /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context  Current context
      * @param document to parse
      * @param bookId   (optional) isbn or native id of the book,
      *                 will only be used for the temporary cover filename
@@ -459,8 +459,7 @@ public class BertrandPtSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private Optional<String> parseCovers(@NonNull final Context context,
-                                         @NonNull final Document document,
+    private Optional<String> parseCovers(@NonNull final Document document,
                                          @Nullable final String bookId,
                                          @SuppressWarnings("SameParameterValue")
                                              @IntRange(from = 0, to = 0) final int cIdx)
@@ -471,7 +470,7 @@ public class BertrandPtSearchEngine
             return Optional.empty();
         }
         final String url = img.attr("src");
-        return saveImage(context, url, null, bookId, cIdx, null);
+        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
     }
 
     @Override

@@ -712,7 +712,7 @@ public class StripInfoSearchEngine
 
         // front cover
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
+            parseCover(document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
 
@@ -722,7 +722,7 @@ public class StripInfoSearchEngine
 
         // back cover
         if (fetchCovers[1]) {
-            parseCover(context, document, book.getRawProductCode(), 1).ifPresent(
+            parseCover(document, book.getRawProductCode(), 1).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 1, fileSpec));
         }
     }
@@ -760,7 +760,6 @@ public class StripInfoSearchEngine
     /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context  Current context
      * @param document to parse
      * @param bookId   (optional) isbn or native id of the book,
      *                 will only be used for the temporary cover filename
@@ -772,8 +771,7 @@ public class StripInfoSearchEngine
      */
     @WorkerThread
     @NonNull
-    private Optional<String> parseCover(@NonNull final Context context,
-                                        @NonNull final Document document,
+    private Optional<String> parseCover(@NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                         @IntRange(from = 0, to = 1) final int cIdx)
@@ -795,14 +793,13 @@ public class StripInfoSearchEngine
         if (url == null) {
             return Optional.empty();
         }
-        return saveCover(context, url, bookId, cIdx);
+        return saveCover(url, bookId, cIdx);
 
     }
 
     /**
      * Download the given cover index.
      *
-     * @param context Current context
      * @param url     location
      * @param bookId  (optional) isbn or native id of the book,
      *                will only be used for the temporary cover filename
@@ -814,8 +811,7 @@ public class StripInfoSearchEngine
      */
     @WorkerThread
     @NonNull
-    private Optional<String> saveCover(@NonNull final Context context,
-                                       @NonNull final String url,
+    private Optional<String> saveCover(@NonNull final String url,
                                        @Nullable final String bookId,
                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
@@ -826,7 +822,8 @@ public class StripInfoSearchEngine
         // in place to guard against website changes.
         if (!url.isEmpty() && !url.endsWith("i=0") && !url.endsWith("mature.png")) {
 
-            final Optional<String> oFileSpec = saveImage(context, url, null, bookId, cIdx, null);
+            final Optional<String> oFileSpec = getHttpCallFactory()
+                    .saveImage(url, null, bookId, cIdx, null);
             if (oFileSpec.isPresent()) {
                 // Some back covers will return the "no cover available" image regardless.
                 // Sadly, we need to check explicitly after the download.

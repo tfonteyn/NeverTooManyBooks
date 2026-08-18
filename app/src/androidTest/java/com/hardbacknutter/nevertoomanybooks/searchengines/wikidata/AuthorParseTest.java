@@ -72,7 +72,7 @@ class AuthorParseTest
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.wikidata_author_q42);
 
-        final Author author = authorParser.parse(context, "en", document, "Q42");
+        final Author author = authorParser.parse("en", document, "Q42");
         assertNotNull(author);
         Log.d(TAG, author.toString());
 

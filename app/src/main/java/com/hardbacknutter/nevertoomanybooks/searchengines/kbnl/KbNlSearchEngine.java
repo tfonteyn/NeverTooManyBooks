@@ -40,7 +40,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -414,7 +413,7 @@ public class KbNlSearchEngine
             final ProductCode productCode = edition.getCode();
             final String codeStr = productCode.getFormatted(getEngineId());
             final String url = String.format(BASE_URL_COVERS, codeStr, sizeParam);
-            return saveImage(context, url, null, codeStr, cIdx, size);
+            return getHttpCallFactory().saveImage(url, null, codeStr, cIdx, size);
         }
         return Optional.empty();
     }

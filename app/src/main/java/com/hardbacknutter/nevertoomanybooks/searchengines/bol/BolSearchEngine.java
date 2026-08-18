@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
@@ -319,7 +318,6 @@ public class BolSearchEngine
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book         to update
      *
-     * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
@@ -329,7 +327,7 @@ public class BolSearchEngine
                              @NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException {
 
         final String url = parseMultiResult(document);
         if (url == null) {
@@ -478,7 +476,7 @@ public class BolSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCoversFromJson(context, root, document, fetchCovers, book);
+            parseCoversFromJson(root, document, fetchCovers, book);
         }
     }
 
@@ -744,7 +742,7 @@ public class BolSearchEngine
         parsePrice(document, book);
 
         if (fetchCovers[0]) {
-            parseCoversFromHtml(context, document, fetchCovers, book);
+            parseCoversFromHtml(document, fetchCovers, book);
         }
     }
 
@@ -832,7 +830,6 @@ public class BolSearchEngine
     /**
      * Parse the document for cover images.
      *
-     * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
@@ -840,8 +837,7 @@ public class BolSearchEngine
      *
      * @throws StorageException on storage related failures
      */
-    private void parseCoversFromHtml(@NonNull final Context context,
-                                     @NonNull final Document document,
+    private void parseCoversFromHtml(@NonNull final Document document,
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Book book)
             throws StorageException {
@@ -854,11 +850,10 @@ public class BolSearchEngine
             return;
         }
         final String url = frontCoverImg.attr("src");
-        commonParseCovers(context, document, fetchCovers, url, book);
+        commonParseCovers(document, fetchCovers, url, book);
     }
 
-    private void parseCoversFromJson(@NonNull final Context context,
-                                     @NonNull final JSONObject root,
+    private void parseCoversFromJson(@NonNull final JSONObject root,
                                      @NonNull final Document document,
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Book book)
@@ -869,7 +864,7 @@ public class BolSearchEngine
         final JSONObject imageJson = root.optJSONObject("image");
         if (imageJson != null) {
             final String url = imageJson.optString("url");
-            commonParseCovers(context, document, fetchCovers, url, book);
+            commonParseCovers(document, fetchCovers, url, book);
         }
     }
 
@@ -880,7 +875,6 @@ public class BolSearchEngine
      * The front cover url is passed in as that can come either from the json parser
      * or from the html parser.
      *
-     * @param context       Current context
      * @param document      to parse
      * @param fetchCovers   Set array indexes to {@code true} to fetch a cover for that index.
      *                      Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
@@ -889,8 +883,7 @@ public class BolSearchEngine
      *
      * @throws StorageException on storage related failures
      */
-    private void commonParseCovers(@NonNull final Context context,
-                                   @NonNull final Document document,
+    private void commonParseCovers(@NonNull final Document document,
                                    @NonNull final boolean[] fetchCovers,
                                    @NonNull final String frontCoverUrl,
                                    @NonNull final Book book)
@@ -901,8 +894,9 @@ public class BolSearchEngine
         }
 
         final String codeStr = book.getRawProductCode();
-        final Optional<String> oFileSpec = saveImage(context, frontCoverUrl, null,
-                                                     codeStr, 0, null);
+
+        final Optional<String> oFileSpec = getHttpCallFactory()
+                .saveImage(frontCoverUrl, null, codeStr, 0, null);
         if (oFileSpec.isEmpty()) {
             return;
         }
@@ -921,7 +915,8 @@ public class BolSearchEngine
         if (url.isEmpty()) {
             return;
         }
-        saveImage(context, url, null, codeStr, 1, null).ifPresent(
+
+        getHttpCallFactory().saveImage(url, null, codeStr, 1, null).ifPresent(
                 fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
     }
 

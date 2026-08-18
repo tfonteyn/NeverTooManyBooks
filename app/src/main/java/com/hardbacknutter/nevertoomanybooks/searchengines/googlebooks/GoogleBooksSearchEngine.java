@@ -481,7 +481,7 @@ public class GoogleBooksSearchEngine
 
         final JSONObject imageLinks = volumeInfo.optJSONObject("imageLinks");
         if (imageLinks != null && fetchCovers[0]) {
-            searchBestCover(context, imageLinks, book.getRawProductCode()).ifPresent(
+            searchBestCover(imageLinks, book.getRawProductCode()).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -625,16 +625,15 @@ public class GoogleBooksSearchEngine
     }
 
     @NonNull
-    private Optional<String> searchBestCover(@NonNull final Context context,
-                                             @NonNull final JSONObject imageLinks,
+    private Optional<String> searchBestCover(@NonNull final JSONObject imageLinks,
                                              @NonNull final String isbn)
             throws StorageException {
 
-        Optional<String> oFileSpec = searchCover(context, imageLinks, ImageWebSize.Large, isbn);
+        Optional<String> oFileSpec = searchCover(imageLinks, ImageWebSize.Large, isbn);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = searchCover(context, imageLinks, ImageWebSize.Medium, isbn);
+            oFileSpec = searchCover(imageLinks, ImageWebSize.Medium, isbn);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = searchCover(context, imageLinks, ImageWebSize.Small, isbn);
+                oFileSpec = searchCover(imageLinks, ImageWebSize.Small, isbn);
             }
         }
         return oFileSpec;
@@ -643,7 +642,6 @@ public class GoogleBooksSearchEngine
     /**
      * Common code to do the actual cover search.
      *
-     * @param context    Current context
      * @param imageLinks the list (JSON object) with image links
      * @param size       of image to get.
      * @param isbn       of the book
@@ -653,8 +651,7 @@ public class GoogleBooksSearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private Optional<String> searchCover(@NonNull final Context context,
-                                         @NonNull final JSONObject imageLinks,
+    private Optional<String> searchCover(@NonNull final JSONObject imageLinks,
                                          @NonNull final ImageWebSize size,
                                          @NonNull final String isbn)
             throws StorageException {
@@ -693,7 +690,7 @@ public class GoogleBooksSearchEngine
         }
 
         if (oUrl.isPresent()) {
-            return saveImage(context, oUrl.get(), null, isbn, 0, size);
+            return getHttpCallFactory().saveImage(oUrl.get(), null, isbn, 0, size);
         }
         return Optional.empty();
     }
