@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -42,24 +41,14 @@ public class ImageRequestFactoryDefault
      *
      * @param acceptLanguageHeader to use
      */
-    ImageRequestFactoryDefault(@NonNull final String acceptLanguageHeader) {
+    public ImageRequestFactoryDefault(@NonNull final String acceptLanguageHeader) {
         this.acceptLanguageHeader = acceptLanguageHeader;
     }
 
-    /**
-     * Create a suitable {@code GET} {@link Request}.
-     *
-     * @param urlStr            to use
-     * @param requestProperties (optional) extra headers to add/override
-
-     *
-     * @return new {@code GET} request instance
-     *
-     * @throws MalformedURLException on url errors
-     */
+    @Override
     @NonNull
     public Request createRequest(@NonNull final String urlStr,
-                                 @Nullable final Map<String, String> requestProperties)
+                                 @Nullable final Map<String, String> headers)
             throws MalformedURLException {
 
         // Host: www.gstatic.com
@@ -102,8 +91,8 @@ public class ImageRequestFactoryDefault
                         HttpConstants.SEC_FETCH_SITE_NONE);
 
         // add or override
-        if (requestProperties != null) {
-            requestProperties.forEach(builder::header);
+        if (headers != null) {
+            headers.forEach(builder::header);
         }
 
         return builder.build();

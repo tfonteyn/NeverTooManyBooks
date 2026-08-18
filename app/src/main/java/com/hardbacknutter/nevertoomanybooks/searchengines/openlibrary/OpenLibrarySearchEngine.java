@@ -1776,7 +1776,7 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    public <T> FutureHttp<T> createGetDocumentRequest() {
+    <T> FutureHttp<T> createGetDocumentRequest() {
         final FutureHttp<T> request = httpFutureFactory.createGetDocumentRequest();
         request.setEnable404Redirect(true);
 
@@ -1791,7 +1791,7 @@ public class OpenLibrarySearchEngine
         @NonNull
         @Override
         public Request createRequest(@NonNull final String urlStr,
-                                     @Nullable final Map<String, String> requestProperties) {
+                                     @Nullable final Map<String, String> /* ignored */ headers) {
 
             // Host, Connection, Accept-Encoding are added by OkHttp
             return new Request.Builder().url(urlStr).build();

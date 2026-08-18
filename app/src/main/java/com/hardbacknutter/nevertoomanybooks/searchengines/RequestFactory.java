@@ -34,8 +34,8 @@ public interface RequestFactory {
     /**
      * Create a suitable {@code GET} {@link Request}.
      *
-     * @param urlStr            to use
-     * @param requestProperties (optional) extra headers to add/override
+     * @param urlStr  to fetch
+     * @param headers (optional) extra headers to add/override
      *
      * @return new {@code GET} request instance
      *
@@ -43,6 +43,6 @@ public interface RequestFactory {
      */
     @NonNull
     Request createRequest(@NonNull String urlStr,
-                          @Nullable Map<String, String> requestProperties)
+                          @Nullable Map<String, String> headers)
             throws MalformedURLException;
 }
