@@ -228,6 +228,7 @@
       <option name="exceptions">
         <list>
           <option value="java.lang.UnsupportedOperationException" />
+          <option value="java.util.concurrent.CancellationException" />
         </list>
       </option>
     </inspection_tool>
