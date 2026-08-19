@@ -190,6 +190,8 @@ public enum EngineId
 
     @NonNull
     private final Locale defaultLocale;
+    @Nullable
+    private final String charSetName;
 
     /** The implementation class for this engine. */
     @NonNull
@@ -243,6 +245,7 @@ public enum EngineId
         this.infoResIdList = builder.infoResIdList;
         this.defaultUrl = builder.defaultSearchUrl;
         this.defaultLocale = builder.defaultLocale;
+        this.charSetName = builder.charSetName;
 
         this.identifierKeys = builder.identifierKeys;
         this.multipleCoverSizes = builder.multipleCoverSizes;
@@ -536,6 +539,17 @@ public enum EngineId
     }
 
     /**
+     * Get the character set for parsing.
+     * Default is {@code null} for automatic detection or fallback to UTF-8..
+     *
+     * @return charSetName
+     */
+    @Nullable
+    public String getCharSetName() {
+        return charSetName;
+    }
+
+    /**
      * Get the {@link Identifier} key for the given type.
      *
      * @param type of key to get
@@ -674,6 +688,9 @@ public enum EngineId
         @NonNull
         private final Locale defaultLocale;
 
+        @Nullable
+        private String charSetName;
+
         private final Map<Identifier.EntityType, String> identifierKeys =
                 new EnumMap<>(Identifier.EntityType.class);
 
@@ -719,6 +736,21 @@ public enum EngineId
             return this;
         }
 
+        /**
+         * Set the character set for parsing.
+         * Default is {@code null} for automatic detection or fallback to UTF-8..
+         * <p>
+         * Only needed of the sites character set does not match the actual used one.
+         *
+         * @param charSetName to use; or {@code null} to auto-select.
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setCharSetName(@Nullable final String charSetName) {
+            this.charSetName = charSetName;
+            return this;
+        }
 
         /**
          * Set the {@link Identifier} key for the website specific identifier.

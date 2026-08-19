@@ -317,8 +317,6 @@ public class IsfdbSearchEngine
     public IsfdbSearchEngine(@NonNull final Context context,
                              @NonNull final SearchEngineConfig config) {
         super(context, config);
-        setCharSetName(CHARSET_DECODE_PAGE);
-
         authorResolverHelper = new AuthorResolverHelper();
     }
 
@@ -340,6 +338,7 @@ public class IsfdbSearchEngine
                                             R.string.site_description_fsf),
                                     HOST_URL,
                                     HOST_LOCALE)
+                .setCharSetName(CHARSET_DECODE_PAGE)
                 .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class)
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_ISFDB)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_ISFDB)
