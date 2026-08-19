@@ -390,7 +390,7 @@ public class DnbSearchEngine
             final String url = COVER_URL + book.getRawProductCode();
             // No referer
             final String bookId = book.getRawProductCode();
-            getHttpCallFactory().saveImage(url, null, bookId, 0, null)
+            httpCallFactory.saveImage(url, null, bookId, 0, null)
                     .ifPresent(s -> CoverFileSpecArray.setFileSpec(book, 0, s));
         }
     }

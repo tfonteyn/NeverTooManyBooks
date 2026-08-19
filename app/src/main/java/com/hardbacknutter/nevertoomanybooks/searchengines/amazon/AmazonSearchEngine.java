@@ -909,7 +909,7 @@ public class AmazonSearchEngine
             url = srcUrl;
         }
 
-        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
+        return httpCallFactory.saveImage(url, null, bookId, cIdx, null);
     }
 
     @Override

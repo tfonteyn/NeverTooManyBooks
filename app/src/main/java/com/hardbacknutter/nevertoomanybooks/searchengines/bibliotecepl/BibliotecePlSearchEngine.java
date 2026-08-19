@@ -939,6 +939,6 @@ public class BibliotecePlSearchEngine
             url = "https:" + url;
         }
 
-        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
+        return httpCallFactory.saveImage(url, null, bookId, cIdx, null);
     }
 }

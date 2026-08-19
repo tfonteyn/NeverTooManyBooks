@@ -895,7 +895,7 @@ public class BolSearchEngine
 
         final String codeStr = book.getRawProductCode();
 
-        final Optional<String> oFileSpec = getHttpCallFactory()
+        final Optional<String> oFileSpec = httpCallFactory
                 .saveImage(frontCoverUrl, null, codeStr, 0, null);
         if (oFileSpec.isEmpty()) {
             return;
@@ -916,7 +916,7 @@ public class BolSearchEngine
             return;
         }
 
-        getHttpCallFactory().saveImage(url, null, codeStr, 1, null).ifPresent(
+        httpCallFactory.saveImage(url, null, codeStr, 1, null).ifPresent(
                 fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
     }
 

@@ -1768,7 +1768,7 @@ public class OpenLibrarySearchEngine
         if ("isbn".equals(key)) {
             getConfig().getThrottler().waitUntilRequestAllowed(COVER_BY_ISBN_REQUEST_DELAY);
         }
-        return getHttpCallFactory().saveImage(url, null, id, cIdx, size);
+        return httpCallFactory.saveImage(url, null, id, cIdx, size);
     }
 
     @NonNull

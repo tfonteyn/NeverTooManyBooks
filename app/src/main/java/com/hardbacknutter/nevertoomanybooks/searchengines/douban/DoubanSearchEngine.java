@@ -811,7 +811,7 @@ public class DoubanSearchEngine
             return Optional.empty();
         }
 
-        return getHttpCallFactory().saveImage(src, null, bookId, cIdx, null);
+        return httpCallFactory.saveImage(src, null, bookId, cIdx, null);
     }
 
     /**

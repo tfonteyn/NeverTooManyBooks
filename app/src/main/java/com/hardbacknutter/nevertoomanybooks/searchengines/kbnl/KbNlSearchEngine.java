@@ -413,7 +413,7 @@ public class KbNlSearchEngine
             final ProductCode productCode = edition.getCode();
             final String codeStr = productCode.getFormatted(getEngineId());
             final String url = String.format(BASE_URL_COVERS, codeStr, sizeParam);
-            return getHttpCallFactory().saveImage(url, null, codeStr, cIdx, size);
+            return httpCallFactory.saveImage(url, null, codeStr, cIdx, size);
         }
         return Optional.empty();
     }

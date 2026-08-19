@@ -470,7 +470,7 @@ public class BertrandPtSearchEngine
             return Optional.empty();
         }
         final String url = img.attr("src");
-        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
+        return httpCallFactory.saveImage(url, null, bookId, cIdx, null);
     }
 
     @Override

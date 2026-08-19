@@ -332,7 +332,7 @@ public class BnfSearchEngine
             if (fetchCovers[c]) {
                 final String url = String.format(COVER_URL, coverIds.get(c));
                 final int finalC = c;
-                getHttpCallFactory().saveImage(url, null, codeStr, c, null).ifPresent(
+                httpCallFactory.saveImage(url, null, codeStr, c, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, finalC, fileSpec));
             }
         }

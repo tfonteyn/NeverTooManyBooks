@@ -822,7 +822,7 @@ public class StripInfoSearchEngine
         // in place to guard against website changes.
         if (!url.isEmpty() && !url.endsWith("i=0") && !url.endsWith("mature.png")) {
 
-            final Optional<String> oFileSpec = getHttpCallFactory()
+            final Optional<String> oFileSpec = httpCallFactory
                     .saveImage(url, null, bookId, cIdx, null);
             if (oFileSpec.isPresent()) {
                 // Some back covers will return the "no cover available" image regardless.

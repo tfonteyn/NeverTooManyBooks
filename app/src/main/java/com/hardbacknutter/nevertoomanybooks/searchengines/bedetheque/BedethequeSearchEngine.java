@@ -776,7 +776,7 @@ public class BedethequeSearchEngine
             throws StorageException {
         if (url != null && !url.isBlank()) {
             final String bookId = book.getRawProductCode();
-            getHttpCallFactory().saveImage(url, null, bookId, cIdx, null).ifPresent(
+            httpCallFactory.saveImage(url, null, bookId, cIdx, null).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));
         }
     }

@@ -470,7 +470,7 @@ public class LastDodoSearchEngine
                                          .replace("/ld_thumb1/", "/ld_medium/");
                 final int finalCIdx = cIdx;
 
-                getHttpCallFactory().saveImage(url, null, isbn, cIdx, null).ifPresent(
+                httpCallFactory.saveImage(url, null, isbn, cIdx, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
             }
         }

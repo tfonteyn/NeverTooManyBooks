@@ -690,7 +690,7 @@ public class GoogleBooksSearchEngine
         }
 
         if (oUrl.isPresent()) {
-            return getHttpCallFactory().saveImage(oUrl.get(), null, isbn, 0, size);
+            return httpCallFactory.saveImage(oUrl.get(), null, isbn, 0, size);
         }
         return Optional.empty();
     }

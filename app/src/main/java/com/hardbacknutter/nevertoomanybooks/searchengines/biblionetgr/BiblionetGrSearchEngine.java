@@ -763,7 +763,7 @@ public class BiblionetGrSearchEngine
             url = HOST_URL + url;
         }
 
-        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
+        return httpCallFactory.saveImage(url, null, bookId, cIdx, null);
     }
 
     private static final class MoneyParserLocaleResolver

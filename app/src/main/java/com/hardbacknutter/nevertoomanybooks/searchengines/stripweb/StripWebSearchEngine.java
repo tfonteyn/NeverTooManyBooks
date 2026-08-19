@@ -714,7 +714,7 @@ public class StripWebSearchEngine
         if (url.startsWith("/")) {
             url = HOST_URL + url;
         }
-        return getHttpCallFactory().saveImage(url, null, bookId, cIdx, null);
+        return httpCallFactory.saveImage(url, null, bookId, cIdx, null);
     }
 
     @Override

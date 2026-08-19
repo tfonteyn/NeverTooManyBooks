@@ -570,7 +570,7 @@ public class GoodreadsSearchEngine
             final String url = o.optString("imageUrl");
             if (!url.isBlank()) {
                 final String bookId = book.getRawProductCode();
-                getHttpCallFactory().saveImage(url, null, bookId, 0, null).ifPresent(
+                httpCallFactory.saveImage(url, null, bookId, 0, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
         }
