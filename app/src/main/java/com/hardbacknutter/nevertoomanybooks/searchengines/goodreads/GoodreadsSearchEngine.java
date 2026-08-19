@@ -60,8 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -85,7 +85,7 @@ import org.jsoup.nodes.Element;
  * https://www.mobileread.com/forums/showpost.php?p=4591998&postcount=821
  */
 public class GoodreadsSearchEngine
-        extends JsoupSearchEngineBase
+        extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId {

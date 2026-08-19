@@ -49,8 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.RequestFactory;
-import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -74,7 +74,7 @@ import okhttp3.Request;
  *         ZDB explain record</a>
  */
 public class DnbSearchEngine
-        extends JsoupSearchEngineBase
+        extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByIssn,
                    SearchEngine.ByText,

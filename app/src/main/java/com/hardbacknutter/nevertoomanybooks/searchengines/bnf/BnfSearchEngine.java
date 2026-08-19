@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -59,7 +59,7 @@ import org.jsoup.nodes.Document;
  * <a href="https://www.bnf.fr">"https://www.bnf.fr</a>
  */
 public class BnfSearchEngine
-        extends JsoupSearchEngineBase
+        extends SearchEngineBase
         implements SearchEngine.ByIssn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode,

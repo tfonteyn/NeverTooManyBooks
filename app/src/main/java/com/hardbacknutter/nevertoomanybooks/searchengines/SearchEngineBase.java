@@ -26,6 +26,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.net.CookieStore;
@@ -33,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
+
+import org.jsoup.nodes.Document;
 
 public class SearchEngineBase
         implements SearchEngine {
@@ -198,6 +202,54 @@ public class SearchEngineBase
     @NonNull
     public HttpCallFactory getHttpCallFactory() {
         return httpCallFactory;
+    }
+
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an HTML parser.
+     *
+     * @param context Current context
+     * @param url     to load
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws SearchException on generic exceptions (wrapped) during search
+     */
+    @WorkerThread
+    @NonNull
+    public Document loadHtml(@NonNull final Context context,
+                             @NonNull final String url,
+                             @Nullable final Map<String, String> headers)
+            throws SearchException {
+        try {
+            return httpFutureFactory.loadHtml(context, url, headers);
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getEngineId(), e);
+        }
+    }
+
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an XML parser.
+     *
+     * @param context Current context
+     * @param url     to load
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws SearchException on generic exceptions (wrapped) during search
+     */
+    @WorkerThread
+    @NonNull
+    public Document loadXml(@NonNull final Context context,
+                            @NonNull final String url,
+                            @Nullable final Map<String, String> headers)
+            throws SearchException {
+        try {
+            return httpFutureFactory.loadXml(context, url, headers);
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getEngineId(), e);
+        }
     }
 
     @Override

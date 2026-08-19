@@ -50,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -65,7 +65,7 @@ import org.jsoup.select.Elements;
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>.
  */
 public class KbNlHtmlSearchEngine
-        extends JsoupSearchEngineBase
+        extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByEdition {
 

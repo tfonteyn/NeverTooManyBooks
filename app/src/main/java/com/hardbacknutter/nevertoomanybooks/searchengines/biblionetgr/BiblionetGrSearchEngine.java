@@ -59,9 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -81,7 +81,7 @@ import org.jsoup.select.Elements;
  * Currently (2025-12) no identifiers are supported.
  */
 public class BiblionetGrSearchEngine
-        extends JsoupSearchEngineBase
+        extends SearchEngineBase
         implements SearchEngine.ByIsbn {
 
     /** {@link SearchEngineConfig#getHostUrl()}. */
