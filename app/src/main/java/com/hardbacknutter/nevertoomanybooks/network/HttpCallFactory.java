@@ -76,12 +76,18 @@ public final class HttpCallFactory {
     @NonNull
     private final String acceptLanguageHeader;
 
+    @Nullable
+    private final String charSetName;
     @NonNull
     private final String imageFilenamePrefix;
 
     /** Lazy created in {@link #getHttpClient()}. */
     @Nullable
     private volatile OkHttpClient httpClient;
+
+    /** Lazy created in {@link #getJsoupLoader()}. */
+    @Nullable
+    private volatile JsoupLoader jsoupLoader;
 
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
@@ -99,11 +105,13 @@ public final class HttpCallFactory {
                            @Nullable final SSLContext sslContext,
                            @NonNull final CookieStore cookieStore,
                            @NonNull final String acceptLanguageHeader,
+                           @Nullable final String charSetName,
                            @NonNull final String imageFilenamePrefix) {
         this.config = config;
         this.sslContext = sslContext;
         this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
+        this.charSetName = charSetName;
 
         this.imageFilenamePrefix = imageFilenamePrefix;
     }
@@ -119,26 +127,6 @@ public final class HttpCallFactory {
 
     public boolean isLogEnabled() {
         return config.isHttpLoggingEnabled();
-    }
-
-    /**
-     * Get/create the {@link OkHttpClient}.
-     *
-     * @return new instance
-     */
-    @NonNull
-    public OkHttpClient getHttpClient() {
-        OkHttpClient instance = httpClient;
-        if (instance == null) {
-            synchronized (this) {
-                instance = httpClient;
-                if (instance == null) {
-                    instance = createOkHttpClient();
-                    httpClient = instance;
-                }
-            }
-        }
-        return instance;
     }
 
     /**
@@ -165,11 +153,6 @@ public final class HttpCallFactory {
                             config.getLogStringRes(),
                             config.isHttpLoggingEnabled(), cookieStore
         );
-    }
-
-    @NonNull
-    public JsoupLoader createJsoupLoader(@Nullable final String charSetName) {
-        return new JsoupLoader(this, charSetName);
     }
 
     /**
@@ -211,15 +194,84 @@ public final class HttpCallFactory {
         }
     }
 
+
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an HTML parser.
+     *
+     * @param context Current context
+     * @param url     to load
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws IOException on generic IO failures
+     */
+    @WorkerThread
+    @NonNull
+    public Document loadHtml(@NonNull final Context context,
+                             @NonNull final String url,
+                             @Nullable final Map<String, String> headers)
+            throws IOException {
+        return getJsoupLoader().loadDocument(context, Parser.htmlParser(), charSetName,
+                                             url, headers);
+
+    }
+
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an XML parser.
+     *
+     * @param context Current context
+     * @param url     to load
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws IOException on generic IO failures
+     */
+    @WorkerThread
+    @NonNull
+    public Document loadXml(@NonNull final Context context,
+                            @NonNull final String url,
+                            @Nullable final Map<String, String> headers)
+            throws IOException {
+
+        return getJsoupLoader().loadDocument(context, Parser.xmlParser(), charSetName,
+                                             url, headers);
+    }
+
     @AnyThread
     @CallSuper
     public void cancel() {
         synchronized (this) {
-            final ImageDownloader downloader = imageDownloader;
-            if (downloader != null) {
-                downloader.cancel();
+            final ImageDownloader tmpImageDownloader = imageDownloader;
+            if (tmpImageDownloader != null) {
+                tmpImageDownloader.cancel();
+            }
+            final JsoupLoader tmpJsoupLoader = jsoupLoader;
+            if (tmpJsoupLoader != null) {
+                tmpJsoupLoader.cancel();
             }
         }
+    }
+
+    /**
+     * Get/create the {@link OkHttpClient}.
+     *
+     * @return new instance
+     */
+    @NonNull
+    public OkHttpClient getHttpClient() {
+        OkHttpClient instance = httpClient;
+        if (instance == null) {
+            synchronized (this) {
+                instance = httpClient;
+                if (instance == null) {
+                    instance = createOkHttpClient();
+                    httpClient = instance;
+                }
+            }
+        }
+        return instance;
     }
 
     @NonNull
@@ -250,6 +302,21 @@ public final class HttpCallFactory {
         }
 
         return builder.build();
+    }
+
+    @NonNull
+    private JsoupLoader getJsoupLoader() {
+        JsoupLoader instance = jsoupLoader;
+        if (instance == null) {
+            synchronized (this) {
+                instance = jsoupLoader;
+                if (instance == null) {
+                    instance = new JsoupLoader(this);
+                    jsoupLoader = instance;
+                }
+            }
+        }
+        return instance;
     }
 
     @NonNull
@@ -306,20 +373,14 @@ public final class HttpCallFactory {
         /** The <strong>request</strong> url for the web page. */
         @Nullable
         private String requestUrl;
-        /** {@code null} by default: for Jsoup to figure it out. */
-        @Nullable
-        private final String charSetName;
 
         /**
          * Constructor.
          *
          * @param httpCallFactory to use
-         * @param charSetName     to use; or {@code null} to auto-select.
          */
-        JsoupLoader(@NonNull final HttpCallFactory httpCallFactory,
-                    @Nullable final String charSetName) {
+        JsoupLoader(@NonNull final HttpCallFactory httpCallFactory) {
             this.httpCallFactory = httpCallFactory;
-            this.charSetName = charSetName;
         }
 
         /**
@@ -334,13 +395,12 @@ public final class HttpCallFactory {
          * Fetch the URL and parse it into {@link #document}.
          * Will silently return if it has downloaded the document before.
          * Call {@link #reset()} before to force a clean/new download.
-         * <p>
-         * The content encoding is: "Accept-Encoding", "gzip"
          *
-         * @param context Current context
-         * @param parser  to use
-         * @param url     to fetch
-         * @param headers optional
+         * @param context     Current context
+         * @param parser      to use
+         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
+         * @param url         to fetch
+         * @param headers     optional
          *
          * @return the parsed Document
          *
@@ -350,6 +410,7 @@ public final class HttpCallFactory {
         @NonNull
         public Document loadDocument(@NonNull final Context context,
                                      @NonNull final Parser parser,
+                                     @Nullable final String charSetName,
                                      @NonNull final String url,
                                      @Nullable final Map<String, String> headers)
                 throws IOException {
@@ -380,7 +441,7 @@ public final class HttpCallFactory {
                 try {
                     httpCall = httpCallFactory.createCall();
                     document = httpCall.get(url, headers, (response, is)
-                            -> processResponse(response, is, parser));
+                            -> processResponse(response, is, parser, charSetName));
                     //noinspection DataFlowIssue
                     return document;
 
@@ -442,7 +503,8 @@ public final class HttpCallFactory {
         @NonNull
         private Document processResponse(@NonNull final Response response,
                                          @NonNull final InputStream is,
-                                         @NonNull final Parser parser)
+                                         @NonNull final Parser parser,
+                                         @Nullable final String charSetName)
                 throws IOException {
             // the original url will change after a redirect.
             // We need the actual url for further processing.

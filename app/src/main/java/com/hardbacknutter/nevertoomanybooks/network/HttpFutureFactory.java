@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -58,19 +59,37 @@ public class HttpFutureFactory {
     private final CookieStore cookieStore;
     @NonNull
     private final String acceptLanguageHeader;
+    @Nullable
+    private final String charSetName;
+
+    /** Lazy created in {@link #getJsoupLoader()}. */
+    @Nullable
+    private volatile JsoupLoader jsoupLoader;
 
     public HttpFutureFactory(@NonNull final NetworkConfig config,
                              @Nullable final SSLContext sslContext,
                              @NonNull final CookieStore cookieStore,
-                             @NonNull final String acceptLanguageHeader) {
+                             @NonNull final String acceptLanguageHeader,
+                             @Nullable final String charSetName) {
         this.config = config;
         this.sslContext = sslContext;
         this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
+        this.charSetName = charSetName;
     }
 
     public boolean isLogEnabled() {
         return config.isHttpLoggingEnabled();
+    }
+
+    @AnyThread
+    public void cancel() {
+        synchronized (this) {
+            final JsoupLoader tmpJsoupLoader = jsoupLoader;
+            if (tmpJsoupLoader != null) {
+                tmpJsoupLoader.cancel();
+            }
+        }
     }
 
     /**
@@ -187,9 +206,63 @@ public class HttpFutureFactory {
         return createRequest(null);
     }
 
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an HTML parser.
+     *
+     * @param context Current context
+     * @param url     to load
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws IOException on generic IO failures
+     */
+    @WorkerThread
     @NonNull
-    public JsoupLoader createJsoupLoader(@Nullable final String charSetName) {
-        return new JsoupLoader(this, charSetName);
+    public Document loadHtml(@NonNull final Context context,
+                             @NonNull final String url,
+                             @Nullable final Map<String, String> headers)
+            throws IOException {
+        return getJsoupLoader().loadDocument(context, Parser.htmlParser(), charSetName,
+                                             url, headers);
+
+    }
+
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an XML parser.
+     *
+     * @param context Current context
+     * @param url     to load
+     * @param headers (optional) extra headers to add/override
+     *
+     * @return the document
+     *
+     * @throws IOException on generic IO failures
+     */
+    @WorkerThread
+    @NonNull
+    public Document loadXml(@NonNull final Context context,
+                            @NonNull final String url,
+                            @Nullable final Map<String, String> headers)
+            throws IOException {
+
+        return getJsoupLoader().loadDocument(context, Parser.xmlParser(), charSetName,
+                                             url, headers);
+    }
+
+    @NonNull
+    private JsoupLoader getJsoupLoader() {
+        JsoupLoader instance = jsoupLoader;
+        if (instance == null) {
+            synchronized (this) {
+                instance = jsoupLoader;
+                if (instance == null) {
+                    instance = new JsoupLoader(this);
+                    jsoupLoader = instance;
+                }
+            }
+        }
+        return instance;
     }
 
     /**
@@ -213,20 +286,14 @@ public class HttpFutureFactory {
         /** The <strong>request</strong> url for the web page. */
         @Nullable
         private String requestUrl;
-        /** {@code null} by default: for Jsoup to figure it out. */
-        @Nullable
-        private final String charSetName;
 
         /**
          * Constructor.
          *
          * @param httpCallFactory to use
-         * @param charSetName     to use; or {@code null} to auto-select.
          */
-        JsoupLoader(@NonNull final HttpFutureFactory httpCallFactory,
-                    @Nullable final String charSetName) {
+        JsoupLoader(@NonNull final HttpFutureFactory httpCallFactory) {
             this.httpCallFactory = httpCallFactory;
-            this.charSetName = charSetName;
         }
 
         /**
@@ -241,13 +308,12 @@ public class HttpFutureFactory {
          * Fetch the URL and parse it into {@link #document}.
          * Will silently return if it has downloaded the document before.
          * Call {@link #reset()} before to force a clean/new download.
-         * <p>
-         * The content encoding is: "Accept-Encoding", "gzip"
          *
-         * @param context Current context
-         * @param parser  to use
-         * @param url     to fetch
-         * @param headers optional
+         * @param context     Current context
+         * @param parser      to use
+         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
+         * @param url         to fetch
+         * @param headers     optional
          *
          * @return the parsed Document
          *
@@ -257,6 +323,7 @@ public class HttpFutureFactory {
         @NonNull
         public Document loadDocument(@NonNull final Context context,
                                      @NonNull final Parser parser,
+                                     @Nullable final String charSetName,
                                      @NonNull final String url,
                                      @Nullable final Map<String, String> headers)
                 throws IOException {
@@ -287,7 +354,7 @@ public class HttpFutureFactory {
                 try {
                     httpCall = httpCallFactory.createRequest(headers);
                     document = httpCall.get(requestUrl, (response, is)
-                            -> processResponse(response, is, parser));
+                            -> processResponse(response, is, parser, charSetName));
                     //noinspection DataFlowIssue
                     return document;
 
@@ -353,7 +420,8 @@ public class HttpFutureFactory {
         @NonNull
         private Document processResponse(@NonNull final HttpURLConnection response,
                                          @NonNull final InputStream is,
-                                         @NonNull final Parser parser)
+                                         @NonNull final Parser parser,
+                                         @Nullable final String charSetName)
                 throws IOException {
             // the original url will change after a redirect.
             // We need the actual url for further processing.

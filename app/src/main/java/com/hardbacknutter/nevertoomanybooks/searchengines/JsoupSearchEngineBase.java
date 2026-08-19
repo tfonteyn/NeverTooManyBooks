@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -29,127 +28,40 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
-
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 
-/**
- * A thin layer between the {@link SearchEngineBase} and the actual engine implementation.
- * This class provides methods to load an html or xml document for Jsoup based engines.
- */
+
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
 
-    @Nullable
-    private String charSetName;
-    /** Responsible for loading and parsing the web page. */
-    @Nullable
-    private HttpFutureFactory.JsoupLoader jsoupLoader;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context. NOT stored.
-     * @param config  the search engine configuration
-     *
-     * @see EngineId#createSearchEngine(Context)
-     */
     protected JsoupSearchEngineBase(@NonNull final Context context,
                                     @NonNull final SearchEngineConfig config) {
         super(context, config);
     }
 
-    /**
-     * Set the character set for jsoup parsing.
-     * Default is {@code null} to let JSoup auto-detect it.
-     * <p>
-     * Only needed of the sites character set does not match the actual used one.
-     *
-     * @param charSetName to use; or {@code null} to auto-select.
-     */
-    protected void setCharSetName(@Nullable final String charSetName) {
-        this.charSetName = charSetName;
-    }
-
-    /**
-     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an HTML parser.
-     *
-     * @param context           Current context
-     * @param url               to load
-     * @param requestProperties (optional) extra headers to add/override
-     *
-     * @return the document
-     *
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     */
     @WorkerThread
     @NonNull
     public Document loadHtml(@NonNull final Context context,
                              @NonNull final String url,
-                             @Nullable final Map<String, String> requestProperties)
+                             @Nullable final Map<String, String> headers)
             throws SearchException {
-        return loadDocument(context, Parser.htmlParser(), url, requestProperties);
+        try {
+            return httpFutureFactory.loadHtml(context, url, headers);
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getEngineId(), e);
+        }
     }
 
-    /**
-     * Load the url into a parsed {@link org.jsoup.nodes.Document} using an XML parser.
-     *
-     * @param context           Current context
-     * @param url               to load
-     * @param requestProperties (optional) extra headers to add/override
-     *
-     * @return the document
-     *
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     */
     @WorkerThread
     @NonNull
     public Document loadXml(@NonNull final Context context,
                             @NonNull final String url,
-                            @Nullable final Map<String, String> requestProperties)
-            throws SearchException {
-        return loadDocument(context, Parser.xmlParser(), url, requestProperties);
-    }
-
-    /**
-     * Load the url into a parsed {@link org.jsoup.nodes.Document}.
-     *
-     * @param context           Current context
-     * @param parser            to use
-     * @param url               to load
-     * @param requestProperties (optional) extra headers to add/override
-     *
-     * @return the document
-     *
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     */
-    @WorkerThread
-    @NonNull
-    private Document loadDocument(@NonNull final Context context,
-                                 @NonNull final Parser parser,
-                                 @NonNull final String url,
-                                 @Nullable final Map<String, String> requestProperties)
+                            @Nullable final Map<String, String> headers)
             throws SearchException {
         try {
-            jsoupLoader = httpFutureFactory.createJsoupLoader(charSetName);
-            return jsoupLoader.loadDocument(context, parser, url, requestProperties);
-
+            return httpFutureFactory.loadXml(context, url, headers);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
-        } finally {
-            jsoupLoader = null;
-        }
-    }
-
-    @Override
-    @AnyThread
-    public void cancel() {
-        super.cancel();
-        synchronized (this) {
-            if (jsoupLoader != null) {
-                jsoupLoader.cancel();
-            }
         }
     }
 }

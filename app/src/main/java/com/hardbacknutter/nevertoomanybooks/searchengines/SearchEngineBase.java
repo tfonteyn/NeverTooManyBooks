@@ -82,11 +82,16 @@ public class SearchEngineBase
                                                       .getCookieManager()
                                                       .getCookieStore();
         final String languageHeader = createLanguageHeader(context);
-        httpFutureFactory = new HttpFutureFactory(config, null, cookieStore,
-                                                  languageHeader);
-        httpCallFactory = new HttpCallFactory(config, null, cookieStore,
-                                              languageHeader,
-                                              config.getEngineId().getPreferenceKey());
+
+        final EngineId engineId = config.getEngineId();
+        final String charSetName = engineId.getCharSetName();
+
+        httpFutureFactory = new HttpFutureFactory(
+                config, null, cookieStore, languageHeader, charSetName);
+
+        httpCallFactory = new HttpCallFactory(
+                config, null, cookieStore, languageHeader, charSetName,
+                engineId.getPreferenceKey());
     }
 
     private String createLanguageHeader(@NonNull final Context context) {
@@ -200,6 +205,7 @@ public class SearchEngineBase
     @CallSuper
     public void cancel() {
         cancelRequested.set(true);
+        httpFutureFactory.cancel();
         httpCallFactory.cancel();
     }
 

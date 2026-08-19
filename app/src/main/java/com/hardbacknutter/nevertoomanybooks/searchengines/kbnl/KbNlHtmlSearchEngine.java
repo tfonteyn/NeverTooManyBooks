@@ -154,10 +154,10 @@ public class KbNlHtmlSearchEngine
     @Override
     public Document loadHtml(@NonNull final Context context,
                              @NonNull final String url,
-                             @Nullable final Map<String, String> requestProperties)
+                             @Nullable final Map<String, String> headers)
             throws SearchException {
 
-        final Document document = super.loadHtml(context, url, requestProperties);
+        final Document document = super.loadHtml(context, url, headers);
 
         final Element base = document.selectFirst("head > base");
         // <base href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=1/TTL=1/">

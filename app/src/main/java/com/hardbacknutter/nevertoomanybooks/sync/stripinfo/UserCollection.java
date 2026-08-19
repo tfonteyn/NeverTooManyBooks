@@ -129,10 +129,8 @@ class UserCollection {
     /** A "collectionContent" section consists of up to 25 book rows. */
     private static final int COLLECTION_CONTENT_ROWS = 25;
 
-    /** Responsible for loading and parsing the web page. */
     @NonNull
-    private final HttpFutureFactory.JsoupLoader jsoupLoader;
-
+    private final HttpFutureFactory httpCallFactory;
     /** Internal id from the website; used in the auth Cookie and links. */
     @NonNull
     private final String userId;
@@ -154,13 +152,12 @@ class UserCollection {
                    @NonNull final HttpFutureFactory httpCallFactory,
                    @NonNull final String userId,
                    @NonNull final BookshelfMapper bookshelfMapper) {
+        this.httpCallFactory = httpCallFactory;
         this.userId = userId;
 
         final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
 
         hostUrl = config.getHostUrl();
-
-        jsoupLoader = httpCallFactory.createJsoupLoader(null);
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }
@@ -198,8 +195,7 @@ class UserCollection {
                 R.string.progress_msg_loading_page, pageNr));
 
         final String url = hostUrl + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
-        final Document document = jsoupLoader
-                .loadDocument(context, Parser.htmlParser(), url, null);
+        final Document document = httpCallFactory.loadHtml(context, url, null);
 
         return parseDocument(document, pageNr, progressListener);
     }
