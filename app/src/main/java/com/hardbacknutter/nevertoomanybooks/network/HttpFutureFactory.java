@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLProtocolException;
 
@@ -225,7 +226,6 @@ public class HttpFutureFactory {
             throws IOException {
         return getJsoupLoader().loadDocument(context, Parser.htmlParser(),
                                              url, headers);
-
     }
 
     /**
@@ -354,6 +354,10 @@ public class HttpFutureFactory {
                                                 "requestUrl=`" + requestUrl + '`');
                 }
 
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new CancellationException();
+                }
+
                 try {
                     httpCall = httpCallFactory.createRequest(headers);
                     document = httpCall.get(requestUrl, (response, is)
@@ -443,6 +447,10 @@ public class HttpFutureFactory {
                     LoggerFactory.getLogger().d(TAG, "processResponse",
                                                 "location header not set, using url");
                 }
+            }
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new CancellationException();
             }
 
             /*

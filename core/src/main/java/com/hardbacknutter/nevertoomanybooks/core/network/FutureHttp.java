@@ -314,7 +314,7 @@ public class FutureHttp<R> {
     /**
      * Send a {@code HEAD} request.
      *
-     * @param url               to connect to
+     * @param url to connect to
      *
      * @throws CancellationException  if the user cancelled us
      * @throws SocketTimeoutException if the timeout expires before
@@ -450,6 +450,11 @@ public class FutureHttp<R> {
                         LoggerFactory.getLogger().d(TAG, "doGetExecute|doGetConnect");
                     }
                     request = doGetConnect(url, method);
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new CancellationException();
+                    }
+
                     if (action != null) {
                         return action.apply(request);
                     } else {
@@ -501,13 +506,14 @@ public class FutureHttp<R> {
      *
      * @return the request which was successful
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws NetworkException on fatal error / giving up
+     * @throws CancellationException if the user cancelled us
+     * @throws IOException           on generic/other IO failures
+     * @throws NetworkException      on fatal error / giving up
      */
     @NonNull
     private HttpURLConnection doGetConnect(@NonNull final URL url,
                                            @NonNull final String method)
-            throws IOException {
+            throws IOException, CancellationException {
 
         // start at 1 to make the logs clear.
         int attempt = 1;
@@ -521,6 +527,10 @@ public class FutureHttp<R> {
         while (attempt <= retryCount) {
             if (enableLog) {
                 logRequest(attempt, request);
+            }
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new CancellationException();
             }
 
             //noinspection OverlyBroadCatchBlock
@@ -565,6 +575,10 @@ public class FutureHttp<R> {
                                             LOG_ATTEMPT + attempt,
                                             LOG_REDIRECT_COUNT + redirectCount,
                                             "new requestUrlStr=" + requestUrlStr);
+                        }
+
+                        if (Thread.currentThread().isInterrupted()) {
+                            throw new CancellationException();
                         }
                         // Note we are NOT using the throttler here,
                         // Android was SUPPOSED to redirect immediately.

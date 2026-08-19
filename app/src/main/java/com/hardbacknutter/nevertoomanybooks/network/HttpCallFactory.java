@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.net.CookieStore;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLProtocolException;
@@ -439,6 +440,10 @@ public final class HttpCallFactory {
                                                 "requestUrl=`" + requestUrl + '`');
                 }
 
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new CancellationException();
+                }
+
                 try {
                     httpCall = httpCallFactory.createCall();
                     document = httpCall.get(url, headers, (response, is)
@@ -523,6 +528,10 @@ public final class HttpCallFactory {
                     LoggerFactory.getLogger().d(TAG, "processResponse",
                                                 "location header not set, using url");
                 }
+            }
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new CancellationException();
             }
 
             /*
