@@ -212,8 +212,7 @@ public final class HttpCallFactory {
                              @NonNull final String url,
                              @Nullable final Map<String, String> headers)
             throws IOException {
-        return getJsoupLoader().loadDocument(context, Parser.htmlParser(), charSetName,
-                                             url, headers);
+        return getJsoupLoader().loadDocument(context, Parser.htmlParser(), url, headers);
 
     }
 
@@ -235,8 +234,7 @@ public final class HttpCallFactory {
                             @Nullable final Map<String, String> headers)
             throws IOException {
 
-        return getJsoupLoader().loadDocument(context, Parser.xmlParser(), charSetName,
-                                             url, headers);
+        return getJsoupLoader().loadDocument(context, Parser.xmlParser(), url, headers);
     }
 
     @AnyThread
@@ -311,7 +309,7 @@ public final class HttpCallFactory {
             synchronized (this) {
                 instance = jsoupLoader;
                 if (instance == null) {
-                    instance = new JsoupLoader(this);
+                    instance = new JsoupLoader(this, charSetName);
                     jsoupLoader = instance;
                 }
             }
@@ -363,6 +361,8 @@ public final class HttpCallFactory {
 
         @NonNull
         private final HttpCallFactory httpCallFactory;
+        @Nullable
+        private final String charSetName;
 
         @Nullable
         private HttpCall httpCall;
@@ -378,9 +378,12 @@ public final class HttpCallFactory {
          * Constructor.
          *
          * @param httpCallFactory to use
+         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
          */
-        JsoupLoader(@NonNull final HttpCallFactory httpCallFactory) {
+        JsoupLoader(@NonNull final HttpCallFactory httpCallFactory,
+                    @Nullable final String charSetName) {
             this.httpCallFactory = httpCallFactory;
+            this.charSetName = charSetName;
         }
 
         /**
@@ -398,7 +401,6 @@ public final class HttpCallFactory {
          *
          * @param context     Current context
          * @param parser      to use
-         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
          * @param url         to fetch
          * @param headers     optional
          *
@@ -410,7 +412,6 @@ public final class HttpCallFactory {
         @NonNull
         public Document loadDocument(@NonNull final Context context,
                                      @NonNull final Parser parser,
-                                     @Nullable final String charSetName,
                                      @NonNull final String url,
                                      @Nullable final Map<String, String> headers)
                 throws IOException {
@@ -441,7 +442,7 @@ public final class HttpCallFactory {
                 try {
                     httpCall = httpCallFactory.createCall();
                     document = httpCall.get(url, headers, (response, is)
-                            -> processResponse(response, is, parser, charSetName));
+                            -> processResponse(response, is, parser));
                     //noinspection DataFlowIssue
                     return document;
 
@@ -503,8 +504,7 @@ public final class HttpCallFactory {
         @NonNull
         private Document processResponse(@NonNull final Response response,
                                          @NonNull final InputStream is,
-                                         @NonNull final Parser parser,
-                                         @Nullable final String charSetName)
+                                         @NonNull final Parser parser)
                 throws IOException {
             // the original url will change after a redirect.
             // We need the actual url for further processing.

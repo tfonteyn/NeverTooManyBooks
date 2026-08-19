@@ -97,13 +97,13 @@ public class HttpFutureFactory {
      *
      * @param headers (optional) extra headers to add/override
      *
-     * @param <R> the type of the return value for the request
+     * @param <RR> the type of the return value for the request
      *
      * @return new instance
      */
     @NonNull
-    public <R> FutureHttp<R> createRequest(@Nullable final Map<String, String> headers) {
-        final FutureHttp<R> request =
+    public <RR> FutureHttp<RR> createRequest(@Nullable final Map<String, String> headers) {
+        final FutureHttp<RR> request =
                 new FutureHttp<>(Objects.requireNonNull(config.getThrottler()),
                                  config.getLogStringRes(),
                                  config.isHttpLoggingEnabled(),
@@ -223,7 +223,7 @@ public class HttpFutureFactory {
                              @NonNull final String url,
                              @Nullable final Map<String, String> headers)
             throws IOException {
-        return getJsoupLoader().loadDocument(context, Parser.htmlParser(), charSetName,
+        return getJsoupLoader().loadDocument(context, Parser.htmlParser(),
                                              url, headers);
 
     }
@@ -246,7 +246,7 @@ public class HttpFutureFactory {
                             @Nullable final Map<String, String> headers)
             throws IOException {
 
-        return getJsoupLoader().loadDocument(context, Parser.xmlParser(), charSetName,
+        return getJsoupLoader().loadDocument(context, Parser.xmlParser(),
                                              url, headers);
     }
 
@@ -257,7 +257,7 @@ public class HttpFutureFactory {
             synchronized (this) {
                 instance = jsoupLoader;
                 if (instance == null) {
-                    instance = new JsoupLoader(this);
+                    instance = new JsoupLoader(this, charSetName);
                     jsoupLoader = instance;
                 }
             }
@@ -276,6 +276,8 @@ public class HttpFutureFactory {
 
         @NonNull
         private final HttpFutureFactory httpCallFactory;
+        @Nullable
+        private final String charSetName;
 
         @Nullable
         private FutureHttp<Document> httpCall;
@@ -291,9 +293,12 @@ public class HttpFutureFactory {
          * Constructor.
          *
          * @param httpCallFactory to use
+         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
          */
-        JsoupLoader(@NonNull final HttpFutureFactory httpCallFactory) {
+        JsoupLoader(@NonNull final HttpFutureFactory httpCallFactory,
+                    @Nullable final String charSetName) {
             this.httpCallFactory = httpCallFactory;
+            this.charSetName = charSetName;
         }
 
         /**
@@ -311,7 +316,6 @@ public class HttpFutureFactory {
          *
          * @param context     Current context
          * @param parser      to use
-         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
          * @param url         to fetch
          * @param headers     optional
          *
@@ -323,7 +327,6 @@ public class HttpFutureFactory {
         @NonNull
         public Document loadDocument(@NonNull final Context context,
                                      @NonNull final Parser parser,
-                                     @Nullable final String charSetName,
                                      @NonNull final String url,
                                      @Nullable final Map<String, String> headers)
                 throws IOException {
@@ -354,7 +357,7 @@ public class HttpFutureFactory {
                 try {
                     httpCall = httpCallFactory.createRequest(headers);
                     document = httpCall.get(requestUrl, (response, is)
-                            -> processResponse(response, is, parser, charSetName));
+                            -> processResponse(response, is, parser));
                     //noinspection DataFlowIssue
                     return document;
 
@@ -372,7 +375,8 @@ public class HttpFutureFactory {
                     //  Read error: ssl=0x91461c80: Failure in SSL library, usually a protocol error
                     //  error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
                     //  external/boringssl/src/crypto/cipher/e_aes.c:1143 0xa0d78e9f:0x00000000)
-                    //  error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
+                    //  error:1000008b:SSL routines:OPENSSL_internal:
+                    //      DECRYPTION_FAILED_OR_BAD_RECORD_MAC
                     //  external/boringssl/src/ssl/tls_record.c:277 0xa0d78e9f:0x00000000)
                     // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                     // 2025-04-13: not seen for quite some time now.
@@ -420,8 +424,7 @@ public class HttpFutureFactory {
         @NonNull
         private Document processResponse(@NonNull final HttpURLConnection response,
                                          @NonNull final InputStream is,
-                                         @NonNull final Parser parser,
-                                         @Nullable final String charSetName)
+                                         @NonNull final Parser parser)
                 throws IOException {
             // the original url will change after a redirect.
             // We need the actual url for further processing.
