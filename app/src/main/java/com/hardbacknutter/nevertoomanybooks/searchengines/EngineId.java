@@ -84,8 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *     </li>
  *
  *     <li>Implement {@link SearchEngine} to create the new engine class
- *         extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
- *         or a similar setup.
+ *         extending {@link SearchEngineBase} or a similar setup.
  *         <ul>
  *             <li>There MUST be a public constructor annotated with {@code @Keep}
  *                 and with arguments ({@link Context},{@link SearchEngineConfig})
@@ -657,9 +656,10 @@ public enum EngineId
     @NonNull
     public String toString() {
         return "EngineId{"
-               + "key=`" + key + '`'
+               + "key=" + key
                + ", enabled=" + enabled
-               + ", defaultUrl=`" + defaultUrl + '`'
+               + ", defaultUrl=" + defaultUrl
+               + ", charSetName=" + charSetName
                + ", locale=" + defaultLocale
                + ", multipleCoverSizes=" + multipleCoverSizes
                + ", identifierKeys=" + identifierKeys

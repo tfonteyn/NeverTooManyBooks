@@ -132,7 +132,7 @@ public final class DBKey {
 
     /** REAL, i.e. a BigDecimal, always a numeric value. */
     public static final String PRICE_LISTED = "list_price";
-    /** Iso3 code, or a displayble String for unknown currencies. */
+    /** Iso3 code, or a displayable String for unknown currencies. */
     public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + CURRENCY_SUFFIX;
     /** Info on limited editions, circulation numbers, etc... */
     public static final String PRINT_RUN = "print_run";
@@ -145,7 +145,7 @@ public final class DBKey {
     public static final String CONDITION_COVER = "cond_cvr";
     /** REAL, i.e. a BigDecimal, always a numeric value. */
     public static final String PRICE_PAID = "price_paid";
-    /** Iso3 code, or a displayble String for unknown currencies. */
+    /** Iso3 code, or a displayable String for unknown currencies. */
     public static final String PRICE_PAID_CURRENCY = PRICE_PAID + CURRENCY_SUFFIX;
     public static final String DATE_ACQUIRED = "date_acquired";
     public static final String PERSONAL_NOTES = "notes";

@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.OptionalLong;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;

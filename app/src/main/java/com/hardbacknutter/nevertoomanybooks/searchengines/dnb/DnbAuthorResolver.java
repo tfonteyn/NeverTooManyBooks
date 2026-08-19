@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 
 public final class DnbAuthorResolver
         implements AuthorResolver {

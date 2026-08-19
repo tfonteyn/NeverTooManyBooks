@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
