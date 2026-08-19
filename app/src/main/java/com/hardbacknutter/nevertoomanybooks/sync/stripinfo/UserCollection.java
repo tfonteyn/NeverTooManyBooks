@@ -45,7 +45,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
 
 /**
  * <strong>Used by the synchronisation logic, i.e. the {@link StripInfoReader}.</strong>
