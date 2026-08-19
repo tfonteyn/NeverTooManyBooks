@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
-import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -132,7 +131,7 @@ class UserCollection {
 
     /** Responsible for loading and parsing the web page. */
     @NonNull
-    private final JsoupLoader jsoupLoader;
+    private final HttpFutureFactory.JsoupLoader jsoupLoader;
 
     /** Internal id from the website; used in the auth Cookie and links. */
     @NonNull
@@ -161,8 +160,7 @@ class UserCollection {
 
         hostUrl = config.getHostUrl();
 
-        final boolean enableLog = config.isHttpLoggingEnabled();
-        jsoupLoader = new JsoupLoader(httpCallFactory, enableLog);
+        jsoupLoader = httpCallFactory.createJsoupLoader(null);
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }

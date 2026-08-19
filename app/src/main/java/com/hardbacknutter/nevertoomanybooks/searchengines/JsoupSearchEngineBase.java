@@ -29,7 +29,7 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
@@ -45,7 +45,7 @@ public abstract class JsoupSearchEngineBase
     private String charSetName;
     /** Responsible for loading and parsing the web page. */
     @Nullable
-    private JsoupLoader jsoupLoader;
+    private HttpFutureFactory.JsoupLoader jsoupLoader;
 
     /**
      * Constructor.
@@ -132,10 +132,7 @@ public abstract class JsoupSearchEngineBase
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException {
         try {
-            final boolean logEnabled = getConfig().isHttpLoggingEnabled();
-            jsoupLoader = new JsoupLoader(httpFutureFactory, logEnabled);
-            jsoupLoader.setCharSetName(charSetName);
-
+            jsoupLoader = httpFutureFactory.createJsoupLoader(charSetName);
             return jsoupLoader.loadDocument(context, parser, url, requestProperties);
 
         } catch (@NonNull final IOException e) {
