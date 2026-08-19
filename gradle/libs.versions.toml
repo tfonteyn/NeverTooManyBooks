@@ -19,7 +19,7 @@ mannodermausInstrumentation = "2.0.1"
 
 androidxActivity = "1.13.0"
 androidxAnnotation = "1.10.0"
-androidxAppcompat = "1.7.1"
+androidxAppcompat = "1.8.0"
 androidxCamerax = "1.6.1"
 androidxCardview = "1.0.0"
 androidxCollection = "1.6.0"
@@ -32,7 +32,7 @@ androidxCustomview = "1.2.0"
 androidxDocumentfile = "1.1.0"
 androidxDrawerlayout = "1.2.0"
 androidxExifinterface = "1.4.2"
-androidxFragment = "1.8.9"
+androidxFragment = "1.9.0"
 androidxInterpolator = "1.0.0"
 androidxLifecycle = "2.11.0"
 androidxRecyclerview = "1.4.0"
@@ -51,7 +51,7 @@ jsoup = "1.23.1"
 re2j = "1.8"
 
 # https://github.com/square/okhttp
-okhttpAndroid = "5.4.0"
+okhttpAndroid = "5.5.0"
 
 # https://github.com/rburgst/okhttp-digest
 okhttpAuthenticationDiggest = "3.1.1"
