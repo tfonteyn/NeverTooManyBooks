@@ -260,14 +260,12 @@ public class LibraryThingSearchEngine
         httpCall = httpCallFactory.createCall();
         try {
             httpCall.get(url, null, parser, handler);
-
+            return handler.getResult();
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
             httpCall = null;
         }
-
-        return handler.getResult();
     }
 
     /**
