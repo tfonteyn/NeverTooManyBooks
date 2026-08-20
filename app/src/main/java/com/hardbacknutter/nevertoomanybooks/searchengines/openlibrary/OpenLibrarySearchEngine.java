@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -178,7 +178,7 @@ public class OpenLibrarySearchEngine
     private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
-    private FutureHttp<String> httpCall;
+    private HttpCall httpCall;
     @Nullable
     private SiteAuthModule siteAuthModule;
     @Nullable
@@ -386,13 +386,11 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     private String loadDocument(@NonNull final String url)
-            throws StorageException, SearchException {
+            throws IOException {
 
-        httpCall = createGetDocumentRequest();
+        httpCall = httpCallFactory.createCall();
         try {
-            return httpCall.getAsString(url, (con, s) -> s);
-        } catch (@NonNull final IOException e) {
-            throw new SearchException(getEngineId(), e);
+            return httpCall.getAsString(url, null);
         } finally {
             httpCall = null;
         }
@@ -409,17 +407,16 @@ public class OpenLibrarySearchEngine
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
-
-        String response = loadDocument(url);
+            throws StorageException, SearchException {
 
         try {
+            String response = loadDocument(url);
+
             final JSONObject jsonObject = new JSONObject(response);
             int numFound = jsonObject.optInt("numFound");
             if (numFound < 1) {
@@ -632,16 +629,14 @@ public class OpenLibrarySearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws IOException          when fetching the Author details fails
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws IOException      on generic IO failures
+     * @throws StorageException on storage related failures
      */
     private void parse(@NonNull final Context context,
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
                        @NonNull final Book book)
-            throws StorageException, IOException, SearchException, CredentialsException {
+            throws StorageException, IOException {
 
         // 2025-06: the site has started to remove several data items from the "book.json"
         // result. It seems they now expect us to ALWAYS fetch the "work.json" as well.
@@ -667,7 +662,7 @@ public class OpenLibrarySearchEngine
                @Nullable final JSONObject workDocument,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException, IOException {
 
         // ALWAYS FIRST parse the work; it typically contains more detailed information.
         if (workDocument != null) {
@@ -820,11 +815,17 @@ public class OpenLibrarySearchEngine
      *   }
      * }
      * }</pre>
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param book     destination
+     *
+     * @throws IOException on generic IO failures
      */
     private void parseWork(@NonNull final Context context,
                            @NonNull final JSONObject document,
                            @NonNull final Book book)
-            throws SearchException, StorageException {
+            throws IOException {
 
         parseBookOrWork(context, document, book);
     }
@@ -838,13 +839,12 @@ public class OpenLibrarySearchEngine
      * @param work     document from the download
      * @param book     destination
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws IOException on generic IO failures
      */
     private void parseBookOrWork(@NonNull final Context context,
                                  @NonNull final JSONObject work,
                                  @NonNull final Book book)
-            throws SearchException, StorageException {
+            throws IOException {
 
         JSONArray a;
         String s;
@@ -973,13 +973,12 @@ public class OpenLibrarySearchEngine
      * @param a       array with author elements
      * @param book    destination
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws IOException on generic IO failures
      */
     private void parseAuthorsFromWork(@NonNull final Context context,
                                       @NonNull final JSONArray a,
                                       @NonNull final Book book)
-            throws StorageException, SearchException {
+            throws IOException {
 
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
@@ -1004,7 +1003,7 @@ public class OpenLibrarySearchEngine
     private void fetchAndParseAuthor(@NonNull final Context context,
                                      @Nullable final String key,
                                      @NonNull final Book book)
-            throws StorageException, SearchException {
+            throws IOException {
         if (key == null || key.isEmpty()) {
             return;
         }
@@ -1074,12 +1073,11 @@ public class OpenLibrarySearchEngine
      * @param a       array with series elements
      * @param book    destination
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws IOException on generic IO failures
      */
     private void parseSeriesFromWork(@NonNull final JSONArray a,
                                      @NonNull final Book book)
-            throws StorageException, SearchException {
+            throws IOException {
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
@@ -1123,13 +1121,12 @@ public class OpenLibrarySearchEngine
      * @param nr      in the series; {@code null} for none
      * @param book    destination
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws IOException on generic IO failures
      */
     private void fetchAndParseSeries(@Nullable final String key,
                                      @Nullable final String nr,
                                      @NonNull final Book book)
-            throws StorageException, SearchException {
+            throws IOException {
         if (key == null || key.isEmpty()) {
             return;
         }
@@ -1460,7 +1457,7 @@ public class OpenLibrarySearchEngine
                 response = loadDocument(url);
                 return parseEditions(new JSONObject(response));
             }
-        } catch (@NonNull final StorageException | JSONException e) {
+        } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         }
 
@@ -1774,14 +1771,6 @@ public class OpenLibrarySearchEngine
             getConfig().getThrottler().waitUntilRequestAllowed(COVER_BY_ISBN_REQUEST_DELAY);
         }
         return httpCallFactory.saveImage(url, null, id, cIdx, size);
-    }
-
-    @NonNull
-    <T> FutureHttp<T> createGetDocumentRequest() {
-        final FutureHttp<T> request = httpFutureFactory.createGetDocumentRequest();
-        request.setEnable404Redirect(true);
-
-        return request;
     }
 
     private static final class OpenLibraryImageRequestFactory

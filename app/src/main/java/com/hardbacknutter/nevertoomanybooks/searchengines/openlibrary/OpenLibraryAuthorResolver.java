@@ -32,11 +32,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -67,6 +67,7 @@ public final class OpenLibraryAuthorResolver
     private final OpenLibrarySearchEngine searchEngine;
     @NonNull
     private final AuthorParser authorParser;
+    private final HttpCallFactory httpCallFactory;
 
     /**
      * Private Constructor.
@@ -78,6 +79,8 @@ public final class OpenLibraryAuthorResolver
     OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
+        httpCallFactory = searchEngine.getHttpCallFactory();
+
         authorParser = new AuthorParser(context, searchEngine);
     }
 
@@ -166,14 +169,14 @@ public final class OpenLibraryAuthorResolver
 
         final String url = String.format(OpenLibrarySearchEngine.AUTHOR_URL, sid) + ".json";
 
-        final FutureHttp<String> httpCall = searchEngine.createGetDocumentRequest();
+        final HttpCall httpCall = httpCallFactory.createCall();
         try {
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, null);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 return authorParser.parse(document);
             }
-        } catch (@NonNull final StorageException | IOException | JSONException e) {
+        } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
         }
         return null;
@@ -193,11 +196,11 @@ public final class OpenLibraryAuthorResolver
     private Author searchByName(@NonNull final String names)
             throws SearchException {
 
-        final FutureHttp<String> httpCall = searchEngine.createGetDocumentRequest();
+        final HttpCall httpCall = httpCallFactory.createCall();
         try {
             final String url = AUTHOR_SEARCH + URLEncoder.encode(names, CHARSET);
 
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(url, null);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final int numFound = document.optInt("numFound");
@@ -209,7 +212,7 @@ public final class OpenLibraryAuthorResolver
                     return authorParser.parse(docs.getJSONObject(0));
                 }
             }
-        } catch (@NonNull final StorageException | IOException | JSONException e) {
+        } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
         }
         return null;

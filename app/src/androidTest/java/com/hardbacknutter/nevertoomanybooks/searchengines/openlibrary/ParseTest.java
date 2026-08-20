@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -82,7 +81,7 @@ class ParseTest
 
     @Test
     void parse1()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, SearchException {
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
 
         // https://openlibrary.org/books/OL22853304M.json
@@ -185,7 +184,7 @@ class ParseTest
 
     @Test
     void parse2()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, SearchException {
 
         // https://openlibrary.org/search.json?q=9780734418227&fields=key,editions
 
@@ -253,7 +252,7 @@ class ParseTest
 
     @Test
     void parse3()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, SearchException {
         // https://openlibrary.org/search.json?q=9780141346830&fields=key,editions
 
         // https://openlibrary.org/books/OL28508809M.json
@@ -336,7 +335,7 @@ class ParseTest
 
     @Test
     void parse4()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, SearchException {
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
 
         // https://openlibrary.org/books/OL36696710M.json
@@ -486,7 +485,7 @@ class ParseTest
 
     @Test
     void parse5()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, SearchException {
         // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
 
         // https://openlibrary.org/books/OL7824144M.json
@@ -587,7 +586,7 @@ class ParseTest
 
     @Test
     void parse6()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, SearchException {
         // https://openlibrary.org/search.json?q=9781691706631&fields=key,editions
 
         // https://openlibrary.org/books/OL33899062M.json
