@@ -965,4 +965,6 @@
         <item quantity="one">Évente</item>
         <item quantity="other">Évente %1$d alkalommal</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Kérések sebességének korlátozása</string>
+    <string name="lbl_limit_request_speed_info">Rövid késleltetéseket iktat be a kérések közé a szerver túlterhelésének és az IP-cím blokkolásának elkerülése érdekében.</string>
 </resources>

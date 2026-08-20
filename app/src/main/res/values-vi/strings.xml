@@ -946,4 +946,6 @@
     <plurals name="freq_ordinal_yearly">
         <item quantity="other">%1$d lần mỗi năm</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Giới hạn tốc độ yêu cầu</string>
+    <string name="lbl_limit_request_speed_info">Thêm khoảng trễ ngắn giữa các yêu cầu để tránh quá tải máy chủ và bị chặn IP.</string>
 </resources>

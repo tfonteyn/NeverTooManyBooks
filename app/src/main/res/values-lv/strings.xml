@@ -983,4 +983,6 @@
         <item quantity="one">%1$d reizi gadā</item>
         <item quantity="other">%1$d reizes gadā</item>
     </plurals>
+    <string name="lbl_limit_request_speed">Ierobežot pieprasījumu ātrumu</string>
+    <string name="lbl_limit_request_speed_info">Pievieno īsas aizkaves starp pieprasījumiem, lai novērstu servera pārslogošanu un IP bloķēšanu.</string>
 </resources>
