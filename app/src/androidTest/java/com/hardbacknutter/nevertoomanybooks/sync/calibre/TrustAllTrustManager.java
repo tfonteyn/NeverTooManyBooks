@@ -28,13 +28,16 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-public class TrustAllTrustManager
+class TrustAllTrustManager
         implements X509TrustManager {
 
     private final X509TrustManager trustManager;
 
     TrustAllTrustManager()
             throws NoSuchAlgorithmException, KeyStoreException {
+        // To allow this class to be used on both "test" and "androidTest":
+        // OpenJDK: default algorithm is "SunX509".
+        // but on Android, the default algorithm is "PKIX".
         final TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX");
         final KeyStore ks = null;
         tmf.init(ks);

@@ -34,12 +34,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieStore;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLProtocolException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -293,7 +300,7 @@ public final class HttpCallFactory {
         }
 
         if (sslContext != null) {
-            builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
+            builder.sslSocketFactory(sslContext.getSocketFactory(), getX509TrustManager());
         }
 
         if (config.isHttpLoggingEnabled()) {
@@ -301,6 +308,29 @@ public final class HttpCallFactory {
         }
 
         return builder.build();
+    }
+
+    @NonNull
+    private X509TrustManager getX509TrustManager() {
+
+        try {
+            final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+
+            // use default system keystore
+            trustManagerFactory.init((KeyStore) null);
+            final TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+
+            if (trustManagers.length >= 1 && trustManagers[0] instanceof X509TrustManager) {
+                return (X509TrustManager) trustManagers[0];
+            }
+
+            throw new IllegalStateException("Unexpected trust managers: "
+                                            + Arrays.toString(trustManagers));
+
+        } catch (@NonNull final NoSuchAlgorithmException | KeyStoreException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @NonNull
