@@ -407,7 +407,8 @@ public final class HttpCallFactory {
          *
          * @return the parsed Document
          *
-         * @throws IOException on generic/other IO failures
+         * @throws CancellationException if the user cancelled us
+         * @throws IOException           on generic/other IO failures
          */
         @WorkerThread
         @NonNull
@@ -522,18 +523,6 @@ public final class HttpCallFactory {
                                             + "\nlocation  =" + locationHeader);
             }
 
-            if (locationHeader == null || locationHeader.isEmpty()) {
-                locationHeader = url;
-                if (httpCallFactory.isLogEnabled()) {
-                    LoggerFactory.getLogger().d(TAG, "processResponse",
-                                                "location header not set, using url");
-                }
-            }
-
-            if (Thread.currentThread().isInterrupted()) {
-                throw new CancellationException();
-            }
-
             /*
              VERY IMPORTANT: Explicitly set the baseUri to the location header.
              JSoup by default uses the absolute path from the inputStream
@@ -552,6 +541,18 @@ public final class HttpCallFactory {
             However, that is WRONG (org.jsoup:jsoup:1.11.3)
             It will NOT resolve the redirect itself and 'location' == 'baseUri'
             */
+            if (locationHeader == null || locationHeader.isEmpty()) {
+                locationHeader = url;
+                if (httpCallFactory.isLogEnabled()) {
+                    LoggerFactory.getLogger().d(TAG, "processResponse",
+                                                "location header not set, using url");
+                }
+            }
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new CancellationException();
+            }
+
             final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader, parser);
             if (httpCallFactory.isLogEnabled()) {
                 LoggerFactory.getLogger()
