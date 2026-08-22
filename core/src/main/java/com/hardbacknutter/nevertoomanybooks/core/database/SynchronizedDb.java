@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -306,7 +307,7 @@ public class SynchronizedDb
     }
 
     /**
-     * Locking-aware wrapper for underlying database method.
+     * Locking-aware wrapper for the underlying {@link SQLiteDatabase#insertOrThrow} method.
      * <p>
      * <strong>Note:</strong> SQLite maintains a Statement cache in its
      * <strong>native code</strong> based on SQL string matching.
@@ -321,15 +322,16 @@ public class SynchronizedDb
      *               row. The keys should be the column names and the values the
      *               column values
      *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     * @return the row id of the newly inserted row <s>, or {@code -1} if an error occurred</s>
      *
+     * @throws SQLException         if the inserts fails
      * @throws TransactionException when currently inside a shared lock
      *
      * @see SQLiteDatabase#insertWithOnConflict(String, String, ContentValues, int)
      */
-    public long insert(@NonNull final String table,
-                       @NonNull final ContentValues values)
-            throws TransactionException {
+    public long insertOrThrow(@NonNull final String table,
+                              @NonNull final ContentValues values)
+            throws TransactionException, SQLException {
 
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock != null) {
@@ -340,10 +342,8 @@ public class SynchronizedDb
             txLock = synchronizer.getExclusiveLock();
         }
 
-        // reminder: insert does not throw exceptions for the actual insert.
-        // but it can throw other exceptions.
         try {
-            return sqLiteDatabase.insert(table, null, values);
+            return sqLiteDatabase.insertOrThrow(table, null, values);
 
         } finally {
             if (txLock != null) {

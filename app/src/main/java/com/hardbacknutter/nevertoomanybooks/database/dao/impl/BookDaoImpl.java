@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -202,10 +203,11 @@ public class BookDaoImpl
             }
 
             // go!
-            final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
-            if (newBookId <= 0) {
-                LoggerFactory.getLogger()
-                             .e(TAG, new Throwable(), "Insert failed"
+            final long newBookId;
+            try {
+                newBookId = db.insertOrThrow(TBL_BOOKS.getName(), cv);
+            } catch (@NonNull final SQLException e) {
+                LoggerFactory.getLogger().e(TAG, e, "Insert failed"
                                                       + "|table=" + TBL_BOOKS.getName()
                                                       + "|cv=" + cv);
 
