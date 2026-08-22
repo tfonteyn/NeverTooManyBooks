@@ -232,7 +232,7 @@ public class BookDaoImpl
             insertBookLinks(context, userLocale, book, flags);
 
             // and populate the search suggestions table
-            ServiceLocator.getInstance().getFtsDao().insert(newBookId);
+            ServiceLocator.getInstance().getFtsDao().insert(book);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
             try {

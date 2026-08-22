@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -86,6 +87,10 @@ class V8 {
     void update() {
         if (oldVersion < 52) {
             db52();
+        }
+        if (oldVersion < 53) {
+            // Added original-title to the FTS columns
+            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
         }
     }
 

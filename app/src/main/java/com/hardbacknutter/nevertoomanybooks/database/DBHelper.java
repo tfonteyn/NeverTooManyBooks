@@ -91,10 +91,11 @@ public class DBHelper
      * v7.13.0: 50
      * v7.16.0: 51
      * v8.0.0: 52
+     * v8.1.0: 53
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 52;
+    public static final int DATABASE_VERSION = 53;
 
     /** NEVER change this name. */
     public static final String DATABASE_NAME = "nevertoomanybooks.db";

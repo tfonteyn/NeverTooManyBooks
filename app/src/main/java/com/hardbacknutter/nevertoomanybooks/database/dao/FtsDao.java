@@ -28,7 +28,9 @@ import androidx.annotation.WorkerThread;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 
 public interface FtsDao {
 
@@ -50,9 +52,25 @@ public interface FtsDao {
                                  @Nullable String publisherName,
                                  @Nullable String keywords);
 
+    /**
+     * Do a local-search. Used by the {@link SearchViewHelper}.
+     *
+     * @param keywords Keywords to find anywhere in book
+     *
+     * @return a list with {@link FtsSearchResult}s
+     */
     @NonNull
-    List<FtsSearchResult> search(@NonNull String keywords);
+    default List<FtsSearchResult> search(@NonNull final String keywords) {
+        return search(null, null, null, null, keywords);
+    }
 
+    /**
+     * Do a local-search. Used by the {@link SearchSuggestionProvider}.
+     *
+     * @param searchText Keywords to find anywhere in book
+     *
+     * @return cursor as defined by the ContentProvider
+     */
     @Nullable
     Cursor querySearchSuggestions(@NonNull String searchText);
 
@@ -69,12 +87,16 @@ public interface FtsDao {
      * <p>
      * <strong>All Exceptions are ignored</strong>
      *
-     * @param bookId the book id
+     * @param book the book to insert
      */
-    void insert(@IntRange(from = 1) long bookId);
+    void insert(@NonNull Book book);
 
     /**
      * Update an FTS record for the given {@link Book}.
+     * <p>
+     * Note we pass the ID only because the caller might potentially only
+     * have a delta of the book data to update.
+     * The FtsDao MUST fetch the full book from the db to update it in the fts table.
      * <p>
      * <strong>Transaction:</strong> required
      * <p>
