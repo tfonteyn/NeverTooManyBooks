@@ -194,12 +194,23 @@ public class BookDaoImpl
                 cv.put(DBKey.DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
             }
 
-            // if we have an id, and we're allowed, use it as-is.
-            if (book.getId() > 0 && flags.contains(BookFlag.UseIdIfPresent)) {
-                cv.put(DBKey.PK_ID, book.getId());
+            // This flag is only set during imports to make sure we preserve id/uuid
+            // If we hit a duplicate, and error will be thrown and the import for this
+            // particular book will be skipped and reported to the user.
+            if (flags.contains(BookFlag.UseIdIfPresent)) {
+                if (book.getId() > 0) {
+                    cv.put(DBKey.PK_ID, book.getId());
+                }
+                if (!book.getUuid().isEmpty()) {
+                    cv.put(DBKey.BOOK_UUID, book.getUuid());
+                }
             } else {
-                // in all other circumstances, make absolutely sure we DO NOT pass in an id.
+                // in all other circumstances, make absolutely sure we DO NOT pass in id/uuid
+                // or we can potentially violate UNIQUE constraints.
+                // The user will already have been notified that they are storing a duplicate
+                // and they confirmed this is what they wanted.
                 cv.remove(DBKey.PK_ID);
+                cv.remove(DBKey.BOOK_UUID);
             }
 
             // go!
