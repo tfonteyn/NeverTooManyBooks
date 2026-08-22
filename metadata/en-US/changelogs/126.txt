@@ -6,6 +6,7 @@ NEW:
 - the Calibre throttler can now be switched off
 
 FIXES:
+- GitHub #250: intentionally inserting duplicate books could fail
 - fix the group book-count. This fixes in particular "Grouping on dates"
   and "Grouping on Series, then on Author" but is generic and valid
   for all similar situations.
@@ -16,4 +17,4 @@ FIXES:
 - tablets (10") display dialogs properly sized instead of too large / too small.
 
 REMOVED:
-- Goodreads. They use AWS WAF blocking. No solution.
+- Goodreads. They use AWS WAF blocking. There is currently no solution to get around that.
