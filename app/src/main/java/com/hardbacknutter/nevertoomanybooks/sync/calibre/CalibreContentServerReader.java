@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -108,6 +109,7 @@ public class CalibreContentServerReader
     private static final String TAG = "CalibreServerReader";
     private static final String BKEY_VIRTUAL_LIBRARY_LIST = TAG + ":vlibs";
 
+    // URGENT: make number of books fetched user configurable.
     /** The number of books we fetch per request. Tested with CCS running on a RaspberryPi 1b+. */
     private static final int NUM = 10;
     /** Response root tag: Number of items returned in 'this' call. */
@@ -134,7 +136,8 @@ public class CalibreContentServerReader
     @NonNull
     private final String eBookString;
 
-    private final BookDao bookDao;
+    private final BookRepository bookRepository;
+
     private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
 
@@ -165,13 +168,12 @@ public class CalibreContentServerReader
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
-    public CalibreContentServerReader(
-            @NonNull final Context context,
-            @NonNull final Set<RecordType> recordTypes,
-            @NonNull final SyncReaderProcessor syncProcessor,
-            @Nullable final LocalDateTime syncDate,
-            @NonNull final Updates updateOption,
-            @NonNull final Bundle extraArgs)
+    public CalibreContentServerReader(@NonNull final Context context,
+                                      @NonNull final Set<RecordType> recordTypes,
+                                      @NonNull final SyncReaderProcessor syncProcessor,
+                                      @Nullable final LocalDateTime syncDate,
+                                      @NonNull final Updates updateOption,
+                                      @NonNull final Bundle extraArgs)
             throws CertificateException {
 
         this.updateOption = updateOption;
@@ -179,18 +181,18 @@ public class CalibreContentServerReader
         this.syncProcessor = syncProcessor;
 
         doCovers = recordTypes.contains(RecordType.Cover);
+        //noinspection deprecation
         library = extraArgs.getParcelable(CalibreContentServer.BKEY_LIBRARY);
 
         server = new CalibreContentServer.Builder(context).build();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        bookDao = serviceLocator.getBookDao();
         bookshelfDao = serviceLocator.getBookshelfDao();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
 
-        dateParser = new ISODateParser(ServiceLocator.getInstance()
-                                                     .getSystemLocaleList()
-                                                     .get(0));
+        bookRepository = new BookRepository(context);
+
+        dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
 
         eBookString = context.getString(R.string.book_format_ebook);
     }
@@ -446,8 +448,9 @@ public class CalibreContentServerReader
         delta = syncProcessor.process(context, book.getId(), book, calibreBook, fieldsWanted);
 
         if (delta != null) {
-            bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                                      BookDao.BookFlag.UseUpdateDateIfPresent));
+            bookRepository.update(context, delta,
+                                  EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                             BookDao.BookFlag.UseUpdateDateIfPresent));
             results.bookUpdated(book.getId());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -471,7 +474,8 @@ public class CalibreContentServerReader
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf();
 
-        final long id = bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
+        final long id = bookRepository.insert(context, book,
+                                              EnumSet.of(BookDao.BookFlag.RunInBatch));
         results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -575,6 +579,8 @@ public class CalibreContentServerReader
     }
 
     /**
+     * Convert the tags from Calibre to our tags.
+     *
      * <pre>
      *   "tags": [
      *       "Action & Adventure",

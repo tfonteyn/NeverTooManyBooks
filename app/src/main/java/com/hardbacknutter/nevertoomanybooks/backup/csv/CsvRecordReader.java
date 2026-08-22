@@ -122,11 +122,13 @@ public class CsvRecordReader
      * <p>
      * Only supports {@link RecordType#Books}.
      *
+     * @param context      Current context
      * @param updateOption options
      */
     @AnyThread
-    public CsvRecordReader(@NonNull final DataReader.Updates updateOption) {
-        super(updateOption);
+    public CsvRecordReader(@NonNull final Context context,
+                           @NonNull final DataReader.Updates updateOption) {
+        super(context, updateOption);
     }
 
     /**

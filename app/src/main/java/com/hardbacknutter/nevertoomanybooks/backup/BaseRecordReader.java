@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
@@ -48,6 +49,8 @@ public abstract class BaseRecordReader
 
     @NonNull
     private final BookDao bookDao;
+    private final BookRepository bookRepository;
+
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
     @NonNull
@@ -58,14 +61,18 @@ public abstract class BaseRecordReader
     /**
      * Constructor.
      *
+     * @param context      Current context
      * @param updateOption options
      */
-    protected BaseRecordReader(@NonNull final DataReader.Updates updateOption) {
+    protected BaseRecordReader(@NonNull final Context context,
+                               @NonNull final DataReader.Updates updateOption) {
         this.updateOption = updateOption;
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         this.bookDao = serviceLocator.getBookDao();
         this.dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
+
+        bookRepository = new BookRepository(context);
     }
 
     @NonNull
@@ -165,9 +172,9 @@ public abstract class BaseRecordReader
         final long preImportId = book.getId();
 
         // explicitly allow the id to be reused if present
-        final long id = bookDao.insert(context, book,
-                                       EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                                  BookDao.BookFlag.UseIdIfPresent));
+        final long id = bookRepository.insert(context, book,
+                                              EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                                         BookDao.BookFlag.UseIdIfPresent));
         results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
@@ -236,8 +243,9 @@ public abstract class BaseRecordReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book book)
             throws StorageException, DaoWriteException {
-        bookDao.update(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                                 BookDao.BookFlag.UseUpdateDateIfPresent));
+        bookRepository.update(context, book,
+                              EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                         BookDao.BookFlag.UseUpdateDateIfPresent));
         results.bookUpdated(book.getId());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {

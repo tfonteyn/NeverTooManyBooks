@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -33,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -54,6 +56,7 @@ class BookDaoImplTest
     private AuthorDao authorDao;
     private PublisherDao publisherDao;
     private BookDao bookDao;
+    private BookRepository bookRepository;
 
     @BeforeEach
     void setup()
@@ -63,6 +66,7 @@ class BookDaoImplTest
         authorDao = serviceLocator.getAuthorDao();
         publisherDao = serviceLocator.getPublisherDao();
         bookDao = serviceLocator.getBookDao();
+        bookRepository = new BookRepository(context);
 
         final List<Long> toRemove = new ArrayList<>();
         try(final TypedCursor fetch = bookDao.fetch(List.of(ISBN.parse("9783956405136")))) {
@@ -127,11 +131,11 @@ class BookDaoImplTest
         final Publisher publisher1 = publisherDao.findById(p1).get();
         book.add(publisher1);
 
-        final long bookId1 = bookDao.insert(context, book);
+        final long bookId1 = bookRepository.insert(context, book, Set.of());
 
         assertEquals(bookId1, book.getId());
 
-        final long bookId2 = bookDao.insert(context, book);
+        final long bookId2 = bookRepository.insert(context, book, Set.of());
         assertEquals(bookId2, book.getId());
 
         assertNotEquals(bookId1, bookId2);

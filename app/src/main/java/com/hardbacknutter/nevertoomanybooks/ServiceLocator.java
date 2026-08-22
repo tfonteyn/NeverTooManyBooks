@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
@@ -591,6 +592,13 @@ public final class ServiceLocator {
         return bedethequeCacheDao;
     }
 
+    /**
+     * Get the {@link BookDao} singleton.
+     *
+     * @return singleton
+     *
+     * @see BookRepository
+     */
     @NonNull
     public BookDao getBookDao() {
         synchronized (this) {

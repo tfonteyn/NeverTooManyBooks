@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -102,6 +103,7 @@ public class StripInfoReader
 
     @NonNull
     private final BookDao bookDao;
+    private final BookRepository bookRepository;
 
     private final IdentifierValueDao bookIdentifierDao;
 
@@ -132,6 +134,8 @@ public class StripInfoReader
         final ServiceLocator locator = ServiceLocator.getInstance();
         bookDao = locator.getBookDao();
         bookIdentifierDao = locator.getBookIdentifierDao();
+
+        bookRepository = new BookRepository(context);
     }
 
     @WorkerThread
@@ -352,7 +356,8 @@ public class StripInfoReader
         final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
         final long preImportId = book.getId();
 
-        final long id = bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
+        final long id = bookRepository.insert(context, book,
+                                              EnumSet.of(BookDao.BookFlag.RunInBatch));
         results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
@@ -369,8 +374,9 @@ public class StripInfoReader
                             @NonNull final Book book,
                             @NonNull final Book delta)
             throws StorageException, DaoWriteException {
-        bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
+        bookRepository.update(context, delta,
+                              EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                         BookDao.BookFlag.UseUpdateDateIfPresent));
         results.bookUpdated(book.getId());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {

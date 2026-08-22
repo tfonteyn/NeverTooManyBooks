@@ -154,9 +154,9 @@ public enum RecordEncoding {
                                                @NonNull final DataReader.Updates updateOption) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(allowedTypes, updateOption));
+                return Optional.of(new JsonRecordReader(context, allowedTypes, updateOption));
             case Csv: {
-                return Optional.of(new CsvRecordReader(updateOption));
+                return Optional.of(new CsvRecordReader(context, updateOption));
             }
             case Xml:
                 //noinspection deprecation

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -70,6 +73,7 @@ class JsonArchiveWriterTest
 
     private ISODateParser dateParser;
     private BookDao bookDao;
+    private BookRepository bookRepository;
 
     @BeforeEach
     void setup()
@@ -77,6 +81,7 @@ class JsonArchiveWriterTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         bookDao = ServiceLocator.getInstance().getBookDao();
+        bookRepository = new BookRepository(context);
 
         dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
 
@@ -162,7 +167,7 @@ class JsonArchiveWriterTest
 
         final Book book = Book.from(modifiedBookId);
         book.setNotes("MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
-        bookDao.update(context, book, Set.of());
+        bookRepository.update(context, book, Set.of());
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!

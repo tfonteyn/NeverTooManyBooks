@@ -56,6 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -107,6 +109,7 @@ public class SearchBookUpdatesViewModel
 
     /** Database Access. */
     private BookDao bookDao;
+    private BookRepository bookRepository;
 
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
@@ -173,6 +176,8 @@ public class SearchBookUpdatesViewModel
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+            bookRepository = new BookRepository(context);
+
             searchCriteria = new BookSearchCriteria();
 
             if (args != null) {
@@ -556,7 +561,7 @@ public class SearchBookUpdatesViewModel
                         }
                         if (delta != null) {
                             try {
-                                bookDao.update(context, delta);
+                                bookRepository.update(context, delta, Set.of());
                             } catch (@NonNull final StorageException | DaoWriteException e) {
                                 // ignore, but log it.
                                 LoggerFactory.getLogger().e(TAG, e);

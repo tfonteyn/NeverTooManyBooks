@@ -52,14 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -110,8 +107,6 @@ public class BookDaoImpl
 
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
-    @NonNull
-    private final TableInfo tableInfo;
 
     /**
      * Constructor.
@@ -123,7 +118,6 @@ public class BookDaoImpl
                        @NonNull final Locale systemLocale) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
-        tableInfo = db.getTableInfo(DBDefinitions.TBL_BOOKS);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -159,13 +153,12 @@ public class BookDaoImpl
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
-                       @NonNull final Book /* in/out */ book,
+                       @NonNull final Locale userLocale,
+                       @NonNull final BookDaoHelper bookDaoHelper,
+                       @NonNull final Book book,
                        @NonNull final Set<BookFlag> flags)
             throws StorageException,
                    DaoWriteException {
-
-        final List<Locale> userLocales = LocaleListUtils.asList(
-                context.getResources().getConfiguration().getLocales());
 
         Synchronizer.SyncLock txLock = null;
         //noinspection OverlyBroadCatchBlock,CheckStyle
@@ -174,7 +167,6 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
             final ContentValues cv = bookDaoHelper.process(context, book, true);
 
             // Make sure we have at least one author
@@ -237,7 +229,7 @@ public class BookDaoImpl
             book.putString(DBKey.BOOK_UUID, uuid);
 
             // next we add the links to series, authors,...
-            insertBookLinks(context, userLocales.get(0), book, flags);
+            insertBookLinks(context, userLocale, book, flags);
 
             // and populate the search suggestions table
             ServiceLocator.getInstance().getFtsDao().insert(newBookId);
@@ -276,13 +268,12 @@ public class BookDaoImpl
 
     @Override
     public void update(@NonNull final Context context,
+                       @NonNull final Locale userLocale,
+                       @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
                        @NonNull final Set<BookFlag> flags)
             throws StorageException,
                    DaoWriteException {
-
-        final List<Locale> userLocales = LocaleListUtils.asList(
-                context.getResources().getConfiguration().getLocales());
 
         Synchronizer.SyncLock txLock = null;
         //noinspection OverlyBroadCatchBlock,CheckStyle
@@ -291,7 +282,6 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
             final ContentValues cv = bookDaoHelper.process(context, book, false);
 
             // Disallow UUID updates
@@ -319,7 +309,7 @@ public class BookDaoImpl
                 SanityCheck.requireValue(uuid, ERROR_UUID);
                 book.putString(DBKey.BOOK_UUID, uuid);
 
-                insertBookLinks(context, userLocales.get(0), book, flags);
+                insertBookLinks(context, userLocale, book, flags);
 
                 ServiceLocator.getInstance().getFtsDao().update(book.getId());
 

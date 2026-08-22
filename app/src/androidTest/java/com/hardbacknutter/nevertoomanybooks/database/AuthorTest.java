@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -49,7 +49,8 @@ class AuthorTest
 
     private Locale bookLocale;
     private AuthorDao authorDao;
-    private BookDao bookDao;
+    private BookRepository bookRepository;
+
     private DBTestHelper h;
 
     @BeforeEach
@@ -58,8 +59,9 @@ class AuthorTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         bookLocale = Locale.getDefault();
-        bookDao = serviceLocator.getBookDao();
         authorDao = serviceLocator.getAuthorDao();
+
+        bookRepository = new BookRepository(context);
 
         h = new DBTestHelper(serviceLocator);
     }
@@ -145,14 +147,14 @@ class AuthorTest
         h.setBookBookshelves(bookIdx, 0);
         h.setBookPublishers(bookIdx, 0);
         h.settBookAuthors(bookIdx, 2);
-        h.bookIdArray[bookIdx] = bookDao.insert(context, h.bookArray[bookIdx], Set.of());
+        h.bookIdArray[bookIdx] = bookRepository.insert(context, h.bookArray[bookIdx], Set.of());
         h.bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 1;
         h.initBook(bookIdx);
         h.setBookBookshelves(bookIdx, 0);
         h.setBookPublishers(bookIdx, 0);
         h.settBookAuthors(bookIdx, 2);
-        h.bookIdArray[bookIdx] = bookDao.insert(context, h.bookArray[bookIdx], Set.of());
+        h.bookIdArray[bookIdx] = bookRepository.insert(context, h.bookArray[bookIdx], Set.of());
         h.bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 4;
         h.initBook(bookIdx);
@@ -160,7 +162,7 @@ class AuthorTest
         h.setBookPublishers(bookIdx, 0);
         h.settBookAuthors(bookIdx, 2);
         h.setBookTocEntries(bookIdx, 2, 1, 0, 3);
-        h.bookIdArray[bookIdx] = bookDao.insert(context, h.bookArray[bookIdx], Set.of());
+        h.bookIdArray[bookIdx] = bookRepository.insert(context, h.bookArray[bookIdx], Set.of());
         h.bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
         h.authorArray[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
@@ -216,14 +218,14 @@ class AuthorTest
         h.setBookBookshelves(bookIdx, 0);
         h.setBookPublishers(bookIdx, 0);
         h.settBookAuthors(bookIdx, 2);
-        h.bookIdArray[bookIdx] = bookDao.insert(context, h.bookArray[bookIdx], Set.of());
+        h.bookIdArray[bookIdx] = bookRepository.insert(context, h.bookArray[bookIdx], Set.of());
         h.bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 1;
         h.initBook(bookIdx);
         h.setBookBookshelves(bookIdx, 0);
         h.setBookPublishers(bookIdx, 0);
         h.settBookAuthors(bookIdx, 2);
-        h.bookIdArray[bookIdx] = bookDao.insert(context, h.bookArray[bookIdx], Set.of());
+        h.bookIdArray[bookIdx] = bookRepository.insert(context, h.bookArray[bookIdx], Set.of());
         h.bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 4;
         h.initBook(bookIdx);
@@ -231,7 +233,7 @@ class AuthorTest
         h.setBookPublishers(bookIdx, 0);
         h.settBookAuthors(bookIdx, 2);
         h.setBookTocEntries(bookIdx, 2, 1, 0, 3);
-        h.bookIdArray[bookIdx] = bookDao.insert(context, h.bookArray[bookIdx], Set.of());
+        h.bookIdArray[bookIdx] = bookRepository.insert(context, h.bookArray[bookIdx], Set.of());
         h.bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
         h.authorArray[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");

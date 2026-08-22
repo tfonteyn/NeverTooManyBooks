@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -82,7 +82,7 @@ class BookTest
     private final FileFilter jpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
 
     private CoverStorage coverStorage;
-    private BookDao bookDao;
+    private BookRepository bookRepository;
     private LoaneeDao loaneeDao;
 
     private DBTestHelper h;
@@ -98,8 +98,9 @@ class BookTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         h = new DBTestHelper(serviceLocator);
 
-        bookDao = serviceLocator.getBookDao();
         loaneeDao = serviceLocator.getLoaneeDao();
+
+        bookRepository = new BookRepository(context);
 
         coverStorage = serviceLocator.getCoverStorage();
 
@@ -163,7 +164,7 @@ class BookTest
         final int bookIdx = 0;
 
         // Do the initial insert and test it
-        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+        final long bookId = prepareAndInsertBook(context, bookIdx);
         Book book = Book.from(bookId);
         assertEquals(bookId, book.getId());
         assertBookMatchesInitialInsert(book, bookIdx);
@@ -180,7 +181,7 @@ class BookTest
         authors.add(this.h.authorArray[1]);
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        bookDao.update(context, book, Set.of());
+        bookRepository.update(context, book, Set.of());
         book.setStage(EntityStage.Stage.Clean);
 
         /*
@@ -215,7 +216,7 @@ class BookTest
 
         final int bookIdx = 0;
 
-        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+        final long bookId = prepareAndInsertBook(context, bookIdx);
 
         loaneeDao.setLoanee(bookId, "TheAdversary");
 
@@ -244,7 +245,7 @@ class BookTest
         final File coverDir = coverStorage.getDir();
         final File tempDir = coverStorage.getTempDir();
 
-        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+        final long bookId = prepareAndInsertBook(context, bookIdx);
         Book book = Book.from(bookId);
 
         // Test Dirty mode
@@ -254,7 +255,7 @@ class BookTest
         // we're in 'Dirty' mode, so must be a temp file
         assertBookHasTempCover(book, 1);
 
-        bookDao.update(context, book, Set.of());
+        bookRepository.update(context, book, Set.of());
         book.setStage(EntityStage.Stage.Clean);
 
         // reload
@@ -312,7 +313,7 @@ class BookTest
         final Optional<Style> s1 = helper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID);
         assertTrue(s1.isPresent());
 
-        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+        final long bookId = prepareAndInsertBook(context, bookIdx);
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
 
         final ShowBookDetailsInput args = new ShowBookDetailsInput(
@@ -332,7 +333,6 @@ class BookTest
      * @return book id
      */
     private long prepareAndInsertBook(@NonNull final Context context,
-                                      @NonNull final BookDao bookDao,
                                       @SuppressWarnings("SameParameterValue") final int bookIdx)
             throws DaoWriteException, StorageException, IOException {
 
@@ -358,7 +358,7 @@ class BookTest
 
         // Inserting the data should change the stage from Dirty to Clean
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        final long bookId = bookDao.insert(context, book, Set.of());
+        final long bookId = bookRepository.insert(context, book, Set.of());
         book.setStage(EntityStage.Stage.Clean);
 
         assertTrue(bookId > 0);

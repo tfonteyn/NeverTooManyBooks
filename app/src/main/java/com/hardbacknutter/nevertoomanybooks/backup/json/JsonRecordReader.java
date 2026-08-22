@@ -144,13 +144,15 @@ public class JsonRecordReader
     /**
      * Constructor.
      *
+     * @param context      Current context
      * @param allowedTypes the record types we're allowed to read
      * @param updateOption options
      */
     @AnyThread
-    public JsonRecordReader(@NonNull final Set<RecordType> allowedTypes,
+    public JsonRecordReader(@NonNull final Context context,
+                            @NonNull final Set<RecordType> allowedTypes,
                             @NonNull final DataReader.Updates updateOption) {
-        super(updateOption);
+        super(context, updateOption);
         this.allowedTypes = allowedTypes;
     }
 

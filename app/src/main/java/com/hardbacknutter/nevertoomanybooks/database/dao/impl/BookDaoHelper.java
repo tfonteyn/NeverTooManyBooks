@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -55,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormal
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -74,7 +74,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Processing and filtering is done in two methods to facilitate testing.
  */
-class BookDaoHelper {
+public class BookDaoHelper {
 
     private static final String TAG = "BookDaoHelper";
 
@@ -96,8 +96,8 @@ class BookDaoHelper {
      * @param tableInfo   of the {@link DBDefinitions#TBL_BOOKS} table
      * @param userLocales Current Locales
      */
-    BookDaoHelper(@NonNull final TableInfo tableInfo,
-                  @NonNull final List<Locale> userLocales) {
+    public BookDaoHelper(@NonNull final TableInfo tableInfo,
+                         @NonNull final List<Locale> userLocales) {
         this.tableInfo = tableInfo;
         this.userLocales = userLocales;
 
@@ -118,8 +118,7 @@ class BookDaoHelper {
 
     /**
      * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link BookDaoImpl#insert(Context, Book, Set)}
-     * and {@link BookDaoImpl#update(Context, Book, Set)}.
+     * Called during {@link BookDao#insert} and {@link BookDao#update}.
      *
      * @param context Current context
      * @param book    to process
@@ -392,7 +391,7 @@ class BookDaoHelper {
      * <ul>
      *      <li>which are null but not allowed to be null</li>
      *      <li>which are null/empty (i.e. blank) but not allowed to be blank</li>
-     * </ul>
+     * </ul>.
      * <p>
      * For new books, REMOVE those keys.
      * Existing books, REPLACE those keys with the default value for the column.
@@ -534,8 +533,7 @@ class BookDaoHelper {
     }
 
     /**
-     * Called during {@link BookDaoImpl#insert(Context, Book, Set)}
-     * and {@link BookDaoImpl#update(Context, Book, Set)}.
+     * Called during {@link BookDao#insert} and {@link BookDao#update}.
      *
      * @param book to process
      *

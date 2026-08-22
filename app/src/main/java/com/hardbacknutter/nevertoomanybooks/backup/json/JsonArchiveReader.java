@@ -107,10 +107,8 @@ public class JsonArchiveReader
                 throw new FileNotFoundException(uri.toString());
             }
 
-            try (is; RecordReader recordReader =
-                    new JsonRecordReader(
-                            EnumSet.of(RecordType.MetaData),
-                            updateOption)) {
+            try (is; RecordReader recordReader = new JsonRecordReader(
+                    context, EnumSet.of(RecordType.MetaData), updateOption)) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         new UriInfo(uri).getDisplayName(context), is);
@@ -137,7 +135,7 @@ public class JsonArchiveReader
                    IOException {
 
         try (InputStream is = context.getContentResolver().openInputStream(uri);
-             RecordReader recordReader = new JsonRecordReader(recordTypes, updateOption)) {
+             RecordReader recordReader = new JsonRecordReader(context, recordTypes, updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());
             }

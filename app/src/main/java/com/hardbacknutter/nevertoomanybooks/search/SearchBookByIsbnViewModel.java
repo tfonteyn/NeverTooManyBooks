@@ -28,12 +28,14 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -48,6 +50,7 @@ public class SearchBookByIsbnViewModel
     private final EditBookOutput resultData = new EditBookOutput();
     /** Database Access. */
     private BookDao bookDao;
+    private BookRepository bookRepository;
 
     private Style style;
 
@@ -91,6 +94,7 @@ public class SearchBookByIsbnViewModel
               @Nullable final SearchBookInput args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+            bookRepository = new BookRepository(context);
 
             if (args != null) {
                 final ScanMode tmpScanMode = args.getScanMode();
@@ -116,7 +120,7 @@ public class SearchBookByIsbnViewModel
         // if BOOK_CONDITION is wanted, assume the user got a new book.
         book.ensureCondition();
 
-        final long id = bookDao.insert(context, book);
+        final long id = bookRepository.insert(context, book, Set.of());
         book.setStage(EntityStage.Stage.Clean);
         onBookEditingDone(new EditBookOutput(true, id, 0));
     }

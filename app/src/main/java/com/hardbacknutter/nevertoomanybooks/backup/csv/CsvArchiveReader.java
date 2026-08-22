@@ -148,7 +148,7 @@ public class CsvArchiveReader
         FileUtils.copy(source, destination);
 
         try (InputStream is = context.getContentResolver().openInputStream(uri);
-             CsvRecordReader recordReader = new CsvRecordReader(updateOption)) {
+             CsvRecordReader recordReader = new CsvRecordReader(context, updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());
             }

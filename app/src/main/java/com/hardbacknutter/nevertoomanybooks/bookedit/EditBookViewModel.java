@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
@@ -226,6 +227,8 @@ public class EditBookViewModel
 
     private AuthorDao authorDao;
     private BookDao bookDao;
+    private BookRepository bookRepository;
+
     private BookshelfDao bookshelfDao;
     private ColorDao colorDao;
     private FormatDao formatDao;
@@ -259,6 +262,8 @@ public class EditBookViewModel
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             authorDao = serviceLocator.getAuthorDao();
             bookDao = serviceLocator.getBookDao();
+            bookRepository = new BookRepository(context);
+
             bookshelfDao = serviceLocator.getBookshelfDao();
             colorDao = serviceLocator.getColorDao();
             formatDao = serviceLocator.getFormatDao();
@@ -543,9 +548,9 @@ public class EditBookViewModel
             throws StorageException, DaoWriteException {
 
         if (book.isNew()) {
-            bookDao.insert(context, book);
+            bookRepository.insert(context, book, Set.of());
         } else {
-            bookDao.update(context, book);
+            bookRepository.update(context, book, Set.of());
         }
         modified = true;
         book.setStage(EntityStage.Stage.Clean);
