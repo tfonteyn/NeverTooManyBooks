@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -53,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -88,7 +87,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
-import org.xml.sax.SAXException;
 
 /**
  * Speculative Fiction only. e.g. Science-Fiction/Fantasy etc.
@@ -298,7 +296,7 @@ public class IsfdbSearchEngine
     @Nullable
     private SiteAuthModule siteAuthModule;
     @Nullable
-    private FutureHttp<Boolean> httpCall;
+    private HttpCall httpCall;
 
     /**
      * Constructor.
@@ -1803,7 +1801,6 @@ public class IsfdbSearchEngine
      *
      * @return list of books found
      *
-     * @throws StorageException      on storage related failures
      * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws IllegalStateException if the SAX parser could not be created
      */
@@ -1813,30 +1810,17 @@ public class IsfdbSearchEngine
                                          @NonNull final boolean[] fetchCovers,
                                          @SuppressWarnings("SameParameterValue")
                                              final int maxRecords)
-            throws StorageException, SearchException {
+            throws SearchException {
 
-        final IsfdbPublicationListHandler listHandler =
+        final IsfdbPublicationListHandler handler =
                 new IsfdbPublicationListHandler(context, this, bookParserHelper,
                                                 fetchCovers, maxRecords);
 
         final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
-        httpCall = httpFutureFactory.createGetDocumentRequest();
+        httpCall = httpCallFactory.createCall();
         try {
-            httpCall.get(url, (con, is) -> {
-                try {
-                    parser.parse(is, listHandler);
-                    return true;
-                } catch (@NonNull final SAXException e) {
-                    // unwrap SAXException using getException() !
-                    final Exception cause = e.getException();
-                    if (cause instanceof EOFException) {
-                        // not an error; we're done.
-                        return true;
-                    }
-                    throw e;
-                }
-            });
-            return listHandler.getResult();
+            httpCall.get(url, null, parser, handler);
+            return handler.getResult();
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
