@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -101,8 +100,7 @@ class IsfdbXmlPublicationTest
                                                 searchEngine.getParserHelper(),
                                                 new boolean[]{true}, 1);
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final SAXParser parser = factory.newSAXParser();
+        final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
         // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {

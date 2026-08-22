@@ -47,9 +47,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -1821,13 +1819,7 @@ public class IsfdbSearchEngine
                 new IsfdbPublicationListHandler(context, this, bookParserHelper,
                                                 fetchCovers, maxRecords);
 
-        final SAXParser parser;
-        try {
-            parser = SAXParserFactory.newInstance().newSAXParser();
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            throw new IllegalStateException(e);
-        }
-
+        final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
         httpCall = httpFutureFactory.createGetDocumentRequest();
         try {
             httpCall.get(url, (con, is) -> {

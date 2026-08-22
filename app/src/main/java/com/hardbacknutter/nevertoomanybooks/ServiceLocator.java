@@ -32,6 +32,10 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore;
@@ -108,6 +112,8 @@ import com.hardbacknutter.util.logger.FileLogger;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import org.xml.sax.SAXException;
+
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 
@@ -154,6 +160,8 @@ public final class ServiceLocator {
     private CookieManager cookieManager;
     @Nullable
     private OkHttpClient okHttpClient;
+    @Nullable
+    private SAXParserFactory saxParserFactory;
 
     @Nullable
     private AppLocale appLocale;
@@ -461,6 +469,28 @@ public final class ServiceLocator {
             }
         }
         return okHttpClient;
+    }
+
+    /**
+     * Create a <strong>new</strong> SAXParser using the default factory.
+     *
+     * @return new instance
+     *
+     * @throws IllegalStateException if we cannot create a default factory.
+     */
+    @NonNull
+    public SAXParser newSAXParser() {
+        synchronized (this) {
+            if (saxParserFactory == null) {
+                saxParserFactory = SAXParserFactory.newInstance();
+            }
+        }
+
+        try {
+            return saxParserFactory.newSAXParser();
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

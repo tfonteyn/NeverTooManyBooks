@@ -45,10 +45,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
@@ -152,12 +151,7 @@ public class XmlRecordReader
             throws DataReaderException,
                    IOException {
 
-        final SAXParser parser;
-        try {
-            parser = SAXParserFactory.newInstance().newSAXParser();
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            throw new IllegalStateException(e);
-        }
+        final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
 
         final XmlFilter rootFilter = new XmlFilter();
         // Allow reading BookCatalogue archive data.

@@ -36,9 +36,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -55,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -249,13 +246,7 @@ public class LibraryThingSearchEngine
         }
 
         final String url = String.format(ALT_EDITIONS_URL, apiToken, codeStr);
-        final SAXParser parser;
-        try {
-            parser = SAXParserFactory.newInstance().newSAXParser();
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            throw new IllegalStateException(e);
-        }
-
+        final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
         httpCall = httpCallFactory.createCall();
         try {

@@ -28,11 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -57,7 +56,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class ParseTest
         extends BaseDBTest {
@@ -139,11 +137,7 @@ class ParseTest
         searchEngine = EngineId.KbNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
-        try {
-            saxParser = SAXParserFactory.newInstance().newSAXParser();
-        } catch (ParserConfigurationException | SAXException e) {
-            fail(e.getMessage());
-        }
+        saxParser = ServiceLocator.getInstance().newSAXParser();
     }
 
     @NonNull

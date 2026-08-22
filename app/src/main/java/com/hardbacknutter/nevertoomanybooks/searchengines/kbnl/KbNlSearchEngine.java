@@ -35,11 +35,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -280,13 +279,7 @@ public class KbNlSearchEngine
 
         final DefaultHandler handler = new KbNlBookHandler(bookParserHelper, book);
 
-        final SAXParser parser;
-        try {
-            parser = SAXParserFactory.newInstance().newSAXParser();
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            throw new IllegalStateException(e);
-        }
-
+        final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
         httpCall = httpFutureFactory.createGetDocumentRequest();
         try {
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
