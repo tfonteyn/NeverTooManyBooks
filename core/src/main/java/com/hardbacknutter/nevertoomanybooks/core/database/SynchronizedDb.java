@@ -312,6 +312,9 @@ public class SynchronizedDb
      * <strong>native code</strong> based on SQL string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
+     * <p>
+     * Dev. notes: See {@link ExtSQLiteStatement#executeInsert()}
+     * for notes on exceptions and return code.
      *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
@@ -321,7 +324,8 @@ public class SynchronizedDb
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      *
      * @throws TransactionException when currently inside a shared lock
-     * @throws RuntimeException     whenever...
+     *
+     * @see SQLiteDatabase#insertWithOnConflict(String, String, ContentValues, int)
      */
     public long insert(@NonNull final String table,
                        @NonNull final ContentValues values)
@@ -366,7 +370,6 @@ public class SynchronizedDb
      * @return the number of rows affected
      *
      * @throws TransactionException when currently inside a shared lock
-     * @throws RuntimeException     whenever...
      */
     public int update(@NonNull final String table,
                       @NonNull final ContentValues values,
@@ -415,7 +418,6 @@ public class SynchronizedDb
      *         whereClause.
      *
      * @throws TransactionException when currently inside a shared lock
-     * @throws RuntimeException     whenever...
      */
     @SuppressWarnings("UnusedReturnValue")
     @VisibleForTesting

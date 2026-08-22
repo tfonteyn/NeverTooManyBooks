@@ -306,9 +306,19 @@ public class ExtSQLiteStatement
         long id;
         //noinspection CheckStyle
         try {
-            // Reminder, the native code of SqLite:
+            // statement.executeInsert() will eventually call:
+            //
+            // https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/java/android/database/sqlite/SQLiteConnection.java#L969
+            //  public long executeForLastInsertedRowId(String sql, Object[] bindArgs,
+            //            CancellationSignal cancellationSignal)
+            //
+            // which calls:
+            //
+            // https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/java/android/database/sqlite/SQLiteConnection.java#L174
+            // https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/jni/android_database_SQLiteConnection.cpp#L613
             //     return err == SQLITE_DONE && sqlite3_changes(connection->db) > 0
             //            ? sqlite3_last_insert_rowid(connection->db) : -1;
+            //
             // In addition, the SqLite/Android Java code can still throw RuntimeExceptions.
             id = statement.executeInsert();
         } catch (@NonNull final RuntimeException e) {
