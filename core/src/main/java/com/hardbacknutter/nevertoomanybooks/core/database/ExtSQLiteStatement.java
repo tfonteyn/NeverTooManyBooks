@@ -37,6 +37,13 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * A simple wrapper for an {@link SQLiteStatement} which is a final class, so we cannot extend it.
  * <p>
  * Provides convenience methods and debug output.
+ * <p>
+ * The update/insert native code:
+ * https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/jni/android_database_SQLiteConnection.cpp#L604
+ * https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/jni/android_database_SQLiteConnection.cpp#L613
+ * the "executeNonQuery" in those methods will force an Exception to be thrown
+ * The mapping of sqlite error codes to the SQLiteExceptions:
+ * https://github.com/aosp-mirror/platform_frameworks_base/blob/main/core/jni/android_database_SQLiteCommon.cpp
  */
 @SuppressWarnings({"unused", "WeakerAccess", "MissingJavadoc"})
 public class ExtSQLiteStatement
@@ -149,6 +156,11 @@ public class ExtSQLiteStatement
         statement.bindNull(index);
     }
 
+    /**
+     * Wrapper for underlying method on SQLiteStatement.
+     * <p>
+     * Clears all existing bindings. Unset bindings are treated as NULL.
+     */
     public void clearBindings() {
         statement.clearBindings();
     }
@@ -269,10 +281,6 @@ public class ExtSQLiteStatement
         int rowsAffected;
         //noinspection CheckStyle
         try {
-            // Reminder, the native code of SqLite:
-            //     return err == SQLITE_DONE ? sqlite3_changes(connection->db) : -1;
-            // the Javadocs do NOT MENTION THE RETURN OF -1 !
-            // In addition, the SqLite/Android Java code can still throw RuntimeExceptions.
             rowsAffected = statement.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e, statement);
@@ -306,20 +314,6 @@ public class ExtSQLiteStatement
         long id;
         //noinspection CheckStyle
         try {
-            // statement.executeInsert() will eventually call:
-            //
-            // https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/java/android/database/sqlite/SQLiteConnection.java#L969
-            //  public long executeForLastInsertedRowId(String sql, Object[] bindArgs,
-            //            CancellationSignal cancellationSignal)
-            //
-            // which calls:
-            //
-            // https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/java/android/database/sqlite/SQLiteConnection.java#L174
-            // https://github.com/aosp-mirror/platform_frameworks_base/blob/1cdfff555f4a21f71ccc978290e2e212e2f8b168/core/jni/android_database_SQLiteConnection.cpp#L613
-            //     return err == SQLITE_DONE && sqlite3_changes(connection->db) > 0
-            //            ? sqlite3_last_insert_rowid(connection->db) : -1;
-            //
-            // In addition, the SqLite/Android Java code can still throw RuntimeExceptions.
             id = statement.executeInsert();
         } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e, statement);
