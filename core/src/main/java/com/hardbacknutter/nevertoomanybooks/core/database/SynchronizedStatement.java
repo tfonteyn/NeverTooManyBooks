@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 /**
  * Wrapper for {@link SQLiteStatement} that ensures locking is used.
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings("unused")
 public class SynchronizedStatement
         extends ExtSQLiteStatement {
 
@@ -44,15 +44,15 @@ public class SynchronizedStatement
 
     /**
      * Constructor.
-     * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
+     * Use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
      *
      * @param synchronizer to use
      * @param statement    to wrap
      * @param readOnly     flag; is the statement a read-only operation
      */
-    public SynchronizedStatement(@NonNull final Synchronizer synchronizer,
-                                 @NonNull final SQLiteStatement statement,
-                                 final boolean readOnly) {
+    SynchronizedStatement(@NonNull final Synchronizer synchronizer,
+                          @NonNull final SQLiteStatement statement,
+                          final boolean readOnly) {
         super(statement);
         this.synchronizer = synchronizer;
         this.readOnly = readOnly;
