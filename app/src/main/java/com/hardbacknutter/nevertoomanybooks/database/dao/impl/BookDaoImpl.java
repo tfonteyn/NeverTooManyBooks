@@ -167,13 +167,13 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final ContentValues cv = bookDaoHelper.process(context, book, true);
-
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
             if (authors.isEmpty()) {
                 throw new DaoInsertException("No authors for book=" + book);
             }
+
+            final ContentValues cv = bookDaoHelper.process(context, book, true);
 
             final String addedOrUpdatedNow = SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC));
 
@@ -186,8 +186,8 @@ public class BookDaoImpl
                 cv.put(DBKey.DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
             }
 
-            // This flag is only set during imports to make sure we preserve id/uuid
-            // If we hit a duplicate, and error will be thrown and the import for this
+            // This flag is only set during imports to make sure we preserve id/uuid.
+            // If we hit a duplicate, an error will be thrown and the import for this
             // particular book will be skipped and reported to the user.
             if (flags.contains(BookFlag.UseIdIfPresent)) {
                 if (book.getId() > 0) {
@@ -211,19 +211,17 @@ public class BookDaoImpl
                 newBookId = db.insertOrThrow(TBL_BOOKS.getName(), cv);
             } catch (@NonNull final SQLException e) {
                 LoggerFactory.getLogger().e(TAG, e, "Insert failed"
-                                                      + "|table=" + TBL_BOOKS.getName()
-                                                      + "|cv=" + cv);
+                                                    + "|table=" + TBL_BOOKS.getName()
+                                                    + "|cv=" + cv);
 
-                book.putLong(DBKey.PK_ID, 0);
-                book.remove(DBKey.BOOK_UUID);
+                removeIds(book, flags);
                 throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book);
             }
 
             // Set the new id/uuid on the Book itself
-            // We manually remove it again (see below) upon any error
+            // We will manually remove them again (see below) upon any error
             book.putLong(DBKey.PK_ID, newBookId);
             // always lookup the UUID
-            // (even if we inserted with a uuid... to protect against future changes)
             final String uuid = getBookUuid(newBookId);
             SanityCheck.requireValue(uuid, ERROR_UUID);
             book.putString(DBKey.BOOK_UUID, uuid);
@@ -239,13 +237,11 @@ public class BookDaoImpl
                 bookDaoHelper.persistCovers(book);
 
             } catch (@NonNull final StorageException e) {
-                book.putLong(DBKey.PK_ID, 0);
-                book.remove(DBKey.BOOK_UUID);
+                removeIds(book, flags);
                 throw e;
 
             } catch (@NonNull final IOException e) {
-                book.putLong(DBKey.PK_ID, 0);
-                book.remove(DBKey.BOOK_UUID);
+                removeIds(book, flags);
                 throw new DaoCoverException(ERROR_STORING_COVERS + book, e);
             }
 
@@ -256,7 +252,6 @@ public class BookDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // Theoretically there is no need to catch RTE here, but paranoia...
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book, e);
 
         } finally {
@@ -264,6 +259,17 @@ public class BookDaoImpl
                 db.endTransaction(txLock);
             }
         }
+    }
+
+    // helper for 'insert'
+    private void removeIds(@NonNull final Book book,
+                           @NonNull final Set<BookFlag> flags) {
+        // Do NOT remove them if we're importing
+        if (flags.contains(BookFlag.UseIdIfPresent)) {
+            return;
+        }
+        book.putLong(DBKey.PK_ID, 0);
+        book.remove(DBKey.BOOK_UUID);
     }
 
     @Override
@@ -289,43 +295,49 @@ public class BookDaoImpl
                 cv.remove(DBKey.BOOK_UUID);
             }
 
-            // set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
+            // This flag is only set during imports to make sure we preserve last-update-date.
+            // Set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
             // or if it's not already present.
             if (!flags.contains(BookFlag.UseUpdateDateIfPresent)
                 || !cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
-                cv.put(DBKey.DATE_LAST_UPDATED__UTC, SqlEncode
-                        .dateTime(LocalDateTime.now(ZoneOffset.UTC)));
+                cv.put(DBKey.DATE_LAST_UPDATED__UTC,
+                       SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC)));
             }
 
             // Reminder: We're updating ONLY the fields present in the ContentValues.
             // Other fields in the database row are not affected.
             // go !
-            final int rowsAffected = db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
+            final int rowsAffected = db.update(TBL_BOOKS.getName(), cv,
+                                               DBKey.PK_ID + "=?",
                                                new String[]{String.valueOf(book.getId())});
 
-            if (rowsAffected > 0) {
-                // always lookup the UUID
-                final String uuid = getBookUuid(book.getId());
-                SanityCheck.requireValue(uuid, ERROR_UUID);
-                book.putString(DBKey.BOOK_UUID, uuid);
-
-                insertBookLinks(context, userLocale, book, flags);
-
-                ServiceLocator.getInstance().getFtsDao().update(book.getId());
-
-                try {
-                    bookDaoHelper.persistCovers(book);
-                } catch (@NonNull final IOException e) {
-                    throw new DaoCoverException(ERROR_STORING_COVERS + book);
-                }
-
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return;
+            if (rowsAffected <= 0) {
+                throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
             }
 
-            throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
+            // always lookup the UUID
+            final String uuid = getBookUuid(book.getId());
+            SanityCheck.requireValue(uuid, ERROR_UUID);
+            book.putString(DBKey.BOOK_UUID, uuid);
+
+            // next we add the links to series, authors,...
+            insertBookLinks(context, userLocale, book, flags);
+
+            // and populate the search suggestions table
+            ServiceLocator.getInstance().getFtsDao().update(book.getId());
+
+            // lastly we move the covers from the cache dir to their permanent dir/name
+            try {
+                bookDaoHelper.persistCovers(book);
+
+            } catch (@NonNull final IOException e) {
+                throw new DaoCoverException(ERROR_STORING_COVERS + book);
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+
         } catch (@NonNull final RuntimeException e) {
             // Theoretically there is no need to catch RTE here, but paranoia...
             LoggerFactory.getLogger().e(TAG, e);
@@ -359,6 +371,7 @@ public class BookDaoImpl
 
     @Override
     public boolean delete(@IntRange(from = 1) final long id) {
+        // We only delete using the UUID, so we can delete the covers as well.
         final String uuid = getBookUuid(id);
         // sanity check
         if (uuid == null || uuid.isBlank()) {
@@ -660,11 +673,11 @@ public class BookDaoImpl
     /**
      * Return a Cursor with all Books selected by the passed arguments.
      *
-     * @param whereClause   without the 'where' keyword, can be {@code null} or {@code ""}
+     * @param whereClause   without the {@code where} keyword, can be {@code null} or {@code ""}
      * @param selectionArgs You may include ?s in where clause in the query,
      *                      which will be replaced by the values from selectionArgs. The
      *                      values will be bound as Strings.
-     * @param orderByClause without the 'order by' keyword, can be {@code null} or {@code ""}
+     * @param orderByClause without the {@code order by} keyword, can be {@code null} or {@code ""}
      *
      * @return A Book Cursor with 0..1 row
      */
@@ -858,11 +871,9 @@ public class BookDaoImpl
                                  new String[]{list.get(0).asText()}, null);
         } else {
             return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN)
-                                 + " IN ("
                                  + list.stream()
                                        .map(s -> '\'' + s.asText() + '\'')
-                                       .collect(Collectors.joining(","))
-                                 + ')',
+                                       .collect(Collectors.joining(",",  " IN (", ")")),
                                  null,
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }
@@ -910,7 +921,7 @@ public class BookDaoImpl
                     productCode.asText(ProductCodeType.Isbn13)})) {
                 while (cursor.moveToNext()) {
                     result.add(new Pair<>(cursor.getLong(0),
-                                        cursor.getString(1)));
+                                          cursor.getString(1)));
                 }
             }
         } else {
@@ -919,7 +930,7 @@ public class BookDaoImpl
                     productCode.asText()})) {
                 while (cursor.moveToNext()) {
                     result.add(new Pair<>(cursor.getLong(0),
-                                        cursor.getString(1)));
+                                          cursor.getString(1)));
                 }
             }
         }

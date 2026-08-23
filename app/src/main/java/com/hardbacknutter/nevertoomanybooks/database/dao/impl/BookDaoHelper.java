@@ -181,9 +181,11 @@ public class BookDaoHelper {
             processExternalIds(book);
         }
 
-        // lastly, clean-up null and blank fields as needed.
+        // clean-up null and blank fields as needed.
         processNullsAndBlanks(book, isNew);
 
+        // lastly filter and extract the name/value pairs for the book table columns
+        // leaving all other data in the Book object as-is.
         return filterValues(book, realNumberParser);
     }
 
