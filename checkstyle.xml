@@ -70,6 +70,8 @@
     <!-- <module name="Translation" />-->
     <!-- <module name="UniqueProperties" />-->
 
+    <module name="SuppressWarningsFilter" />
+
     <module name="TreeWalker">
         <property name="tabWidth"
                   value="4" />
@@ -82,7 +84,7 @@
         <module name="MissingOverride" />
         <module name="PackageAnnotation" />
         <module name="SuppressWarnings" />
-        <!-- <module name="SuppressWarningsHolder" />-->
+        <module name="SuppressWarningsHolder" />
 
         <!-- ========== Block Checks ========== -->
         <!-- a switch with nested blocks can be collapsed/expanded in the editor. Useful. -->
