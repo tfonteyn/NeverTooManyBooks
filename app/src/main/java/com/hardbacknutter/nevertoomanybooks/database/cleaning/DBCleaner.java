@@ -373,10 +373,10 @@ public class DBCleaner {
         sql = update + "('true','t','yes')";
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, 1);
-            final int count = stmt.executeUpdateDelete();
+            final int rowsAffected = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
-                if (count > 0) {
-                    logger.d(TAG, "booleanCleanup", "true=" + count);
+                if (rowsAffected > 0) {
+                    logger.d(TAG, "booleanCleanup", "true=" + rowsAffected);
                 }
             }
         }
@@ -384,10 +384,10 @@ public class DBCleaner {
         sql = update + "('false','f','no')";
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, 0);
-            final int count = stmt.executeUpdateDelete();
+            final int rowsAffected = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
-                if (count > 0) {
-                    logger.d(TAG, "booleanCleanup", "false=" + count);
+                if (rowsAffected > 0) {
+                    logger.d(TAG, "booleanCleanup", "false=" + rowsAffected);
                 }
             }
         }
