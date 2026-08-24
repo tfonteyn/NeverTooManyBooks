@@ -576,6 +576,7 @@ class BooklistBuilder {
         // The triggers will do the grouping levels.
         final int initialInsertCount;
         try (SynchronizedStatement stmt = db.compileStatement(sqlBulkInsert)) {
+            // Note we use the executeUpdateDelete to get the NUMBER of rows inserted
             initialInsertCount = stmt.executeUpdateDelete();
         }
 
