@@ -375,9 +375,7 @@ public class DBCleaner {
             stmt.bindLong(1, 1);
             final int rowsAffected = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
-                if (rowsAffected > 0) {
-                    logger.d(TAG, "booleanCleanup", "true=" + rowsAffected);
-                }
+                logger.d(TAG, "booleanCleanup", "true=" + rowsAffected);
             }
         }
 
@@ -386,9 +384,7 @@ public class DBCleaner {
             stmt.bindLong(1, 0);
             final int rowsAffected = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
-                if (rowsAffected > 0) {
-                    logger.d(TAG, "booleanCleanup", "false=" + rowsAffected);
-                }
+                logger.d(TAG, "booleanCleanup", "false=" + rowsAffected);
             }
         }
     }
