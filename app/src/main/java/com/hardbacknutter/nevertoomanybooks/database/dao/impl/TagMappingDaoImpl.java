@@ -200,7 +200,11 @@ public class TagMappingDaoImpl
             stmt.bindLong(1, mapping.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
-        return rowsAffected > 0;
+        if (rowsAffected > 0) {
+            mapping.setId(0);
+            return true;
+        }
+        return false;
     }
 
     private static final class Sql {
