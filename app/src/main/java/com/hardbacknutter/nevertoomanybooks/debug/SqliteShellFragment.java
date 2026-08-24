@@ -56,11 +56,8 @@ public class SqliteShellFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "SqliteShellFragment";
-
-    private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
-
     static final String PK_SQLITE_MAX_LINES = "sqlite.shell.max.lines";
-
+    private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
     private static final int MAX_LINES = 200;
 
     private static final String UTF_8 = "utf-8";
@@ -82,6 +79,13 @@ public class SqliteShellFragment
 
     private int maxLines = MAX_LINES;
 
+    /**
+     * Constructor.
+     *
+     * @param allowUpdates flag
+     *
+     * @return instance
+     */
     @NonNull
     public static Fragment create(final boolean allowUpdates) {
         final Fragment fragment = new SqliteShellFragment();
@@ -142,42 +146,47 @@ public class SqliteShellFragment
     }
 
     //    private void textSmaller() {
-//        final WebSettings settings = outputView.getSettings();
-//        settings.setTextZoom(settings.getTextZoom() - 10);
-//    }
-//
-//    private void textBigger() {
-//        final WebSettings settings = outputView.getSettings();
-//        settings.setTextZoom(settings.getTextZoom() + 10);
-//    }
+    //        final WebSettings settings = outputView.getSettings();
+    //        settings.setTextZoom(settings.getTextZoom() - 10);
+    //    }
+    //
+    //    private void textBigger() {
+    //        final WebSettings settings = outputView.getSettings();
+    //        settings.setTextZoom(settings.getTextZoom() + 10);
+    //    }
 
     private void execute() {
         executeSql(vb.input.getText().toString().strip());
     }
 
     private void executeSql(@NonNull final String sql) {
-        final String lcSql = sql.toLowerCase(Locale.ROOT);
+        final String lcSql = sql.toUpperCase(Locale.ROOT);
+
+
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
-            if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
+            if (allowUpdates && lcSql.startsWith("INSERT")) {
                 getToolbar().setTitle("");
 
-                if (allowUpdates) {
-                    final int rowsAffected;
-                    try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-                        rowsAffected = stmt.executeUpdateDelete();
-                    }
-                    final String result = getString(R.string.debug_sq_shell_rows_affected_x,
-                                                    rowsAffected);
-                    vb.output.loadDataWithBaseURL(null, result,
-                                                  TEXT_HTML, UTF_8, null);
-                } else {
-                    vb.output.loadDataWithBaseURL(
-                            null,
-                            getString(R.string.debug_sq_shell_warning_updates_not_allowed),
-                            TEXT_HTML, UTF_8, null);
+                final long id;
+                try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+                    id = stmt.executeInsert();
                 }
-            } else {
+                final String result = getString(R.string.debug_sq_shell_row_id, id);
+                vb.output.loadDataWithBaseURL(null, result, TEXT_HTML, UTF_8, null);
+
+            } else if (allowUpdates && (lcSql.startsWith("UPDATE") || lcSql.startsWith("DELETE"))) {
+                getToolbar().setTitle("");
+
+                final int rowsAffected;
+                try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+                    rowsAffected = stmt.executeUpdateDelete();
+                }
+                final String result = getString(R.string.debug_sq_shell_rows_affected_x,
+                                                rowsAffected);
+                vb.output.loadDataWithBaseURL(null, result, TEXT_HTML, UTF_8, null);
+
+            } else if (lcSql.startsWith("SELECT")) {
                 //TODO: parse for keyword 'limit' and add default if not present
                 try (Cursor cursor = db.rawQuery(sql, null)) {
                     final String result = getString(R.string.debug_sq_shell_rows_x,
@@ -206,12 +215,29 @@ public class SqliteShellFragment
                     vb.output.loadDataWithBaseURL(null, sb.toString(),
                                                   TEXT_HTML, UTF_8, null);
                 }
+
+            } else if (allowUpdates) {
+                getToolbar().setTitle("");
+
+                try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+                    stmt.execute();
+                }
+                final String result = getString(R.string.action_done);
+                vb.output.loadDataWithBaseURL(null, result, TEXT_HTML, UTF_8, null);
+
+            } else {
+                vb.output.loadDataWithBaseURL(
+                        null,
+                        getString(R.string.debug_sq_shell_warning_updates_not_allowed),
+                        TEXT_HTML, UTF_8, null);
             }
         } catch (@NonNull final Exception e) {
             getToolbar().setTitle("");
 
-            vb.output.loadDataWithBaseURL(null, String.valueOf(e.getMessage()),
-                                          TEXT_HTML, UTF_8, null);
+            final Throwable cause = e.getCause();
+            final String msg = e.getMessage() + "<br>" + (cause != null ? cause.getMessage() : "");
+
+            vb.output.loadDataWithBaseURL(null, msg, TEXT_HTML, UTF_8, null);
         }
     }
 
@@ -235,7 +261,6 @@ public class SqliteShellFragment
                      R.string.lbl_settings)
                 .setIcon(R.drawable.settings_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
         }
 
         @Override

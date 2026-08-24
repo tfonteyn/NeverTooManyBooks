@@ -208,6 +208,8 @@
             translatable="false">Run</string>
     <string name="debug_sq_shell_list_tables"
             translatable="false">List tables</string>
+    <string name="debug_sq_shell_row_id"
+            translatable="false">RowID: %1$d</string>
     <string name="debug_sq_shell_max_rows"
             translatable="false">Max rows</string>
     <string name="debug_sq_shell_rows_x"
