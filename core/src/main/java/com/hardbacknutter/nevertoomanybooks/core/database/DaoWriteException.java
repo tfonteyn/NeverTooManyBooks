@@ -19,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * On purpose <strong>NOT</strong> an IOException, to force the developer to deal with it.
@@ -29,12 +29,16 @@ public class DaoWriteException
 
     private static final long serialVersionUID = -2857466683799399619L;
 
-    protected DaoWriteException(@NonNull final String message) {
+    protected DaoWriteException(@Nullable final String message) {
         super(message);
     }
 
-    protected DaoWriteException(@NonNull final String message,
-                                @NonNull final Throwable cause) {
+    protected DaoWriteException(@Nullable final Throwable cause) {
+        super(cause);
+    }
+
+    protected DaoWriteException(@Nullable final String message,
+                                @Nullable final Throwable cause) {
         super(message, cause);
     }
 }

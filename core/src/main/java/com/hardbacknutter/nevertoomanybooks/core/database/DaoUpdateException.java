@@ -20,17 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class DaoUpdateException
         extends DaoWriteException {
-    public DaoUpdateException(@NonNull final String message) {
+
+    public DaoUpdateException(@Nullable final String message) {
         super(message);
     }
 
-    public DaoUpdateException(@NonNull final String message,
-                              @NonNull final Throwable cause) {
+    public DaoUpdateException(@Nullable final Throwable cause) {
+        super(cause);
+    }
+    
+    public DaoUpdateException(@Nullable final String message,
+                              @Nullable final Throwable cause) {
         super(message, cause);
     }
-
 }
