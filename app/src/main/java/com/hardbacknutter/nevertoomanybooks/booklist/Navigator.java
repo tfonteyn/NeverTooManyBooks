@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,9 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDoneException;
+
 import androidx.annotation.IntRange;
 
 public interface Navigator {
@@ -35,11 +38,20 @@ public interface Navigator {
     /**
      * Get the book id to load for the given position.
      *
-     * @param position of the book, {@code 0..}
+     * @param position of the book, {@code 0} based
      *
      * @return book id
+     *
+     * @throws SQLiteDoneException if no book was found;
+     *                             This should never happen... flw
+     * @throws SQLException        on unexpected failures
      */
-    long getBookId(@IntRange(from = 0) int position);
+    @IntRange(from = 1)
+    long getBookId(@IntRange(from = 0) int position)
+            throws SQLiteDoneException, SQLException;
 
+    /**
+     * Clean up / close.
+     */
     void close();
 }

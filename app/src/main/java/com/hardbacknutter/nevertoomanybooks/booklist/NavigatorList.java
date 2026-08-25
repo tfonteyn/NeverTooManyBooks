@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -30,22 +31,29 @@ public class NavigatorList
     @NonNull
     private final List<Long> list;
 
+    /**
+     * Constructor.
+     *
+     * @param list with book ids to navigate between
+     */
     public NavigatorList(@NonNull final List<Long> list) {
         this.list = list;
     }
 
     @Override
+    @IntRange(from = 1)
     public int getRowCount() {
         return list.size();
     }
 
     @Override
+    @IntRange(from = 1)
     public long getBookId(final int position) {
         return list.get(position);
     }
 
     @Override
     public void close() {
-
+        // nothing to do
     }
 }

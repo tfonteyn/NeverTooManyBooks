@@ -108,7 +108,7 @@ public class IndexDefinition {
      * @param db                     Underlying database
      * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      *
-     * @throws SQLException on failure
+     * @throws SQLException on unexpected failures
      */
     public void create(@NonNull final SQLiteDatabase db,
                        final boolean collationCaseSensitive) {
@@ -125,7 +125,7 @@ public class IndexDefinition {
      *
      * @param db Underlying database
      *
-     * @throws SQLException on failure
+     * @throws SQLException on unexpected failures
      */
     public void delete(@NonNull final SQLiteDatabase db) {
         db.execSQL("DROP INDEX IF EXISTS " + name);

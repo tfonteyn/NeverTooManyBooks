@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.IntRange;
@@ -62,28 +63,16 @@ public final class NavigatorDao
                 + _FROM_ + tableName + _WHERE_ + DBKey.PK_ID + "=?");
     }
 
-    /**
-     * Get the total number of rows (i.e. books) in the navigation table.
-     *
-     * @return row count
-     */
+    @Override
     @IntRange(from = 1)
     public int getRowCount() {
         return rowCount;
     }
 
-    /**
-     * Get the book id to load for the given position.
-     *
-     * @param position of the book, {@code 0..}
-     *
-     * @return book id
-     *
-     * @throws SQLiteDoneException which should NEVER happen... flw
-     */
     @Override
+    @IntRange(from = 1)
     public long getBookId(@IntRange(from = 0) final int position)
-            throws SQLiteDoneException {
+            throws SQLiteDoneException, SQLException {
         // positions are 0-based, but the table row is 1-based
         bookStmt.bindLong(1, position + 1);
         return bookStmt.simpleQueryForLong();

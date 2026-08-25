@@ -91,7 +91,7 @@ public class IdentifierDaoImpl
      * @param context Current context
      * @param db      Underlying database
      *
-     * @throws SQLException on failure
+     * @throws SQLException on unexpected failures
      * @see #restore(Context)
      */
     public static void onPostCreate(@NonNull final Context context,

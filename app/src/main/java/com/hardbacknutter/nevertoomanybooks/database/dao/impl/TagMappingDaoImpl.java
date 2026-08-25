@@ -87,7 +87,7 @@ public class TagMappingDaoImpl
      *
      * @param db Underlying database
      *
-     * @throws SQLException on failure
+     * @throws SQLException on unexpected failures
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
