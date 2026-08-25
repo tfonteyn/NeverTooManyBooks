@@ -124,8 +124,7 @@ public class SynchronizedStatement
 
     @Override
     @IntRange(from = -1)
-    public int executeUpdateDelete()
-            throws SQLException {
+    public int executeUpdateDelete() {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             return super.executeUpdateDelete();
@@ -136,8 +135,7 @@ public class SynchronizedStatement
 
     @Override
     @IntRange(from = -1)
-    public long executeInsert()
-            throws SQLException {
+    public long executeInsert() {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             return super.executeInsert();
