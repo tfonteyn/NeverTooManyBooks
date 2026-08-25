@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -76,9 +77,12 @@ public interface FtsDao {
 
     /**
      * Rebuild the entire FTS database.
+     *
+     * @throws SQLException on unexpected failures
      */
     @WorkerThread
-    void rebuild();
+    void rebuild()
+            throws SQLException;
 
     /**
      * Insert an FTS record for the given {@link Book}.
@@ -89,6 +93,7 @@ public interface FtsDao {
      *
      * @param book the book to insert
      */
+    @WorkerThread
     void insert(@NonNull Book book);
 
     /**
@@ -104,5 +109,6 @@ public interface FtsDao {
      *
      * @param bookId the book id
      */
+    @WorkerThread
     void update(@IntRange(from = 1) long bookId);
 }

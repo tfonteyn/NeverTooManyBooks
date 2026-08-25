@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.app.SearchManager;
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -77,7 +78,8 @@ public class FtsDaoImpl
     private static final int NANO_TO_MILLIS = 1_000_000;
 
     /** log error string. */
-    private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
+    private static final String ERROR_FAILED_TO_UPDATE = "Failed to update";
+    private static final String ERROR_FAILED_TO_INSERT = "Failed to insert";
 
     /** Name of the temporary table used during {@link #rebuild()}. */
     private static final String TMP_TABLE_FOR_REBUILDING = "books_fts_rebuilding";
@@ -183,7 +185,8 @@ public class FtsDaoImpl
 
     @Override
     @WorkerThread
-    public void rebuild() {
+    public void rebuild()
+            throws SQLException {
         // This can take several seconds with many books or a slow device.
         long t0 = 0;
         if (BuildConfig.DEBUG /* always */) {
@@ -235,7 +238,9 @@ public class FtsDaoImpl
         }
     }
 
+    @SuppressWarnings({"checkstyle:IllegalCatch", "OverlyBroadCatchBlock"})
     @Override
+    @WorkerThread
     public void insert(@NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -301,10 +306,16 @@ public class FtsDaoImpl
             stmt.bindLong(11, book.getId());
 
             stmt.execute();
+
+        } catch (@NonNull final RuntimeException e) {
+            // updating FTS should not be fatal.
+            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_INSERT);
         }
     }
 
+    @SuppressWarnings({"checkstyle:IllegalCatch", "OverlyBroadCatchBlock"})
     @Override
+    @WorkerThread
     public void update(@IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -313,13 +324,12 @@ public class FtsDaoImpl
             }
         }
 
-        //noinspection CheckStyle
         try (Cursor cursor = db.rawQuery(Sql.BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, Sql.UPDATE);
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE);
         }
     }
 
@@ -333,9 +343,12 @@ public class FtsDaoImpl
      *
      * @param cursor Cursor of books to update
      * @param sql    Statement to execute (insert or update)
+     *
+     * @throws SQLException on unexpected failures
      */
     private void processBooks(@NonNull final Cursor cursor,
-                              @NonNull final String sql) {
+                              @NonNull final String sql)
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
