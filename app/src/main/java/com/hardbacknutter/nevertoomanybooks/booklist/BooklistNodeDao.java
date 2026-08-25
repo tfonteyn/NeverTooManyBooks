@@ -257,10 +257,12 @@ public class BooklistNodeDao {
             }
         } catch (@NonNull final SQLiteConstraintException e) {
             if (BuildConfig.DEBUG /* always */) {
-                // DEBUG ONLY!
+                // DEBUG ONLY: clear the entire node db.
                 // This protects the developer when changing the structure irresponsibly...
                 clearAll(db);
-                throw new IllegalStateException(e);
+                throw e;
+            } else {
+                throw e;
             }
         } finally {
             if (txLock != null) {
