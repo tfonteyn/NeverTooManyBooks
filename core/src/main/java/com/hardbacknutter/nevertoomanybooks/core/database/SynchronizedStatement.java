@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,9 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -58,8 +60,9 @@ public class SynchronizedStatement
         this.readOnly = readOnly;
     }
 
+    @Override
     public long simpleQueryForLong()
-            throws SQLiteDoneException {
+            throws SQLiteDoneException, SQLException {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             return super.simpleQueryForLong();
@@ -68,7 +71,9 @@ public class SynchronizedStatement
         }
     }
 
-    public long simpleQueryForLongOrZero() {
+    @Override
+    public long simpleQueryForLongOrZero()
+            throws SQLException {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             return super.simpleQueryForLongOrZero();
@@ -77,9 +82,10 @@ public class SynchronizedStatement
         }
     }
 
+    @Override
     @NonNull
     public String simpleQueryForString()
-            throws SQLiteDoneException {
+            throws SQLiteDoneException, SQLException {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             return super.simpleQueryForString();
@@ -88,8 +94,10 @@ public class SynchronizedStatement
         }
     }
 
+    @Override
     @Nullable
-    public String simpleQueryForStringOrNull() {
+    public String simpleQueryForStringOrNull()
+            throws SQLException {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             return super.simpleQueryForStringOrNull();
@@ -98,7 +106,9 @@ public class SynchronizedStatement
         }
     }
 
-    public void execute() {
+    @Override
+    public void execute()
+            throws SQLException {
         final Synchronizer.SyncLock txLock;
         if (readOnly) {
             txLock = synchronizer.getSharedLock();
@@ -112,7 +122,10 @@ public class SynchronizedStatement
         }
     }
 
-    public int executeUpdateDelete() {
+    @Override
+    @IntRange(from = -1)
+    public int executeUpdateDelete()
+            throws SQLException {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             return super.executeUpdateDelete();
@@ -121,7 +134,10 @@ public class SynchronizedStatement
         }
     }
 
-    public long executeInsert() {
+    @Override
+    @IntRange(from = -1)
+    public long executeInsert()
+            throws SQLException {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             return super.executeInsert();

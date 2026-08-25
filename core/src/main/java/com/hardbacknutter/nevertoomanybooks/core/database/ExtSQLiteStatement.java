@@ -20,9 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,7 +32,6 @@ import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
-import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -175,15 +176,18 @@ public class ExtSQLiteStatement
      *
      * @return The result of the query.
      *
-     * @throws SQLiteDoneException if the query returns zero rows
+     * @throws SQLiteDoneException if the query returned zero rows
+     * @throws SQLException        on unexpected failures
      * @see #simpleQueryForLongOrZero()
      */
     public long simpleQueryForLong()
-            throws SQLiteDoneException {
+            throws SQLiteDoneException, SQLException {
         final long result = statement.simpleQueryForLong();
+        
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "simpleQueryForLong", statement + "|long=" + result);
+            LoggerFactory.getLogger().d(TAG, "simpleQueryForLong",
+                                        "result=" + result,
+                                        statement);
         }
         return result;
     }
@@ -194,8 +198,11 @@ public class ExtSQLiteStatement
      * Execute a statement that returns a 1 by 1 table with a numeric value.
      *
      * @return The result of the query, or {@code 0} if no rows found
+     *
+     * @throws SQLException on unexpected failures
      */
-    public long simpleQueryForLongOrZero() {
+    public long simpleQueryForLongOrZero()
+            throws SQLException {
         try {
             return simpleQueryForLong();
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -208,16 +215,19 @@ public class ExtSQLiteStatement
      *
      * @return The result of the query.
      *
-     * @throws SQLiteDoneException if the query returns zero rows
+     * @throws SQLiteDoneException if the query returned zero rows
+     * @throws SQLException        on unexpected failures
      * @see #simpleQueryForStringOrNull()
      */
     @NonNull
     public String simpleQueryForString()
-            throws SQLiteDoneException {
+            throws SQLiteDoneException, SQLException {
         final String result = statement.simpleQueryForString();
+        
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "simpleQueryForString", statement + "|string=" + result);
+            LoggerFactory.getLogger().d(TAG, "simpleQueryForString",
+                                        "result=" + result,
+                                        statement);
         }
         return result;
     }
@@ -228,16 +238,15 @@ public class ExtSQLiteStatement
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
      * @return The result of the query, or {@code null} if no rows found
+     *
+     * @throws SQLException on unexpected failures
      */
     @Nullable
-    public String simpleQueryForStringOrNull() {
+    public String simpleQueryForStringOrNull()
+            throws SQLException {
         try {
             return simpleQueryForString();
         } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "simpleQueryForStringOrNull", super.toString() + "|NULL");
-            }
             return null;
         }
     }
@@ -247,13 +256,12 @@ public class ExtSQLiteStatement
      * CREATE / DROP table, view, trigger, index etc.
      * <p>
      * <strong>2025-03-27: Currently only used by FTS insert/update.</strong>
+     *
+     * @throws SQLException on unexpected failures
      */
-    public void execute() {
-        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "execute", statement);
-        }
-        //noinspection CheckStyle
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public void execute()
+            throws SQLException {
         try {
             statement.execute();
         } catch (@NonNull final RuntimeException e) {
@@ -277,9 +285,10 @@ public class ExtSQLiteStatement
      * @return the number of rows affected by this SQL statement execution,
      *         or {@code -1} if an error occurred
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    @IntRange(from = -1)
     public int executeUpdateDelete() {
         int rowsAffected;
-        //noinspection CheckStyle
         try {
             rowsAffected = statement.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
@@ -288,9 +297,9 @@ public class ExtSQLiteStatement
         }
 
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "executeUpdateDelete",
-                            statement + "|rowsAffected=" + rowsAffected);
+            LoggerFactory.getLogger().d(TAG, "executeUpdateDelete",
+                                        "rowsAffected=" + rowsAffected,
+                                        statement);
         }
         return rowsAffected;
     }
@@ -307,12 +316,13 @@ public class ExtSQLiteStatement
      * <p>
      * URGENT: SQLiteConstraintException would indicate a BUG -> RETHROW IT?
      *
-     * @return the row id of the newly inserted row,
-     *         or {@code -1} if an error occurred
+     * @return the row id of the newly inserted row;
+     *         or {@code -1} if no inserts were done (but NOT due to an error)
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    @IntRange(from = -1)
     public long executeInsert() {
         long id;
-        //noinspection CheckStyle
         try {
             id = statement.executeInsert();
         } catch (@NonNull final RuntimeException e) {
@@ -321,11 +331,8 @@ public class ExtSQLiteStatement
         }
 
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            final Logger logger = LoggerFactory.getLogger();
-            logger.d(TAG, "executeInsert", statement + "|id=" + id);
-            if (id == -1) {
-                logger.e(TAG, new Throwable(), "Insert failed|" + statement);
-            }
+            LoggerFactory.getLogger().d(TAG, "executeInsert", "id=" + id,
+                                        statement);
         }
         return id;
     }
