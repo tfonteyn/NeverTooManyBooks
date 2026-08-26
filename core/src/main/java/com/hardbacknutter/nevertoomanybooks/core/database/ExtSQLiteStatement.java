@@ -24,6 +24,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -180,6 +181,7 @@ public class ExtSQLiteStatement
      * @throws SQLException        on unexpected failures
      * @see #simpleQueryForLongOrZero()
      */
+    @Discouraged(message = "You probably want to use simpleQueryForLongOrZero()")
     public long simpleQueryForLong()
             throws SQLiteDoneException, SQLException {
         final long result = statement.simpleQueryForLong();
@@ -219,6 +221,7 @@ public class ExtSQLiteStatement
      * @throws SQLException        on unexpected failures
      * @see #simpleQueryForStringOrNull()
      */
+    @Discouraged(message = "You probably want to use simpleQueryForStringOrNull()")
     @NonNull
     public String simpleQueryForString()
             throws SQLiteDoneException, SQLException {

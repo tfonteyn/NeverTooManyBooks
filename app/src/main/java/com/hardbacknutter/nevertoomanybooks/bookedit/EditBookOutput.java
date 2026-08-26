@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ContractOutput;
@@ -36,6 +37,7 @@ public final class EditBookOutput
     private static final String BKEY_LAST_BOOK_ID_PROCESSED = TAG + ":lastId";
 
     /** The BoB should reposition on this book. Can be {@code 0}. */
+    @IntRange(from = 0)
     private long repositionToBookId;
 
     /** SOMETHING was modified. This normally means that BoB will need to rebuild. */
@@ -46,6 +48,7 @@ public final class EditBookOutput
      * than this is the last book id we processed.
      * Can be {@code 0}.
      */
+    @IntRange(from = 0)
     private long lastBookIdProcessed;
 
     /**
@@ -65,8 +68,8 @@ public final class EditBookOutput
      *                            Pass in {@code 0} when not applicable.
      */
     public EditBookOutput(final boolean modified,
-                          final long repositionToBookId,
-                          final long lastBookIdProcessed) {
+                          @IntRange(from = 0) final long repositionToBookId,
+                          @IntRange(from = 0) final long lastBookIdProcessed) {
         this.modified = modified;
         this.repositionToBookId = repositionToBookId;
         this.lastBookIdProcessed = lastBookIdProcessed;
@@ -96,7 +99,7 @@ public final class EditBookOutput
     }
 
     /**
-     * Overwrite the current result with the new data <strong>if</strong> the new
+     * Overwrite the current result with the new data <strong>but only if</strong> the new
      * data contains <i>more</i> information.
      *
      * @param data add/set
@@ -126,8 +129,9 @@ public final class EditBookOutput
      * The BoB should reposition on this book.
      * <strong>DO NOT</strong> presume this is the book which was edited!
      *
-     * @return book id
+     * @return book id, or {@code 0} for none
      */
+    @IntRange(from = 0)
     public long getRepositionToBookId() {
         return repositionToBookId;
     }
@@ -135,9 +139,10 @@ public final class EditBookOutput
     /**
      * Get the last book id processed (i.e. when a <strong>list</strong> of books was done).
      *
-     * @return the <strong>last</strong> book id which was processed
+     * @return the <strong>last</strong> book id which was processed, or {@code 0} for none
      */
     @SuppressWarnings("WeakerAccess")
+    @IntRange(from = 0)
     public long getLastBookIdProcessed() {
         return lastBookIdProcessed;
     }

@@ -72,10 +72,10 @@ public final class NavigatorDao
     @Override
     @IntRange(from = 1)
     public long getBookId(@IntRange(from = 0) final int position)
-            throws SQLiteDoneException, SQLException {
+            throws SQLException {
         // positions are 0-based, but the table row is 1-based
         bookStmt.bindLong(1, position + 1);
-        return bookStmt.simpleQueryForLong();
+        return bookStmt.simpleQueryForLongOrZero();
     }
 
     @Override

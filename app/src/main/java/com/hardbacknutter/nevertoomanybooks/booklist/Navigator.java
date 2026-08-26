@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.IntRange;
 
@@ -42,13 +41,11 @@ public interface Navigator {
      *
      * @return book id
      *
-     * @throws SQLiteDoneException if no book was found;
-     *                             This should never happen... flw
      * @throws SQLException        on unexpected failures
      */
     @IntRange(from = 1)
     long getBookId(@IntRange(from = 0) int position)
-            throws SQLiteDoneException, SQLException;
+            throws SQLException;
 
     /**
      * Clean up / close.
