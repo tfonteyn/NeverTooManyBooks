@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -106,43 +107,46 @@ final class TestConstants {
     private TestConstants() {
     }
 
+    private static void doDelete(@NonNull final SynchronizedDb db,
+                                 @NonNull final TableDefinition table,
+                                 @NonNull final String column,
+                                 @NonNull final String list) {
+        db.execSQL("DELETE FROM " + table.getName()
+                   + " WHERE " + column + " IN (" + list + ")");
+    }
+
     static void deleteBookshelves(@NonNull final SynchronizedDb db) {
         final String list = Arrays.stream(BOOKSHELF)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_BOOKSHELF.getName(), DBKey.BOOKSHELF.NAME
-                                           + " IN (" + list + ")", null);
+        doDelete(db, TBL_BOOKSHELF, DBKey.BOOKSHELF.NAME, list);
     }
 
     static void deleteAuthors(@NonNull final SynchronizedDb db) {
         final String list = Arrays.stream(AUTHOR_FAMILY_NAME)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_AUTHORS.getName(), DBKey.AUTHOR.FAMILY_NAME
-                                         + " IN (" + list + ")", null);
+        doDelete(db, TBL_AUTHORS, DBKey.AUTHOR.FAMILY_NAME, list);
     }
 
     static void deletePublishers(@NonNull final SynchronizedDb db) {
         final String list = Arrays.stream(PUBLISHER)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_PUBLISHERS.getName(), DBKey.PUBLISHER.NAME
-                                            + " IN (" + list + ")", null);
+        doDelete(db, TBL_PUBLISHERS, DBKey.PUBLISHER.NAME, list);
     }
 
     static void deleteTocs(@NonNull final SynchronizedDb db) {
         final String list = Arrays.stream(TOC_TITLE)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_TOC_ENTRIES.getName(), DBKey.TITLE
-                                             + " IN (" + list + ")", null);
+        doDelete(db, TBL_TOC_ENTRIES, DBKey.TITLE, list);
     }
 
     static void deleteBooks(@NonNull final SynchronizedDb db) {
         final String list = Arrays.stream(BOOK_TITLE)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_BOOKS.getName(), DBKey.TITLE
-                                       + " IN (" + list + ")", null);
+        doDelete(db, TBL_BOOKS, DBKey.TITLE, list);
     }
 }

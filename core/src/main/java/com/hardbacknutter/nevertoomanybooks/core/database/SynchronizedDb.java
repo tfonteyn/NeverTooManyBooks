@@ -30,7 +30,6 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.List;
@@ -396,55 +395,6 @@ public class SynchronizedDb
         // but it can throw other exceptions.
         try {
             return sqLiteDatabase.update(table, values, whereClause, whereArgs);
-        } finally {
-            if (txLock != null) {
-                txLock.unlock();
-            }
-        }
-    }
-
-    /**
-     * Locking-aware wrapper for underlying database method.
-     * <p>
-     * <strong>Note:</strong> SQLite maintains a Statement cache in its
-     * <strong>native code</strong> based on SQL string matching.
-     * However, to avoid the Android code overhead,
-     * loops should use {@link #compileStatement} instead.
-     * <p>
-     * 2023-12-03: all regular use of this method was phased out in favour of
-     * {@link #compileStatement(String)}.
-     *
-     * @param table       the table to delete from
-     * @param whereClause the optional WHERE clause to apply when deleting.
-     *                    Passing null will delete all rows.
-     * @param whereArgs   the arguments to bind for the WHERE
-     *
-     * @return the number of rows affected if a whereClause is passed in, 0
-     *         otherwise. To remove all rows and get a count pass "1" as the
-     *         whereClause.
-     *
-     * @throws TransactionException when currently inside a shared lock
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @VisibleForTesting
-    public int delete(@NonNull final String table,
-                      @Nullable final String whereClause,
-                      @Nullable final String[] whereArgs)
-            throws TransactionException {
-
-        Synchronizer.SyncLock txLock = null;
-        if (currentTxLock != null) {
-            if (currentTxLock.getType() != Synchronizer.LockType.Exclusive) {
-                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
-            }
-        } else {
-            txLock = synchronizer.getExclusiveLock();
-        }
-
-        // reminder: delete does not throw exceptions for the actual delete.
-        // but it can throw other exceptions.
-        try {
-            return sqLiteDatabase.delete(table, whereClause, whereArgs);
         } finally {
             if (txLock != null) {
                 txLock.unlock();

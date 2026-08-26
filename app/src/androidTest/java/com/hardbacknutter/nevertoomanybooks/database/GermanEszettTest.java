@@ -55,10 +55,10 @@ class GermanEszettTest
         super.setup("de_DE");
 
         final SynchronizedDb db = serviceLocator.getDb();
-        db.delete(TBL_AUTHORS.getName(), DBKey.AUTHOR.FAMILY_NAME
-                                         + "='Groß'", null);
-        db.delete(TBL_AUTHORS.getName(), DBKey.AUTHOR.FAMILY_NAME
-                                         + "='Gross'", null);
+        db.execSQL("DELETE FROM " + TBL_AUTHORS.getName()
+                   + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "='Groß'");
+        db.execSQL("DELETE FROM " + TBL_AUTHORS.getName()
+                   + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "='Gross'");
 
         authorDao = serviceLocator.getAuthorDao();
 

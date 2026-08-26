@@ -93,9 +93,8 @@ class GoodreadsCsvImportTest
                                        Identifier.EntityType.Book)
                                  .get()
                                  .getId();
-        locator.getDb().delete(DBDefinitions.TBL_BOOK_IDENTIFIER.getName(),
-                               DBKey.FK_IDENTIFIER + "=" + grId,
-                               null);
+        locator.getDb().execSQL("DELETE FROM " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
+                                + " WHERE " + DBKey.FK_IDENTIFIER + "=" + grId);
     }
 
     @SuppressWarnings("LocalCanBeFinal")
