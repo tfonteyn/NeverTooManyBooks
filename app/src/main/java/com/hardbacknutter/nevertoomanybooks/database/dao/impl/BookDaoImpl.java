@@ -209,6 +209,7 @@ public class BookDaoImpl
             final long newBookId;
             try {
                 newBookId = db.insertOrThrow(TBL_BOOKS.getName(), cv);
+                // no need to check for -1 here
             } catch (@NonNull final SQLException e) {
                 LoggerFactory.getLogger().e(TAG, e, "Insert failed"
                                                     + "|table=" + TBL_BOOKS.getName()
@@ -311,6 +312,9 @@ public class BookDaoImpl
                                                DBKey.PK_ID + "=?",
                                                new String[]{String.valueOf(book.getId())});
 
+            // There is in fact no need to check on -1
+            // Checking on 0: this would only be the case if the _id=? fails to find the book.
+            // In short: this check is pure paranoia
             if (rowsAffected <= 0) {
                 throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
             }

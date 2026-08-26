@@ -314,8 +314,14 @@ public class SynchronizedDb
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      * <p>
-     * Dev. notes: See {@link ExtSQLiteStatement#executeInsert()}
-     * for notes on exceptions and return code.
+     * Dev. notes:
+     * <ul>
+     *     <li>See {@link ExtSQLiteStatement#executeInsert()} for notes on exceptions
+     *         and return code.</li>
+     *     <li>DO NOT USE {@link SQLiteDatabase#insert(String, String, ContentValues)} as it will
+     *         swallow all exceptions and ALWAYS return {@code -1} so we would have
+     *         no way of knowing WHY it failed.</li>
+     * </ul>
      *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
