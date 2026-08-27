@@ -48,7 +48,7 @@ public interface Logger {
         for (final Object parameter : params) {
             if (parameter instanceof Throwable) {
                 e = (Throwable) parameter;
-            } else {
+            } else if (parameter != null) {
                 sj.add(String.valueOf(parameter));
             }
         }
