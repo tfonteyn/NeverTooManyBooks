@@ -257,8 +257,6 @@ public class ExtSQLiteStatement
     /**
      * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
      * CREATE / DROP table, view, trigger, index etc.
-     * <p>
-     * <strong>2025-03-27: Currently only used by FTS insert/update.</strong>
      *
      * @throws SQLException on unexpected failures
      */

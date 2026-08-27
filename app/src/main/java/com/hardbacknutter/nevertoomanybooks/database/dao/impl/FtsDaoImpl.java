@@ -77,10 +77,6 @@ public class FtsDaoImpl
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
-    /** log error string. */
-    private static final String ERROR_FAILED_TO_UPDATE = "Failed to update";
-    private static final String ERROR_FAILED_TO_INSERT = "Failed to insert";
-
     /** Name of the temporary table used during {@link #rebuild()}. */
     private static final String TMP_TABLE_FOR_REBUILDING = "books_fts_rebuilding";
     private static final String LIST_DELIMITER = "; ";
@@ -214,7 +210,6 @@ public class FtsDaoImpl
             }
         } catch (@NonNull final RuntimeException e) {
             // we're running as a task thread, just clean-up, and let the task handle the exception
-            LoggerFactory.getLogger().e(TAG, e);
             db.drop(TMP_TABLE_FOR_REBUILDING);
             throw e;
 
@@ -305,11 +300,11 @@ public class FtsDaoImpl
             // FTS_BOOK_ID : in a where clause, or as insert parameter
             stmt.bindLong(11, book.getId());
 
+            // throws SQLException
             stmt.execute();
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_INSERT);
         }
     }
 
@@ -325,11 +320,11 @@ public class FtsDaoImpl
         }
 
         try (Cursor cursor = db.rawQuery(Sql.BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
+            // throws SQLException
             processBooks(cursor, Sql.UPDATE);
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE);
         }
     }
 
@@ -467,6 +462,7 @@ public class FtsDaoImpl
                 // FTS_BOOK_ID : in a where clause, or as insert parameter
                 stmt.bindLong(11, bookId);
 
+                // throws SQLException
                 stmt.execute();
             }
         }

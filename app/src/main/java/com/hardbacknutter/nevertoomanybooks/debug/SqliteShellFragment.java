@@ -220,6 +220,7 @@ public class SqliteShellFragment
                 getToolbar().setTitle("");
 
                 try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+                    // throws SQLException
                     stmt.execute();
                 }
                 final String result = getString(R.string.action_done);
