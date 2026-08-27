@@ -277,11 +277,6 @@ public class ExtSQLiteStatement
      * <p>
      * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
      * and a {@code -1} is returned.</strong>
-     * <p>
-     * <strong>SQLiteFullException</strong>: we're ignoring/logging with the assumption
-     * that if the device has no space left, the user will notice this during general usage.
-     * <p>
-     * URGENT: SQLiteConstraintException would indicate a BUG -> RETHROW IT?
      *
      * @return the number of rows affected by this SQL statement execution,
      *         or {@code -1} if an error occurred
@@ -311,11 +306,6 @@ public class ExtSQLiteStatement
      * <p>
      * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
      * and a {@code -1} is returned.</strong>
-     * <p>
-     * <strong>SQLiteFullException</strong>: we're ignoring/logging with the assumption
-     * that if the device has no space left, the user will notice this during general usage.
-     * <p>
-     * URGENT: SQLiteConstraintException would indicate a BUG -> RETHROW IT?
      *
      * @return the row id of the newly inserted row;
      *         or {@code -1} if no inserts were done (but NOT due to an error)
@@ -332,8 +322,7 @@ public class ExtSQLiteStatement
         }
 
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            LoggerFactory.getLogger().d(TAG, "executeInsert", "id=" + id,
-                                        statement);
+            LoggerFactory.getLogger().d(TAG, "executeInsert",  "id=" + id, statement);
         }
         return id;
     }
