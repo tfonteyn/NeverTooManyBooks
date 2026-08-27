@@ -217,6 +217,10 @@ android {
     lint {
         // allow command line builds to complete
         abortOnError = false
+        // prevent lint crashing with a NumberFormatException when it finds a string '+issn'
+        // in my "raw" xml test files...
+        // We should log this with Google, but they would ignore it for the next 5 years anyhow.
+        disable 'UnusedResources'
     }
 
     // https://developer.android.com/build/dependencies#dependency-info-play
