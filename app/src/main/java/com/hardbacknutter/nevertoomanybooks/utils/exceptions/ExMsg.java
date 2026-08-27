@@ -74,11 +74,13 @@ public final class ExMsg {
     public static Optional<String> map(@NonNull final Context context,
                                        @Nullable final Throwable e) {
         if (e != null) {
-            String msg = getMsg(context, e);
+            // Note we try to map the upper exception FIRST,
+            // as that might contain a user displayable (localised) message.
+            final String msg = getMsg(context, e);
 
+            // Otherwise try an encapsulated cause
             if (msg == null && e.getCause() != null) {
-                // Handle encapsulated exceptions
-                msg = getMsg(context, e.getCause());
+                return map(context, e.getCause());
             }
 
             if (msg != null) {
