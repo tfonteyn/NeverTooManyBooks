@@ -21,7 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Handler;
 import android.os.LocaleList;
+import android.os.Looper;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -672,6 +674,10 @@ public class SearchBookUpdatesViewModel
     @AnyThread
     public void cancel() {
         super.cancel();
-        postSearch(false);
+        // postSearch is @UiThread only
+        // Theoretically we can make cancel() @UiThread as cancelling is currently
+        // only done by the user from a progress/cancel dialog.
+        // But we want to keep cancel() @AnyThread for future use.
+        new Handler(Looper.getMainLooper()).post(() -> postSearch(false));
     }
 }
