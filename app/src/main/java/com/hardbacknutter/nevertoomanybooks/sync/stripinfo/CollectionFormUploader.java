@@ -444,6 +444,7 @@ class CollectionFormUploader {
     /**
      * Request to cancel an ongoing post (to the site).
      */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (httpCall != null) {

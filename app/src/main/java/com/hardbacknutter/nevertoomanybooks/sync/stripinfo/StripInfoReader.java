@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDoneException;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -221,6 +222,7 @@ public class StripInfoReader
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (searchEngine) {
             searchEngine.cancel();

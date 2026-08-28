@@ -229,6 +229,7 @@ public class OpenLibraryAuth
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (httpPost != null) {

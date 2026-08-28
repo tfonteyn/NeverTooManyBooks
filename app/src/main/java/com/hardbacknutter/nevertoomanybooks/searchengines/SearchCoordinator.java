@@ -454,7 +454,7 @@ public class SearchCoordinator
     }
 
     /**
-     * Cancel all searches.
+     * Request to cancel all searches.
      */
     @AnyThread
     public void cancel() {

@@ -172,6 +172,10 @@ public class CollectionFormParser {
         book.setStripInfoCollectionData(collectionData);
     }
 
+    /**
+     * Request to cancel the operation.
+     */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (httpCall != null) {

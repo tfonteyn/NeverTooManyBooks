@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -417,6 +418,7 @@ class BookSearch {
         return !activeTasks.isEmpty();
     }
 
+    @AnyThread
     void cancel() {
         activeTasks.values().forEach(SearchTask::cancel);
     }

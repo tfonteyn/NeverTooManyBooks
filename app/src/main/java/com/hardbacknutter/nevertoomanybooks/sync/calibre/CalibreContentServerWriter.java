@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.os.LocaleList;
 import android.util.Base64;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -139,6 +140,7 @@ public class CalibreContentServerWriter
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         server.cancel();
     }

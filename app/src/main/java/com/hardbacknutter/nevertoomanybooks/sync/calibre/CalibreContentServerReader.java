@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -198,6 +199,7 @@ public class CalibreContentServerReader
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         server.cancel();
     }

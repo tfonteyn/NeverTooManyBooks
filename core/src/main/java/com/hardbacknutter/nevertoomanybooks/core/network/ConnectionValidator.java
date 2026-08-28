@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -50,5 +51,6 @@ public interface ConnectionValidator {
     /**
      * Cancel any current/ongoing connection request to the website.
      */
+    @AnyThread
     void cancel();
 }

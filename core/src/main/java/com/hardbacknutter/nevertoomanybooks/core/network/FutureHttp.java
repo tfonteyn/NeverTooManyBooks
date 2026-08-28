@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1005,6 +1006,7 @@ public class FutureHttp<R> {
     /**
      * Request to cancel an ongoing http request.
      */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (futureHttp != null) {

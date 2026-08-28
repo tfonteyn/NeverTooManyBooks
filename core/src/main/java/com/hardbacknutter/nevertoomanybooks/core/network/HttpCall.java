@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -740,6 +741,10 @@ public class HttpCall {
                || code == HTTP_PERMANENT_REDIRECT;
     }
 
+    /**
+     * Request to cancel the operation.
+     */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (call != null) {

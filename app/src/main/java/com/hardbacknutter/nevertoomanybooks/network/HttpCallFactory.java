@@ -245,6 +245,9 @@ public final class HttpCallFactory {
         return getJsoupLoader().loadDocument(context, Parser.xmlParser(), url, headers);
     }
 
+    /**
+     * Request to cancel the operation.
+     */
     @AnyThread
     @CallSuper
     public void cancel() {
@@ -594,6 +597,10 @@ public final class HttpCallFactory {
             return parsedDocument;
         }
 
+        /**
+         * Request to cancel the operation.
+         */
+        @AnyThread
         public void cancel() {
             synchronized (this) {
                 if (httpCall != null) {

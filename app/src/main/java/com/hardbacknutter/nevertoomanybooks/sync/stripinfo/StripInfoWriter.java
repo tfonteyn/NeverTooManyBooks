@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -97,6 +98,7 @@ public class StripInfoWriter
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         collectionForm.cancel();
     }

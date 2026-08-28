@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -71,6 +72,7 @@ public interface SiteAuthModule {
     /**
      * Cancel any current/ongoing authentication request to the website.
      */
+    @AnyThread
     void cancel();
 
 }

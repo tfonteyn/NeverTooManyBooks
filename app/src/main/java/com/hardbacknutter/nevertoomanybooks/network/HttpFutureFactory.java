@@ -83,6 +83,9 @@ public class HttpFutureFactory {
         return config.isHttpLoggingEnabled();
     }
 
+    /**
+     * Request to cancel the operation.
+     */
     @AnyThread
     public void cancel() {
         synchronized (this) {
@@ -483,6 +486,10 @@ public class HttpFutureFactory {
             return parsedDocument;
         }
 
+        /**
+         * Request to cancel the operation.
+         */
+        @AnyThread
         public void cancel() {
             synchronized (this) {
                 if (httpCall != null) {

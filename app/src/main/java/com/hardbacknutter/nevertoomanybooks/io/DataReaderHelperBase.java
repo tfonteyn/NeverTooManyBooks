@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -241,6 +242,10 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
         }
     }
 
+    /**
+     * Request to cancel the operation.
+     */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (dataReader != null) {

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -132,6 +133,12 @@ public abstract class DataWriterHelperBase<RESULTS> {
         }
     }
 
+    /**
+     * Request to cancel the operation.
+     * <p>
+     * Override if the implementation needs to clean up or cancel something.
+     */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (dataWriter != null) {

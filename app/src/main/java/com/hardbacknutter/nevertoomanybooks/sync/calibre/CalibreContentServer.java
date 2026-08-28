@@ -1642,6 +1642,7 @@ public final class CalibreContentServer
         postCall.post(createPostRequest(url, body), null);
     }
 
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (jsonFetchCall != null) {

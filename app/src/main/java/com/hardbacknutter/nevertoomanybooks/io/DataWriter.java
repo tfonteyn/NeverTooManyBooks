@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -71,10 +72,11 @@ public interface DataWriter<RESULT>
                    IOException;
 
     /**
-     * Called when the operation is cancelled.
+     * Request to cancel the operation.
      * <p>
      * Override if the implementation needs to clean up or cancel something.
      */
+    @AnyThread
     default void cancel() {
     }
 

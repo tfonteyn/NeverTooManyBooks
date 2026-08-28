@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.util.Base64;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -319,6 +320,10 @@ public class ImageDownloader {
         }
     }
 
+    /**
+     * Request to cancel the download.
+     */
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (call != null) {

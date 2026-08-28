@@ -266,6 +266,7 @@ public class IsfdbAuth
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             if (httpPost != null) {

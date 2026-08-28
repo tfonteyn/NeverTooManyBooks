@@ -601,6 +601,7 @@ public class SearchBookUpdatesViewModel
      * @param success {@code true} if the search was successful
      *                or {@code false} if it was cancelled.
      */
+    @UiThread
     private void postSearch(final boolean success) {
         if (currentCursor != null) {
             currentCursor.close();
@@ -646,6 +647,7 @@ public class SearchBookUpdatesViewModel
      *
      * @param e error
      */
+    @UiThread
     private void postSearch(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
 
