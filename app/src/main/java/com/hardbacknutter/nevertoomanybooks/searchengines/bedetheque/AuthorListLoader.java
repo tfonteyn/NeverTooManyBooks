@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.util.Iterator;
 import java.util.Locale;
@@ -83,11 +84,11 @@ class AuthorListLoader {
      *
      * @return {@code true} on success
      *
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
+    @WorkerThread
     boolean fetch(final char c1)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         final String url = hostUrl + "/liste_auteurs_BD_" + c1 + ".html";
         final Document document = searchEngine.loadHtml(context, url, null);
@@ -105,6 +106,7 @@ class AuthorListLoader {
      * @return {@code true} on success
      */
     @VisibleForTesting
+    @WorkerThread
     boolean parseAuthorList(@NonNull final Document document) {
 
         // There can be 100's or even 1000's of Authors. Pass an iterator

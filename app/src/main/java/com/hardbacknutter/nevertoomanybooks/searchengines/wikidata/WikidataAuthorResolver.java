@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -136,6 +137,7 @@ public final class WikidataAuthorResolver
     }
 
     @Override
+    @WorkerThread
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {

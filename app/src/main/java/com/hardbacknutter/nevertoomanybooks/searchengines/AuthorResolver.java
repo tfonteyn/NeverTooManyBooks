@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -50,6 +51,7 @@ public interface AuthorResolver {
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
+    @WorkerThread
     boolean resolve(@NonNull Context context,
                     @NonNull Author author)
             throws SearchException, CredentialsException;

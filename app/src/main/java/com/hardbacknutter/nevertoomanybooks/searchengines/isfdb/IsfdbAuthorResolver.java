@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Optional;
@@ -124,6 +125,7 @@ public final class IsfdbAuthorResolver
     }
 
     @Override
+    @WorkerThread
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {

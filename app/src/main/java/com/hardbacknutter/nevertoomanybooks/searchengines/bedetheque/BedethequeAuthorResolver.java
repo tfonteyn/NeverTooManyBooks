@@ -144,6 +144,7 @@ public class BedethequeAuthorResolver
     }
 
     @Override
+    @WorkerThread
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
@@ -225,13 +226,13 @@ public class BedethequeAuthorResolver
      *
      * @return cached BdtAuthor, or {@code null} if not found
      *
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException on generic exceptions (wrapped) during search
      */
+    @WorkerThread
     @Nullable
     private BdtAuthor lookupInCache(@NonNull final Context context,
                                     @NonNull final Author author)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         // Check if we have the author in the cache
         final String name = author.getFormattedName(false);

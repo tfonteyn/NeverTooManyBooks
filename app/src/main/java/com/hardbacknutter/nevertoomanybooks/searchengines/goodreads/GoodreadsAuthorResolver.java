@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -137,6 +138,7 @@ public final class GoodreadsAuthorResolver
     }
 
     @Override
+    @WorkerThread
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {

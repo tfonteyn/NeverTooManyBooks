@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -110,6 +111,7 @@ public final class DnbAuthorResolver
     }
 
     @Override
+    @WorkerThread
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
