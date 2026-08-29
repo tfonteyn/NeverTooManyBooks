@@ -154,6 +154,7 @@ public class SettingsFragment
                          R.id.content_frame, p -> {
                     p.setIcon(R.drawable.display_settings_24px);
                     final Context context = getContext();
+                    //noinspection DataFlowIssue
                     p.setSummary(String.join(", ", List.of(
                             context.getString(R.string.pt_ui_language),
                             context.getString(R.string.pt_ui_theme),
@@ -349,6 +350,7 @@ public class SettingsFragment
                         p.setSummary(getString(R.string.warning_requires_android_x, 9));
                     } else {
                         final Context context = getContext();
+                        //noinspection DataFlowIssue
                         final List<StorageVolume> storageVolumes =
                                 CoverVolume.getAvailable(context);
 

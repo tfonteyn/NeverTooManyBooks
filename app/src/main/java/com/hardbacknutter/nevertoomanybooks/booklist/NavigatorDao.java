@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;

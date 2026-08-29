@@ -60,6 +60,7 @@ public class BertrandPtPreferencesFragment
 
                     // The default depends on the user language.
                     final Context context = getContext();
+                    @SuppressWarnings("DataFlowIssue")
                     final boolean checked = ((SearchEngine.SearchOnSite)
                             EngineId.BertrandPt.createSearchEngine(context))
                             .isShowSearchOnSiteMenu(context);

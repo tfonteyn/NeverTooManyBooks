@@ -66,6 +66,7 @@ public class BarcodePreferenceFragment
                              R.string.pt_camera_lens_facing, null, p -> {
                     p.setIcon(R.drawable.photo_camera_24px);
 
+                    @SuppressWarnings("DataFlowIssue")
                     final CameraConfig cameraConfig = new CameraConfig(getContext());
                     final List<Integer> cameras = cameraConfig.getAvailableLensFacingIds();
                     // Add 1 for the system-default value

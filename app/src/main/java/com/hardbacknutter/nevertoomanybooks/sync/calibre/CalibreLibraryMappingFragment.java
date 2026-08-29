@@ -128,6 +128,7 @@ public class CalibreLibraryMappingFragment
                 vm.mapBookshelfToLibrary(bookshelf);
                 vb.bookshelf.setText(bookshelf.getName());
             } catch (@NonNull final DaoWriteException e) {
+                //noinspection DataFlowIssue
                 ErrorDialog.show(getContext(), TAG, e);
             }
         });
@@ -135,6 +136,7 @@ public class CalibreLibraryMappingFragment
         vb.btnCreate.setOnClickListener(btn -> {
             try {
                 btn.setEnabled(false);
+                @SuppressWarnings("DataFlowIssue")
                 final Bookshelf bookshelf = vm.createLibraryAsBookshelf(getContext());
                 addBookshelf(bookshelf, vb.bookshelf);
 

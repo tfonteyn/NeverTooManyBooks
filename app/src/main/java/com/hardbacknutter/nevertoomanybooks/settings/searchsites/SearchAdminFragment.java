@@ -149,6 +149,7 @@ public class SearchAdminFragment
         //noinspection DataFlowIssue
         final boolean animationEnabled = Prefs.isAnimationEnabled(getContext());
         new TabLayoutMediator(tabPanel, viewPager, false, animationEnabled, (tab, position) -> {
+            //noinspection DataFlowIssue
             if (ScreenSize.compute(getActivity()).getWidth() == ScreenSize.Value.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {

@@ -240,6 +240,7 @@ public class EditBookshelvesFragment
             // We have prevented deletion of the default/only bookshelf already
             //noinspection DataFlowIssue
             StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
+                //noinspection DataFlowIssue
                 vm.deleteBookshelf(getContext(), bookshelf);
                 // - we're transposing row and columns
                 // - and potentially changing the default/selected shelf

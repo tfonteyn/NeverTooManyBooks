@@ -58,8 +58,7 @@ class AuthorParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         EngineId.Goodreads.getConfig().setHttpLoggingEnabled(true);
-        final GoodreadsSearchEngine searchEngine = (GoodreadsSearchEngine)
-                EngineId.Goodreads.createSearchEngine(context);
+        final GoodreadsSearchEngine searchEngine = EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         resolver = new GoodreadsAuthorResolver(context, searchEngine);

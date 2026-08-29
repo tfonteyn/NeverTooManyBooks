@@ -285,8 +285,8 @@ public final class ReadingProgress
      */
     public void setPages(@IntRange(from = 0) final int currentPage,
                          @IntRange(from = 1) final int totalPages) {
-        this.currentPage = currentPage < 0 ? 0 : currentPage;
-        this.totalPages = totalPages < 1 ? 1 : totalPages;
+        this.currentPage = Math.max(0, currentPage);
+        this.totalPages = Math.max(1, totalPages);
 
         if (currentPage > totalPages) {
             this.totalPages = currentPage;

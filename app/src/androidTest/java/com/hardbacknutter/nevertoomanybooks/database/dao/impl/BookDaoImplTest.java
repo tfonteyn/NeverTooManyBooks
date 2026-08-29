@@ -90,6 +90,7 @@ class BookDaoImplTest
                     .ifPresent(p -> publisherDao.delete(context, p));
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     void insertDuplicate()
             throws DaoWriteException, StorageException {
