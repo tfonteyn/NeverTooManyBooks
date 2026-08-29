@@ -153,10 +153,10 @@ public class ShowBookPagerViewModel
      *
      * @param position to look up
      *
-     * @return the book id at that position, or {@code 0} for none (which should never happen)
+     * @return the book id at that position
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @IntRange(from = 0)
+    @IntRange(from = 1)
     long getBookIdAtPosition(@IntRange(from = 0) final int position) {
         if (navHelper != null) {
             return navHelper.getBookId(position);
