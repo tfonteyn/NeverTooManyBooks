@@ -512,7 +512,7 @@ public class ImageHandlerViewModel
                         }
                     } else {
                         imageOwner.removeImage(context, cIdx);
-                        onInvalidImage.setValue(LiveDataEvent.ofNullable(null));
+                        onInvalidImage.postValue(LiveDataEvent.ofNullable(null));
                     }
                     return (Void) null;
                 },
