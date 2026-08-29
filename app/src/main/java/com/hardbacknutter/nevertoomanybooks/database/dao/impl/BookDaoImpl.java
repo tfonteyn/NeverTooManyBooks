@@ -335,7 +335,7 @@ public class BookDaoImpl
                 bookDaoHelper.persistCovers(book);
 
             } catch (@NonNull final IOException e) {
-                throw new DaoCoverException(ERROR_STORING_COVERS + book);
+                throw new DaoCoverException(ERROR_STORING_COVERS + book, e);
             }
 
             if (txLock != null) {
@@ -390,7 +390,7 @@ public class BookDaoImpl
      *
      * @param uuids list of book UUIDs
      *
-     * @return the number of books deleted (i.e. rowsAffected)
+     * @return the number of books deleted
      */
     @Override
     public int deleteByUuid(@NonNull final Collection<String> uuids) {
@@ -408,7 +408,9 @@ public class BookDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_UUID)) {
                 for (final String uuid : uuids) {
                     stmt.bindString(1, uuid);
+                    // check that the delete actually happened
                     if (stmt.executeUpdateDelete() > 0) {
+                        // and collect those, so we know which covers to delete.
                         actuallyDeleted.add(uuid);
                     }
                 }

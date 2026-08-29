@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -101,7 +102,7 @@ public class DeletedBooksDaoImpl
                     stmt.bindString(1, record.first);
                     stmt.bindString(2, record.second);
                     final long iId = stmt.executeInsert();
-                    // simply ignore failure, see SQL statement.
+                    // INSERT OR IGNORE can return {@code -1}
                     if (iId != -1) {
                         count++;
                     }
@@ -130,6 +131,7 @@ public class DeletedBooksDaoImpl
 
     @WorkerThread
     @Override
+    @IntRange(from = 0)
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(
                 DELETE_FROM_ + TBL_DELETED_BOOKS.getName())) {

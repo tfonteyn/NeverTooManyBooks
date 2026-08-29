@@ -320,12 +320,12 @@ public interface AuthorDao
      * Delete the given {@link Author}.
      *
      * @param context Current context
-     * @param item    to delete
+     * @param author  to delete
      *
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Context context,
-                   @NonNull Author item);
+                   @NonNull Author author);
 
     @StringDef({
             DBKey.TITLE_OB,

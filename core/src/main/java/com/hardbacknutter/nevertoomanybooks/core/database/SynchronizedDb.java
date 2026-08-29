@@ -315,7 +315,7 @@ public class SynchronizedDb
      * <p>
      * Dev. notes:
      * <ul>
-     *     <li>See {@link ExtSQLiteStatement#executeInsert()} for notes on exceptions
+     *     <li>See {@link ExtSQLiteStatement#executeInsert} for notes on exceptions
      *         and return code.</li>
      *     <li>DO NOT USE {@link SQLiteDatabase#insert(String, String, ContentValues)} as it will
      *         swallow all exceptions and ALWAYS return {@code -1} so we would have

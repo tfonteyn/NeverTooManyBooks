@@ -32,5 +32,4 @@ public class DaoCoverException
                              @NonNull final Throwable cause) {
         super(message, cause);
     }
-
 }

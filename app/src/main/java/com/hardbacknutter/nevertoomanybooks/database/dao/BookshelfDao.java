@@ -336,11 +336,11 @@ public interface BookshelfDao {
     /**
      * Delete the given {@link Bookshelf}.
      *
-     * @param context Current context
-     * @param item    to delete
+     * @param context   Current context
+     * @param bookshelf to delete
      *
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Context context,
-                   @NonNull Bookshelf item);
+                   @NonNull Bookshelf bookshelf);
 }

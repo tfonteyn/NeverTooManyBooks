@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * A simple wrapper for an {@link SQLiteStatement} which is a final class, so we cannot extend it.
+ * A simple wrapper for an {@link SQLiteStatement} which is a final class.
  * <p>
  * Provides convenience methods and debug output.
  * <p>
@@ -185,7 +185,7 @@ public class ExtSQLiteStatement
     public long simpleQueryForLong()
             throws SQLiteDoneException, SQLException {
         final long result = statement.simpleQueryForLong();
-        
+
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger().d(TAG, "simpleQueryForLong",
                                         "result=" + result,
@@ -226,7 +226,7 @@ public class ExtSQLiteStatement
     public String simpleQueryForString()
             throws SQLiteDoneException, SQLException {
         final String result = statement.simpleQueryForString();
-        
+
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger().d(TAG, "simpleQueryForString",
                                         "result=" + result,

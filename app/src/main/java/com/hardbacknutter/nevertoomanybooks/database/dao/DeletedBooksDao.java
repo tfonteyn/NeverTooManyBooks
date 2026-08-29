@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -83,9 +84,9 @@ public interface DeletedBooksDao {
      * Note this is <strong>not</strong> called from {@link Purger#purge()}
      * as we will always seek the users permission to purge the dao/table.
      *
-     * @return the number of rows deleted,
-     *         or {@code -1} if an error occurred
+     * @return the number of rows deleted
      */
     @WorkerThread
+    @IntRange(from = 0)
     int purge();
 }

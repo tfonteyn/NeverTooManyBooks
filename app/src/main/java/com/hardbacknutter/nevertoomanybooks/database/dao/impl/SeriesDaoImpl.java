@@ -537,6 +537,7 @@ public class SeriesDaoImpl
 
     @Override
     @WorkerThread
+    @IntRange(from = 0)
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
             return stmt.executeUpdateDelete();

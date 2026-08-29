@@ -34,8 +34,6 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -124,17 +122,13 @@ public final class ExMsg {
         } else if (e instanceof CoverStorageException) {
             return context.getString(R.string.error_storage_not_accessible);
 
-        } else if (e instanceof DaoInsertException || e instanceof DaoUpdateException) {
-            // There was a database write operation failure.
-            // Unlikely (but not impossible) to be disk-full.
-            return getUnexpectedErrorMessage(context);
-
         } else if (e instanceof DaoCoverException) {
-            // It's very likely a disk-full, or it could be an unexpected access issue.
+            // It's very likely a disk-full, but it could be an unexpected IO issue.
             return context.getString(R.string.error_storage_not_writable);
 
         } else if (e instanceof DaoWriteException) {
-            // Fallback, we should never get here.
+            // There was a database write operation failure.
+            // Unlikely (but not impossible) to be disk-full.
             return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof DataReaderException) {

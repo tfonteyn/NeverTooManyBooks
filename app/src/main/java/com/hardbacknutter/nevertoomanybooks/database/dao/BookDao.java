@@ -146,7 +146,7 @@ public interface BookDao {
     /**
      * Delete the given {@link Book} (and its covers).
      *
-     * @param id of the book.
+     * @param id of the book to delete.
      *
      * @return {@code true} if a row was deleted
      */

@@ -41,7 +41,7 @@ public interface Navigator {
      *
      * @return book id
      *
-     * @throws SQLException        on unexpected failures
+     * @throws SQLException on unexpected failures
      */
     @IntRange(from = 1)
     long getBookId(@IntRange(from = 0) int position)

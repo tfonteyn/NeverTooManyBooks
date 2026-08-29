@@ -175,6 +175,7 @@ public class TagDaoImpl
     }
 
     @Override
+    @IntRange(from = 0)
     public int purge() {
         final List<String> inUse = getColumnAsStringArrayList(
                 SELECT_DISTINCT_ + DBKey.FK_TAG + _FROM_ + TBL_BOOK_TAG);
@@ -549,7 +550,7 @@ public class TagDaoImpl
                 for (final Tag tag : list) {
                     stmt.bindString(1, tag.getName());
                     final long iId = stmt.executeInsert();
-                    // simply ignore failure, see SQL statement.
+                    // INSERT OR IGNORE can return {@code -1}
                     if (iId != -1) {
                         count++;
                     }

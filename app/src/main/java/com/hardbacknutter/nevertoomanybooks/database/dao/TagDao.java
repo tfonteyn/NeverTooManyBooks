@@ -116,7 +116,6 @@ public interface TagDao {
      *
      * @return {@code true} if a row was deleted
      */
-
     boolean delete(@NonNull Tag tag);
 
     /**
@@ -182,6 +181,7 @@ public interface TagDao {
      *         or {@code -1} if an error occurred
      */
     @WorkerThread
+    @IntRange(from = 0)
     int purge();
 
     /**

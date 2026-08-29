@@ -292,11 +292,11 @@ public interface PublisherDao
     /**
      * Delete the given {@link Publisher}.
      *
-     * @param context Current context
-     * @param item    to delete
+     * @param context   Current context
+     * @param publisher to delete
      *
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Context context,
-                   @NonNull Publisher item);
+                   @NonNull Publisher publisher);
 }

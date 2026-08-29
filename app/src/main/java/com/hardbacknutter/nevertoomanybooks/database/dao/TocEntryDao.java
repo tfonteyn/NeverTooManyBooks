@@ -288,11 +288,11 @@ public interface TocEntryDao
     /**
      * Delete the given {@link TocEntry}.
      *
-     * @param context Current context
-     * @param item    to delete
+     * @param context  Current context
+     * @param tocEntry to delete
      *
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Context context,
-                   @NonNull TocEntry item);
+                   @NonNull TocEntry tocEntry);
 }

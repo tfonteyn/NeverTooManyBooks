@@ -151,6 +151,14 @@ public class IdentifierDaoImpl
         throw new DaoInsertException(ERROR_INSERT_FROM + identifier);
     }
 
+    /**
+     * Updates the given list of identifiers.
+     *
+     * @param db             Underlying database
+     * @param identifierList to insert
+     *
+     * @throws SQLException FATAL - we're in a real mess now
+     */
     public static void doUpdate(@NonNull final SQLiteDatabase db,
                                 @NonNull final Collection<Identifier> identifierList) {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.UPDATE))) {

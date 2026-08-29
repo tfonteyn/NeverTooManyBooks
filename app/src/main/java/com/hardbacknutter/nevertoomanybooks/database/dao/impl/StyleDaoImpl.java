@@ -112,7 +112,7 @@ public class StyleDaoImpl
      * Create and insert the single global/defaults style.
      * Used during app installation (and upgrade).
      *
-     * @param db    DUnderlying database
+     * @param db    Underlying database
      * @param style the defaults
      */
     public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,

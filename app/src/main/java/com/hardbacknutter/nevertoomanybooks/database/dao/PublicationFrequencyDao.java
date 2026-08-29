@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
+@FunctionalInterface
 public interface PublicationFrequencyDao {
 
     /**

@@ -108,6 +108,7 @@ public class BedethequeCacheDaoImpl
 
             long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
+                //noinspection NestedAssignment
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     stmt.bindString(1, bdtAuthor.getName());
                     stmt.bindString(2, textNormaliser.strict(bdtAuthor.getName(), locale));
@@ -156,6 +157,7 @@ public class BedethequeCacheDaoImpl
             long iId;
             try (SynchronizedStatement stmtInsert = db.compileStatement(sqlInsert);
                  SynchronizedStatement stmtUpdate = db.compileStatement(sqlUpdateUrl)) {
+                //noinspection NestedAssignment
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     // check if we already have this one
                     fixId(bdtAuthor, locale);

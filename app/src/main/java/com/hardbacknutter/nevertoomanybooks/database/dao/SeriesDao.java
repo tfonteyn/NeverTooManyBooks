@@ -316,10 +316,10 @@ public interface SeriesDao
      * Delete the given {@link Series}.
      *
      * @param context Current context
-     * @param item    to delete
+     * @param series  to delete
      *
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Context context,
-                   @NonNull Series item);
+                   @NonNull Series series);
 }

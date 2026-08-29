@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.WorkerThread;
 
 @FunctionalInterface
@@ -28,9 +29,9 @@ public interface Purgeable {
     /**
      * Delete orphaned records.
      *
-     * @return the number of rows deleted,
-     *         or {@code -1} if an error occurred
+     * @return the number of rows deleted
      */
     @WorkerThread
+    @IntRange(from = 0)
     int purge();
 }
