@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -180,7 +181,7 @@ public class CalibreLibraryCoder
             try {
                 return v3decode(data);
             } catch (@NonNull final DaoWriteException e) {
-                throw new JSONException(e);
+                throw new UncheckedDaoWriteException(e);
             }
         }
 
