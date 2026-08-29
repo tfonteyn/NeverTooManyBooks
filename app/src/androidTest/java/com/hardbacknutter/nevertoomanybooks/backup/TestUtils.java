@@ -62,6 +62,7 @@ public final class TestUtils {
              final OutputStream os = new FileOutputStream(file)) {
             final byte[] buffer = new byte[BUFFER_SIZE];
             int nRead;
+            //noinspection NestedAssignment
             while ((nRead = is.read(buffer)) > 0) {
                 os.write(buffer, 0, nRead);
             }

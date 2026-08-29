@@ -98,6 +98,7 @@ public final class FileUtils {
         } else {
             final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
             int nRead;
+            //noinspection NestedAssignment
             while ((nRead = is.read(buffer)) > 0) {
                 os.write(buffer, 0, nRead);
             }
@@ -348,6 +349,7 @@ public final class FileUtils {
         final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
         try (InputStream is = new FileInputStream(file)) {
             int nRead;
+            //noinspection NestedAssignment
             while ((nRead = is.read(buffer)) > 0) {
                 crc32.update(buffer, 0, nRead);
             }
