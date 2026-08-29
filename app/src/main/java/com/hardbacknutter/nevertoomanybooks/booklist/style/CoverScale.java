@@ -272,23 +272,28 @@ public enum CoverScale {
         final Resources res = context.getResources();
 
         if (this == Hidden) {
-            // we should never get here / return 0... flw
+            // we should never get here, this value will never get used... flw
             return 1;
         }
 
         if (this == Maximum) {
+            // Hard coded values based on screen size.
+
             if (res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 final ScreenSize screenSize = ScreenSize.compute(context);
                 if (screenSize.getWidth().isAtLeast(ScreenSize.Value.Expanded)) {
+                    // Tablet
                     return 3;
                 }
+                // Phone
                 return 2;
             } else {
-                // Configuration.ORIENTATION_PORTRAIT
+                // Configuration.ORIENTATION_PORTRAIT, tablet/phone.
                 return 1;
             }
         }
 
+        // Small/Medium/Large based on the physical size of the screen
         final float coverWidthPx = lookup(res, ScreenLayout.Grid);
         return (int) Math.floor((float) getWindowWidthInPx(context) / coverWidthPx);
     }
