@@ -130,7 +130,7 @@ public class SharedPreferencesDataStore
     @Override
     public boolean getBoolean(@NonNull final String key,
                               @Nullable final Boolean defValue) {
-        return p.getBoolean(key, defValue != null ? defValue : false);
+        return p.getBoolean(key, defValue != null && defValue);
     }
 
     @Override

@@ -150,7 +150,7 @@ public class BooksOnBookshelfInput {
     }
 
     boolean isProposeBackup() {
-        return proposeBackup != null ? proposeBackup : false;
+        return proposeBackup != null && proposeBackup;
     }
 
     @Nullable

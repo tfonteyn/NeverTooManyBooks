@@ -232,7 +232,7 @@ public class FieldVisibilityPreferenceFragment
         @Override
         public void putBoolean(@NonNull final String key,
                                @Nullable final Boolean value) {
-            fieldVisibility.setVisible(key, value != null ? value : false);
+            fieldVisibility.setVisible(key, value != null && value);
             fieldVisibility.save();
         }
 

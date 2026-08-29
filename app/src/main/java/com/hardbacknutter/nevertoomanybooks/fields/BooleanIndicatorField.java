@@ -62,12 +62,12 @@ public class BooleanIndicatorField
     @Override
     @NonNull
     public Boolean getValue() {
-        return rawValue != null ? rawValue : false;
+        return rawValue != null && rawValue;
     }
 
     @Override
     public void setValue(@Nullable final Boolean value) {
-        super.setValue(value != null ? value : false);
+        super.setValue(value != null && value);
 
         final View view = getView();
         if (view != null) {
