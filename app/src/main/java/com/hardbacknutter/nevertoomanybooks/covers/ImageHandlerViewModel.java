@@ -19,12 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.WindowManager;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -622,11 +626,25 @@ public class ImageHandlerViewModel
      * @throws CoverStorageException The images directory is not available
      * @see #getDestinationImageFile()
      */
+    @SuppressLint("WrongThread")
+    @AnyThread
     @NonNull
-    private File createDestinationTempImageFile()
-            throws CoverStorageException {
+    private File createDestinationTempImageFile() throws CoverStorageException {
         final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
-        savedStateHandle.set(savedStateTempDestFilePath, tempFile.getAbsolutePath());
+
+        final String path = tempFile.getAbsolutePath();
+        // Sigh... we want to be able to run createDestinationTempImageFile
+        // both in UIThread and in WorkerThread
+        // But to do this we MUST set the method to @AnyThread AND @SuppressLint("WrongThread")
+        // AND we can't define the Runnable outside of the if/else...
+        // The pox on Android...
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            savedStateHandle.set(savedStateTempDestFilePath, path);
+        } else {
+            new Handler(Looper.getMainLooper()).post(() ->
+                    savedStateHandle.set(savedStateTempDestFilePath, path));
+        }
+
         return tempFile;
     }
 
