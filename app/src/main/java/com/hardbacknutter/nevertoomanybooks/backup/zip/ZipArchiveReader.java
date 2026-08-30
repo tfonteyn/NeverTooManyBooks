@@ -295,8 +295,8 @@ public class ZipArchiveReader
      *                             The user MUST take action on it NOW.
      * @throws IOException         on generic/other IO failures
      */
-    @WorkerThread
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)

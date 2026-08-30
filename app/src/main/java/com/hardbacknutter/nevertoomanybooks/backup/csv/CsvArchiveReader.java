@@ -90,8 +90,9 @@ public class CsvArchiveReader
         this.updateOption = updateOption;
     }
 
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws DataReaderException, CredentialsException, StorageException, IOException {
 
@@ -126,8 +127,8 @@ public class CsvArchiveReader
         return Optional.of(new ArchiveMetaData(0, bundle));
     }
 
-    @WorkerThread
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)

@@ -94,8 +94,9 @@ public class JsonArchiveReader
         metaData.validate(context);
     }
 
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws DataReaderException,
                    IOException {
@@ -125,8 +126,8 @@ public class JsonArchiveReader
         return Optional.of(metaData);
     }
 
-    @WorkerThread
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)

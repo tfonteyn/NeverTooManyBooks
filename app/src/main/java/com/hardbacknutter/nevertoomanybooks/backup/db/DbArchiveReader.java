@@ -132,8 +132,8 @@ public class DbArchiveReader
     }
 
 
-    @WorkerThread
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)

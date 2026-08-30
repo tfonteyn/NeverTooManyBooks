@@ -139,8 +139,8 @@ public class StripInfoReader
         bookRepository = new BookRepository(context);
     }
 
-    @WorkerThread
     @Override
+    @WorkerThread
     @NonNull
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
