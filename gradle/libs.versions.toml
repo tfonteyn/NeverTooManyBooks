@@ -46,7 +46,7 @@ desugar = "2.1.5"
 material = '1.14.0'
 
 # jsoup HTML parser library @ https://jsoup.org/
-jsoup = "1.23.1"
+jsoup = "1.23.2"
 # jsoup uses/needs https://github.com/google/re2j
 re2j = "1.8"
 
