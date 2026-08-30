@@ -92,7 +92,7 @@ A question mark is written as the character semicolon: ';'
     <string name="X_action_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_dialog_message">Φαίνεται ότι το &APP_NAME; έχει καταρρεύσει. Πατήστε «%1$s» για να αποθηκεύσετε μια αναφορά σε τοποθεσία της επιλογής σας. Μπορείτε να χρησιμοποιήσετε αυτήν την αναφορά για να καταχωρήσετε ένα νέο ζήτημα (πρόβλημα) στον ιστότοπο της εφαρμογής.</string>
+    <string name="acra_dialog_message">Παρουσιάστηκε απρόσμενο σφάλμα. Πατήστε «%1$s» για να αποθηκεύσετε μια αναφορά σε τοποθεσία της επιλογής σας. Μπορείτε να χρησιμοποιήσετε αυτήν την αναφορά για να καταχωρήσετε ένα νέο ζήτημα (πρόβλημα) στον ιστότοπο της εφαρμογής.</string>
     <string name="action_add">Προσθήκη</string>
     <string name="action_add_with_details">Προσθήκη με λεπτομέρειες</string>
     <string name="action_clear">Διαγραφή</string>
@@ -241,9 +241,9 @@ A question mark is written as the character semicolon: ';'
     <string name="error_http_403_forbidden">Η πρόσβαση στον ιστότοπο έχει αποκλειστεί.</string>
     <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Βεβαιωθείτε ότι ο χώρος αποθήκευσης είναι εγγράψιμος και διαθέτει αρκετό χώρο.</string>
-    <string name="error_unexpected">Παρουσιάστηκε ένα άγνωστο σφάλμα.</string>
+    <string name="error_unexpected">Παρουσιάστηκε απρόσμενο σφάλμα.</string>
     <string name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s».</string>
-    <string name="error_unexpected_long">Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
+    <string name="error_unexpected_long">Παρουσιάστηκε απρόσμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
     <string name="error_upgrade_not_supported">Η αναβάθμιση από εκδόσεις παλαιότερες της %1$s δεν υποστηρίζεται.</string>
     <string name="option_fab_add_book_by_barcode_scan">Σάρωση γραμμωτού κώδικα</string>

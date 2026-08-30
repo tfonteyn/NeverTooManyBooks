@@ -205,7 +205,7 @@
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="debug_select_items">Selecione o que você gostaria de incluir:</string>
     <string name="pt_ui_theme">Tema</string>
-    <string name="acra_dialog_message">Parece que &APP_NAME; travou. Toque em “%1$s” para salvar um relatório em um local de sua escolha. Você pode usar este relatório para relatar um novo problema no site do projeto.</string>
+    <string name="acra_dialog_message">Ocorreu um erro inesperado. Toque em “%1$s” para salvar um relatório em um local de sua escolha. Você pode usar este relatório para relatar um novo problema no site do projeto.</string>
     <string name="httpErrorAuth">Não foi possível autenticar.</string>
     <string name="httpError">Ocorreu um erro de rede.</string>
     <string name="error_import_archive_invalid">O arquivo está corrompido ou inválido.</string>

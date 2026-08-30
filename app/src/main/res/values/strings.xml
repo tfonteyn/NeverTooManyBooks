@@ -211,11 +211,9 @@
     <!-- Crash-report dialog: asking the user which data should be included. -->
     <string name="debug_select_items">Select what you would like to include:</string>
     <!-- Crash-report dialog
-        "&APP_NAME;" will be automatically populated.
-
         Param 1: always "create"; the button name
     -->
-    <string name="acra_dialog_message">It looks like &APP_NAME; has crashed. Tap “%1$s” to save a report to a location of your choice. You can use this report to report a new issue on the project website.</string>
+    <string name="acra_dialog_message">An unexpected error occurred. Tap “%1$s” to save a report to a location of your choice. You can use this report to report a new issue on the project website.</string>
     <!-- Crash-report dialog -->
     <string name="acra_report_saved">You can now visit the project page on GitHub and log a new issue. Please attach the previously saved report to the issue. If you don’t have a GitHub account yet, you will need to create one.</string>
     <!-- endregion -->

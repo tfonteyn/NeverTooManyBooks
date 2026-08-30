@@ -83,8 +83,7 @@
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="a_space_b">%1$s %2$s</string>
-    <string name="acra_dialog_message">&APP_NAME;
-        似乎已崩潰。點擊「%1$s」將報告儲存至你選擇的位置。你可以使用此報告在專案網站上報告新問題。</string>
+    <string name="acra_dialog_message">發生了一個意外的錯誤。點擊「%1$s」將報告儲存至你選擇的位置。你可以使用此報告在專案網站上報告新問題。</string>
     <string name="acra_report_saved">你現在可以造訪 GitHub 上的專案頁面並記錄新問題。請將先前儲存的報告附加到該問題中。如果你還沒有 GitHub 帳戶，則需要建立一個。</string>
     <string name="action_add">新增</string>
     <string name="action_add_with_details">添加詳細資訊</string>
@@ -233,7 +232,7 @@
     <string name="error_storage_not_writable">請檢查儲存空間是否可以寫入，並且有足夠的空間。</string>
     <string name="error_total_pages_must_be_larger_than_current_page">必須大於或等於目前頁面</string>
     <string name="error_type_not_supported">不支援的類型：%1$s…</string>
-    <string name="error_unexpected">發生意外錯誤。</string>
+    <string name="error_unexpected">發生了一個意外的錯誤。</string>
     <string name="error_unexpected_long">發生了一個意外的錯誤。如果問題仍然存在，請使用設定頁面底部的 「%1$s」 選項聯絡支援。</string>
     <string name="error_unknown_host">連線「%1$s」服務出現問題。</string>
     <string name="error_unsupported_version_v">不支援的版本：%1$d</string>

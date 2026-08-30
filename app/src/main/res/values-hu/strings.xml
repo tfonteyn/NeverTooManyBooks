@@ -104,7 +104,7 @@
     <string name="error_book_search_failed">A könyv keresése sikertelen.</string>
     <string name="error_http_401_authorization_failed">Engedélyezés sikertelen</string>
     <string name="error_network_failed_try_again">Ellenőrizze a kapcsolatot és próbálja újra.</string>
-    <string name="acra_dialog_message">Úgy tűnik a(z) &APP_NAME; összeomlott. Jelentést menthet el egy választott helyre, ehhez érintse meg a következőt: „%1$s”. A jelentéssel új feladatot naplózhat a projekt weboldalán.</string>
+    <string name="acra_dialog_message">Váratlan hiba történt. Jelentést menthet el egy választott helyre, ehhez érintse meg a következőt: „%1$s”. A jelentéssel új feladatot naplózhat a projekt weboldalán.</string>
     <string name="error_site_authentication_failed">%1$s hitelesítés sikertelen</string>
     <string name="error_unexpected">Váratlan hiba történt.</string>
     <string name="error_unexpected_long">Váratlan hiba történt. Ha a probléma továbbra is fennáll, lépjen kapcsolatba az ügyfélszolgálattal a beállítások oldal alján található „%1$s” opció segítségével.</string>

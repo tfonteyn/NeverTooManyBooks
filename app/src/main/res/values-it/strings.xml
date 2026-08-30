@@ -215,7 +215,7 @@
     <string name="confirm_scope_for_delete">Elimina il titolo “%1$s” di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta “%3$s” non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
-    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca “%1$s” per salvare un rapporto in una posizione ha scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
+    <string name="acra_dialog_message">Si è verificato un errore imprevisto. Tocca “%1$s” per salvare un rapporto in una posizione ha scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
     <string name="disabled">Disattivata</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
@@ -249,7 +249,7 @@
     <string name="error_http_403_forbidden">Il sito web ha bloccato l’accesso.</string>
     <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
-    <string name="error_unexpected">Si è verificato un errore non identificato.</string>
+    <string name="error_unexpected">Si è verificato un errore imprevisto.</string>
     <string name="error_unknown_host">Si è verificato un problema di connessione al servizio attivo “%1$s”.</string>
     <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l’assistenza utilizzando l’opzione “%1$s” nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>

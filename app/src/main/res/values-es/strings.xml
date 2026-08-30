@@ -214,7 +214,7 @@
     <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>
     <string name="confirm_test_connection">Es recomendable probar esta conexión para evitar problemas más adelante.</string>
     <string name="confirm_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
-    <string name="acra_dialog_message">Parece que &APP_NAME; se ha bloqueado. Pulse «%1$s» para guardar un informe en la ubicación que desee. Puedes utilizar este informe para informar de una nueva incidencia en la página web del proyecto.</string>
+    <string name="acra_dialog_message">Se ha producido un error inesperado. Pulse «%1$s» para guardar un informe en la ubicación que desee. Puedes utilizar este informe para informar de una nueva incidencia en la página web del proyecto.</string>
     <string name="disabled">Apagado</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinámica</string>
     <string name="enabled">Habilitado</string>
@@ -248,9 +248,9 @@
     <string name="error_http_403_forbidden">El sitio web ha bloqueado el acceso.</string>
     <string name="error_storage_not_accessible">Por favor, compruebe que el almacenamiento es accesible.</string>
     <string name="error_storage_not_writable">Por favor, compruebe que el almacenamiento es grabable y tiene espacio suficiente.</string>
-    <string name="error_unexpected">Se ha producido un error desconocido.</string>
+    <string name="error_unexpected">Se ha producido un error inesperado.</string>
     <string name="error_unknown_host">Hubo un problema de conexión al servicio en «%1$s».</string>
-    <string name="error_unexpected_long">Ocurrió un error inesperado. Si el problema persiste, comuníquese con el servicio de asistencia mediante la opción «%1$s» en la parte inferior de la página de configuración.</string>
+    <string name="error_unexpected_long">Se ha producido un error inesperado. Si el problema persiste, comuníquese con el servicio de asistencia mediante la opción «%1$s» en la parte inferior de la página de configuración.</string>
     <string name="error_unsupported_version_v">Versión no compatible: %1$d</string>
     <string name="error_upgrade_not_supported">No se admite la actualización desde versiones anteriores a la %1$s.</string>
     <string name="option_fab_add_book_by_barcode_scan">Escanear un código de barras</string>

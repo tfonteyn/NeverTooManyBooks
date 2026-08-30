@@ -111,7 +111,7 @@
     <string name="X_action_use_default_setting">Použít výchozí nastavení</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_dialog_message">Vypadá to, že &APP_NAME; se zhroutila. Klepnutím na „%1$s“ uložíte zprávu na vámi zvolené místo. Tuto zprávu můžete použít k nahlášení nového problému na webových stránkách projektu.</string>
+    <string name="acra_dialog_message">Došlo k neočekávané chybě. Klepnutím na „%1$s“ uložíte zprávu na vámi zvolené místo. Tuto zprávu můžete použít k nahlášení nového problému na webových stránkách projektu.</string>
     <string name="action_add">Přidat</string>
     <string name="action_add_with_details">Přidejte podrobnosti</string>
     <string name="action_clear">Vymazat</string>

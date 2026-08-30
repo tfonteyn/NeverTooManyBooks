@@ -84,7 +84,7 @@
     <string name="and_others_textual">%1$s et al.</string>
     <string name="notification_channel_info">Información</string>
     <string name="debug_select_items">Escolle o que che gustaría incluír:</string>
-    <string name="acra_dialog_message">Parece que &APP_NAME; bloqueouse. Preme «%1$s» para gardar un informe no destino que queiras. Podes utilizalo para comunicar a incidencia na páxina web do proxecto.</string>
+    <string name="acra_dialog_message">Ocurriu un erro inesperado. Preme «%1$s» para gardar un informe no destino que queiras. Podes utilizalo para comunicar a incidencia na páxina web do proxecto.</string>
     <string name="httpErrorAuth">Non se puido autenticar.</string>
     <string name="httpErrorFile">Non se puido acceder ao ficheiro.</string>
     <string name="httpErrorFileNotFound">Non se puido atopar o ficheiro solicitado.</string>
@@ -129,12 +129,12 @@
     <string name="httpErrorFailedSslHandshake">Non se puido establecer unha conexión segura.</string>
     <string name="error_email_failed">Fallou o envío do correo electrónico.</string>
     <string name="acra_report_saved">Xa podes visitar a páxina do proxecto en GitHub e engadir unha nova incidencia. Adxunta o informe que gardaches antes. Se non tes conta en Github, terás que crear unha.</string>
-    <string name="error_unexpected">Produciuse un erro inesperado.</string>
+    <string name="error_unexpected">Ocurriu un erro inesperado.</string>
     <string name="error_import_csv_missing_columns_x">O ficheiro debe conter unha columna cun destes nomes: %1$s</string>
     <string name="error_http_401_authorization_failed">Fallou a autorización</string>
     <string name="error_http_403_forbidden">O sitio web bloqueou o acceso.</string>
     <string name="error_network_site_access_failed">Houbo un problema de rede accedendo a %1$s. Comproba se o sitio web está activo e, se o problema persiste, contacta coa asistencia.</string>
-    <string name="error_unexpected_long">Ocorreu un erro inesperado. Se persiste o problema, contacta coa asistencia mediante a opción «%1$s» na parte inferior da páxina de configuración.</string>
+    <string name="error_unexpected_long">Ocurriu un erro inesperado. Se persiste o problema, contacta coa asistencia mediante a opción «%1$s» na parte inferior da páxina de configuración.</string>
     <string name="error_http_401_site_authorization_failed">Erro de autorización en %1$s.</string>
     <string name="error_site_access_blocked">O acceso foi bloqueado polo sitio web.</string>
     <string name="error_search_failed_network">Por favor, abre Axustes e comproba as preferencias de rede e da páxina de busca.\nComproba tamén a configuración de rede do teu dispositivo.</string>

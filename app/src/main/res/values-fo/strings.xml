@@ -61,7 +61,9 @@
     <string name="btn_all_books">Allar bøkur</string>
     <string name="debug_select_items">Vel hvat tú vilt telja uppí:</string>
     <string name="ellipsize">%1$s…</string>
-    <string name="error_unexpected">Ein óvæntaður villa uppstóð.</string>
+    <string name="error_unexpected">Ein óvæntað villa íkom.</string>
+    <string name="acra_dialog_message">Ein óvæntað villa íkom. Trýst á „%1$s“ fyri at goyma eina frágreiðing á einum staði, tú velur. Tú kanst nýta hesa frágreiðingina til at boða frá einum nýggjum trupulleika á heimasíðuni hjá verkætlanini.</string>
+    <string name="error_unexpected_long">Ein óvæntað villa íkom.\nUm trupulleikin heldur fram, boða so veitaranum frá umvegis kostin „%1$s“ neðst á uppsetingarsíðuni.</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Ein netvilla uppstóð.</string>
     <string name="httpErrorAuth">Kundi ikki vátta.</string>

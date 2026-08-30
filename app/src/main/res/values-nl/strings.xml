@@ -88,7 +88,7 @@
     <string name="X_action_use_default_setting">Standaardinstellingen gebruiken</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_dialog_message">Het lijkt erop dat &APP_NAME; is gecrasht. Tik op „%1$s” om een rapport op te slaan op een locatie naar keuze. U kunt dit rapport gebruiken om een nieuw probleem te melden op de projectwebsite.</string>
+    <string name="acra_dialog_message">Er is een onverwachte fout opgetreden. Tik op „%1$s” om een rapport op te slaan op een locatie naar keuze. U kunt dit rapport gebruiken om een nieuw probleem te melden op de projectwebsite.</string>
     <string name="action_add">Toevoegen</string>
     <string name="action_add_with_details">Toevoegen met details</string>
     <string name="action_clear">Wissen</string>
@@ -232,7 +232,7 @@
     <string name="error_http_403_forbidden">De website heeft de toegang geblokkeerd.</string>
     <string name="error_storage_not_accessible">Controleer a.u.b. of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer a.u.b. of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
-    <string name="error_unexpected">Er is een onbekende fout opgetreden.</string>
+    <string name="error_unexpected">Er is een onverwachte fout opgetreden.</string>
     <string name="error_unexpected_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_unknown_host">Er was een connectie probleem naar de service op „%1$s”.</string>
     <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>

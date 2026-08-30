@@ -224,7 +224,7 @@
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
-    <string name="acra_dialog_message">Wygląda na to, że aplikacja &APP_NAME; uległa awarii. Naciśnij „%1$s”, aby zapisać raport w wybranej lokalizacji. Możesz użyć tego raportu do zgłoszenia nowego błędu na stronie projektu.</string>
+    <string name="acra_dialog_message">Wystąpił nieoczekiwany błąd. Naciśnij „%1$s”, aby zapisać raport w wybranej lokalizacji. Możesz użyć tego raportu do zgłoszenia nowego błędu na stronie projektu.</string>
     <string name="disabled">Wyłączone</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamiczny</string>
     <string name="enabled">Włączone</string>
@@ -258,7 +258,7 @@
     <string name="error_http_403_forbidden">Witryna zablokowała dostęp.</string>
     <string name="error_storage_not_accessible">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
-    <string name="error_unexpected">Wystąpił nieznany błąd.</string>
+    <string name="error_unexpected">Wystąpił nieoczekiwany błąd.</string>
     <string name="error_unknown_host">Wystąpił problem z połączeniem z usługą w „%1$s”.</string>
     <string name="error_unexpected_long">Wystąpił nieoczekiwany błąd. Jeśli problem nie ustąpi, skontaktuj się z pomocą, korzystając z opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_unsupported_version_v">Nieobsługiwana wersja: %1$d</string>

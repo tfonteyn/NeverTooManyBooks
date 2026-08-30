@@ -77,7 +77,7 @@
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
-    <string name="acra_dialog_message">Có vẻ như &APP_NAME; đã gặp sự cố. Nhấn vào “%1$s” để lưu báo cáo vào vị trí bạn chọn. Bạn có thể sử dụng báo cáo này để báo cáo vấn đề mới trên trang web của dự án.</string>
+    <string name="acra_dialog_message">Đã xảy ra lỗi không xác định. Nhấn vào “%1$s” để lưu báo cáo vào vị trí bạn chọn. Bạn có thể sử dụng báo cáo này để báo cáo vấn đề mới trên trang web của dự án.</string>
     <string name="acra_report_saved">Bây giờ bạn có thể truy cập trang dự án trên GitHub và ghi lại vấn đề mới. Vui lòng đính kèm báo cáo đã lưu trước đó về vấn đề này. Nếu bạn chưa có tài khoản Github, bạn cần tạo một tài khoản.</string>
     <string name="action_add">Thêm</string>
     <string name="action_add_with_details">Thêm với chi tiết</string>
@@ -239,8 +239,8 @@
     <string name="error_storage_not_writable">Vui lòng kiểm tra xem bộ nhớ có thể ghi được không và có đủ dung lượng hay không.</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Phải lớn hơn hoặc bằng trang hiện tại</string>
     <string name="error_type_not_supported">Loại không được hỗ trợ: %1$s…</string>
-    <string name="error_unexpected">Đã xảy ra lỗi không mong muốn.</string>
-    <string name="error_unexpected_long">Một lỗi không mong muốn đã xảy ra. Nếu sự cố vẫn tiếp diễn, hãy liên hệ với bộ phận hỗ trợ qua tùy chọn “%1$s” ở cuối trang thiết đặt.</string>
+    <string name="error_unexpected">Đã xảy ra lỗi không xác định.</string>
+    <string name="error_unexpected_long">Đã xảy ra lỗi không xác định. Nếu sự cố vẫn tiếp diễn, hãy liên hệ với bộ phận hỗ trợ qua tùy chọn “%1$s” ở cuối trang thiết đặt.</string>
     <string name="error_unknown_host">Đã xảy ra sự cố kết nối với dịch vụ trên “%1$s”.</string>
     <string name="error_unsupported_version_v">Phiên bản không được hỗ trợ: %1$d</string>
     <string name="error_updates_aborted">Cập nhật bị hủy bỏ</string>

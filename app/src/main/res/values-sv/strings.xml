@@ -85,7 +85,7 @@
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
-    <string name="acra_dialog_message">Det verkar som att &APP_NAME; har kraschat. Tryck på ”%1$s” för att spara en rapport till valfri plats. Du kan använda denna rapport för att rapportera ett nytt problem på projektets webbplats.</string>
+    <string name="acra_dialog_message">Ett oväntat fel uppstod. Tryck på ”%1$s” för att spara en rapport till valfri plats. Du kan använda denna rapport för att rapportera ett nytt problem på projektets webbplats.</string>
     <string name="acra_report_saved">Du kan nu besöka projektets sida på GitHub och skapa en ny ärende. Vänligen bifoga den sparade rapporten till ärendet. Om du inte har ett Github-konto måste du skapa ett.</string>
     <string name="action_add">Lägg till</string>
     <string name="action_add_with_details">Lägg till med detaljer</string>
@@ -252,7 +252,7 @@
     <string name="error_total_pages_must_be_larger_than_current_page">Måste vara större än eller lika med aktuell sida</string>
     <string name="error_type_not_supported">Typ stöds inte: %1$s…</string>
     <string name="error_unexpected">Ett oväntat fel uppstod.</string>
-    <string name="error_unexpected_long">Ett oväntat fel har inträffat. Om problemet kvarstår, kontakta support via ”%1$s” längst ner på inställningssidan.</string>
+    <string name="error_unexpected_long">Ett oväntat fel uppstod. Om problemet kvarstår, kontakta support via ”%1$s” längst ner på inställningssidan.</string>
     <string name="error_unknown_host">Ett anslutningsproblem uppstod till tjänsten på ”%1$s”.</string>
     <string name="error_unsupported_version_v">Versionen stöds inte: %1$d</string>
     <string name="error_updates_aborted">Uppdateringar avbröts</string>

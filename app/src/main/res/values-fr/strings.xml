@@ -101,7 +101,7 @@
     <string name="X_action_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_dialog_message">Il semblerait que &APP_NAME; soit tombé en panne. Touchez « %1$s » pour enregistrer un rapport à l’emplacement de votre choix. Vous pouvez utiliser ce rapport pour signaler un nouveau problème sur le site web du projet.</string>
+    <string name="acra_dialog_message">Une erreur inattendue est survenue. Touchez « %1$s » pour enregistrer un rapport à l’emplacement de votre choix. Vous pouvez utiliser ce rapport pour signaler un nouveau problème sur le site web du projet.</string>
     <string name="action_add">Ajouter</string>
     <string name="action_add_with_details">Ajouter avec détails</string>
     <string name="action_clear">Effacer</string>
@@ -248,9 +248,9 @@
     <string name="error_http_403_forbidden">Le site web a bloqué l’accès.</string>
     <string name="error_storage_not_accessible">Vérifiez que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>
-    <string name="error_unexpected">Une erreur inconnue s’est produite.</string>
+    <string name="error_unexpected">Une erreur inattendue est survenue.</string>
     <string name="error_unknown_host">Il y a eu un problème de connexion au service sur « %1$s ».</string>
-    <string name="error_unexpected_long">Une erreur inattendue s’est produite. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
+    <string name="error_unexpected_long">Une erreur inattendue est survenue. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge : %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n’est pas prise en charge.</string>
     <string name="option_fab_add_book_by_barcode_scan">Numériser un code-barres</string>

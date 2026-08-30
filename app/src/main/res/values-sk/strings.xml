@@ -107,7 +107,7 @@
     <string name="httpErrorFileNotFound">Nepodarilo sa nájsť požadovaný súbor.</string>
     <string name="httpErrorRedirectLoop">Stránka obsahuje príliš veľa presmerovaní servera.</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
-    <string name="error_unexpected">Vyskytla sa neočakávaná chyba.</string>
+    <string name="error_unexpected">Vyskytla sa nečakaná chyba.</string>
     <string name="error_upgrade_not_supported">Aktualizácia z verzií starších ako %1$s nie je podporovaná.</string>
     <string name="error_network_please_connect">Pripojte sa na internet.</string>
     <string name="error_network_failed_try_again">Skontrolujte pripojenie a skúste znova.</string>
@@ -644,10 +644,10 @@
     <string name="progress_msg_x_updated">%1$d aktualizovaných</string>
     <string name="error_search_failed_network">Otvorte Nastavenia a skontrolujte svoje sieťové preferencie a preferencie vyhľadávacích stránok.\nSkontrolujte aj nastavenia siete vášho zariadenia.</string>
     <string name="error_backup_failed">Zálohovanie zlyhalo.</string>
-    <string name="acra_dialog_message">Zdá sa, že aplikácia &APP_NAME; spadla. Klepnite na „%1$s“ pre uloženie správy do Vami zvoleného umiestnenia. Túto správu môžete použiť na nahlásenie nového problému na webovej stránke projektu.</string>
+    <string name="acra_dialog_message">Vyskytla sa nečakaná chyba. Klepnite na „%1$s“ pre uloženie správy do Vami zvoleného umiestnenia. Túto správu môžete použiť na nahlásenie nového problému na webovej stránke projektu.</string>
     <string name="error_storage_not_writable">Skontrolujte, či je úložisko zapisovateľné a má dostatok miesta.</string>
     <string name="warning_no_search_data_for_active_sites">Žiadne platné údaje vyhľadávania pre aktívne stránky.</string>
-    <string name="error_unexpected_long">Vyskytla sa neočakávaná chyba. Ak problém pretrváva, kontaktujte podporu prostredníctvom možnosti „%1$s“ v spodnej časti stránky nastavení.</string>
+    <string name="error_unexpected_long">Vyskytla sa nečakaná chyba. Ak problém pretrváva, kontaktujte podporu prostredníctvom možnosti „%1$s“ v spodnej časti stránky nastavení.</string>
     <string name="error_unknown_host">Vyskytol sa problém s pripojením k službe na „%1$s“.</string>
     <string name="error_file_not_found">Súbor sa nenašiel: %1$s</string>
     <string name="warning_immediate_global_changes">UPOZORNENIE: Uložené zmeny sa okamžite použijú na všetky knihy.</string>

@@ -230,7 +230,7 @@
     <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
-    <string name="acra_dialog_message">Похоже, что приложение &APP_NAME; потерпело крах. Нажмите «%1$s», чтобы сохранить отчет в выбранном вами месте. Этот отчет можно использовать для сообщения о новой проблеме на сайте проекта.</string>
+    <string name="acra_dialog_message">Произошла непредвиденная ошибка. Нажмите «%1$s», чтобы сохранить отчет в выбранном вами месте. Этот отчет можно использовать для сообщения о новой проблеме на сайте проекта.</string>
     <string name="disabled">Выключенo</string>
     <string name="pe_fast_scroller_overlay_dynamic">Динамический</string>
     <string name="enabled">Включено</string>
@@ -264,9 +264,9 @@
     <string name="error_http_403_forbidden">Веб-сайт заблокировал доступ.</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
-    <string name="error_unexpected">Произошла неожиданная ошибка.</string>
+    <string name="error_unexpected">Произошла непредвиденная ошибка.</string>
     <string name="error_unknown_host">Возникла проблема с подключением к сервису на «%1$s».</string>
-    <string name="error_unexpected_long">Произошла неожиданная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
+    <string name="error_unexpected_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
     <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
     <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
     <string name="option_fab_add_book_by_barcode_scan">Сканирование штрих-кода</string>

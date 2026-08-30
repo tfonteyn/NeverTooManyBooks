@@ -777,8 +777,8 @@
     <string name="warning_camera_permission_denied">Svītrkodu skenēšanai vai attēlu uzņemšanai ir nepieciešama piekļuve kamerai. Atveriet lietotnes iestatījumus, izvēlieties “Atļaujas” un iespējojiet “Kamera”.</string>
     <string name="warning_local_network_permission_required">Lai piekļūtu %1$s jūsu vietējā tīklā, ir nepieciešama atļauja.</string>
     <string name="warning_local_network_permission_denied">Lai piekļūtu %1$s jūsu vietējā tīklā, ir nepieciešama atļauja. Atveriet lietotnes iestatījumus, izvēlieties “Atļaujas” un iespējojiet “Tuvumā esošas ierīces”.</string>
-    <string name="error_unexpected">Radusies neparedzēta kļūda.</string>
-    <string name="error_unexpected_long">Radusies neparedzēta kļūda. Ja problēma nepazūd, sazinieties ar atbalsta dienestu, izmantojot opciju “%1$s” iestatījumu lapas apakšā.</string>
+    <string name="error_unexpected">Radās negaidīta kļūda.</string>
+    <string name="error_unexpected_long">RRadās negaidīta kļūda. Ja problēma nepazūd, sazinieties ar atbalsta dienestu, izmantojot opciju “%1$s” iestatījumu lapas apakšā.</string>
     <string name="error_upgrade_not_supported">Jaunināšana no versijām, kas vecākas par %1$s, netiek atbalstīta.</string>
     <string name="error_updates_aborted">Atjaunināšana pārtraukta</string>
     <string name="error_network_please_connect">Lūdzu, izveidojiet savienojumu ar internetu.</string>
@@ -819,7 +819,7 @@
     <string name="httpErrorFileNotFound">Nevarēja atrast pieprasīto failu.</string>
     <string name="error_invalid_url">Nederīga adrese (URL)</string>
     <string name="debug_select_items">Atlasiet, ko vēlaties iekļaut:</string>
-    <string name="acra_dialog_message">Izskatās, ka &APP_NAME; ir avarējusi. Pieskarieties “%1$s”, lai saglabātu pārskatu jūsu izvēlētajā vietā. Jūs varat izmantot šo pārskatu, lai ziņotu par jaunu problēmu projekta vietnē.</string>
+    <string name="acra_dialog_message">Radās negaidīta kļūda. Pieskarieties “%1$s”, lai saglabātu pārskatu jūsu izvēlētajā vietā. Jūs varat izmantot šo pārskatu, lai ziņotu par jaunu problēmu projekta vietnē.</string>
     <string name="acra_report_saved">Tagad varat apmeklēt projekta lapu vietnē GitHub un reģistrēt jaunu problēmu. Lūdzu, pievienojiet iepriekš saglabāto pārskatu. Ja jums vēl nav GitHub konta, jums tāds būs jāizveido.</string>
     <string name="notification_channel_error">Kļūda</string>
     <string name="notification_channel_warn">Brīdinājums</string>
