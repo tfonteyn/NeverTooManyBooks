@@ -181,19 +181,17 @@ public class App
                         ReportField.DISPLAY,
                         // Device Android version, just a plain "15",...
                         ReportField.ANDROID_VERSION,
-
+                        // Device memory
                         ReportField.TOTAL_MEM_SIZE,
                         ReportField.AVAILABLE_MEM_SIZE,
 
-                        // the reason we got these was to get the locale
-                        // We're now storing that in the CUSTOM_DATA
-                        // ReportField.INITIAL_CONFIGURATION,
-                        // ReportField.CRASH_CONFIGURATION,
+                        // The device locales will be added as CUSTOM_DATA, see below
+
+                        // All the below is Application, and NOT device.
 
                         // a uuid for the report, not related to the device
                         ReportField.REPORT_ID,
 
-                        // All the below is Application, and NOT device.
                         ReportField.APP_VERSION_CODE,
 
                         ReportField.APPLICATION_LOG,
@@ -227,12 +225,14 @@ public class App
                 .getSignedBy()
                 .orElse("Not signed"));
 
-        // This can be very useful when the user sets another language.
-        // We have some code which needs to / is  aware of multi-locales.
-        errorReporter.putCustomData("device_locale",
+        // The user locales are heavily used for parsing.
+        // Having the device locale(s) can help a lot if parsing errors occur.
+        errorReporter.putCustomData("device_locales",
                                     Resources.getSystem().getConfiguration()
-                                             .getLocales().get(0).toString());
+                                             .getLocales().toString());
 
+
+        // Catch OutOfMemoryError before handing them of to ACRA.
         Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
             if (throwable instanceof OutOfMemoryError) {
                 final File logDir = ServiceLocator.getInstance().getLogDir();
