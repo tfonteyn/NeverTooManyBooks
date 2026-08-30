@@ -328,7 +328,8 @@ public class JsonRecordReader
                     // of the wikidata author claim id, instead of the id itself.
                     IdentifierMigration.repairBuiltinIdentifiersWikidataClaim(context);
                 }
-            } catch (@NonNull final JSONException | UncheckedDaoWriteException e) {
+            } catch (@NonNull final JSONException
+                                    | UncheckedDaoWriteException | DaoWriteException e) {
                 // Unpack if possible
                 if (e.getCause() instanceof DaoWriteException) {
                     throw new DataReaderException(context.getString(
@@ -405,38 +406,36 @@ public class JsonRecordReader
     private void readBookshelves(@NonNull final Context context,
                                  @NonNull final JSONObject root,
                                  @NonNull final Style defaultStyle)
-            throws JSONException,
-                   UncheckedDaoWriteException {
+            throws JSONException, DaoWriteException {
+
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
         if (jsonRoot != null) {
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
-            new BookshelfCoder(defaultStyle)
-                    .decode(jsonRoot)
-                    .stream()
-                    // If we ever make the mistake of backing up the 'All Books' again
-                    // (or any other special negative-id shelf, ... prevent crashing
-                    .filter(bookshelf -> bookshelf.getId() >= 0)
-                    .forEach(bookshelf -> processBookshelf(context, bookshelfDao, locale,
-                                                           bookshelf));
+            // If we ever make the mistake of backing up the 'All Books' again
+            // (or any other special negative-id shelf, ... prevent crashing
+            for (final Bookshelf bookshelf : new BookshelfCoder(defaultStyle)
+                    .decode(jsonRoot)) {
+                if (bookshelf.getId() >= 0) {
+                    processBookshelf(context, bookshelfDao, locale, bookshelf);
+                }
+            }
         }
     }
 
     private void processBookshelf(@NonNull final Context context,
                                   @NonNull final BookshelfDao bookshelfDao,
                                   @NonNull final Locale locale,
-                                  @NonNull final Bookshelf bookshelf) {
+                                  @NonNull final Bookshelf bookshelf)
+            throws DaoWriteException {
+
         bookshelfDao.fixId(context, bookshelf, locale);
         if (bookshelf.getId() > 0) {
             // The shelf already exists
             switch (getUpdateOption()) {
                 case Overwrite: {
-                    try {
-                        bookshelfDao.update(context, bookshelf, locale);
-                    } catch (@NonNull final DaoWriteException e) {
-                        throw new UncheckedDaoWriteException(e);
-                    }
+                    bookshelfDao.update(context, bookshelf, locale);
                     break;
                 }
                 case OnlyNewer:
@@ -444,42 +443,36 @@ public class JsonRecordReader
                     break;
             }
         } else {
-            try {
-                bookshelfDao.insert(context, bookshelf, locale);
-                results.bookshelves++;
-            } catch (@NonNull final DaoWriteException e) {
-                throw new UncheckedDaoWriteException(e);
-            }
+            bookshelfDao.insert(context, bookshelf, locale);
+            results.bookshelves++;
         }
     }
 
     private void readCalibreLibraries(@NonNull final Context context,
                                       @NonNull final JSONObject root,
                                       @NonNull final Style defaultStyle)
-            throws JSONException,
-                   UncheckedDaoWriteException {
+            throws JSONException, DaoWriteException {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
         if (jsonRoot != null) {
             final CalibreLibraryDao dao = ServiceLocator.getInstance().getCalibreLibraryDao();
-            new CalibreLibraryCoder(context, defaultStyle).decode(jsonRoot).forEach(
-                    library -> processCalibreLibrary(context, dao, library));
+            for (final CalibreLibrary library : new CalibreLibraryCoder(context, defaultStyle)
+                    .decode(jsonRoot)) {
+                processCalibreLibrary(context, dao, library);
+            }
         }
     }
 
     private void processCalibreLibrary(@NonNull final Context context,
                                        @NonNull final CalibreLibraryDao dao,
-                                       @NonNull final CalibreLibrary library) {
+                                       @NonNull final CalibreLibrary library)
+            throws DaoWriteException {
         dao.fixId(context, library);
         if (library.getId() > 0) {
             // The library already exists
             switch (getUpdateOption()) {
                 case Overwrite: {
-                    try {
-                        dao.update(library);
-                    } catch (@NonNull final DaoWriteException e) {
-                        throw new UncheckedDaoWriteException(e);
-                    }
+                    dao.update(library);
                     break;
                 }
                 case OnlyNewer:
@@ -487,39 +480,33 @@ public class JsonRecordReader
                     break;
             }
         } else {
-            try {
-                dao.insert(library);
-            } catch (@NonNull final DaoWriteException e) {
-                throw new UncheckedDaoWriteException(e);
-            }
+            dao.insert(library);
         }
     }
 
     private void readCalibreCustomFields(@NonNull final JSONObject root)
             throws JSONException,
-                   UncheckedDaoWriteException {
+                   UncheckedDaoWriteException, DaoWriteException {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreCustomFields.getName());
         if (jsonRoot != null) {
             final CalibreCustomFieldDao dao =
                     ServiceLocator.getInstance().getCalibreCustomFieldDao();
-            new CalibreCustomFieldCoder().decode(jsonRoot).forEach(
-                    field -> processCalibreCustomField(dao, field));
+            for (final CalibreCustomField field : new CalibreCustomFieldCoder().decode(jsonRoot)) {
+                processCalibreCustomField(dao, field);
+            }
         }
     }
 
     private void processCalibreCustomField(final CalibreCustomFieldDao dao,
-                                           final CalibreCustomField field) {
+                                           final CalibreCustomField field)
+            throws DaoWriteException {
         dao.fixId(field);
         if (field.getId() > 0) {
             // The field already exists
             switch (getUpdateOption()) {
                 case Overwrite: {
-                    try {
-                        dao.update(field);
-                    } catch (@NonNull final DaoWriteException e) {
-                        throw new UncheckedDaoWriteException(e);
-                    }
+                   dao.update(field);
                     break;
                 }
                 case OnlyNewer:
@@ -527,11 +514,7 @@ public class JsonRecordReader
                     break;
             }
         } else {
-            try {
-                dao.insert(field);
-            } catch (@NonNull final DaoWriteException e) {
-                throw new UncheckedDaoWriteException(e);
-            }
+            dao.insert(field);
         }
     }
 
@@ -547,27 +530,28 @@ public class JsonRecordReader
         }
     }
 
-    private void readIdentifiers(@NonNull final JSONObject root) {
+    private void readIdentifiers(@NonNull final JSONObject root)
+            throws DaoWriteException {
+
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Identifiers.getName());
         if (jsonRoot != null) {
             final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
-            new IdentifierCoder().decode(jsonRoot).forEach(
-                    identifier -> processIdentifier(dao, identifier));
+            for (final Identifier identifier : new IdentifierCoder().decode(jsonRoot)) {
+                processIdentifier(dao, identifier);
+            }
         }
     }
 
     private void processIdentifier(@NonNull final IdentifierDao dao,
-                                   @NonNull final Identifier identifier) {
+                                   @NonNull final Identifier identifier)
+            throws DaoWriteException {
+
         dao.fixId(identifier);
         if (identifier.getId() > 0) {
             // The field already exists
             switch (getUpdateOption()) {
                 case Overwrite: {
-                    try {
-                        dao.update(identifier);
-                    } catch (@NonNull final DaoWriteException e) {
-                        throw new UncheckedDaoWriteException(e);
-                    }
+                    dao.update(identifier);
                     break;
                 }
                 case OnlyNewer:
@@ -575,11 +559,7 @@ public class JsonRecordReader
                     break;
             }
         } else {
-            try {
-                dao.insert(identifier);
-            } catch (@NonNull final DaoWriteException e) {
-                throw new UncheckedDaoWriteException(e);
-            }
+            dao.insert(identifier);
         }
     }
 
@@ -595,29 +575,29 @@ public class JsonRecordReader
         }
     }
 
-    private void readTagMappings(@NonNull final JSONObject root) {
+    private void readTagMappings(@NonNull final JSONObject root)
+            throws DaoWriteException {
+
         // a sub container for {@link TagMapping} objects.
         final JSONArray elements = root.optJSONArray(DBKey.TAGS.TAG_MAPPING);
         if (elements != null) {
             final TagMappingDao dao = ServiceLocator.getInstance().getTagMappingDao();
-            new TagMappingCoder().decode(elements).forEach(
-                    tagMapping -> processTagMapping(dao, tagMapping));
+            for (final TagMapping tagMapping : new TagMappingCoder().decode(elements)) {
+                processTagMapping(dao, tagMapping);
+            }
 
         }
     }
 
     private void processTagMapping(@NonNull final TagMappingDao dao,
-                                   @NonNull final TagMapping tagMapping) {
+                                   @NonNull final TagMapping tagMapping)
+            throws DaoWriteException {
         dao.fixId(tagMapping);
         if (tagMapping.getId() > 0) {
             // The field already exists
             switch (getUpdateOption()) {
                 case Overwrite: {
-                    try {
-                        dao.update(tagMapping);
-                    } catch (@NonNull final DaoWriteException e) {
-                        throw new UncheckedDaoWriteException(e);
-                    }
+                    dao.update(tagMapping);
                     break;
                 }
                 case OnlyNewer:
@@ -625,11 +605,7 @@ public class JsonRecordReader
                     break;
             }
         } else {
-            try {
-                dao.insert(tagMapping);
-            } catch (@NonNull final DaoWriteException e) {
-                throw new UncheckedDaoWriteException(e);
-            }
+            dao.insert(tagMapping);
         }
     }
 
