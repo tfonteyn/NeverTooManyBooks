@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
@@ -70,6 +69,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataOb
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+
+import org.acra.ACRA;
 
 /**
  * Edit the list of Authors of a Book.
@@ -383,7 +384,7 @@ public class EditBookAuthorListDialogFragment
             vm.changeForAllBooks(getContext(), original, modified);
             adapter.notifyDataSetChanged();
         } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 
@@ -399,7 +400,7 @@ public class EditBookAuthorListDialogFragment
             vm.changeForThisBook(getContext(), original, modified);
             adapter.notifyDataSetChanged();
         } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ACRA.getErrorReporter().handleException(e, false);
         }
 
         // Updated author(s): Book gets them, but TocEntries remain using old set

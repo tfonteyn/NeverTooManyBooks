@@ -103,6 +103,8 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
+import org.acra.ACRA;
+
 /**
  * Use-cases / logic flow....   might contain errors...
  * <p>
@@ -1010,10 +1012,11 @@ public class SearchBookByIsbnFragment
         try {
             //noinspection DataFlowIssue
             vm.onSaveBook(context, book);
-        } catch (@NonNull final StorageException | DaoWriteException e) {
-            // Should never get here unless disk-full.
-            // If we do... the book result is discarded.
-            ErrorDialog.show(context, TAG, e);
+
+        } catch (@NonNull final StorageException e) {
+            ErrorDialog.show(getContext(), TAG, e);
+        } catch (@NonNull final DaoWriteException e) {
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 

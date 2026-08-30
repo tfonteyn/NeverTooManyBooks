@@ -36,6 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import org.acra.ACRA;
+
 /**
  * All public methods are convenience methods which call {@link #showDialog}.
  * Done this way to ensure specific exceptions are ALWAYS showing the same message
@@ -59,14 +61,17 @@ public final class ErrorDialog {
     public static void show(@NonNull final Context context,
                             @NonNull final String tag,
                             @NonNull final Throwable e) {
+        if (e instanceof DaoWriteException) {
+            ACRA.getErrorReporter().handleException(e, false);
+            return;
+        }
+
         LoggerFactory.getLogger().e(tag, e);
 
         @Nullable
         final String title;
         if (e instanceof StorageException) {
             title = context.getString(R.string.error_storage_not_accessible);
-        } else if (e instanceof DaoWriteException) {
-            title = context.getString(R.string.error_unexpected);
         } else {
             title = null;
         }
@@ -88,6 +93,11 @@ public final class ErrorDialog {
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
+        if (e instanceof DaoWriteException) {
+            ACRA.getErrorReporter().handleException(e, false);
+            return;
+        }
+
         LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, title, null, closingAction);
     }
@@ -106,6 +116,11 @@ public final class ErrorDialog {
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message) {
+        if (e instanceof DaoWriteException) {
+            ACRA.getErrorReporter().handleException(e, false);
+            return;
+        }
+
         LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, title, message, (d, w) -> d.dismiss());
     }
@@ -126,6 +141,11 @@ public final class ErrorDialog {
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
+        if (e instanceof DaoWriteException) {
+            ACRA.getErrorReporter().handleException(e, false);
+            return;
+        }
+
         LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, title, message, closingAction);
     }

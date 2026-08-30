@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
@@ -70,6 +69,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconD
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+
+import org.acra.ACRA;
 
 /**
  * Edit the list of Series of a Book.
@@ -396,7 +397,7 @@ public class EditBookSeriesListDialogFragment
             adapter.notifyDataSetChanged();
 
         } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 
@@ -413,7 +414,7 @@ public class EditBookSeriesListDialogFragment
             adapter.notifyDataSetChanged();
 
         } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 

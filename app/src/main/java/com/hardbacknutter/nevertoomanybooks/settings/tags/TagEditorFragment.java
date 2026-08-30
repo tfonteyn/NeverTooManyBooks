@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerIte
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagNamesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagNameBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -61,6 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+
+import org.acra.ACRA;
 
 /**
  * This editor allows CRUD actions on {@link Tag}s.
@@ -251,8 +252,7 @@ public class TagEditorFragment
                 updateEntry(tagName, position);
             }
         } catch (@NonNull final DaoWriteException e) {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), TAG, e);
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 

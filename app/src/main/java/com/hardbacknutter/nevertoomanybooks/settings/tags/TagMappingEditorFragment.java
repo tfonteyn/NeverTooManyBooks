@@ -74,6 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
+import org.acra.ACRA;
+
 /**
  * This editor allows CRUD actions on {@link TagMapping}s.
  * Editing/creating uses an {@link EditParcelableLauncher}.
@@ -259,8 +261,7 @@ public class TagMappingEditorFragment
                 updateEntry(original, position, edit);
             }
         } catch (@NonNull final DaoWriteException e) {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), TAG, e);
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 

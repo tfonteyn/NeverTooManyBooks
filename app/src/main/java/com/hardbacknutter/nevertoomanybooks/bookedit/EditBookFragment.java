@@ -65,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
+import org.acra.ACRA;
+
 public class EditBookFragment
         extends BaseFragment {
 
@@ -298,8 +300,10 @@ public class EditBookFragment
             vm.saveBook(getContext());
             setResultsAndFinish();
 
-        } catch (@NonNull final StorageException | DaoWriteException e) {
+        } catch (@NonNull final StorageException e) {
             ErrorDialog.show(getContext(), TAG, e);
+        } catch (@NonNull final DaoWriteException e) {
+            ACRA.getErrorReporter().handleException(e, false);
         }
     }
 

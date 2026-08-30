@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
+import org.acra.ACRA;
+
 public class CalibreLibraryMappingFragment
         extends BaseFragment {
 
@@ -128,8 +130,7 @@ public class CalibreLibraryMappingFragment
                 vm.mapBookshelfToLibrary(bookshelf);
                 vb.bookshelf.setText(bookshelf.getName());
             } catch (@NonNull final DaoWriteException e) {
-                //noinspection DataFlowIssue
-                ErrorDialog.show(getContext(), TAG, e);
+                ACRA.getErrorReporter().handleException(e, false);
             }
         });
 
@@ -141,7 +142,7 @@ public class CalibreLibraryMappingFragment
                 addBookshelf(bookshelf, vb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                ErrorDialog.show(getContext(), TAG, e);
+                ACRA.getErrorReporter().handleException(e, false);
             }
         });
 
@@ -308,7 +309,7 @@ public class CalibreLibraryMappingFragment
                     vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
                     holder.vb.bookshelf.setText(bookshelf.getName());
                 } catch (@NonNull final DaoWriteException e) {
-                    ErrorDialog.show(context, TAG, e);
+                    ACRA.getErrorReporter().handleException(e, false);
                 }
             });
 
@@ -320,7 +321,7 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    ErrorDialog.show(context, TAG, e);
+                    ACRA.getErrorReporter().handleException(e, false);
                 }
             });
 
