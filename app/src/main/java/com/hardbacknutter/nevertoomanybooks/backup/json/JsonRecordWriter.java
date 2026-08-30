@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagMappingCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -394,7 +395,7 @@ public class JsonRecordWriter
                 writer.write(jsonData.toString());
             }
 
-        } catch (@NonNull final JSONException | StackOverflowError e) {
+        } catch (@NonNull final JSONException | UncheckedDaoWriteException | StackOverflowError e) {
             throw new DataWriterException(e);
         }
 
