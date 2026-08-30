@@ -126,41 +126,41 @@ public class CalibreCustomFieldDaoImpl
     }
 
     @Override
-    public void fixId(@NonNull final CalibreCustomField calibreCustomField) {
-        final long id = findByName(calibreCustomField);
-        calibreCustomField.setId(id);
+    public void fixId(@NonNull final CalibreCustomField field) {
+        final long id = findByName(field);
+        field.setId(id);
     }
 
     @Override
     @IntRange(from = 1)
-    public long insert(@NonNull final CalibreCustomField calibreCustomField)
+    public long insert(@NonNull final CalibreCustomField field)
             throws DaoInsertException {
 
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(calibreCustomField, stmt);
+            iId = doInsert(field, stmt);
         }
 
         if (iId != -1) {
-            calibreCustomField.setId(iId);
+            field.setId(iId);
             return iId;
         }
 
         // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
+        throw new DaoInsertException(ERROR_INSERT_FROM + field);
     }
 
     @Override
-    public void update(@NonNull final CalibreCustomField calibreCustomField)
+    public void update(@NonNull final CalibreCustomField field)
             throws DaoUpdateException {
 
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindString(1, calibreCustomField.getCalibreKey());
-            stmt.bindString(2, calibreCustomField.getType());
-            stmt.bindString(3, calibreCustomField.getDbKey());
+            stmt.bindString(1, field.getCalibreKey());
+            stmt.bindString(2, field.getType());
+            stmt.bindString(3, field.getDbKey());
 
-            stmt.bindLong(4, calibreCustomField.getId());
+            stmt.bindLong(4, field.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
 
@@ -168,7 +168,7 @@ public class CalibreCustomFieldDaoImpl
             return;
         }
 
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField);
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + field);
     }
 
     @Override

@@ -35,31 +35,31 @@ public interface CalibreCustomFieldDao {
      * <p>
      * If the item has 'sub' items, then implementations must propagate the call.
      *
-     * @param calibreCustomField to update
+     * @param field to update
      */
-    void fixId(@NonNull CalibreCustomField calibreCustomField);
+    void fixId(@NonNull CalibreCustomField field);
 
     /**
      * Creates a new {@link CalibreCustomField} in the database.
      *
-     * @param calibreCustomField object to insert. Will be updated with the id.
+     * @param field object to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row
      *
      * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
-    long insert(@NonNull CalibreCustomField calibreCustomField)
+    long insert(@NonNull CalibreCustomField field)
             throws DaoWriteException;
 
     /**
      * Update the given {@link CalibreCustomField}.
      *
-     * @param calibreCustomField to update
+     * @param field to update
      *
      * @throws DaoWriteException on failure
      */
-    void update(@NonNull CalibreCustomField calibreCustomField)
+    void update(@NonNull CalibreCustomField field)
             throws DaoWriteException;
 
     /**
