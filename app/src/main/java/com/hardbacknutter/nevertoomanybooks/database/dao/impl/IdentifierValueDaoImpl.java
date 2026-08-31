@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -104,10 +105,11 @@ public class IdentifierValueDaoImpl
                 stmt.bindLong(1, fkId);
                 stmt.bindLong(2, identifier.getId());
                 stmt.bindString(3, iv.getSid());
-                if (stmt.executeInsert(null) == -1) {
-                    throw new DaoInsertException("insert FK-Identifier");
-                }
+
+                stmt.executeInsert(() -> "insert FK-Identifier");
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 

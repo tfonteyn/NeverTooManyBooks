@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.database.SQLException;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -99,12 +100,12 @@ public class IsoLanguageDaoImpl
                     stmt.bindString(1, userIso3);
                     stmt.bindString(2, loc.first);
                     stmt.bindString(3, loc.second);
-                    final long iId = stmt.executeInsert(null);
-                    if (iId < 0) {
-                        throw new DaoInsertException("Failed top insert: "
-                                                     + userIso3 + ": loc: " + loc);
-                    }
+
+                    stmt.executeInsert(() -> "Failed top insert: "
+                                             + userIso3 + ": loc: " + loc);
                 }
+            } catch (@NonNull final SQLException e) {
+                throw new DaoInsertException(e);
             }
 
             if (txLock != null) {

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -114,9 +115,10 @@ public class StripInfoDaoImpl
             stmt.bindLong(++i, data.getAmount());
             stmt.bindString(++i, dateTime);
 
-            if (stmt.executeInsert(null) == -1) {
-                throw new DaoInsertException(ERROR_INSERT_FROM + data);
-            }
+            stmt.executeInsert(() -> ERROR_INSERT_FROM + data);
+
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
 
         return true;

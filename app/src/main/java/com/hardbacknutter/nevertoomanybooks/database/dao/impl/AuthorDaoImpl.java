@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -358,7 +359,6 @@ public class AuthorDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.SET_COMPLETE)) {
             stmt.bindBoolean(1, complete);
-
             stmt.bindLong(2, author.getId());
             rowsAffected = stmt.executeUpdateDelete(null);
         }
@@ -510,10 +510,11 @@ public class AuthorDaoImpl
                 stmt.bindLong(2, author.getId());
                 stmt.bindLong(3, position);
                 stmt.bindLong(4, author.getRole());
-                if (stmt.executeInsert(null) == -1) {
-                    throw new DaoInsertException("insert Book-Author");
-                }
+
+                stmt.executeInsert(() -> "insert Book-Author");
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -543,32 +544,27 @@ public class AuthorDaoImpl
                 stmt.bindString(6, author.getDeathDate().orElse(null));
                 stmt.bindString(7, author.getImageUuid().orElse(null));
                 stmt.bindBoolean(8, author.isComplete());
-                iId = stmt.executeInsert(null);
-            }
-
-            if (iId != -1) {
+                iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + author);
                 author.setId(iId);
 
-                authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
-                                                   author.getId(), author.getIdentifiers());
-                insertOrUpdateRealAuthor(context, author, locale);
-
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return iId;
+            } catch (@NonNull final SQLException e) {
+                author.setId(0);
+                throw new DaoInsertException(e);
             }
-        } catch (@NonNull final DaoWriteException e) {
-            author.setId(0);
-            throw e;
+
+            authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
+                                               author.getId(), author.getIdentifiers());
+            insertOrUpdateRealAuthor(context, author, locale);
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+            return iId;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The insert failed with -1
-        author.setId(0);
-        throw new DaoInsertException(ERROR_INSERT_FROM + author);
     }
 
     @Override
@@ -586,7 +582,6 @@ public class AuthorDaoImpl
             // Store first, this will update the author fields if successful
             persistPicture(author);
 
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
                 stmt.bindString(2, textNormaliser.strict(author.getFamilyName(), locale));
@@ -598,21 +593,18 @@ public class AuthorDaoImpl
                 stmt.bindBoolean(8, author.isComplete());
 
                 stmt.bindLong(9, author.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + author);
             }
 
-            if (rowsAffected > 0) {
-                authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
-                                                   author.getId(), author.getIdentifiers());
-                insertOrUpdateRealAuthor(context, author, locale);
+            authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
+                                               author.getId(), author.getIdentifiers());
+            insertOrUpdateRealAuthor(context, author, locale);
 
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return;
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + author);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -776,10 +768,12 @@ public class AuthorDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, authorId);
             stmt.bindLong(2, realAuthorId);
-            if (stmt.executeInsert(null) == -1) {
-                throw new DaoInsertException("Failed to insert PseudonymLink author=" + authorId
-                                             + ", real=" + realAuthorId);
-            }
+
+            stmt.executeInsert(() -> "Failed to insert PseudonymLink"
+                                     + " author=" + authorId
+                                     + ", real=" + realAuthorId);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 

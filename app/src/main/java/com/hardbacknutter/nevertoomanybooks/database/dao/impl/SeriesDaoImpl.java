@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
@@ -335,10 +336,11 @@ public class SeriesDaoImpl
                 stmt.bindLong(2, series.getId());
                 stmt.bindString(3, series.getNumber());
                 stmt.bindLong(4, position);
-                if (stmt.executeInsert(null) == -1) {
-                    throw new DaoInsertException("insert Book-Series");
-                }
+
+                stmt.executeInsert(() -> "insert Book-Series");
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -368,31 +370,27 @@ public class SeriesDaoImpl
                 stmt.bindString(1, title);
                 stmt.bindString(2, textNormaliser.strict(obTitle, locale));
                 stmt.bindBoolean(3, series.isComplete());
-                iId = stmt.executeInsert(null);
-            }
-
-            if (iId != -1) {
+                iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + series);
                 series.setId(iId);
 
-                publicationFrequencyDao.setFrequency(series);
-                seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
-                                                   series.getId(), series.getIdentifiers());
-
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return iId;
+            } catch (@NonNull final SQLException e) {
+                series.setId(0);
+                throw new DaoInsertException(e);
             }
-        } catch (@NonNull final DaoWriteException e) {
-            series.setId(0);
-            throw e;
+
+            publicationFrequencyDao.setFrequency(series);
+            seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
+                                               series.getId(), series.getIdentifiers());
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+            return iId;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + series);
     }
 
     @Override
@@ -415,27 +413,23 @@ public class SeriesDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, series.getTitle());
                 stmt.bindString(2, textNormaliser.strict(obTitle, locale));
                 stmt.bindBoolean(3, series.isComplete());
 
                 stmt.bindLong(4, series.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + series);
             }
 
-            if (rowsAffected > 0) {
-                publicationFrequencyDao.setFrequency(series);
-                seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
-                                                   series.getId(), series.getIdentifiers());
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return;
+            publicationFrequencyDao.setFrequency(series);
+            seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
+                                               series.getId(), series.getIdentifiers());
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

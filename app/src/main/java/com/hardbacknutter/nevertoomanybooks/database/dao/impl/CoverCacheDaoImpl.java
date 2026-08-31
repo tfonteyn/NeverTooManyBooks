@@ -39,8 +39,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -232,7 +230,6 @@ public class CoverCacheDaoImpl
         // Use the default serial executor as we only want a single write thread at a time.
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             TASKS_WRITING.incrementAndGet();
-            //noinspection CheckStyle,OverlyBroadCatchBlock
             try {
                 // Rapid scrolling of view could already have recycled the bitmap.
                 if (!bitmap.isRecycled()) {
@@ -251,10 +248,7 @@ public class CoverCacheDaoImpl
                         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
-
-                            if (stmt.executeInsert(null) == -1) {
-                                logAndDisableCache(new DaoInsertException(cacheId));
-                            }
+                            stmt.executeInsert(null);
                         }
                     } else {
                         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
@@ -264,10 +258,7 @@ public class CoverCacheDaoImpl
                                     LocalDateTime.now(ZoneOffset.UTC)));
 
                             stmt.bindString(4, cacheId);
-
-                            if (stmt.executeUpdateDelete(null) <= 0) {
-                                logAndDisableCache(new DaoUpdateException(cacheId));
-                            }
+                            stmt.executeUpdateDelete(null);
                         }
                     }
                 }
@@ -276,20 +267,17 @@ public class CoverCacheDaoImpl
                 // java.lang.IllegalStateException: Can't compress a recycled bitmap
                 // don't care at this point; this is just a cache; don't even log.
 
-            } catch (@NonNull final RuntimeException e) {
-                logAndDisableCache(e);
+            } catch (@NonNull final SQLException e) {
+                // Disable the cache
+                //FIXME: we should let the user know, and cancel any pending tasks...
+                ServiceLocator.getInstance()
+                              .getCoverStorage()
+                              .setImageCachingEnabled(false);
+                throw e;
             }
 
             TASKS_WRITING.decrementAndGet();
         });
-    }
-
-    private void logAndDisableCache(@NonNull final Throwable e) {
-        LoggerFactory.getLogger().e(TAG, e);
-        //FIXME: we should let the user know, and cancel any pending tasks...
-        ServiceLocator.getInstance()
-                      .getCoverStorage()
-                      .setImageCachingEnabled(false);
     }
 
     private static final class Sql {

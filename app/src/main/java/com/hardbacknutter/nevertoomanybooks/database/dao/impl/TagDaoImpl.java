@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Build;
 
 import androidx.annotation.IntRange;
@@ -267,10 +268,10 @@ public class TagDaoImpl
 
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, tag.getId());
-                if (stmt.executeInsert(null) == -1) {
-                    throw new DaoInsertException("insert Book-Tag");
-                }
+                stmt.executeInsert(() -> "insert Book-Tag");
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -279,38 +280,28 @@ public class TagDaoImpl
     public long insert(@NonNull final Tag tag)
             throws DaoInsertException {
 
-        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, tag.getName());
-            iId = stmt.executeInsert(null);
-        }
-
-        if (iId != -1) {
+            final long iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + tag);
             tag.setId(iId);
             return iId;
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
-
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + tag);
     }
 
     @Override
     public void update(@NonNull final Tag tag)
             throws DaoUpdateException {
 
-        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, tag.getName());
 
             stmt.bindLong(2, tag.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tag);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + tag);
     }
 
     @Override

@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
@@ -95,26 +94,20 @@ public class IdentifierDaoImpl
      * @see #restore(Context)
      */
     public static void onPostCreate(@NonNull final Context context,
-                                    @NonNull final SQLiteDatabase db) {
+                                    @NonNull final SQLiteDatabase db)
+            throws SQLException {
         final Collection<Identifier> identifierList = Identifier.createInitialList(context);
         doInsert(db, identifierList);
     }
 
     public static void doInsert(@NonNull final SQLiteDatabase db,
-                                @NonNull final Collection<Identifier> identifierList) {
+                                @NonNull final Collection<Identifier> identifierList)
+        throws SQLException {
         // This method must run on API 26: Use a simple INSERT, and not the UPSERT!
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
                 doInsert(identifier, stmt);
             }
-        } catch (@NonNull final SQLException e) {
-            // log... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
-        } catch (@NonNull final DaoInsertException e) {
-            // log, but just rethrow errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new SQLException("doInsert", e);
         }
     }
 
@@ -126,11 +119,11 @@ public class IdentifierDaoImpl
      *
      * @return the row id of the newly inserted item
      *
-     * @throws DaoInsertException on failure
+     * @throws SQLException on failure
      */
     private static long doInsert(@NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt)
-            throws DaoInsertException {
+            throws SQLException {
         int c = 0;
         stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindLong(++c, identifier.getEntityType().getId());
@@ -141,15 +134,10 @@ public class IdentifierDaoImpl
         stmt.bindString(++c, identifier.getWikidataClaim().orElse(null));
         stmt.bindString(++c, identifier.getSiteUrl());
         stmt.bindString(++c, identifier.getRawUri().orElse(null));
-        final long iId = stmt.executeInsert(null);
 
-        if (iId != -1) {
-            identifier.setId(iId);
-            return iId;
-        }
-
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + identifier);
+        final long iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + identifier);
+        identifier.setId(iId);
+        return iId;
     }
 
     /**
@@ -158,22 +146,15 @@ public class IdentifierDaoImpl
      * @param db             Underlying database
      * @param identifierList to insert
      *
-     * @throws SQLException FATAL - we're in a real mess now
+     * @throws SQLException on failure
      */
     public static void doUpdate(@NonNull final SQLiteDatabase db,
-                                @NonNull final Collection<Identifier> identifierList) {
+                                @NonNull final Collection<Identifier> identifierList)
+            throws SQLException {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.UPDATE))) {
             for (final Identifier identifier : identifierList) {
                 doUpdate(identifier, stmt);
             }
-        } catch (@NonNull final SQLException e) {
-            // log... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
-        } catch (@NonNull final DaoUpdateException e) {
-            // log, but just rethrow errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new SQLException("doUpdate", e);
         }
     }
 
@@ -183,11 +164,11 @@ public class IdentifierDaoImpl
      * @param identifier to update
      * @param stmt       statement to run
      *
-     * @throws DaoUpdateException on failure
+     * @throws SQLException on failure
      */
     private static void doUpdate(@NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt)
-            throws DaoUpdateException {
+            throws SQLException {
         int c = 0;
         stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindLong(++c, identifier.getEntityType().getId());
@@ -200,13 +181,8 @@ public class IdentifierDaoImpl
         stmt.bindString(++c, identifier.getRawUri().orElse(null));
 
         stmt.bindLong(++c, identifier.getId());
-        final int rowsAffected = stmt.executeUpdateDelete(null);
 
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + identifier);
+        stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + identifier);
     }
 
     /**
@@ -252,6 +228,8 @@ public class IdentifierDaoImpl
             for (final Identifier identifier : identifierList) {
                 doInsert(identifier, stmt);
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -277,11 +255,19 @@ public class IdentifierDaoImpl
                 iId = stmtFindByKey.simpleQueryForLongOrZero();
                 if (iId == 0) {
                     // no, add it
-                    doInsert(identifier, stmtInsert);
+                    try {
+                        doInsert(identifier, stmtInsert);
+                    } catch (@NonNull final SQLException e) {
+                        throw new DaoInsertException(e);
+                    }
                 } else {
                     // key exists, update it
                     identifier.setId(iId);
-                    doUpdate(identifier, stmtUpdate);
+                    try {
+                        doUpdate(identifier, stmtUpdate);
+                    } catch (@NonNull final SQLException e) {
+                        throw new DaoUpdateException(e);
+                    }
                 }
             }
         }
@@ -385,6 +371,8 @@ public class IdentifierDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             return doInsert(identifier, stmt);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -394,6 +382,8 @@ public class IdentifierDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             doUpdate(identifier, stmt);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
     }
 

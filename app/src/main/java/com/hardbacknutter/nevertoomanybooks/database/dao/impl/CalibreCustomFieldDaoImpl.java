@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 
@@ -67,8 +66,11 @@ public class CalibreCustomFieldDaoImpl
      * NEWTHINGS: adding a Calibre custom field
      *
      * @param db Underlying database
+     *
+     * @throws SQLException on any failures
      */
-    public static void onPostCreate(@NonNull final SQLiteDatabase db) {
+    public static void onPostCreate(@NonNull final SQLiteDatabase db)
+        throws SQLException {
         //noinspection CheckStyle
         final String[][] all = {
                 // From the built in templates:
@@ -100,10 +102,6 @@ public class CalibreCustomFieldDaoImpl
                 final CalibreCustomField field = new CalibreCustomField(row[0], row[1], row[2]);
                 doInsert(field, stmt);
             }
-        } catch (@NonNull final SQLException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
         }
     }
 
@@ -115,14 +113,17 @@ public class CalibreCustomFieldDaoImpl
      * @param stmt  statement to run
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     *
+     * @throws SQLException on any failures
      */
     public static long doInsert(@NonNull final CalibreCustomField field,
-                                @NonNull final ExtSQLiteStatement stmt) {
+                                @NonNull final ExtSQLiteStatement stmt)
+        throws SQLException {
 
         stmt.bindString(1, field.getCalibreKey());
         stmt.bindString(2, field.getType());
         stmt.bindString(3, field.getDbKey());
-        return stmt.executeInsert(null);
+        return stmt.executeInsert(() -> ERROR_INSERT_FROM + field);
     }
 
     @Override
@@ -136,39 +137,30 @@ public class CalibreCustomFieldDaoImpl
     public long insert(@NonNull final CalibreCustomField field)
             throws DaoInsertException {
 
-        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(field, stmt);
-        }
-
-        if (iId != -1) {
+            final long iId = doInsert(field, stmt);
             field.setId(iId);
             return iId;
-        }
 
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + field);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(ERROR_INSERT_FROM + field);
+        }
     }
 
     @Override
     public void update(@NonNull final CalibreCustomField field)
             throws DaoUpdateException {
 
-        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, field.getCalibreKey());
             stmt.bindString(2, field.getType());
             stmt.bindString(3, field.getDbKey());
 
             stmt.bindLong(4, field.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + field);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + field);
     }
 
     @Override

@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -106,22 +107,23 @@ public class BedethequeCacheDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 //noinspection NestedAssignment
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     stmt.bindString(1, bdtAuthor.getName());
                     stmt.bindString(2, textNormaliser.strict(bdtAuthor.getName(), locale));
                     stmt.bindString(3, bdtAuthor.getUrl());
-                    iId = stmt.executeInsert(null);
-                    if (iId != -1) {
-                        bdtAuthor.setId(iId);
-                    } else {
-                        // Can't reset previous id's
-                        throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
-                    }
+
+                    final BdtAuthor fBdtAuthor = bdtAuthor;
+                    final long iId = stmt.executeInsert(
+                            () -> ERROR_INSERT_FROM + fBdtAuthor);
+                    bdtAuthor.setId(iId);
                 }
+            } catch (@NonNull final SQLException e) {
+                // Can't reset previous id's
+                throw new DaoInsertException(e);
             }
+
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
@@ -151,10 +153,9 @@ public class BedethequeCacheDaoImpl
                                      + ") VALUES(?,?,?)";
 
             final String sqlUpdateUrl = UPDATE_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
-                                     + _SET_ + CacheDbHelper.BDT_AUTHOR_URL + "=?"
-                                     + _WHERE_ + DBKey.PK_ID + "=?";
+                                        + _SET_ + CacheDbHelper.BDT_AUTHOR_URL + "=?"
+                                        + _WHERE_ + DBKey.PK_ID + "=?";
 
-            long iId;
             try (SynchronizedStatement stmtInsert = db.compileStatement(sqlInsert);
                  SynchronizedStatement stmtUpdate = db.compileStatement(sqlUpdateUrl)) {
                 //noinspection NestedAssignment
@@ -168,19 +169,25 @@ public class BedethequeCacheDaoImpl
                         stmtInsert.bindString(2, textNormaliser.strict(bdtAuthor.getName(),
                                                                        locale));
                         stmtInsert.bindString(3, bdtAuthor.getUrl());
-                        iId = stmtInsert.executeInsert(null);
-                        if (iId != -1) {
+                        try {
+                            final BdtAuthor fBdtAuthor = bdtAuthor;
+                            final long iId = stmtInsert.executeInsert(
+                                    () -> ERROR_INSERT_FROM + fBdtAuthor);
                             bdtAuthor.setId(iId);
-                        } else {
+                        } catch (@NonNull final SQLException e) {
                             // Can't reset previous id's
-                            throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
+                            throw new DaoInsertException(e);
                         }
                     } else {
                         // We ALWAYS update the url.
                         stmtUpdate.bindString(1, bdtAuthor.getUrl());
                         stmtUpdate.bindLong(2, bdtAuthor.getId());
-                        if (stmtUpdate.executeUpdateDelete(null) <= 0) {
-                            throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
+                        try {
+                            final BdtAuthor fBdtAuthor = bdtAuthor;
+                            stmtUpdate.executeUpdateDelete(
+                                    () -> ERROR_UPDATE_FROM + fBdtAuthor);
+                        } catch (@NonNull final SQLException e) {
+                            throw new DaoUpdateException(e);
                         }
                     }
                 }
@@ -208,7 +215,6 @@ public class BedethequeCacheDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 // the name from the last AS-IS
                 stmt.bindString(1, bdtAuthor.getName());
@@ -226,17 +232,14 @@ public class BedethequeCacheDaoImpl
                 }
 
                 stmt.bindLong(6, bdtAuthor.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + bdtAuthor);
             }
 
-            if (rowsAffected > 0) {
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return;
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

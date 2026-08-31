@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.cleaning;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -80,6 +81,7 @@ public class Purger {
             }
 
             for (final Purgeable dao : daos) {
+                @IntRange(from = 0)
                 final int i = dao.purge();
                 if (i > 0) {
                     logger.w(TAG, dao.getClass().getName(), "Purged: " + i);

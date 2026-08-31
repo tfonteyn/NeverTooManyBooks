@@ -133,12 +133,12 @@ public class BookDaoImpl
 
     @Override
     public boolean touch(final long bookId) {
-        final boolean result;
+        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.TOUCH)) {
             stmt.bindLong(1, bookId);
-            result = 0 < stmt.executeUpdateDelete(null);
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
-        return result;
+        return rowsAffected > 0;
     }
 
     /**
@@ -408,9 +408,9 @@ public class BookDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_UUID)) {
                 for (final String uuid : uuids) {
                     stmt.bindString(1, uuid);
-                    // check that the delete actually happened
+                    // paranoia: check that the delete really happened
                     if (stmt.executeUpdateDelete(null) > 0) {
-                        // and collect those, so we know which covers to delete.
+                        // and collect those uuids for deleting the covers
                         actuallyDeleted.add(uuid);
                     }
                 }
@@ -599,14 +599,13 @@ public class BookDaoImpl
         final String sql = Sql.UPDATE_BOOKS_SET + ',' + DBKey.LOCATION + "=?"
                            + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds);
 
-        final boolean success;
-
+        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, location);
-            success = 0 < stmt.executeUpdateDelete(null);
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
-        return success;
+        return rowsAffected > 0;
     }
 
     @Override
@@ -615,22 +614,21 @@ public class BookDaoImpl
         final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = read ? now : "";
 
-        final boolean success;
-
+        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_READ_PROGRESS)) {
             stmt.bindBoolean(1, read);
             stmt.bindString(2, endDate);
             stmt.bindString(3, "");
             stmt.bindLong(4, book.getId());
-            success = 0 < stmt.executeUpdateDelete(null);
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
-        if (success) {
+        if (rowsAffected > 0) {
             book.internalSetReadingProgress(read, endDate);
             book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         }
 
-        return success;
+        return rowsAffected > 0;
     }
 
     @Override
@@ -639,8 +637,6 @@ public class BookDaoImpl
 
         final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = progress.isRead() ? now : "";
-
-        final boolean success;
 
         // If the separate page-count field is empty, and we have a total-pages value,
         // set it as well.
@@ -651,6 +647,7 @@ public class BookDaoImpl
         }
 
         // We might be updating the page-count needlessly, but no harm done.
+        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(
                 Sql.UPDATE_READ_PROGRESS_AND_PAGE_COUNT)) {
             stmt.bindBoolean(1, progress.isRead());
@@ -658,15 +655,15 @@ public class BookDaoImpl
             stmt.bindString(3, progress.toJson());
             stmt.bindString(4, pageCount);
             stmt.bindLong(5, book.getId());
-            success = 0 < stmt.executeUpdateDelete(null);
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
-        if (success) {
+        if (rowsAffected > 0) {
             book.internalSetReadingProgress(progress, endDate, pageCount);
             book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         }
 
-        return success;
+        return rowsAffected > 0;
     }
 
     @Override

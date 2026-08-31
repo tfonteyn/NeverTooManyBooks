@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.LocaleList;
 
@@ -307,12 +308,13 @@ public class TocEntryDaoImpl
         final ReorderHelper reorderHelper = new ReorderHelper(LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales()));
 
+        // track inserted entries for reversing in case of error
+        final List<TocEntry> actualInserts = new ArrayList<>();
+
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK);
              SynchronizedStatement stmtInsToc = db.compileStatement(Sql.INSERT);
              SynchronizedStatement stmtUpdToc = db.compileStatement(Sql.UPDATE)) {
 
-            // track inserted entries for reversing in case of error
-            final List<TocEntry> actualInserts = new ArrayList<>();
             long position = 0;
             for (final TocEntry tocEntry : tocEntries) {
                 final Locale locale = localeSupplier.apply(tocEntry);
@@ -325,7 +327,6 @@ public class TocEntryDaoImpl
                     authorDao.insert(context, author, locale);
                 }
 
-
                 final String title = tocEntry.getTitle();
                 final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
@@ -336,15 +337,15 @@ public class TocEntryDaoImpl
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
-                    final long iId = stmtInsToc.executeInsert(null);
-                    if (iId != -1) {
+                    try {
+                        final long iId = stmtInsToc.executeInsert(
+                                () -> ERROR_INSERT_FROM + tocEntry);
                         tocEntry.setId(iId);
                         actualInserts.add(tocEntry);
-                    } else {
+                    } catch (@NonNull final SQLException e) {
                         actualInserts.forEach(entry -> entry.setId(0));
-                        throw new DaoInsertException(ERROR_INSERT_FROM + tocEntry);
+                        throw new DaoInsertException(e);
                     }
-
                 } else {
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
@@ -353,8 +354,12 @@ public class TocEntryDaoImpl
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
-                    if (stmtUpdToc.executeUpdateDelete(null) != 1) {
-                        throw new DaoUpdateException(ERROR_UPDATE_FROM + tocEntry);
+
+                    try {
+                        stmtUpdToc.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tocEntry);
+                    } catch (@NonNull final SQLException e) {
+                        actualInserts.forEach(entry -> entry.setId(0));
+                        throw new DaoUpdateException(e);
                     }
                 }
 
@@ -374,10 +379,7 @@ public class TocEntryDaoImpl
                     stmt.bindLong(1, tocEntry.getId());
                     stmt.bindLong(2, bookId);
                     stmt.bindLong(3, position);
-                    if (stmt.executeInsert(null) == -1) {
-                        actualInserts.forEach(entry -> entry.setId(0));
-                        throw new DaoInsertException("insert Book-TocEntry");
-                    }
+                    stmt.executeInsert(() -> "insert Book-TocEntry");
                 } catch (@NonNull final SQLiteConstraintException e) {
                     // ignore and reset the position counter.
                     position--;
@@ -388,6 +390,9 @@ public class TocEntryDaoImpl
                                                     "bookId=" + bookId,
                                                     e);
                     }
+                } catch (@NonNull final SQLException e) {
+                    actualInserts.forEach(entry -> entry.setId(0));
+                    throw new DaoInsertException(e);
                 }
             }
         }

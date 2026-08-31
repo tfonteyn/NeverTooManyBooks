@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -152,9 +153,9 @@ public class CalibreDaoImpl
             stmt.bindString(4, book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
             stmt.bindLong(5, library.getId());
 
-            if (stmt.executeInsert(null) == -1) {
-                throw new DaoInsertException(ERROR_INSERT_FROM + book);
-            }
+            stmt.executeInsert(() -> ERROR_INSERT_FROM + book);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
 
         return true;

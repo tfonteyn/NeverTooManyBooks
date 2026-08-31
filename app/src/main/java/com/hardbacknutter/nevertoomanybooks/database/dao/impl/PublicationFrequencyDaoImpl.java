@@ -75,34 +75,36 @@ public class PublicationFrequencyDaoImpl
                                    @NonNull final PublicationFrequency frequency) {
         final Optional<PublicationFrequency> current = findBySeriesId(seriesId);
         if (current.isEmpty()) {
-            return insert(seriesId, frequency);
+            insert(seriesId, frequency);
+            return true;
 
         } else if (!frequency.equals(current.get())) {
-            return update(seriesId, frequency);
+            update(seriesId, frequency);
+            return true;
         }
         return false;
     }
 
-    private boolean insert(@IntRange(from = 1) final long seriesId,
+    private void insert(@IntRange(from = 1) final long seriesId,
                            @NonNull final PublicationFrequency frequency) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindLong(1, seriesId);
             stmt.bindLong(2, frequency.getType().getId());
             stmt.bindLong(3, frequency.getCadence());
             stmt.bindBoolean(4, frequency.isOrdinal());
-            return stmt.executeInsert(null) > 0;
+            stmt.executeInsert(null);
         }
     }
 
-    private boolean update(@IntRange(from = 1) final long seriesId,
-                           @NonNull final PublicationFrequency frequency) {
+    private void update(@IntRange(from = 1) final long seriesId,
+                        @NonNull final PublicationFrequency frequency) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindLong(1, frequency.getType().getId());
             stmt.bindLong(2, frequency.getCadence());
             stmt.bindBoolean(3, frequency.isOrdinal());
 
             stmt.bindLong(4, seriesId);
-            return stmt.executeUpdateDelete(null) > 0;
+            stmt.executeUpdateDelete(null);
         }
     }
 

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
@@ -429,10 +430,11 @@ public class BookshelfDaoImpl
                     stmt.bindLong(1, bookshelfId);
                     stmt.bindString(2, filter.getDBKey());
                     stmt.bindString(3, filter.getPersistedValue());
-                    if (stmt.executeInsert(null) == -1) {
-                        throw new DaoInsertException(ERROR_INSERT_FROM + filter);
-                    }
+
+                    stmt.executeInsert(() -> ERROR_INSERT_FROM + filter);
                 }
+            } catch (@NonNull final SQLException e) {
+                throw new DaoInsertException(e);
             }
 
             if (txLock != null) {
@@ -534,10 +536,11 @@ public class BookshelfDaoImpl
 
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, bookshelf.getId());
-                if (stmt.executeInsert(null) == -1) {
-                    throw new DaoInsertException("insert Book-Bookshelf");
-                }
+
+                stmt.executeInsert(() -> "insert Book-Bookshelf");
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -564,29 +567,25 @@ public class BookshelfDaoImpl
                 stmt.bindLong(2, styleId);
                 stmt.bindLong(3, topRowListPosition.getAdapterPosition());
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
-                iId = stmt.executeInsert(null);
-            }
-
-            if (iId != -1) {
+                iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + bookshelf);
                 bookshelf.setId(iId);
-                storeFilters(bookshelf);
 
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return iId;
+            } catch (@NonNull final SQLException e) {
+                bookshelf.setId(0);
+                throw new DaoInsertException(e);
             }
-        } catch (@NonNull final DaoInsertException e) {
-            bookshelf.setId(0);
-            throw e;
+
+            storeFilters(bookshelf);
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+            return iId;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The insert failed with -1
-        bookshelf.setId(0);
-        throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
     }
 
     @Override
@@ -605,7 +604,6 @@ public class BookshelfDaoImpl
             }
 
             final TopRowListPosition topRowListPosition = bookshelf.getTopRowPosition();
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
@@ -613,19 +611,16 @@ public class BookshelfDaoImpl
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
 
                 stmt.bindLong(5, bookshelf.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + bookshelf);
             }
 
-            if (rowsAffected > 0) {
-                storeFilters(bookshelf);
+            storeFilters(bookshelf);
 
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return;
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

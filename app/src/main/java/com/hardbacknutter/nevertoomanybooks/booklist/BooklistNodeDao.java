@@ -262,10 +262,8 @@ public class BooklistNodeDao {
                 // DEBUG ONLY: clear the entire node db.
                 // This protects the developer when changing the structure irresponsibly...
                 clearAll(db);
-                throw e;
-            } else {
-                throw e;
             }
+            throw e;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

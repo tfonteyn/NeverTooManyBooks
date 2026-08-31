@@ -73,32 +73,33 @@ public class LoaneeDaoImpl
                                    @NonNull final String loanee) {
         final String current = findLoaneeByBookId(bookId);
         if (current == null || current.isEmpty()) {
-            return insert(bookId, loanee);
+            insert(bookId, loanee);
+            return true;
 
         } else if (!loanee.equals(current)) {
             // This is currently not reachable from the user-menu's
             // but leaving this in place for the future.
-            return update(bookId, loanee);
+            update(bookId, loanee);
+            return true;
         }
         return false;
     }
 
-    private boolean insert(@IntRange(from = 1) final long bookId,
+    private void insert(@IntRange(from = 1) final long bookId,
                            @NonNull final String loanee) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindLong(1, bookId);
             stmt.bindString(2, loanee);
-            return stmt.executeInsert(null) > 0;
+            stmt.executeInsert(null);
         }
     }
 
-    private boolean update(@IntRange(from = 1) final long bookId,
+    private void update(@IntRange(from = 1) final long bookId,
                            @NonNull final String loanee) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, loanee);
-
             stmt.bindLong(2, bookId);
-            return stmt.executeUpdateDelete(null) > 0;
+            stmt.executeUpdateDelete(null);
         }
     }
 

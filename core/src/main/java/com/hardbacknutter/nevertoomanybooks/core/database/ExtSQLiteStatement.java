@@ -48,7 +48,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * The mapping of sqlite error codes to the SQLiteExceptions:
  * https://github.com/aosp-mirror/platform_frameworks_base/blob/main/core/jni/android_database_SQLiteCommon.cpp
  */
-@SuppressWarnings({"unused", "MissingJavadoc"})
+@SuppressWarnings("unused")
 public class ExtSQLiteStatement
         implements Closeable {
 
@@ -284,17 +284,19 @@ public class ExtSQLiteStatement
      *
      * @return the number of rows affected by this SQL statement execution,
      *         or {@code -1} if an error occurred
+     *
+     * @throws SQLException on unexpected failures
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
-    @IntRange(from = -1)
-    public int executeUpdateDelete(@Nullable final Supplier<String> errMsgSupplier) {
-        int rowsAffected;
+    @IntRange(from = 0)
+    public int executeUpdateDelete(@Nullable final Supplier<String> errMsgSupplier)
+            throws SQLException {
+        final int rowsAffected;
         try {
             rowsAffected = statement.executeUpdateDelete();
         } catch (@NonNull final SQLException e) {
             final String errMsg = errMsgSupplier != null ? errMsgSupplier.get() : null;
             LoggerFactory.getLogger().e(TAG, e, errMsg, statement);
-            rowsAffected = -1;
+            throw e;
         }
 
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
@@ -308,25 +310,24 @@ public class ExtSQLiteStatement
     /**
      * Execute this SQL statement and return the id of the row inserted due to this call.
      * The SQL statement should be an INSERT for this to be a useful call.
-     * <p>
-     * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
-     * and a {@code -1} is returned.</strong>
      *
      * @param errMsgSupplier error message supplier for logging
      *
      * @return the row id of the newly inserted row;
      *         or {@code -1} if no inserts were done (but NOT due to an error)
+     *
+     * @throws SQLException on unexpected failures
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
     @IntRange(from = -1)
-    public long executeInsert(@Nullable final Supplier<String> errMsgSupplier) {
-        long id;
+    public long executeInsert(@Nullable final Supplier<String> errMsgSupplier)
+            throws SQLException {
+        final long id;
         try {
             id = statement.executeInsert();
         } catch (@NonNull final SQLException e) {
             final String errMsg = errMsgSupplier != null ? errMsgSupplier.get() : null;
             LoggerFactory.getLogger().e(TAG, e, errMsg, statement);
-            id = -1;
+            throw e;
         }
 
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -178,29 +179,24 @@ public class CalibreLibraryDaoImpl
                 // The getMappedBookshelfId MUST have been previously
                 // verified/'fixId' against the BookshelfDao!
                 stmt.bindLong(5, library.getMappedBookshelfId());
-                iId = stmt.executeInsert(null);
-            }
-
-            if (iId != -1) {
+                iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + library);
                 library.setId(iId);
-                insertVirtualLibraries(library);
-
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return iId;
+            } catch (@NonNull final SQLException e) {
+                library.setId(0);
+                throw new DaoInsertException(e);
             }
-        } catch (@NonNull final DaoInsertException e) {
-            library.setId(0);
-            throw e;
+
+            insertVirtualLibraries(library);
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+            return iId;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The insert failed with -1
-        library.setId(0);
-        throw new DaoInsertException(ERROR_INSERT_FROM + library);
     }
 
     @Override
@@ -215,7 +211,6 @@ public class CalibreLibraryDaoImpl
 
             // The CalibreLibrary#getMappedBookshelfId MUST have been previously
             // verified/'fixId' against the BookshelfDao!
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_LIBRARY)) {
                 int c = 0;
                 stmt.bindString(++c, library.getUuid());
@@ -225,21 +220,17 @@ public class CalibreLibraryDaoImpl
                 stmt.bindLong(++c, library.getMappedBookshelfId());
 
                 stmt.bindLong(++c, library.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + library);
             }
+            // just delete and recreate...
+            deleteVirtualLibraries(library.getId());
+            insertVirtualLibraries(library);
 
-            if (rowsAffected > 0) {
-                // just delete and recreate...
-                deleteVirtualLibraries(library.getId());
-                insertVirtualLibraries(library);
-
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return;
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -303,7 +294,6 @@ public class CalibreLibraryDaoImpl
     public void update(@NonNull final CalibreVirtualLibrary library)
             throws DaoUpdateException {
 
-        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_VIRTUAL_LIBRARY)) {
             int c = 0;
             stmt.bindLong(++c, library.getLibraryId());
@@ -312,14 +302,10 @@ public class CalibreLibraryDaoImpl
             stmt.bindLong(++c, library.getMappedBookshelfId());
 
             stmt.bindLong(++c, library.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + library);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
     }
 
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library)
@@ -344,15 +330,14 @@ public class CalibreLibraryDaoImpl
                     // The getMappedBookshelfId MUST have been previously
                     // verified/'fixId' against the BookshelfDao!
                     stmt.bindLong(4, vLib.getMappedBookshelfId());
+
                     final long iId = stmt.executeInsert(null);
-                    if (iId != -1) {
-                        vLib.setId(iId);
-                    } else {
-                        // Reset all id's before throwing!
-                        vLibs.forEach(v -> v.setId(0));
-                        throw new DaoInsertException(ERROR_INSERT_FROM + library);
-                    }
+                    vLib.setId(iId);
                 }
+            } catch (@NonNull final SQLException e) {
+                // Reset all id's before throwing!
+                vLibs.forEach(v -> v.setId(0));
+                throw new DaoInsertException(ERROR_INSERT_FROM + library);
             }
         }
     }

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
@@ -38,7 +39,6 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -274,10 +274,11 @@ public class PublisherDaoImpl
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, publisher.getId());
                 stmt.bindLong(3, position);
-                if (stmt.executeInsert(null) == -1) {
-                    throw new DaoInsertException("insert Book-Publisher");
-                }
+
+                stmt.executeInsert(() -> "insert Book-Publisher");
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
     }
 
@@ -293,20 +294,15 @@ public class PublisherDaoImpl
                 context.getResources().getConfiguration().getLocales()))
                 .reorderForSorting(context, name, locale);
 
-        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, name);
             stmt.bindString(2, textNormaliser.strict(obName, locale));
-            iId = stmt.executeInsert(null);
-        }
-
-        if (iId != -1) {
+            final long iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + publisher);
             publisher.setId(iId);
             return iId;
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
-
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + publisher);
     }
 
     @Override
@@ -320,20 +316,15 @@ public class PublisherDaoImpl
                 context.getResources().getConfiguration().getLocales()))
                 .reorderForSorting(context, text, locale);
 
-        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, publisher.getName());
             stmt.bindString(2, textNormaliser.strict(obName, locale));
 
             stmt.bindLong(3, publisher.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + publisher);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + publisher);
     }
 
     @Override
@@ -360,7 +351,7 @@ public class PublisherDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final DaoInsertException | DaoUpdateException e) {
             return false;
         } finally {
             if (txLock != null) {

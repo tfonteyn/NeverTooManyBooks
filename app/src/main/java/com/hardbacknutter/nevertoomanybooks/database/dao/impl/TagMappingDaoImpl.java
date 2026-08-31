@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 
@@ -57,6 +56,9 @@ public class TagMappingDaoImpl
     private static final String TAG = "TagMappingDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
+
+    private static final String BOOK_TAG_SCIENCE_FICTION = "Science Fiction";
+    private static final String BOOK_TAG_FANTASY = "Fantasy";
 
     /**
      * Constructor.
@@ -73,11 +75,14 @@ public class TagMappingDaoImpl
                 // These are just some examples to give the user some ideas
 
                 // unify what are identical terms
-                new Pair<>("science-fiction", Set.of("Science Fiction")),
-                new Pair<>("Sciencefiction", Set.of("Science Fiction")),
+                new Pair<>("science-fiction", Set.of(BOOK_TAG_SCIENCE_FICTION)),
+                new Pair<>("Sciencefiction", Set.of(BOOK_TAG_SCIENCE_FICTION)),
+
                 // splitting of combinations into multiple tags
-                new Pair<>("science fiction fantasy", Set.of("Science Fiction", "Fantasy")),
-                new Pair<>("Science Fiction & Fantasy", Set.of("Science Fiction", "Fantasy"))
+                new Pair<>("science fiction fantasy",
+                           Set.of(BOOK_TAG_SCIENCE_FICTION, BOOK_TAG_FANTASY)),
+                new Pair<>("Science Fiction & Fantasy",
+                           Set.of(BOOK_TAG_SCIENCE_FICTION, BOOK_TAG_FANTASY))
                 // and so on... up to the user to set up theirs obviously
         );
     }
@@ -89,15 +94,12 @@ public class TagMappingDaoImpl
      *
      * @throws SQLException on unexpected failures
      */
-    public static void onPostCreate(@NonNull final SQLiteDatabase db) {
+    public static void onPostCreate(@NonNull final SQLiteDatabase db)
+        throws SQLException {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Pair<String, Set<String>> pair : createInitialList()) {
                 doInsert(pair.first, pair.second, stmt);
             }
-        } catch (@NonNull final SQLException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
         }
     }
 
@@ -110,15 +112,19 @@ public class TagMappingDaoImpl
      * @param stmt     statement to run
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     *
+     * @throws SQLException on any failures
      */
     private static long doInsert(@NonNull final String tag,
                                  @NonNull final Set<String> mappings,
-                                 @NonNull final ExtSQLiteStatement stmt) {
+                                 @NonNull final ExtSQLiteStatement stmt)
+        throws SQLException {
 
         final String mapped = TagMapping.encodeMappingString(mappings);
         stmt.bindString(1, tag);
         stmt.bindString(2, mapped);
-        return stmt.executeInsert(null);
+        return stmt.executeInsert(() -> ERROR_INSERT_FROM
+                                        + "tag=" + tag + "mappings=" + mappings);
     }
 
     @NonNull
@@ -160,37 +166,29 @@ public class TagMappingDaoImpl
     @Override
     public long insert(@NonNull final TagMapping mapping)
             throws DaoInsertException {
-        final long iId;
+
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(mapping.getTagName(), mapping.getMappings(), stmt);
-        }
-        if (iId != -1) {
+            final long iId = doInsert(mapping.getTagName(), mapping.getMappings(), stmt);
             mapping.setId(iId);
             return iId;
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + mapping);
     }
 
     @Override
     public void update(@NonNull final TagMapping mapping)
             throws DaoUpdateException {
 
-        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, mapping.getTagName());
             stmt.bindString(2, TagMapping.encodeMappingString(mapping.getMappings()));
 
             stmt.bindLong(3, mapping.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + mapping);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + mapping);
-
     }
 
     @Override

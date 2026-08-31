@@ -114,16 +114,16 @@ public class StyleDaoImpl
      *
      * @param db    Underlying database
      * @param style the defaults
+     *
+     * @throws SQLException on any failures
      */
     public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,
-                                            @NonNull final Style style) {
+                                            @NonNull final Style style)
+        throws SQLException {
+
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
                 db.compileStatement(Sql.INSERT_STYLE))) {
             doInsert(style, null, stmt);
-        } catch (@NonNull final SQLException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
         }
     }
 
@@ -143,11 +143,15 @@ public class StyleDaoImpl
      * @param styleName the name
      * @param stmt      statement to run
      *
+     * @throws SQLException on any failures
+     *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     private static long doInsert(@NonNull final Style style,
                                  @Nullable final String styleName,
-                                 @NonNull final ExtSQLiteStatement stmt) {
+                                 @NonNull final ExtSQLiteStatement stmt)
+        throws SQLException {
+
         int c = 0;
         stmt.bindString(++c, style.getUuid());
         stmt.bindLong(++c, style.getType().getId());
@@ -185,7 +189,7 @@ public class StyleDaoImpl
 
         //NEWTHINGS: style option: add to the inserted values
 
-        return stmt.executeInsert(null);
+        return stmt.executeInsert(() -> ERROR_INSERT_FROM + style);
     }
 
     @Override
@@ -250,18 +254,13 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoInsertException {
 
-        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_STYLE)) {
-            iId = doInsert(style, style.getLabel(context), stmt);
-        }
-
-        if (iId != -1) {
+            final long iId = doInsert(style, style.getLabel(context), stmt);
             style.setId(iId);
             return iId;
+        } catch (@NonNull final SQLException e) {
+            throw new DaoInsertException(e);
         }
-
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + style);
     }
 
     @Override
@@ -269,66 +268,74 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoUpdateException {
 
-        // Note that the Style.Type is NEVER updated.
-
-        final int rowsAffected;
         if (style.getType() == Style.Type.Builtin) {
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_BUILTIN_STYLE)) {
-                int c = 0;
-                stmt.bindBoolean(++c, style.isPreferred());
-                stmt.bindLong(++c, style.getMenuPosition());
-
-                stmt.bindLong(++c, style.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
-            }
+            updateBuiltinStyle(style);
         } else {
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_STYLE)) {
-                int c = 0;
-                stmt.bindBoolean(++c, style.isPreferred());
-                stmt.bindLong(++c, style.getMenuPosition());
-                stmt.bindString(++c, style.getLabel(context));
+            updateUserStyle(context, style);
+        }
+    }
 
-                stmt.bindLong(++c, style.getLayout().getId());
-                stmt.bindLong(++c, style.getCoverClickAction().getId());
-                stmt.bindLong(++c, style.getCoverLongClickAction().getId());
-                stmt.bindLong(++c, style.getCoverScale().getId());
-                stmt.bindLong(++c, style.getTextScale().getId());
-                stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
+    private void updateBuiltinStyle(@NonNull final Style style)
+            throws DaoUpdateException {
 
-                stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
-                stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.List));
-                stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
-                stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_BUILTIN_STYLE)) {
+            int c = 0;
+            stmt.bindBoolean(++c, style.isPreferred());
+            stmt.bindLong(++c, style.getMenuPosition());
 
-                stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
-                stmt.bindBoolean(++c, style.isShowReorderedTitle());
-                stmt.bindBoolean(++c, style.isShowGroupBookCount());
+            stmt.bindLong(++c, style.getId());
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + style);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
+        }
+    }
 
-                stmt.bindBoolean(++c, style.useReadProgress());
-                stmt.bindLong(++c, style.getCitationType().getId());
+    private void updateUserStyle(@NonNull final Context context,
+                                 @NonNull final Style style)
+            throws DaoUpdateException {
 
-                stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_STYLE)) {
+            int c = 0;
+            stmt.bindBoolean(++c, style.isPreferred());
+            stmt.bindLong(++c, style.getMenuPosition());
+            stmt.bindString(++c, style.getLabel(context));
 
-                stmt.bindLong(++c, style.getExpansionLevel());
-                stmt.bindString(++c, getGroupIdsAsCsv(style));
-                stmt.bindLong(++c, style.getPrimaryAuthorRole());
+            stmt.bindLong(++c, style.getLayout().getId());
+            stmt.bindLong(++c, style.getCoverClickAction().getId());
+            stmt.bindLong(++c, style.getCoverLongClickAction().getId());
+            stmt.bindLong(++c, style.getCoverScale().getId());
+            stmt.bindLong(++c, style.getTextScale().getId());
+            stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
 
-                //NEWTHINGS: style option: add to the UPDATE
+            stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
+            stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.List));
+            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
+            stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
 
-                for (final Style.UnderEach item : Style.UnderEach.values()) {
-                    stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
-                }
+            stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
+            stmt.bindBoolean(++c, style.isShowReorderedTitle());
+            stmt.bindBoolean(++c, style.isShowGroupBookCount());
 
-                stmt.bindLong(++c, style.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.bindBoolean(++c, style.useReadProgress());
+            stmt.bindLong(++c, style.getCitationType().getId());
+
+            stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
+
+            stmt.bindLong(++c, style.getExpansionLevel());
+            stmt.bindString(++c, getGroupIdsAsCsv(style));
+            stmt.bindLong(++c, style.getPrimaryAuthorRole());
+
+            //NEWTHINGS: style option: add to the UPDATE
+
+            for (final Style.UnderEach item : Style.UnderEach.values()) {
+                stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
             }
-        }
 
-        if (rowsAffected > 0) {
-            return;
+            stmt.bindLong(++c, style.getId());
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + style);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoUpdateException(e);
         }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
     }
 
     @Override

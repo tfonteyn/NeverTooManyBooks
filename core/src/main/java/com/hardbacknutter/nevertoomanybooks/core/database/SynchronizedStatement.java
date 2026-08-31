@@ -32,12 +32,8 @@ import java.util.function.Supplier;
 /**
  * Wrapper for {@link SQLiteStatement} that ensures locking is used.
  */
-@SuppressWarnings("unused")
 public class SynchronizedStatement
         extends ExtSQLiteStatement {
-
-    /** Log tag. */
-    private static final String TAG = "SynchronizedStatement";
 
     /** Synchronizer from database. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -125,8 +121,9 @@ public class SynchronizedStatement
     }
 
     @Override
-    @IntRange(from = -1)
-    public int executeUpdateDelete(@Nullable final Supplier<String> errMsgSupplier) {
+    @IntRange(from = 0)
+    public int executeUpdateDelete(@Nullable final Supplier<String> errMsgSupplier)
+        throws SQLException {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             return super.executeUpdateDelete(errMsgSupplier);
@@ -137,7 +134,8 @@ public class SynchronizedStatement
 
     @Override
     @IntRange(from = -1)
-    public long executeInsert(@Nullable final Supplier<String> errMsgSupplier) {
+    public long executeInsert(@Nullable final Supplier<String> errMsgSupplier)
+            throws SQLException {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             return super.executeInsert(errMsgSupplier);
