@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -63,7 +60,7 @@
     <string name="ellipsize">%1$s…</string>
     <string name="error_unexpected">Ein óvæntað villa íkom.</string>
     <string name="acra_dialog_message">Ein óvæntað villa íkom. Trýst á „%1$s“ fyri at goyma eina frágreiðing á einum staði, tú velur. Tú kanst nýta hesa frágreiðingina til at boða frá einum nýggjum trupulleika á heimasíðuni hjá verkætlanini.</string>
-    <string name="error_unexpected_long">Ein óvæntað villa íkom.\nUm trupulleikin heldur fram, boða so veitaranum frá umvegis kostin „%1$s“ neðst á uppsetingarsíðuni.</string>
+    <string name="error_unexpected_long">Ein óvæntað villa íkom. Um trupulleikin heldur fram, boða so veitaranum frá umvegis kostin „%1$s“ neðst á uppsetingarsíðuni.</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Ein netvilla uppstóð.</string>
     <string name="httpErrorAuth">Kundi ikki vátta.</string>
