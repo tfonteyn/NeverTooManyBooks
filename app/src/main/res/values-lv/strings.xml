@@ -778,7 +778,7 @@
     <string name="warning_local_network_permission_required">Lai piekļūtu %1$s jūsu vietējā tīklā, ir nepieciešama atļauja.</string>
     <string name="warning_local_network_permission_denied">Lai piekļūtu %1$s jūsu vietējā tīklā, ir nepieciešama atļauja. Atveriet lietotnes iestatījumus, izvēlieties “Atļaujas” un iespējojiet “Tuvumā esošas ierīces”.</string>
     <string name="error_unexpected">Radās negaidīta kļūda.</string>
-    <string name="error_unexpected_long">RRadās negaidīta kļūda. Ja problēma nepazūd, sazinieties ar atbalsta dienestu, izmantojot opciju “%1$s” iestatījumu lapas apakšā.</string>
+    <string name="error_unexpected_long">Radās negaidīta kļūda. Ja problēma nepazūd, sazinieties ar atbalsta dienestu, izmantojot opciju “%1$s” iestatījumu lapas apakšā.</string>
     <string name="error_upgrade_not_supported">Jaunināšana no versijām, kas vecākas par %1$s, netiek atbalstīta.</string>
     <string name="error_updates_aborted">Atjaunināšana pārtraukta</string>
     <string name="error_network_please_connect">Lūdzu, izveidojiet savienojumu ar internetu.</string>
