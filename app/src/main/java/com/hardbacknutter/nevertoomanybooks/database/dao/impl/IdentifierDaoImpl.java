@@ -40,8 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -192,7 +191,7 @@ public class IdentifierDaoImpl
      */
     @Override
     public void restore(@NonNull final Context context)
-            throws DaoUpdateException, DaoInsertException {
+            throws DaoWriteException {
         final Collection<Identifier> identifierList = Identifier.createInitialList(context);
         Synchronizer.SyncLock txLock = null;
         try {
@@ -216,7 +215,7 @@ public class IdentifierDaoImpl
 
     @RequiresApi(Build.VERSION_CODES.R)
     private void restoreApi30(@NonNull final Collection<Identifier> identifierList)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -229,12 +228,12 @@ public class IdentifierDaoImpl
                 doInsert(identifier, stmt);
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            throw new DaoWriteException(e);
         }
     }
 
     private void restoreApi26(@NonNull final Collection<Identifier> identifierList)
-            throws DaoUpdateException, DaoInsertException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -258,7 +257,8 @@ public class IdentifierDaoImpl
                     try {
                         doInsert(identifier, stmtInsert);
                     } catch (@NonNull final SQLException e) {
-                        throw new DaoInsertException(e);
+                        identifier.setId(0);
+                        throw new DaoWriteException(e);
                     }
                 } else {
                     // key exists, update it
@@ -266,7 +266,7 @@ public class IdentifierDaoImpl
                     try {
                         doUpdate(identifier, stmtUpdate);
                     } catch (@NonNull final SQLException e) {
-                        throw new DaoUpdateException(e);
+                        throw new DaoWriteException(e);
                     }
                 }
             }
@@ -367,23 +367,24 @@ public class IdentifierDaoImpl
     @IntRange(from = 1)
     @Override
     public long insert(@NonNull final Identifier identifier)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             return doInsert(identifier, stmt);
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            identifier.setId(0);
+            throw new DaoWriteException(e);
         }
     }
 
     @Override
     public void update(@NonNull final Identifier identifier)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             doUpdate(identifier, stmt);
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         }
     }
 

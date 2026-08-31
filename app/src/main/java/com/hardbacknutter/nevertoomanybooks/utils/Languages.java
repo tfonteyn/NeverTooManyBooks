@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
@@ -443,7 +443,7 @@ public class Languages {
 
         try {
             isoLanguageDao.get().add(locale);
-        } catch (@NonNull final DaoInsertException e) {
+        } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger().e(TAG, e);
         }
 

@@ -42,8 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -252,21 +251,22 @@ public class StyleDaoImpl
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Style style)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_STYLE)) {
             final long iId = doInsert(style, style.getLabel(context), stmt);
             style.setId(iId);
             return iId;
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            style.setId(0);
+            throw new DaoWriteException(e);
         }
     }
 
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Style style)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         if (style.getType() == Style.Type.Builtin) {
             updateBuiltinStyle(style);
@@ -276,7 +276,7 @@ public class StyleDaoImpl
     }
 
     private void updateBuiltinStyle(@NonNull final Style style)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_BUILTIN_STYLE)) {
             int c = 0;
@@ -286,13 +286,13 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + style);
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         }
     }
 
     private void updateUserStyle(@NonNull final Context context,
                                  @NonNull final Style style)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_STYLE)) {
             int c = 0;
@@ -334,14 +334,14 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + style);
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         }
     }
 
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Collection<Style> styles)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -399,7 +399,7 @@ public class StyleDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoUpdateException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
         } finally {
             if (txLock != null) {
@@ -410,7 +410,7 @@ public class StyleDaoImpl
 
     @Override
     public void purgeNodeStates(@NonNull final Style style)
-            throws DaoUpdateException {
+            throws DaoWriteException {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_NODE_STATE_BY_STYLE_ID)) {
             stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete(null);

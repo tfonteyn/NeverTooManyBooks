@@ -29,8 +29,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -135,7 +134,7 @@ public class CalibreCustomFieldDaoImpl
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final CalibreCustomField field)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             final long iId = doInsert(field, stmt);
@@ -143,13 +142,14 @@ public class CalibreCustomFieldDaoImpl
             return iId;
 
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + field);
+            field.setId(0);
+            throw new DaoWriteException(e);
         }
     }
 
     @Override
     public void update(@NonNull final CalibreCustomField field)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, field.getCalibreKey());
@@ -158,8 +158,9 @@ public class CalibreCustomFieldDaoImpl
 
             stmt.bindLong(4, field.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + field);
+
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         }
     }
 

@@ -44,9 +44,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -60,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -71,28 +69,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 
-/**
- * Database access helper class.
- * <p>
- * insert/update of a Book failures are handled with {@link DaoWriteException}
- * which makes the deep nesting of calls easier to handle.
- * <p>
- * All others follow the pattern of:
- * insert: return new id, or {@code -1} for error.
- * update: return rows affected, can be 0; or boolean when appropriate.
- * <p>
- * Individual deletes return boolean (i.e. 0 or 1 row affected)
- * Multi-deletes return either void, or the number of rows deleted.
- * <p>
- * TODO: some places ignore insert/update failures. A storage full could trigger a failure.
- */
 public class BookDaoImpl
         extends BaseDaoImpl
         implements BookDao {
@@ -122,7 +104,8 @@ public class BookDaoImpl
 
     @SuppressWarnings("UnusedReturnValue")
     @Override
-    public boolean touch(@NonNull final Book book) {
+    public boolean touch(@NonNull final Book book)
+            throws SQLException {
         if (touch(book.getId())) {
             book.setLastModified(LocalDateTime.now(ZoneOffset.UTC));
             return true;
@@ -132,7 +115,8 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean touch(final long bookId) {
+    public boolean touch(final long bookId)
+            throws SQLException {
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.TOUCH)) {
             stmt.bindLong(1, bookId);
@@ -145,9 +129,15 @@ public class BookDaoImpl
      * See {@link #touch(long)} but for a list of books.
      *
      * @param bookIds to update
+     *
+     * @throws SQLException on failures
      */
-    private void touch(@NonNull final Collection<Long> bookIds) {
-        db.execSQL(Sql.UPDATE_BOOKS_SET + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds));
+    private void touch(@NonNull final Collection<Long> bookIds)
+        throws SQLException {
+        try (SynchronizedStatement stmt = db.compileStatement(
+                Sql.UPDATE_BOOKS_SET + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds))) {
+            stmt.executeUpdateDelete(null);
+        }
     }
 
     @Override
@@ -157,11 +147,9 @@ public class BookDaoImpl
                        @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
                        @NonNull final Set<BookFlag> flags)
-            throws StorageException,
-                   DaoWriteException {
+            throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -170,7 +158,7 @@ public class BookDaoImpl
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
             if (authors.isEmpty()) {
-                throw new DaoInsertException("No authors for book=" + book);
+                authors.add(Author.createUnknownAuthor(context));
             }
 
             final ContentValues cv = bookDaoHelper.process(context, book, true);
@@ -206,26 +194,16 @@ public class BookDaoImpl
             }
 
             // go!
-            final long newBookId;
-            try {
-                newBookId = db.insertOrThrow(TBL_BOOKS.getName(), cv);
-                // no need to check for -1 here
-            } catch (@NonNull final SQLException e) {
-                LoggerFactory.getLogger().e(TAG, e, "Insert failed"
-                                                    + "|table=" + TBL_BOOKS.getName()
-                                                    + "|cv=" + cv);
-
-                removeIds(book, flags);
-                throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book);
-            }
+            // throws SQLException
+            final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
 
             // Set the new id/uuid on the Book itself
-            // We will manually remove them again (see below) upon any error
-            book.putLong(DBKey.PK_ID, newBookId);
+            // We will manually remove them again (see #removeIds) upon any error
+            book.setId(newBookId);
             // always lookup the UUID
             final String uuid = getBookUuid(newBookId);
             SanityCheck.requireValue(uuid, ERROR_UUID);
-            book.putString(DBKey.BOOK_UUID, uuid);
+            book.setUuid(uuid);
 
             // next we add the links to series, authors,...
             insertBookLinks(context, userLocale, book, flags);
@@ -234,26 +212,24 @@ public class BookDaoImpl
             ServiceLocator.getInstance().getFtsDao().insert(book);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
-            try {
-                bookDaoHelper.persistCovers(book);
-
-            } catch (@NonNull final StorageException e) {
-                removeIds(book, flags);
-                throw e;
-
-            } catch (@NonNull final IOException e) {
-                removeIds(book, flags);
-                throw new DaoImageException(ERROR_STORING_COVERS + book, e);
-            }
+            bookDaoHelper.persistCovers(book);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
             return newBookId;
 
-        } catch (@NonNull final RuntimeException e) {
-            // Theoretically there is no need to catch RTE here, but paranoia...
-            throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book, e);
+        } catch (@NonNull final StorageException | IOException e) {
+            removeIds(book, flags);
+            throw new DaoImageException(ERROR_STORING_COVERS + book, e);
+
+        } catch (@NonNull final SQLException e) {
+            removeIds(book, flags);
+            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
+
+        } catch (@NonNull final DaoWriteException e) {
+            removeIds(book, flags);
+            throw e;
 
         } finally {
             if (txLock != null) {
@@ -269,8 +245,8 @@ public class BookDaoImpl
         if (flags.contains(BookFlag.UseIdIfPresent)) {
             return;
         }
-        book.putLong(DBKey.PK_ID, 0);
-        book.remove(DBKey.BOOK_UUID);
+        book.setId(0);
+        book.setUuid(null);
     }
 
     @Override
@@ -279,11 +255,9 @@ public class BookDaoImpl
                        @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
                        @NonNull final Set<BookFlag> flags)
-            throws StorageException,
-                   DaoWriteException {
+            throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -307,22 +281,16 @@ public class BookDaoImpl
 
             // Reminder: We're updating ONLY the fields present in the ContentValues.
             // Other fields in the database row are not affected.
-            // go !
-            final int rowsAffected = db.update(TBL_BOOKS.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(book.getId())});
 
-            // There is in fact no need to check on -1
-            // Checking on 0: this would only be the case if the _id=? fails to find the book.
-            // In short: this check is pure paranoia
-            if (rowsAffected <= 0) {
-                throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
-            }
+            // go !
+            // throws SQLException
+            db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
+                      new String[]{String.valueOf(book.getId())});
 
             // always lookup the UUID
             final String uuid = getBookUuid(book.getId());
             SanityCheck.requireValue(uuid, ERROR_UUID);
-            book.putString(DBKey.BOOK_UUID, uuid);
+            book.setUuid(uuid);
 
             // next we add the links to series, authors,...
             insertBookLinks(context, userLocale, book, flags);
@@ -331,21 +299,17 @@ public class BookDaoImpl
             ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
             // lastly we move the covers from the cache dir to their permanent dir/name
-            try {
-                bookDaoHelper.persistCovers(book);
-
-            } catch (@NonNull final IOException e) {
-                throw new DaoImageException(ERROR_STORING_COVERS + book, e);
-            }
+            bookDaoHelper.persistCovers(book);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
 
-        } catch (@NonNull final RuntimeException e) {
-            // Theoretically there is no need to catch RTE here, but paranoia...
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book, e);
+        } catch (@NonNull final StorageException | IOException e) {
+            throw new DaoImageException(ERROR_STORING_COVERS + book, e);
+
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
 
         } finally {
             if (txLock != null) {
@@ -358,8 +322,8 @@ public class BookDaoImpl
     public boolean delete(@NonNull final Book book) {
         final boolean success = delete(book.getId());
         if (success) {
-            book.remove(DBKey.PK_ID);
-            book.remove(DBKey.BOOK_UUID);
+            book.setId(0);
+            book.setUuid(null);
         }
         return success;
     }
@@ -576,7 +540,7 @@ public class BookDaoImpl
                 db.setTransactionSuccessful();
             }
 
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final SQLException | DaoWriteException e) {
             return false;
 
         } finally {
@@ -876,7 +840,7 @@ public class BookDaoImpl
             return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN)
                                  + list.stream()
                                        .map(s -> '\'' + s.asText() + '\'')
-                                       .collect(Collectors.joining(",",  " IN (", ")")),
+                                       .collect(Collectors.joining(",", " IN (", ")")),
                                  null,
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }

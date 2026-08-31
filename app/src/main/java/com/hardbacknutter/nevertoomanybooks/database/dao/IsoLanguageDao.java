@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 
 public interface IsoLanguageDao {
 
@@ -43,8 +43,8 @@ public interface IsoLanguageDao {
      *
      * @param userLocale to create a cached list for.
      *
-     * @throws DaoInsertException on failure
+     * @throws DaoWriteException on failure
      */
     void add(@NonNull Locale userLocale)
-            throws DaoInsertException;
+            throws DaoWriteException;
 }

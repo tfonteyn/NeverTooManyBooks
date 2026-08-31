@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
@@ -49,10 +48,10 @@ public interface StripInfoDao {
      * @return {@code true} if an insert was done.
      *         {@code false} if no insert was <strong>attempted</strong>
      *
-     * @throws DaoInsertException on failure to insert
+     * @throws DaoWriteException on failure to insert
      */
     boolean insert(@NonNull Book book)
-            throws DaoInsertException;
+            throws DaoWriteException;
 
     /**
      * Delete all data related to StripInfo from the database.

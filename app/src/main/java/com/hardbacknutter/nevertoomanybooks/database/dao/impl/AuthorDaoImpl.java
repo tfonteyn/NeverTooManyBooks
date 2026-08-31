@@ -45,8 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -470,6 +468,8 @@ public class AuthorDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -514,7 +514,7 @@ public class AuthorDaoImpl
                 stmt.executeInsert(() -> "insert Book-Author");
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            throw new DaoWriteException(e);
         }
     }
 
@@ -546,10 +546,6 @@ public class AuthorDaoImpl
                 stmt.bindBoolean(8, author.isComplete());
                 iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + author);
                 author.setId(iId);
-
-            } catch (@NonNull final SQLException e) {
-                author.setId(0);
-                throw new DaoInsertException(e);
             }
 
             authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
@@ -560,6 +556,15 @@ public class AuthorDaoImpl
                 db.setTransactionSuccessful();
             }
             return iId;
+
+        } catch (@NonNull final SQLException e) {
+            author.setId(0);
+            throw new DaoWriteException(e);
+
+        } catch (@NonNull final DaoWriteException e) {
+            author.setId(0);
+            throw e;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -604,7 +609,7 @@ public class AuthorDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -763,7 +768,7 @@ public class AuthorDaoImpl
 
     private void insertPseudonymLink(final long authorId,
                                      final long realAuthorId)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, authorId);
@@ -773,7 +778,7 @@ public class AuthorDaoImpl
                                      + " author=" + authorId
                                      + ", real=" + realAuthorId);
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            throw new DaoWriteException(e);
         }
     }
 

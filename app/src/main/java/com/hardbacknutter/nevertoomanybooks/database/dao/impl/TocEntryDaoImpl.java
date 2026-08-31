@@ -39,8 +39,6 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -336,16 +334,9 @@ public class TocEntryDaoImpl
                     stmtInsToc.bindString(3, textNormaliser.strict(obTitle, locale));
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
-
-                    try {
-                        final long iId = stmtInsToc.executeInsert(
-                                () -> ERROR_INSERT_FROM + tocEntry);
-                        tocEntry.setId(iId);
-                        actualInserts.add(tocEntry);
-                    } catch (@NonNull final SQLException e) {
-                        actualInserts.forEach(entry -> entry.setId(0));
-                        throw new DaoInsertException(e);
-                    }
+                    final long iId = stmtInsToc.executeInsert(() -> ERROR_INSERT_FROM + tocEntry);
+                    tocEntry.setId(iId);
+                    actualInserts.add(tocEntry);
                 } else {
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
@@ -354,13 +345,7 @@ public class TocEntryDaoImpl
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
-
-                    try {
-                        stmtUpdToc.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tocEntry);
-                    } catch (@NonNull final SQLException e) {
-                        actualInserts.forEach(entry -> entry.setId(0));
-                        throw new DaoUpdateException(e);
-                    }
+                    stmtUpdToc.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tocEntry);
                 }
 
                 // create the book<->TocEntry link.
@@ -390,11 +375,11 @@ public class TocEntryDaoImpl
                                                     "bookId=" + bookId,
                                                     e);
                     }
-                } catch (@NonNull final SQLException e) {
-                    actualInserts.forEach(entry -> entry.setId(0));
-                    throw new DaoInsertException(e);
                 }
             }
+        } catch (@NonNull final SQLException e) {
+            actualInserts.forEach(entry -> entry.setId(0));
+            throw new DaoWriteException(e);
         }
     }
 
@@ -438,8 +423,10 @@ public class TocEntryDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoWriteException e) {
+
+        } catch (@NonNull final SQLException | DaoWriteException e) {
             return false;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

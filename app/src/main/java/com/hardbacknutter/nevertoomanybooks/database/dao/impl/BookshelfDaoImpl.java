@@ -48,8 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -300,8 +299,7 @@ public class BookshelfDaoImpl
 
     @Override
     public void validate(@NonNull final Context context)
-            throws DaoInsertException,
-                   DaoUpdateException {
+            throws DaoWriteException {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         for (final Bookshelf bookshelf : getAll()) {
@@ -398,10 +396,10 @@ public class BookshelfDaoImpl
      *
      * @param bookshelf to store the filters of
      *
-     * @throws DaoInsertException on failure
+     * @throws DaoWriteException on failure
      */
     private void storeFilters(@NonNull final Bookshelf bookshelf)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         // prune the filters so we only keep the active ones
         final List<PFilter<?>> list = bookshelf.pruneFilters();
@@ -433,13 +431,13 @@ public class BookshelfDaoImpl
 
                     stmt.executeInsert(() -> ERROR_INSERT_FROM + filter);
                 }
-            } catch (@NonNull final SQLException e) {
-                throw new DaoInsertException(e);
             }
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -502,7 +500,7 @@ public class BookshelfDaoImpl
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Bookshelf> list)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -517,6 +515,8 @@ public class BookshelfDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -540,7 +540,7 @@ public class BookshelfDaoImpl
                 stmt.executeInsert(() -> "insert Book-Bookshelf");
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            throw new DaoWriteException(e);
         }
     }
 
@@ -549,7 +549,7 @@ public class BookshelfDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
                        @NonNull final Locale locale)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
@@ -569,10 +569,6 @@ public class BookshelfDaoImpl
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
                 iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + bookshelf);
                 bookshelf.setId(iId);
-
-            } catch (@NonNull final SQLException e) {
-                bookshelf.setId(0);
-                throw new DaoInsertException(e);
             }
 
             storeFilters(bookshelf);
@@ -581,6 +577,15 @@ public class BookshelfDaoImpl
                 db.setTransactionSuccessful();
             }
             return iId;
+
+        } catch (@NonNull final SQLException e) {
+            bookshelf.setId(0);
+            throw new DaoWriteException(e);
+
+        } catch (@NonNull final DaoWriteException e) {
+            bookshelf.setId(0);
+            throw e;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -592,7 +597,7 @@ public class BookshelfDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
                        @NonNull final Locale locale)
-            throws DaoUpdateException, DaoInsertException {
+            throws DaoWriteException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
@@ -620,7 +625,7 @@ public class BookshelfDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -660,7 +665,7 @@ public class BookshelfDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoUpdateException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
         } finally {
             if (txLock != null) {
@@ -674,7 +679,7 @@ public class BookshelfDaoImpl
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Bookshelf source,
                          @NonNull final Bookshelf target)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         int booksMoved;
 
@@ -736,7 +741,7 @@ public class BookshelfDaoImpl
 
     @Override
     public void purgeNodeStates(final long bookshelfId)
-            throws DaoUpdateException {
+            throws DaoWriteException {
         try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.DELETE_NODE_STATE_BY_BOOKSHELF_ID)) {
             stmt.bindLong(1, bookshelfId);

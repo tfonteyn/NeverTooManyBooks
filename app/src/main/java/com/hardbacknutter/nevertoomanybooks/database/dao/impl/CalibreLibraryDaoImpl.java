@@ -32,8 +32,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -162,7 +161,7 @@ public class CalibreLibraryDaoImpl
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final CalibreLibrary library)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -181,9 +180,6 @@ public class CalibreLibraryDaoImpl
                 stmt.bindLong(5, library.getMappedBookshelfId());
                 iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + library);
                 library.setId(iId);
-            } catch (@NonNull final SQLException e) {
-                library.setId(0);
-                throw new DaoInsertException(e);
             }
 
             insertVirtualLibraries(library);
@@ -192,6 +188,15 @@ public class CalibreLibraryDaoImpl
                 db.setTransactionSuccessful();
             }
             return iId;
+
+        } catch (@NonNull final SQLException e) {
+            library.setId(0);
+            throw new DaoWriteException(e);
+
+        } catch (@NonNull final DaoWriteException e) {
+            library.setId(0);
+            throw e;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -201,7 +206,7 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public void update(@NonNull final CalibreLibrary library)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -230,7 +235,8 @@ public class CalibreLibraryDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -292,7 +298,7 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public void update(@NonNull final CalibreVirtualLibrary library)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_VIRTUAL_LIBRARY)) {
             int c = 0;
@@ -303,13 +309,14 @@ public class CalibreLibraryDaoImpl
 
             stmt.bindLong(++c, library.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + library);
+
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         }
     }
 
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -331,13 +338,13 @@ public class CalibreLibraryDaoImpl
                     // verified/'fixId' against the BookshelfDao!
                     stmt.bindLong(4, vLib.getMappedBookshelfId());
 
-                    final long iId = stmt.executeInsert(null);
+                    final long iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + library);
                     vLib.setId(iId);
                 }
             } catch (@NonNull final SQLException e) {
                 // Reset all id's before throwing!
                 vLibs.forEach(v -> v.setId(0));
-                throw new DaoInsertException(ERROR_INSERT_FROM + library);
+                throw new DaoWriteException(e);
             }
         }
     }

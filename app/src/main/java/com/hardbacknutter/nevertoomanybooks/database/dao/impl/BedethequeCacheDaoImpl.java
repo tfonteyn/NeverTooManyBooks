@@ -31,8 +31,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -86,7 +85,7 @@ public class BedethequeCacheDaoImpl
     @Override
     public void insert(@NonNull final Locale locale,
                        @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             insertApi30(locale, recordSupplier);
@@ -98,7 +97,7 @@ public class BedethequeCacheDaoImpl
     @RequiresApi(Build.VERSION_CODES.R)
     private void insertApi30(@NonNull final Locale locale,
                              @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoInsertException {
+            throws DaoWriteException {
         BdtAuthor bdtAuthor;
 
         Synchronizer.SyncLock txLock = null;
@@ -120,8 +119,9 @@ public class BedethequeCacheDaoImpl
                     bdtAuthor.setId(iId);
                 }
             } catch (@NonNull final SQLException e) {
-                // Can't reset previous id's
-                throw new DaoInsertException(e);
+                // We can't reset previous id's unless we start keeping track
+                // of the at least 1000+ entries we get in this loop
+                throw new DaoWriteException(e);
             }
 
             if (txLock != null) {
@@ -136,7 +136,7 @@ public class BedethequeCacheDaoImpl
 
     private void insertApi26(@NonNull final Locale locale,
                              @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         BdtAuthor bdtAuthor;
 
@@ -175,8 +175,9 @@ public class BedethequeCacheDaoImpl
                                     () -> ERROR_INSERT_FROM + fBdtAuthor);
                             bdtAuthor.setId(iId);
                         } catch (@NonNull final SQLException e) {
-                            // Can't reset previous id's
-                            throw new DaoInsertException(e);
+                            // We can't reset previous id's unless we start keeping track
+                            // of the at least 1000+ entries we get in this loop
+                            throw new DaoWriteException(e);
                         }
                     } else {
                         // We ALWAYS update the url.
@@ -187,7 +188,7 @@ public class BedethequeCacheDaoImpl
                             stmtUpdate.executeUpdateDelete(
                                     () -> ERROR_UPDATE_FROM + fBdtAuthor);
                         } catch (@NonNull final SQLException e) {
-                            throw new DaoUpdateException(e);
+                            throw new DaoWriteException(e);
                         }
                     }
                 }
@@ -205,7 +206,7 @@ public class BedethequeCacheDaoImpl
     @Override
     public void update(@NonNull final BdtAuthor bdtAuthor,
                        @NonNull final Locale locale)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         final String realName = bdtAuthor.getRealName();
 
@@ -239,7 +240,8 @@ public class BedethequeCacheDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

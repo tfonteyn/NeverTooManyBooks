@@ -38,8 +38,6 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -295,6 +293,8 @@ public class SeriesDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -340,7 +340,7 @@ public class SeriesDaoImpl
                 stmt.executeInsert(() -> "insert Book-Series");
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            throw new DaoWriteException(e);
         }
     }
 
@@ -372,10 +372,6 @@ public class SeriesDaoImpl
                 stmt.bindBoolean(3, series.isComplete());
                 iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + series);
                 series.setId(iId);
-
-            } catch (@NonNull final SQLException e) {
-                series.setId(0);
-                throw new DaoInsertException(e);
             }
 
             publicationFrequencyDao.setFrequency(series);
@@ -386,6 +382,15 @@ public class SeriesDaoImpl
                 db.setTransactionSuccessful();
             }
             return iId;
+
+        } catch (@NonNull final SQLException e) {
+            series.setId(0);
+            throw new DaoWriteException(e);
+
+        } catch (@NonNull final DaoWriteException e) {
+            series.setId(0);
+            throw e;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -429,7 +434,8 @@ public class SeriesDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

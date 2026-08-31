@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -74,7 +74,7 @@ public class IsoLanguageDaoImpl
 
     @Override
     public void add(@NonNull final Locale userLocale)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         final String userIso3 = getIsoCode(userLocale);
 
@@ -100,17 +100,16 @@ public class IsoLanguageDaoImpl
                     stmt.bindString(1, userIso3);
                     stmt.bindString(2, loc.first);
                     stmt.bindString(3, loc.second);
-
-                    stmt.executeInsert(() -> "Failed top insert: "
-                                             + userIso3 + ": loc: " + loc);
+                    stmt.executeInsert(() -> "Failed top insert: " + userIso3 + ": loc: " + loc);
                 }
-            } catch (@NonNull final SQLException e) {
-                throw new DaoInsertException(e);
             }
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

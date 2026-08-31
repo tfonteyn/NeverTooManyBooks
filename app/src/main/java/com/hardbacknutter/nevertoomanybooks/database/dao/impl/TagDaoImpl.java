@@ -47,8 +47,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -221,7 +220,7 @@ public class TagDaoImpl
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Tag> list,
                                @NonNull final Function<Tag, Locale> localeSupplier)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -235,6 +234,8 @@ public class TagDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -271,36 +272,39 @@ public class TagDaoImpl
                 stmt.executeInsert(() -> "insert Book-Tag");
             }
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            throw new DaoWriteException(e);
         }
     }
 
     @IntRange(from = 1)
     @Override
     public long insert(@NonNull final Tag tag)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, tag.getName());
             final long iId = stmt.executeInsert(() -> ERROR_INSERT_FROM + tag);
             tag.setId(iId);
             return iId;
+
         } catch (@NonNull final SQLException e) {
-            throw new DaoInsertException(e);
+            tag.setId(0);
+            throw new DaoWriteException(e);
         }
     }
 
     @Override
     public void update(@NonNull final Tag tag)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, tag.getName());
 
             stmt.bindLong(2, tag.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tag);
+
         } catch (@NonNull final SQLException e) {
-            throw new DaoUpdateException(e);
+            throw new DaoWriteException(e);
         }
     }
 
@@ -323,7 +327,7 @@ public class TagDaoImpl
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Tag source,
                          @NonNull final Tag target)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         int booksMoved;
 
@@ -391,7 +395,7 @@ public class TagDaoImpl
             @NonNull final Context context,
             @NonNull final Locale locale,
             @NonNull final Set<TagMapperTask.Options> options)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (options.isEmpty()) {
@@ -447,7 +451,7 @@ public class TagDaoImpl
 
     private int applyTagMappings(@NonNull final Context context,
                                  @NonNull final Locale locale)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         final TagMapper tagMapper = new TagMapper(locale);
@@ -495,12 +499,11 @@ public class TagDaoImpl
      *
      * @return the number of books moved
      *
-     * @throws DaoInsertException on failure
-     * @throws DaoUpdateException on failure
+     * @throws DaoWriteException on failure
      * @see #moveBooks(Context, Tag, Tag)
      */
     private int mergeCaseDifferences(@NonNull final Context context)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
         // the modified book count
         int bookCount = 0;
         final List<Tag> tags = getAll();

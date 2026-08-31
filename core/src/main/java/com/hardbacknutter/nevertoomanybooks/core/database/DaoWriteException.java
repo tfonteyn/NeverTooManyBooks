@@ -29,15 +29,15 @@ public class DaoWriteException
 
     private static final long serialVersionUID = -2857466683799399619L;
 
-    protected DaoWriteException(@Nullable final String message) {
+    public DaoWriteException(@Nullable final String message) {
         super(message);
     }
 
-    protected DaoWriteException(@Nullable final Throwable cause) {
+    public DaoWriteException(@Nullable final Throwable cause) {
         super(cause);
     }
 
-    protected DaoWriteException(@Nullable final String message,
+    public DaoWriteException(@Nullable final String message,
                                 @Nullable final Throwable cause) {
         super(message, cause);
     }
