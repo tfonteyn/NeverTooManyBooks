@@ -32,6 +32,7 @@ import java.net.URL;
 public class HttpForbiddenException
         extends HttpStatusException {
 
+    private static final long serialVersionUID = -8351876228757040290L;
 
     /**
      * Constructor.
