@@ -113,7 +113,7 @@ public class BedethequeCacheDaoImpl
                     stmt.bindString(1, bdtAuthor.getName());
                     stmt.bindString(2, textNormaliser.strict(bdtAuthor.getName(), locale));
                     stmt.bindString(3, bdtAuthor.getUrl());
-                    iId = stmt.executeInsert();
+                    iId = stmt.executeInsert(null);
                     if (iId != -1) {
                         bdtAuthor.setId(iId);
                     } else {
@@ -168,7 +168,7 @@ public class BedethequeCacheDaoImpl
                         stmtInsert.bindString(2, textNormaliser.strict(bdtAuthor.getName(),
                                                                        locale));
                         stmtInsert.bindString(3, bdtAuthor.getUrl());
-                        iId = stmtInsert.executeInsert();
+                        iId = stmtInsert.executeInsert(null);
                         if (iId != -1) {
                             bdtAuthor.setId(iId);
                         } else {
@@ -179,7 +179,7 @@ public class BedethequeCacheDaoImpl
                         // We ALWAYS update the url.
                         stmtUpdate.bindString(1, bdtAuthor.getUrl());
                         stmtUpdate.bindLong(2, bdtAuthor.getId());
-                        if (stmtUpdate.executeUpdateDelete() <= 0) {
+                        if (stmtUpdate.executeUpdateDelete(null) <= 0) {
                             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
                         }
                     }
@@ -226,7 +226,7 @@ public class BedethequeCacheDaoImpl
                 }
 
                 stmt.bindLong(6, bdtAuthor.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
 
             if (rowsAffected > 0) {

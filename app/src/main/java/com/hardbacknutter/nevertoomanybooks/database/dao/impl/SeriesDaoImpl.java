@@ -185,7 +185,7 @@ public class SeriesDaoImpl
             stmt.bindBoolean(1, complete);
 
             stmt.bindLong(2, series.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -293,7 +293,7 @@ public class SeriesDaoImpl
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
+            stmt1.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -335,7 +335,7 @@ public class SeriesDaoImpl
                 stmt.bindLong(2, series.getId());
                 stmt.bindString(3, series.getNumber());
                 stmt.bindLong(4, position);
-                if (stmt.executeInsert() == -1) {
+                if (stmt.executeInsert(null) == -1) {
                     throw new DaoInsertException("insert Book-Series");
                 }
             }
@@ -368,7 +368,7 @@ public class SeriesDaoImpl
                 stmt.bindString(1, title);
                 stmt.bindString(2, textNormaliser.strict(obTitle, locale));
                 stmt.bindBoolean(3, series.isComplete());
-                iId = stmt.executeInsert();
+                iId = stmt.executeInsert(null);
             }
 
             if (iId != -1) {
@@ -422,7 +422,7 @@ public class SeriesDaoImpl
                 stmt.bindBoolean(3, series.isComplete());
 
                 stmt.bindLong(4, series.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
 
             if (rowsAffected > 0) {
@@ -455,7 +455,7 @@ public class SeriesDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, series.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
             if (rowsAffected > 0) {
                 fixPositions(context);
@@ -541,7 +541,7 @@ public class SeriesDaoImpl
     @IntRange(from = 0)
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
-            return stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete(null);
         }
     }
 
@@ -569,7 +569,7 @@ public class SeriesDaoImpl
                 if (!currentObTitle.equals(rObTitle)) {
                     stmt.bindString(1, rObTitle);
                     stmt.bindLong(2, id);
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                     i++;
                 }
             }

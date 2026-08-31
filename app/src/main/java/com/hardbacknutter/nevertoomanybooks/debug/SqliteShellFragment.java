@@ -170,7 +170,7 @@ public class SqliteShellFragment
 
                 final long id;
                 try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-                    id = stmt.executeInsert();
+                    id = stmt.executeInsert(null);
                 }
                 final String result = getString(R.string.debug_sq_shell_row_id, id);
                 vb.output.loadDataWithBaseURL(null, result, TEXT_HTML, UTF_8, null);
@@ -180,7 +180,7 @@ public class SqliteShellFragment
 
                 final int rowsAffected;
                 try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-                    rowsAffected = stmt.executeUpdateDelete();
+                    rowsAffected = stmt.executeUpdateDelete(null);
                 }
                 final String result = getString(R.string.debug_sq_shell_rows_affected_x,
                                                 rowsAffected);

@@ -27,6 +27,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * Wrapper for {@link SQLiteStatement} that ensures locking is used.
  */
@@ -124,10 +126,10 @@ public class SynchronizedStatement
 
     @Override
     @IntRange(from = -1)
-    public int executeUpdateDelete() {
+    public int executeUpdateDelete(@Nullable final Supplier<String> errMsgSupplier) {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
-            return super.executeUpdateDelete();
+            return super.executeUpdateDelete(errMsgSupplier);
         } finally {
             exclusiveLock.unlock();
         }
@@ -135,10 +137,10 @@ public class SynchronizedStatement
 
     @Override
     @IntRange(from = -1)
-    public long executeInsert() {
+    public long executeInsert(@Nullable final Supplier<String> errMsgSupplier) {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
-            return super.executeInsert();
+            return super.executeInsert(errMsgSupplier);
         } finally {
             exclusiveLock.unlock();
         }

@@ -459,7 +459,7 @@ class DuplicateRowCleaner {
                 + SELECT_ + '1' + _FROM_ + table.getName() + ' ' + A_2
                 + _WHERE_ + A_2 + '.' + keyColumn + '=' + keepIdColumn
                 + _AND_ + whereOthers + ')')) {
-            final int rowsAffected = stmt.executeUpdateDelete();
+            final int rowsAffected = stmt.executeUpdateDelete(null);
             logger.w(TAG, "insertReplacementRows", table.getName() + ':' + rowsAffected);
         }
     }
@@ -471,7 +471,7 @@ class DuplicateRowCleaner {
                 DELETE_FROM_ + table.getName()
                 + _WHERE_ + keyColumn
                 + _IN_ + '(' + SELECT_ + REMOVE_ID + _FROM_ + tblRemove + ')')) {
-            final int rowsAffected = stmt.executeUpdateDelete();
+            final int rowsAffected = stmt.executeUpdateDelete(null);
             logger.w(TAG, "deleteRemovedIds", table.getName() + ':' + rowsAffected);
         }
     }

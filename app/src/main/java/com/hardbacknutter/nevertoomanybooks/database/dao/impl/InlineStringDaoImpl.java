@@ -80,7 +80,7 @@ public class InlineStringDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(sqlUpdate)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
-            stmt.executeUpdateDelete();
+            stmt.executeUpdateDelete(null);
         }
     }
 }

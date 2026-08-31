@@ -360,7 +360,7 @@ public class AuthorDaoImpl
             stmt.bindBoolean(1, complete);
 
             stmt.bindLong(2, author.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -469,7 +469,7 @@ public class AuthorDaoImpl
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
+            stmt1.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -510,7 +510,7 @@ public class AuthorDaoImpl
                 stmt.bindLong(2, author.getId());
                 stmt.bindLong(3, position);
                 stmt.bindLong(4, author.getRole());
-                if (stmt.executeInsert() == -1) {
+                if (stmt.executeInsert(null) == -1) {
                     throw new DaoInsertException("insert Book-Author");
                 }
             }
@@ -543,7 +543,7 @@ public class AuthorDaoImpl
                 stmt.bindString(6, author.getDeathDate().orElse(null));
                 stmt.bindString(7, author.getImageUuid().orElse(null));
                 stmt.bindBoolean(8, author.isComplete());
-                iId = stmt.executeInsert();
+                iId = stmt.executeInsert(null);
             }
 
             if (iId != -1) {
@@ -598,7 +598,7 @@ public class AuthorDaoImpl
                 stmt.bindBoolean(8, author.isComplete());
 
                 stmt.bindLong(9, author.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
 
             if (rowsAffected > 0) {
@@ -732,7 +732,7 @@ public class AuthorDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, author.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
             if (rowsAffected > 0) {
                 fixPositions(context);
@@ -776,7 +776,7 @@ public class AuthorDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, authorId);
             stmt.bindLong(2, realAuthorId);
-            if (stmt.executeInsert() == -1) {
+            if (stmt.executeInsert(null) == -1) {
                 throw new DaoInsertException("Failed to insert PseudonymLink author=" + authorId
                                              + ", real=" + realAuthorId);
             }
@@ -786,7 +786,7 @@ public class AuthorDaoImpl
     private void deletePseudonymLink(final long pseudonymId) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, pseudonymId);
-            stmt.executeUpdateDelete();
+            stmt.executeUpdateDelete(null);
         }
     }
 
@@ -810,7 +810,7 @@ public class AuthorDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_AUTHOR)) {
                 stmt.bindLong(1, target.getId());
                 stmt.bindLong(2, source.getId());
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
 
             // Relink books with the target Author,
@@ -863,7 +863,7 @@ public class AuthorDaoImpl
     @IntRange(from = 0)
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
-            return stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete(null);
         }
     }
 
@@ -893,7 +893,7 @@ public class AuthorDaoImpl
                     stmt.bindString(1, newFamilyOb);
                     stmt.bindString(2, newGivenOb);
                     stmt.bindLong(3, id);
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                     i++;
                 }
             }

@@ -295,7 +295,7 @@ public class DBCleaner {
                 for (final Map.Entry<Long, String> entry : toUpdate.entrySet()) {
                     stmt.bindLong(1, entry.getKey());
                     stmt.bindString(2, entry.getValue());
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                 }
             }
         }
@@ -329,7 +329,7 @@ public class DBCleaner {
                 for (final Pair<Long, String> row : rows) {
                     stmt.bindString(1, SqlEncode.dateTime(row.second));
                     stmt.bindLong(2, row.first);
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                 }
             }
             // reuse for next column
@@ -375,7 +375,7 @@ public class DBCleaner {
         sql = update + "('true','t','yes')";
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, 1);
-            final int rowsAffected = stmt.executeUpdateDelete();
+            final int rowsAffected = stmt.executeUpdateDelete(null);
             if (BuildConfig.DEBUG /* always */) {
                 logger.d(TAG, "booleanCleanup", "true=" + rowsAffected);
             }
@@ -384,7 +384,7 @@ public class DBCleaner {
         sql = update + "('false','f','no')";
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, 0);
-            final int rowsAffected = stmt.executeUpdateDelete();
+            final int rowsAffected = stmt.executeUpdateDelete(null);
             if (BuildConfig.DEBUG /* always */) {
                 logger.d(TAG, "booleanCleanup", "false=" + rowsAffected);
             }
@@ -406,7 +406,7 @@ public class DBCleaner {
             final String sql = DELETE_FROM_ + TBL_BOOK_BOOKSHELF
                                + _WHERE_ + DBKey.FK_BOOKSHELF + _IS_NULL;
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
             toLog("bookBookshelf|EXIT", select);
         }
@@ -432,7 +432,7 @@ public class DBCleaner {
             final String sql =
                     UPDATE_ + table + _SET_ + column + "=''" + _WHERE_ + column + _IS_NULL;
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
             toLog("nullString2empty|EXIT", select);
         }

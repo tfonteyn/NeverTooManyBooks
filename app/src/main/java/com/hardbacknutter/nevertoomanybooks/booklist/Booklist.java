@@ -584,7 +584,7 @@ public class Booklist
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateAuthorIsComplete)) {
                 stmt.bindBoolean(1, complete);
                 stmt.bindLong(2, authorId);
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
         }
         return getNodes(DBKey.FK_AUTHOR, authorId);
@@ -614,7 +614,7 @@ public class Booklist
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateSeriesIsComplete)) {
                 stmt.bindBoolean(1, complete);
                 stmt.bindLong(2, seriesId);
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
         }
         return getNodes(DBKey.FK_SERIES, seriesId);
@@ -664,7 +664,7 @@ public class Booklist
                     stmt.bindString(++i, readProgress);
                 }
                 stmt.bindLong(++i, bookId);
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
         }
         return getNodes(DBKey.FK_BOOK, bookId);
@@ -695,7 +695,7 @@ public class Booklist
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookLoanee)) {
                 stmt.bindString(1, loanee != null ? loanee : "");
                 stmt.bindLong(2, bookId);
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
         }
         return getNodes(DBKey.FK_BOOK, bookId);

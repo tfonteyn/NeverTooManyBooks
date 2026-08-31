@@ -122,7 +122,7 @@ public class CalibreCustomFieldDaoImpl
         stmt.bindString(1, field.getCalibreKey());
         stmt.bindString(2, field.getType());
         stmt.bindString(3, field.getDbKey());
-        return stmt.executeInsert();
+        return stmt.executeInsert(null);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class CalibreCustomFieldDaoImpl
             stmt.bindString(3, field.getDbKey());
 
             stmt.bindLong(4, field.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -176,7 +176,7 @@ public class CalibreCustomFieldDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         if (rowsAffected > 0) {
             calibreCustomField.setId(0);

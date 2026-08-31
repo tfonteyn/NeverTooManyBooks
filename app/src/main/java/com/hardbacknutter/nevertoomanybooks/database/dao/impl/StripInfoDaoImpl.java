@@ -114,7 +114,7 @@ public class StripInfoDaoImpl
             stmt.bindLong(++i, data.getAmount());
             stmt.bindString(++i, dateTime);
 
-            if (stmt.executeInsert() == -1) {
+            if (stmt.executeInsert(null) == -1) {
                 throw new DaoInsertException(ERROR_INSERT_FROM + data);
             }
         }
@@ -127,7 +127,7 @@ public class StripInfoDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
             stmt.bindLong(1, book.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         return rowsAffected > 0;
     }

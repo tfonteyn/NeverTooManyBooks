@@ -85,7 +85,7 @@ public class IdentifierValueDaoImpl
         // Just delete all current links
         try (SynchronizedStatement stmt1 = db.compileStatement(sql.DELETE_LINK_BY_FK)) {
             stmt1.bindLong(1, fkId);
-            stmt1.executeUpdateDelete();
+            stmt1.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -104,7 +104,7 @@ public class IdentifierValueDaoImpl
                 stmt.bindLong(1, fkId);
                 stmt.bindLong(2, identifier.getId());
                 stmt.bindString(3, iv.getSid());
-                if (stmt.executeInsert() == -1) {
+                if (stmt.executeInsert(null) == -1) {
                     throw new DaoInsertException("insert FK-Identifier");
                 }
             }

@@ -136,7 +136,7 @@ public class BookDaoImpl
         final boolean result;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.TOUCH)) {
             stmt.bindLong(1, bookId);
-            result = 0 < stmt.executeUpdateDelete();
+            result = 0 < stmt.executeUpdateDelete(null);
         }
         return result;
     }
@@ -409,7 +409,7 @@ public class BookDaoImpl
                 for (final String uuid : uuids) {
                     stmt.bindString(1, uuid);
                     // check that the delete actually happened
-                    if (stmt.executeUpdateDelete() > 0) {
+                    if (stmt.executeUpdateDelete(null) > 0) {
                         // and collect those, so we know which covers to delete.
                         actuallyDeleted.add(uuid);
                     }
@@ -603,7 +603,7 @@ public class BookDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, location);
-            success = 0 < stmt.executeUpdateDelete();
+            success = 0 < stmt.executeUpdateDelete(null);
         }
 
         return success;
@@ -622,7 +622,7 @@ public class BookDaoImpl
             stmt.bindString(2, endDate);
             stmt.bindString(3, "");
             stmt.bindLong(4, book.getId());
-            success = 0 < stmt.executeUpdateDelete();
+            success = 0 < stmt.executeUpdateDelete(null);
         }
 
         if (success) {
@@ -658,7 +658,7 @@ public class BookDaoImpl
             stmt.bindString(3, progress.toJson());
             stmt.bindString(4, pageCount);
             stmt.bindLong(5, book.getId());
-            success = 0 < stmt.executeUpdateDelete();
+            success = 0 < stmt.executeUpdateDelete(null);
         }
 
         if (success) {
@@ -1024,7 +1024,7 @@ public class BookDaoImpl
                 if (!currentObTitle.equals(rObTitle)) {
                     stmt.bindString(1, rObTitle);
                     stmt.bindLong(2, id);
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                     i++;
                 }
             }

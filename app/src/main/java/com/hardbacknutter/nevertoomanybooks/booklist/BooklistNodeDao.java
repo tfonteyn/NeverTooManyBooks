@@ -201,7 +201,7 @@ public class BooklistNodeDao {
             stmt.bindBoolean(1, expand);
             stmt.bindBoolean(2, visible);
             stmt.bindLong(3, nodeLevel);
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -235,7 +235,7 @@ public class BooklistNodeDao {
                     Sql.DELETE_ALL_FOR_CURRENT_SHELF)) {
                 stmt.bindLong(1, bookshelfId);
                 stmt.bindLong(2, styleId);
-                rowsUpdated = stmt.executeUpdateDelete();
+                rowsUpdated = stmt.executeUpdateDelete(null);
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 LoggerFactory.getLogger().d(TAG, "saveAllNodes", "delete",
@@ -247,7 +247,7 @@ public class BooklistNodeDao {
                     String.format(Sql.SAVE_ALL_NODES, listTable.getName()))) {
                 stmt.bindLong(1, bookshelfId);
                 stmt.bindLong(2, styleId);
-                rowsUpdated = stmt.executeUpdateDelete();
+                rowsUpdated = stmt.executeUpdateDelete(null);
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 LoggerFactory.getLogger().d(TAG, "saveAllNodes", "insert",
@@ -359,7 +359,7 @@ public class BooklistNodeDao {
                 String.format(Sql.UPDATE_NODE, listTable.getName()))) {
             stmt.bindBoolean(1, expand);
             stmt.bindLong(2, rowId);
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             LoggerFactory.getLogger().d(TAG, "updateNode",
@@ -443,7 +443,7 @@ public class BooklistNodeDao {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
             stmt.bindLong(3, level);
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -458,7 +458,7 @@ public class BooklistNodeDao {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
             stmt.bindLong(3, level);
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -493,7 +493,7 @@ public class BooklistNodeDao {
                 String.format(Sql.COLLAPSE_AND_HIDE_NODES_BETWEEN, listTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             LoggerFactory.getLogger().d(TAG, "collapseAndHideNodesBetween",
@@ -550,7 +550,7 @@ public class BooklistNodeDao {
             stmt.bindLong(4, startRowIncl);
             stmt.bindLong(5, endRowExcl);
 
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -570,7 +570,7 @@ public class BooklistNodeDao {
             stmt.bindLong(3, startRowIncl);
             stmt.bindLong(4, endRowExcl);
 
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -648,7 +648,7 @@ public class BooklistNodeDao {
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, bookshelfId);
             stmt.bindLong(2, styleId);
-            rowsUpdated = stmt.executeUpdateDelete();
+            rowsUpdated = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -685,7 +685,7 @@ public class BooklistNodeDao {
             for (final Pair<Integer, String> p : keyPrefixes) {
                 insert.bindLong(1, p.first);
                 insert.bindString(2, p.second);
-                insert.executeInsert();
+                insert.executeInsert(null);
             }
         }
 
@@ -702,7 +702,7 @@ public class BooklistNodeDao {
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);

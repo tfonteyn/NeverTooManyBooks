@@ -182,7 +182,7 @@ public class TagDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(
                 DELETE_FROM_ + TBL_TAGS + _WHERE_ + DBKey.PK_ID
                 + _NOT_IN_ + '(' + String.join(",", inUse) + ')')) {
-            return stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete(null);
         }
     }
 
@@ -233,7 +233,7 @@ public class TagDaoImpl
         // Just delete all current links
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
+            stmt1.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -267,7 +267,7 @@ public class TagDaoImpl
 
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, tag.getId());
-                if (stmt.executeInsert() == -1) {
+                if (stmt.executeInsert(null) == -1) {
                     throw new DaoInsertException("insert Book-Tag");
                 }
             }
@@ -282,7 +282,7 @@ public class TagDaoImpl
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, tag.getName());
-            iId = stmt.executeInsert();
+            iId = stmt.executeInsert(null);
         }
 
         if (iId != -1) {
@@ -303,7 +303,7 @@ public class TagDaoImpl
             stmt.bindString(1, tag.getName());
 
             stmt.bindLong(2, tag.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -318,7 +318,7 @@ public class TagDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, tag.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         if (rowsAffected > 0) {
             tag.setId(0);
@@ -349,7 +349,7 @@ public class TagDaoImpl
                 try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_TAG)) {
                     stmt.bindLong(1, target.getId());
                     stmt.bindLong(2, source.getId());
-                    booksMoved = stmt.executeUpdateDelete();
+                    booksMoved = stmt.executeUpdateDelete(null);
                 }
             } else {
                 // manual labour...
@@ -550,7 +550,7 @@ public class TagDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BULK)) {
                 for (final Tag tag : list) {
                     stmt.bindString(1, tag.getName());
-                    final long iId = stmt.executeInsert();
+                    final long iId = stmt.executeInsert(null);
                     // INSERT OR IGNORE can return {@code -1}
                     if (iId != -1) {
                         count++;

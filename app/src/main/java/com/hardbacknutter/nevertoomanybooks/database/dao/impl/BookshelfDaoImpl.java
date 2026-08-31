@@ -416,7 +416,7 @@ public class BookshelfDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.DELETE_FILTERS_BY_BOOKSHELF_ID)) {
                 stmt.bindLong(1, bookshelfId);
-                stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete(null);
             }
 
             // is there anything to insert ?
@@ -429,7 +429,7 @@ public class BookshelfDaoImpl
                     stmt.bindLong(1, bookshelfId);
                     stmt.bindString(2, filter.getDBKey());
                     stmt.bindString(3, filter.getPersistedValue());
-                    if (stmt.executeInsert() == -1) {
+                    if (stmt.executeInsert(null) == -1) {
                         throw new DaoInsertException(ERROR_INSERT_FROM + filter);
                     }
                 }
@@ -514,7 +514,7 @@ public class BookshelfDaoImpl
         // Just delete all current links; we'll insert them from scratch.
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
+            stmt1.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -534,7 +534,7 @@ public class BookshelfDaoImpl
 
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, bookshelf.getId());
-                if (stmt.executeInsert() == -1) {
+                if (stmt.executeInsert(null) == -1) {
                     throw new DaoInsertException("insert Book-Bookshelf");
                 }
             }
@@ -564,7 +564,7 @@ public class BookshelfDaoImpl
                 stmt.bindLong(2, styleId);
                 stmt.bindLong(3, topRowListPosition.getAdapterPosition());
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
-                iId = stmt.executeInsert();
+                iId = stmt.executeInsert(null);
             }
 
             if (iId != -1) {
@@ -613,7 +613,7 @@ public class BookshelfDaoImpl
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
 
                 stmt.bindLong(5, bookshelf.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
 
             if (rowsAffected > 0) {
@@ -654,7 +654,7 @@ public class BookshelfDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
             if (rowsAffected > 0) {
                 bookshelf.setId(0);
@@ -696,7 +696,7 @@ public class BookshelfDaoImpl
                 try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_BOOKSHELF)) {
                     stmt.bindLong(1, target.getId());
                     stmt.bindLong(2, source.getId());
-                    booksMoved = stmt.executeUpdateDelete();
+                    booksMoved = stmt.executeUpdateDelete(null);
                 }
             } else {
                 // manual labour...
@@ -745,7 +745,7 @@ public class BookshelfDaoImpl
         try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.DELETE_NODE_STATE_BY_BOOKSHELF_ID)) {
             stmt.bindLong(1, bookshelfId);
-            stmt.executeUpdateDelete();
+            stmt.executeUpdateDelete(null);
         }
     }
 

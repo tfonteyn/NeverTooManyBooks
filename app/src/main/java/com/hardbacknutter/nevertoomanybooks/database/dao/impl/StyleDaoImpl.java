@@ -185,7 +185,7 @@ public class StyleDaoImpl
 
         //NEWTHINGS: style option: add to the inserted values
 
-        return stmt.executeInsert();
+        return stmt.executeInsert(null);
     }
 
     @Override
@@ -279,7 +279,7 @@ public class StyleDaoImpl
                 stmt.bindLong(++c, style.getMenuPosition());
 
                 stmt.bindLong(++c, style.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
         } else {
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_STYLE)) {
@@ -320,7 +320,7 @@ public class StyleDaoImpl
                 }
 
                 stmt.bindLong(++c, style.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
         }
 
@@ -381,7 +381,7 @@ public class StyleDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
             if (rowsAffected > 0) {
                 style.setId(0);
@@ -406,7 +406,7 @@ public class StyleDaoImpl
             throws DaoUpdateException {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_NODE_STATE_BY_STYLE_ID)) {
             stmt.bindLong(1, style.getId());
-            stmt.executeUpdateDelete();
+            stmt.executeUpdateDelete(null);
         }
     }
 

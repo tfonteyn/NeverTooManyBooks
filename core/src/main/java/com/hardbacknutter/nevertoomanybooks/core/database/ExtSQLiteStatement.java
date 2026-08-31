@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Closeable;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
@@ -47,7 +48,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * The mapping of sqlite error codes to the SQLiteExceptions:
  * https://github.com/aosp-mirror/platform_frameworks_base/blob/main/core/jni/android_database_SQLiteCommon.cpp
  */
-@SuppressWarnings({"unused", "WeakerAccess", "MissingJavadoc"})
+@SuppressWarnings({"unused", "MissingJavadoc"})
 public class ExtSQLiteStatement
         implements Closeable {
 
@@ -163,6 +164,7 @@ public class ExtSQLiteStatement
      * <p>
      * Clears all existing bindings. Unset bindings are treated as NULL.
      */
+    @SuppressWarnings("WeakerAccess")
     public void clearBindings() {
         statement.clearBindings();
     }
@@ -182,7 +184,7 @@ public class ExtSQLiteStatement
      * @see #simpleQueryForLongOrZero()
      */
     @Discouraged(message = "You probably want to use simpleQueryForLongOrZero()")
-    public long simpleQueryForLong()
+    protected long simpleQueryForLong()
             throws SQLiteDoneException, SQLException {
         final long result = statement.simpleQueryForLong();
 
@@ -203,7 +205,7 @@ public class ExtSQLiteStatement
      *
      * @throws SQLException on unexpected failures
      */
-    public long simpleQueryForLongOrZero()
+    protected long simpleQueryForLongOrZero()
             throws SQLException {
         try {
             return simpleQueryForLong();
@@ -223,7 +225,7 @@ public class ExtSQLiteStatement
      */
     @Discouraged(message = "You probably want to use simpleQueryForStringOrNull()")
     @NonNull
-    public String simpleQueryForString()
+    protected String simpleQueryForString()
             throws SQLiteDoneException, SQLException {
         final String result = statement.simpleQueryForString();
 
@@ -245,7 +247,7 @@ public class ExtSQLiteStatement
      * @throws SQLException on unexpected failures
      */
     @Nullable
-    public String simpleQueryForStringOrNull()
+    protected String simpleQueryForStringOrNull()
             throws SQLException {
         try {
             return simpleQueryForString();
@@ -261,11 +263,11 @@ public class ExtSQLiteStatement
      * @throws SQLException on unexpected failures
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public void execute()
+    protected void execute()
             throws SQLException {
         try {
             statement.execute();
-        } catch (@NonNull final RuntimeException e) {
+        } catch (@NonNull final SQLException e) {
             LoggerFactory.getLogger().e(TAG, e, statement);
             throw e;
         }
@@ -278,17 +280,20 @@ public class ExtSQLiteStatement
      * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
      * and a {@code -1} is returned.</strong>
      *
+     * @param errMsgSupplier error message supplier for logging
+     *
      * @return the number of rows affected by this SQL statement execution,
      *         or {@code -1} if an error occurred
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
     @IntRange(from = -1)
-    public int executeUpdateDelete() {
+    public int executeUpdateDelete(@Nullable final Supplier<String> errMsgSupplier) {
         int rowsAffected;
         try {
             rowsAffected = statement.executeUpdateDelete();
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e, statement);
+        } catch (@NonNull final SQLException e) {
+            final String errMsg = errMsgSupplier != null ? errMsgSupplier.get() : null;
+            LoggerFactory.getLogger().e(TAG, e, errMsg, statement);
             rowsAffected = -1;
         }
 
@@ -307,22 +312,25 @@ public class ExtSQLiteStatement
      * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
      * and a {@code -1} is returned.</strong>
      *
+     * @param errMsgSupplier error message supplier for logging
+     *
      * @return the row id of the newly inserted row;
      *         or {@code -1} if no inserts were done (but NOT due to an error)
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
     @IntRange(from = -1)
-    public long executeInsert() {
+    public long executeInsert(@Nullable final Supplier<String> errMsgSupplier) {
         long id;
         try {
             id = statement.executeInsert();
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e, statement);
+        } catch (@NonNull final SQLException e) {
+            final String errMsg = errMsgSupplier != null ? errMsgSupplier.get() : null;
+            LoggerFactory.getLogger().e(TAG, e, errMsg, statement);
             id = -1;
         }
 
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
-            LoggerFactory.getLogger().d(TAG, "executeInsert",  "id=" + id, statement);
+            LoggerFactory.getLogger().d(TAG, "executeInsert", "id=" + id, statement);
         }
         return id;
     }

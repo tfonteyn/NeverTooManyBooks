@@ -234,7 +234,7 @@ public class PublisherDaoImpl
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
+            stmt1.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -274,7 +274,7 @@ public class PublisherDaoImpl
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, publisher.getId());
                 stmt.bindLong(3, position);
-                if (stmt.executeInsert() == -1) {
+                if (stmt.executeInsert(null) == -1) {
                     throw new DaoInsertException("insert Book-Publisher");
                 }
             }
@@ -297,7 +297,7 @@ public class PublisherDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, name);
             stmt.bindString(2, textNormaliser.strict(obName, locale));
-            iId = stmt.executeInsert();
+            iId = stmt.executeInsert(null);
         }
 
         if (iId != -1) {
@@ -326,7 +326,7 @@ public class PublisherDaoImpl
             stmt.bindString(2, textNormaliser.strict(obName, locale));
 
             stmt.bindLong(3, publisher.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -348,7 +348,7 @@ public class PublisherDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, publisher.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
             if (rowsAffected > 0) {
                 fixPositions(context);
@@ -433,7 +433,7 @@ public class PublisherDaoImpl
     @IntRange(from = 0)
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
-            return stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete(null);
         }
     }
 
@@ -460,7 +460,7 @@ public class PublisherDaoImpl
                 if (!currentObTitle.equals(rObTitle)) {
                     stmt.bindString(1, rObTitle);
                     stmt.bindLong(2, id);
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                     i++;
                 }
             }

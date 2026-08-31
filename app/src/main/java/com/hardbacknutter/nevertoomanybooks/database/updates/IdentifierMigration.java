@@ -160,7 +160,7 @@ public class IdentifierMigration {
                 if (claim != null) {
                     stmt.bindString(1, claim);
                     stmt.bindString(2, identifier.getKey());
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                 }
             }
         }

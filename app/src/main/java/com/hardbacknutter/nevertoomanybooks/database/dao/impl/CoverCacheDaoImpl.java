@@ -121,7 +121,7 @@ public class CoverCacheDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_IMAGE_ID)) {
             stmt.bindString(1, uuid + '%');
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         return rowsAffected > 0;
     }
@@ -252,7 +252,7 @@ public class CoverCacheDaoImpl
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
 
-                            if (stmt.executeInsert() == -1) {
+                            if (stmt.executeInsert(null) == -1) {
                                 logAndDisableCache(new DaoInsertException(cacheId));
                             }
                         }
@@ -265,7 +265,7 @@ public class CoverCacheDaoImpl
 
                             stmt.bindString(4, cacheId);
 
-                            if (stmt.executeUpdateDelete() <= 0) {
+                            if (stmt.executeUpdateDelete(null) <= 0) {
                                 logAndDisableCache(new DaoUpdateException(cacheId));
                             }
                         }

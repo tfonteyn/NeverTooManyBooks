@@ -152,7 +152,7 @@ public class CalibreDaoImpl
             stmt.bindString(4, book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
             stmt.bindLong(5, library.getId());
 
-            if (stmt.executeInsert() == -1) {
+            if (stmt.executeInsert(null) == -1) {
                 throw new DaoInsertException(ERROR_INSERT_FROM + book);
             }
         }
@@ -165,7 +165,7 @@ public class CalibreDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
             stmt.bindLong(1, book.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         return rowsAffected > 0;
     }

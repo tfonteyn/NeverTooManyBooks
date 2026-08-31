@@ -99,7 +99,7 @@ public class IsoLanguageDaoImpl
                     stmt.bindString(1, userIso3);
                     stmt.bindString(2, loc.first);
                     stmt.bindString(3, loc.second);
-                    final long iId = stmt.executeInsert();
+                    final long iId = stmt.executeInsert(null);
                     if (iId < 0) {
                         throw new DaoInsertException("Failed top insert: "
                                                      + userIso3 + ": loc: " + loc);

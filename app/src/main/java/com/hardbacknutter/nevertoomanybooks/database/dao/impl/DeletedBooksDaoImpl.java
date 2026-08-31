@@ -101,7 +101,7 @@ public class DeletedBooksDaoImpl
                 for (final Pair<String, String> record : list) {
                     stmt.bindString(1, record.first);
                     stmt.bindString(2, record.second);
-                    final long iId = stmt.executeInsert();
+                    final long iId = stmt.executeInsert(null);
                     // INSERT OR IGNORE can return {@code -1}
                     if (iId != -1) {
                         count++;
@@ -135,7 +135,7 @@ public class DeletedBooksDaoImpl
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(
                 DELETE_FROM_ + TBL_DELETED_BOOKS.getName())) {
-            return stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete(null);
         }
     }
 }

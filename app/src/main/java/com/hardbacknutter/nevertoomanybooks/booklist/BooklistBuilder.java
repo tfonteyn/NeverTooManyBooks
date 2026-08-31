@@ -577,7 +577,7 @@ class BooklistBuilder {
         final int initialInsertCount;
         try (SynchronizedStatement stmt = db.compileStatement(sqlBulkInsert)) {
             // Note we use the executeUpdateDelete to get the NUMBER of rows inserted
-            initialInsertCount = stmt.executeUpdateDelete();
+            initialInsertCount = stmt.executeUpdateDelete(null);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {

@@ -118,7 +118,7 @@ public class TagMappingDaoImpl
         final String mapped = TagMapping.encodeMappingString(mappings);
         stmt.bindString(1, tag);
         stmt.bindString(2, mapped);
-        return stmt.executeInsert();
+        return stmt.executeInsert(null);
     }
 
     @NonNull
@@ -182,7 +182,7 @@ public class TagMappingDaoImpl
             stmt.bindString(2, TagMapping.encodeMappingString(mapping.getMappings()));
 
             stmt.bindLong(3, mapping.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -198,7 +198,7 @@ public class TagMappingDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, mapping.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         if (rowsAffected > 0) {
             mapping.setId(0);

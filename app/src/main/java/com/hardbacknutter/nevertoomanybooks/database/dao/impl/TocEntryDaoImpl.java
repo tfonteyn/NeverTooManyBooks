@@ -295,7 +295,7 @@ public class TocEntryDaoImpl
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
-            stmt.executeUpdateDelete();
+            stmt.executeUpdateDelete(null);
         }
 
         // is there anything to insert ?
@@ -336,7 +336,7 @@ public class TocEntryDaoImpl
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
-                    final long iId = stmtInsToc.executeInsert();
+                    final long iId = stmtInsToc.executeInsert(null);
                     if (iId != -1) {
                         tocEntry.setId(iId);
                         actualInserts.add(tocEntry);
@@ -353,7 +353,7 @@ public class TocEntryDaoImpl
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
-                    if (stmtUpdToc.executeUpdateDelete() != 1) {
+                    if (stmtUpdToc.executeUpdateDelete(null) != 1) {
                         throw new DaoUpdateException(ERROR_UPDATE_FROM + tocEntry);
                     }
                 }
@@ -374,7 +374,7 @@ public class TocEntryDaoImpl
                     stmt.bindLong(1, tocEntry.getId());
                     stmt.bindLong(2, bookId);
                     stmt.bindLong(3, position);
-                    if (stmt.executeInsert() == -1) {
+                    if (stmt.executeInsert(null) == -1) {
                         actualInserts.forEach(entry -> entry.setId(0));
                         throw new DaoInsertException("insert Book-TocEntry");
                     }
@@ -421,7 +421,7 @@ public class TocEntryDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, tocEntry.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
             if (rowsAffected > 0) {
                 fixPositions(context);
@@ -480,7 +480,7 @@ public class TocEntryDaoImpl
     @IntRange(from = 0)
     public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
-            return stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete(null);
         }
     }
 
@@ -508,7 +508,7 @@ public class TocEntryDaoImpl
                 if (!currentObTitle.equals(rObTitle)) {
                     stmt.bindString(1, rObTitle);
                     stmt.bindLong(2, id);
-                    stmt.executeUpdateDelete();
+                    stmt.executeUpdateDelete(null);
                     i++;
                 }
             }

@@ -178,7 +178,7 @@ public class CalibreLibraryDaoImpl
                 // The getMappedBookshelfId MUST have been previously
                 // verified/'fixId' against the BookshelfDao!
                 stmt.bindLong(5, library.getMappedBookshelfId());
-                iId = stmt.executeInsert();
+                iId = stmt.executeInsert(null);
             }
 
             if (iId != -1) {
@@ -225,7 +225,7 @@ public class CalibreLibraryDaoImpl
                 stmt.bindLong(++c, library.getMappedBookshelfId());
 
                 stmt.bindLong(++c, library.getId());
-                rowsAffected = stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete(null);
             }
 
             if (rowsAffected > 0) {
@@ -252,7 +252,7 @@ public class CalibreLibraryDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         if (rowsAffected > 0) {
             library.setId(0);
@@ -312,7 +312,7 @@ public class CalibreLibraryDaoImpl
             stmt.bindLong(++c, library.getMappedBookshelfId());
 
             stmt.bindLong(++c, library.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
 
         if (rowsAffected > 0) {
@@ -344,7 +344,7 @@ public class CalibreLibraryDaoImpl
                     // The getMappedBookshelfId MUST have been previously
                     // verified/'fixId' against the BookshelfDao!
                     stmt.bindLong(4, vLib.getMappedBookshelfId());
-                    final long iId = stmt.executeInsert();
+                    final long iId = stmt.executeInsert(null);
                     if (iId != -1) {
                         vLib.setId(iId);
                     } else {
@@ -368,7 +368,7 @@ public class CalibreLibraryDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(
                 Sql.DELETE_VIRTUAL_LIBRARIES_BY_LIBRARY_ID)) {
             stmt.bindLong(1, libraryId);
-            stmt.executeUpdateDelete();
+            stmt.executeUpdateDelete(null);
         }
     }
 

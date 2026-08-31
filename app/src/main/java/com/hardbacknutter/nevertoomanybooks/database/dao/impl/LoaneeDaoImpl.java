@@ -88,7 +88,7 @@ public class LoaneeDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindLong(1, bookId);
             stmt.bindString(2, loanee);
-            return stmt.executeInsert() > 0;
+            return stmt.executeInsert(null) > 0;
         }
     }
 
@@ -98,7 +98,7 @@ public class LoaneeDaoImpl
             stmt.bindString(1, loanee);
 
             stmt.bindLong(2, bookId);
-            return stmt.executeUpdateDelete() > 0;
+            return stmt.executeUpdateDelete(null) > 0;
         }
     }
 
@@ -116,7 +116,7 @@ public class LoaneeDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         return rowsAffected > 0;
     }

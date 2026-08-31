@@ -90,7 +90,7 @@ public class PublicationFrequencyDaoImpl
             stmt.bindLong(2, frequency.getType().getId());
             stmt.bindLong(3, frequency.getCadence());
             stmt.bindBoolean(4, frequency.isOrdinal());
-            return stmt.executeInsert() > 0;
+            return stmt.executeInsert(null) > 0;
         }
     }
 
@@ -102,7 +102,7 @@ public class PublicationFrequencyDaoImpl
             stmt.bindBoolean(3, frequency.isOrdinal());
 
             stmt.bindLong(4, seriesId);
-            return stmt.executeUpdateDelete() > 0;
+            return stmt.executeUpdateDelete(null) > 0;
         }
     }
 
@@ -130,7 +130,7 @@ public class PublicationFrequencyDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_SERIES_ID)) {
             stmt.bindLong(1, seriesId);
-            rowsAffected = stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete(null);
         }
         return rowsAffected > 0;
     }
