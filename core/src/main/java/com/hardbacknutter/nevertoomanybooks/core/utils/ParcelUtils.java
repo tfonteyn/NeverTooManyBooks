@@ -73,8 +73,9 @@ public final class ParcelUtils {
      * @see #writeParcelableList(Parcel, List, int)
      * @see Parcel#readParcelableList(List, ClassLoader)
      */
-    @SuppressWarnings({"MissingJavadoc", "CheckStyle", "ForLoopWithMissingComponent",
-            "LocalVariableNamingConvention"})
+    @SuppressWarnings({
+            "MissingJavadoc", "CheckStyle", "ForLoopWithMissingComponent",
+            "LocalVariableNamingConvention", "deprecation"})
     @NonNull
     public static <T extends Parcelable> List<T> readParcelableList(
             @NonNull final Parcel in,
@@ -127,6 +128,7 @@ public final class ParcelUtils {
      *                                  is of an unsupported type
      * @see #wrap(List)
      */
+    @SuppressWarnings("deprecation")
     @Nullable
     public static List<Long> unwrap(@NonNull final Bundle args,
                                     @NonNull final String key) {
@@ -179,6 +181,7 @@ public final class ParcelUtils {
          *
          * @param in Parcel to construct the object from
          */
+        @SuppressWarnings("deprecation")
         private ParcelableArrayListLong(@NonNull final Parcel in) {
             list = new ArrayList<>();
             in.readList(list, getClass().getClassLoader());
