@@ -575,7 +575,7 @@ public final class ImageHandler {
                              context.getString(R.string.warning_image_copy_failed),
                              context.getString(R.string.error_storage_not_writable));
         } else {
-            // CoverStorageException is unlikely but possible.
+            // ImageStorageException is unlikely but possible.
             // Others very unlikely.
             //noinspection DataFlowIssue
             ErrorDialog.show(fragment.getContext(), TAG, e);

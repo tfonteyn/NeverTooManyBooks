@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,19 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+package com.hardbacknutter.nevertoomanybooks.covers;
 
-package com.hardbacknutter.nevertoomanybooks.core.database;
+import androidx.annotation.Nullable;
 
-import androidx.annotation.NonNull;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
-public class DaoCoverException
-        extends DaoWriteException {
-    public DaoCoverException(@NonNull final String message) {
+/**
+ * Thrown when external storage media is not available.
+ */
+public class ImageStorageException
+        extends StorageException {
+
+    private static final long serialVersionUID = 2553728112905906864L;
+
+    public ImageStorageException(@Nullable final String message) {
         super(message);
     }
 
-    public DaoCoverException(@NonNull final String message,
-                             @NonNull final Throwable cause) {
+    public ImageStorageException(@Nullable final String message,
+                                 @Nullable final Throwable cause) {
         super(message, cause);
     }
 }

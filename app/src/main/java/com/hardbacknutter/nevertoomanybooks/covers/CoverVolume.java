@@ -179,17 +179,17 @@ public final class CoverVolume {
      *
      * @return volume
      *
-     * @throws CoverStorageException if the indexed volume is not available
+     * @throws ImageStorageException if the indexed volume is not available
      */
     @NonNull
     public static StorageVolume getStorageVolume(@NonNull final Context context,
                                                  final int volume)
-            throws CoverStorageException {
+            throws ImageStorageException {
         final StorageManager storage = (StorageManager) context.getSystemService(
                 Context.STORAGE_SERVICE);
         final List<StorageVolume> volumes = storage.getStorageVolumes();
         if (volume >= volumes.size()) {
-            throw new CoverStorageException("Volume not available");
+            throw new ImageStorageException("Volume not available");
         }
         return volumes.get(volume);
     }

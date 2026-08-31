@@ -33,7 +33,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpTooManyRequestsExce
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -119,10 +119,10 @@ public final class ExMsg {
             // The ValidatorException always provides a localised message.
             return e.getLocalizedMessage();
 
-        } else if (e instanceof CoverStorageException) {
+        } else if (e instanceof ImageStorageException) {
             return context.getString(R.string.error_storage_not_accessible);
 
-        } else if (e instanceof DaoCoverException) {
+        } else if (e instanceof DaoImageException) {
             // It's very likely a disk-full, but it could be an unexpected IO issue.
             return context.getString(R.string.error_storage_not_writable);
 

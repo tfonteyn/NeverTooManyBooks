@@ -179,7 +179,7 @@ public class ImageHandlerViewModel
                         final File dstFile = createDestinationTempImageFile();
                         return EditImageExternalContract.Input.create(srcFile, dstFile);
 
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
@@ -205,7 +205,7 @@ public class ImageHandlerViewModel
                         final File dstFile = createDestinationTempImageFile();
                         return EditImageExternalContract.Input.create(srcFile, dstFile);
 
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
                 },
@@ -230,7 +230,7 @@ public class ImageHandlerViewModel
                         final File srcFile = createSourceTempImageFile(context, imageOwner);
                         final File dstFile = createDestinationTempImageFile();
                         return EditImageContract.Input.create(srcFile, dstFile);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
@@ -255,7 +255,7 @@ public class ImageHandlerViewModel
                     try {
                         final File dstFile = createDestinationTempImageFile();
                         return EditImageContract.Input.create(srcFile, dstFile);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
                 },
@@ -276,7 +276,7 @@ public class ImageHandlerViewModel
                     try {
                         final File tempFile = createDestinationTempImageFile();
                         return TakePictureContract.Input.create(tempFile);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
                 },
@@ -311,7 +311,7 @@ public class ImageHandlerViewModel
 
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
                 },
@@ -362,7 +362,7 @@ public class ImageHandlerViewModel
                                                  .setRotation(explicitRotation),
                                          file,
                                          action);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
@@ -411,7 +411,7 @@ public class ImageHandlerViewModel
                                                  .setScale(true),
                                          file,
                                          NextAction.Done);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
@@ -473,7 +473,7 @@ public class ImageHandlerViewModel
                                                  .setScale(true),
                                          file,
                                          NextAction.Done);
-                    } catch (@NonNull final CoverStorageException e) {
+                    } catch (@NonNull final ImageStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
@@ -587,14 +587,14 @@ public class ImageHandlerViewModel
      *
      * @return the File
      *
-     * @throws CoverStorageException The images directory is not available
+     * @throws ImageStorageException The images directory is not available
      * @throws IOException           on failure to make a copy of the permanent file
      */
     @WorkerThread
     @NonNull
     private File createSourceTempImageFile(@NonNull final Context context,
                                            @NonNull final ImageOwner imageOwner)
-            throws CoverStorageException, IOException {
+            throws ImageStorageException, IOException {
 
         // the temp file we'll return
         final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
@@ -623,13 +623,13 @@ public class ImageHandlerViewModel
      *
      * @return file
      *
-     * @throws CoverStorageException The images directory is not available
+     * @throws ImageStorageException The images directory is not available
      * @see #getDestinationImageFile()
      */
     @SuppressLint("WrongThread")
     @AnyThread
     @NonNull
-    private File createDestinationTempImageFile() throws CoverStorageException {
+    private File createDestinationTempImageFile() throws ImageStorageException {
         final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
 
         final String path = tempFile.getAbsolutePath();
@@ -672,7 +672,7 @@ public class ImageHandlerViewModel
      *
      * @return TransformationResult
      *
-     * @throws CoverStorageException The images directory is not available
+     * @throws ImageStorageException The images directory is not available
      * @throws IOException           on generic/other IO failures
      */
     @WorkerThread
@@ -680,7 +680,7 @@ public class ImageHandlerViewModel
     private TransformationResult transform(@NonNull final Transformation transformation,
                                            @NonNull final File destFile,
                                            @NonNull final NextAction nextAction)
-            throws CoverStorageException, IOException {
+            throws ImageStorageException, IOException {
 
         final Optional<Bitmap> optBitmap = transformation.transform();
         if (optBitmap.isPresent()) {

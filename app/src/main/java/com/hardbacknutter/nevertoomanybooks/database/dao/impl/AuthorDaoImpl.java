@@ -42,7 +42,8 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -690,11 +690,11 @@ public class AuthorDaoImpl
      *
      * @param author to store
      *
-     * @throws DaoCoverException on any error.
-     *                           Note this will wrap any IOException or CoverStorageException
+     * @throws DaoImageException on any error.
+     *                           Note this will wrap any IOException or ImageStorageException
      */
     private void persistPicture(@NonNull final Author author)
-            throws DaoCoverException {
+            throws DaoImageException {
         final Optional<String> fileSpec = author.getTmpPictureFileSpec();
         if (fileSpec.isPresent()) {
             try {
@@ -714,8 +714,8 @@ public class AuthorDaoImpl
                     author.setImageUuid(uuid);
                 }
                 author.setTmpPictureFileSpec(null);
-            } catch (@NonNull final IOException | CoverStorageException e) {
-                throw new DaoCoverException(ERROR_STORING_IMAGES + author, e);
+            } catch (@NonNull final IOException | ImageStorageException e) {
+                throw new DaoImageException(ERROR_STORING_IMAGES + author, e);
             }
         }
     }

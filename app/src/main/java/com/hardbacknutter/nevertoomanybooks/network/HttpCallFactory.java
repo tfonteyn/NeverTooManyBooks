@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -174,7 +174,7 @@ public final class HttpCallFactory {
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws ImageStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -183,7 +183,7 @@ public final class HttpCallFactory {
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 3) final int cIdx,
                                       @Nullable final ImageWebSize size)
-            throws CoverStorageException {
+            throws ImageStorageException {
 
         final String tempFilename = ImageFileInfo
                 .getTempFilename(imageFilenamePrefix, bookId, cIdx, size);

@@ -31,7 +31,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ class VersionedFileServiceTest
 
     @NonNull
     private File getTmpDir()
-            throws CoverStorageException {
+            throws ImageStorageException {
         return ServiceLocator.getInstance().getCoverStorage().getTempDir();
     }
 
@@ -87,7 +87,7 @@ class VersionedFileServiceTest
 
     @Test
     void subDir()
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
         final File backupDir = new File(getTmpDir(), SUBDIR);
         backupDir.mkdir();
         assertTrue(backupDir.exists());
@@ -169,7 +169,7 @@ class VersionedFileServiceTest
 
     @Test
     void sameDir5()
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
         final VersionedFileService versionedFileService = new VersionedFileService(5);
 
         final String filename = FILE_PREFIX + "_sameDir5";
@@ -251,7 +251,7 @@ class VersionedFileServiceTest
 
     @Test
     void sameDir1()
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
         final VersionedFileService versionedFileService = new VersionedFileService(1);
 
         final String filename = FILE_PREFIX + "_sameDir1";

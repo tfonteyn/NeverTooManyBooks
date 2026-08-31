@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -1160,7 +1160,7 @@ public class Author
      *                If applicable, the caller can/must use the {@link File}
      *                as returned by this method.
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      * @throws IOException           on generic/other IO failures
      */
     @Override
@@ -1168,7 +1168,7 @@ public class Author
     public void setImage(@NonNull final Context context,
                          @IntRange(from = 0, to = 0) final int cIdx,
                          @Nullable final File file)
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
 
         if (file == null) {
             removeImage(context, cIdx);

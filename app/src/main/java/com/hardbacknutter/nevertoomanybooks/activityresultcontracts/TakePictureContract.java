@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 
 /**
@@ -89,19 +89,19 @@ public class TakePictureContract
          *
          * @return instance
          *
-         * @throws CoverStorageException When a given {@link File} is outside
+         * @throws ImageStorageException When a given {@link File} is outside
          *                               the paths supported by the provider.
          */
         @NonNull
         public static Input create(@NonNull final File dstFile)
-                throws CoverStorageException {
+                throws ImageStorageException {
             try {
                 final Uri dstUri = GenericFileProvider.createUri(dstFile);
                 return new Input(dstUri);
 
             } catch (@NonNull final IllegalArgumentException e) {
                 // This would be a bug; a permission issue with the GenericFileProvider
-                throw new CoverStorageException(ERROR_GENERIC_FILE_PROVIDER, e);
+                throw new ImageStorageException(ERROR_GENERIC_FILE_PROVIDER, e);
             }
         }
     }

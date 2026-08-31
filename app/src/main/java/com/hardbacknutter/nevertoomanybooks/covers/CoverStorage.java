@@ -150,11 +150,11 @@ public class CoverStorage {
      * This method is called during startup, and when/if the user changes the cover volume
      * in the preferences.
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      */
     @AnyThread
     public void initDir()
-            throws CoverStorageException {
+            throws ImageStorageException {
 
         coverDir = ensureDir();
 
@@ -167,14 +167,14 @@ public class CoverStorage {
             } catch (@NonNull final IOException | SecurityException e) {
                 // SecurityException is never thrown as the
                 // System.getSecurityManager() always return null
-                throw new CoverStorageException("Failed to write Pictures/.nomedia", e);
+                throw new ImageStorageException("Failed to write Pictures/.nomedia", e);
             }
         }
 
         // Create the temporary subdirectory if not done yet
         final File tmpDir = new File(coverDir, TMP_SUB_DIR);
         if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
-            throw new CoverStorageException("Failed to create covers directory: Pictures/tmp");
+            throw new ImageStorageException("Failed to create covers directory: Pictures/tmp");
         }
     }
 
@@ -187,11 +187,11 @@ public class CoverStorage {
      *
      * @return service
      *
-     * @throws CoverStorageException on any error
+     * @throws ImageStorageException on any error
      */
     @NonNull
     private VersionedFileService createVersionedFileService()
-            throws CoverStorageException {
+            throws ImageStorageException {
         return new VersionedFileService(getTempDir(), 1);
     }
 
@@ -224,12 +224,12 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      * @see #initDir()
      */
     @NonNull
     public File getDir()
-            throws CoverStorageException {
+            throws ImageStorageException {
         synchronized (this) {
             // This should never be possible, but see GitHub #184
             if (coverDir == null) {
@@ -246,14 +246,14 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      * @see #initDir()
      * @see #getDir()
      */
     @Discouraged(message = "Avoid using this method if possible due to overhead")
     @NonNull
     private File ensureDir()
-            throws CoverStorageException {
+            throws ImageStorageException {
 
         final Context context = appContextSupplier.get();
 
@@ -266,7 +266,7 @@ public class CoverStorage {
             || externalFilesDirs.length <= volume
             || externalFilesDirs[volume] == null
             || !externalFilesDirs[volume].exists()) {
-            throw new CoverStorageException("Failed to access covers on volume: " + volume);
+            throw new ImageStorageException("Failed to access covers on volume: " + volume);
         }
 
         return externalFilesDirs[volume];
@@ -278,11 +278,11 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      */
     @NonNull
     public File getTempDir()
-            throws CoverStorageException {
+            throws ImageStorageException {
         return new File(getDir(), TMP_SUB_DIR);
     }
 
@@ -291,18 +291,18 @@ public class CoverStorage {
      *
      * @return file
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      */
     @NonNull
     File getTempFile()
-            throws CoverStorageException {
+            throws ImageStorageException {
         return new File(getTempDir(), System.nanoTime() + EXT_JPG);
     }
 
     /**
      * Get the file for this cover. We'll attempt to find a jpg or a png.
      * <p>
-     * Any {@link CoverStorageException} is <strong>IGNORED</strong>
+     * Any {@link ImageStorageException} is <strong>IGNORED</strong>
      *
      * @param uuid the book UUID
      * @param cIdx 0..n image index
@@ -323,7 +323,7 @@ public class CoverStorage {
         final File dir;
         try {
             dir = getDir();
-        } catch (@NonNull final CoverStorageException e) {
+        } catch (@NonNull final ImageStorageException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return Optional.empty();
         }
@@ -388,14 +388,14 @@ public class CoverStorage {
      * @return permanent file
      *
      * @throws IOException           on generic/other IO failures
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      */
     @AnyThread
     @NonNull
     public File persist(@NonNull final File source,
                         @NonNull final String uuid,
                         @IntRange(from = 0, to = 3) final int cIdx)
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
 
         final String name = createName(uuid, cIdx) + EXT_JPG;
         final File destination = new File(getDir(), name);
@@ -421,13 +421,13 @@ public class CoverStorage {
      * @return File written to (the one passed in)
      *
      * @throws IOException           on generic/other IO failures
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      */
     @WorkerThread
     @NonNull
     public File persist(@NonNull final Bitmap source,
                         @NonNull final File destination)
-            throws CoverStorageException,
+            throws ImageStorageException,
                    IOException {
 
         final File tmpFile = getTempFile();
@@ -455,7 +455,7 @@ public class CoverStorage {
      *
      * @return File written to (the one passed in)
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */
@@ -463,7 +463,7 @@ public class CoverStorage {
     @NonNull
     public File persist(@Nullable final InputStream source,
                         @NonNull final File destination)
-            throws CoverStorageException,
+            throws ImageStorageException,
                    FileNotFoundException,
                    IOException {
 
@@ -486,14 +486,14 @@ public class CoverStorage {
      *
      * @return the File
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */
     @WorkerThread
     @NonNull
     File writeTempFile(@Nullable final InputStream source)
-            throws CoverStorageException, IOException {
+            throws ImageStorageException, IOException {
 
         if (source == null) {
             throw new FileNotFoundException(ERROR_INPUT_STREAM_WAS_NULL);
@@ -541,7 +541,7 @@ public class CoverStorage {
             if (isUndoEnabled()) {
                 try {
                     createVersionedFileService().save(file);
-                } catch (@NonNull final CoverStorageException | IOException e) {
+                } catch (@NonNull final ImageStorageException | IOException e) {
                     LoggerFactory.getLogger().e(TAG, e);
                 }
             } else {
@@ -584,7 +584,7 @@ public class CoverStorage {
 
         try {
             return createVersionedFileService().restore(new File(getDir(), name));
-        } catch (@NonNull final CoverStorageException e) {
+        } catch (@NonNull final ImageStorageException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
@@ -611,7 +611,7 @@ public class CoverStorage {
 
         try {
             return createVersionedFileService().hasBackup(new File(getDir(), name));
-        } catch (@NonNull final CoverStorageException e) {
+        } catch (@NonNull final ImageStorageException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }

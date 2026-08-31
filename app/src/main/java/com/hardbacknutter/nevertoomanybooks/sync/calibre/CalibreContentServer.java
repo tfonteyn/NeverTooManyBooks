@@ -91,7 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -1387,7 +1387,7 @@ public final class CalibreContentServer
     @NonNull
     Optional<File> getCover(final int calibreId,
                             @NonNull final String coverUrl)
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
 
         final String tempFilename = ImageFileInfo.getTempFilename(
                 FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);

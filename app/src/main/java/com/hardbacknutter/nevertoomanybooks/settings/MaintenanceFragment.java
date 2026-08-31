@@ -346,7 +346,7 @@ public class MaintenanceFragment
                 FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
 
             } catch (@NonNull final StorageException | SecurityException e) {
-                // CoverStorageException will not be thrown as we
+                // ImageStorageException will not be thrown as we
                 // already did the same 'gets' to read the used-space above.
                 // SecurityException is never thrown as the
                 // System.getSecurityManager() always return null

@@ -153,14 +153,14 @@ public class ImageDownloader {
      *
      * @return Downloaded File
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws ImageStorageException The covers directory is not available
      * @throws IOException           on generic/other IO failures
      */
     @NonNull
     @WorkerThread
     public Optional<File> fetch(@NonNull final Request request,
                                 @NonNull final String filename)
-            throws IOException, CoverStorageException {
+            throws IOException, ImageStorageException {
 
         final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
         final File tempDir = coverStorage.getTempDir();

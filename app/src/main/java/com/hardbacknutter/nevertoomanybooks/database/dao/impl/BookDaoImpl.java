@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -243,7 +243,7 @@ public class BookDaoImpl
 
             } catch (@NonNull final IOException e) {
                 removeIds(book, flags);
-                throw new DaoCoverException(ERROR_STORING_COVERS + book, e);
+                throw new DaoImageException(ERROR_STORING_COVERS + book, e);
             }
 
             if (txLock != null) {
@@ -335,7 +335,7 @@ public class BookDaoImpl
                 bookDaoHelper.persistCovers(book);
 
             } catch (@NonNull final IOException e) {
-                throw new DaoCoverException(ERROR_STORING_COVERS + book, e);
+                throw new DaoImageException(ERROR_STORING_COVERS + book, e);
             }
 
             if (txLock != null) {

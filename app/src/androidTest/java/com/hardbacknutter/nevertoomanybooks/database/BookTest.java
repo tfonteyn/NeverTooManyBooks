@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -369,7 +369,7 @@ class BookTest
 
     private void assertBookMatchesInitialInsert(@NonNull final Book book,
                                                 @SuppressWarnings("SameParameterValue") final int bookIdx)
-            throws CoverStorageException {
+            throws ImageStorageException {
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
@@ -412,7 +412,7 @@ class BookTest
 
     private void assertBookHasTempCover(@NonNull final Book book,
                                         @IntRange(from = 0, to = 3) final int cIdx)
-            throws CoverStorageException {
+            throws ImageStorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 
