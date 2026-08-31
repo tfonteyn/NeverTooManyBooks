@@ -216,6 +216,7 @@ public interface AuthorDao
      *
      * @throws DaoWriteException on failure
      */
+    @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Author source,
                   @NonNull Author target)

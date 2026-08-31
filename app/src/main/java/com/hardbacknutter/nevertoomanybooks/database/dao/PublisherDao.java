@@ -188,6 +188,7 @@ public interface PublisherDao
      *
      * @throws DaoWriteException on failure
      */
+    @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Publisher source,
                   @NonNull Publisher target)

@@ -212,6 +212,7 @@ public interface SeriesDao
      *
      * @throws DaoWriteException on failure
      */
+    @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Series source,
                   @NonNull Series target)

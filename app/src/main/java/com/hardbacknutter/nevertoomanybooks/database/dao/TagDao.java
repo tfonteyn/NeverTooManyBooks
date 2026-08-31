@@ -268,6 +268,7 @@ public interface TagDao {
      *
      * @throws DaoWriteException on failure
      */
+    @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Tag source,
                   @NonNull Tag target)

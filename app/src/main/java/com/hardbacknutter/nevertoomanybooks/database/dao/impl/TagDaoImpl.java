@@ -328,6 +328,7 @@ public class TagDaoImpl
     }
 
     @Override
+    @IntRange(from = 0)
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Tag source,
                          @NonNull final Tag target)

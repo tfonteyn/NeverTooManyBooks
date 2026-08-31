@@ -675,6 +675,7 @@ public class BookshelfDaoImpl
     }
 
     @Override
+    @IntRange(from = 0)
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Bookshelf source,
                          @NonNull final Bookshelf target)
