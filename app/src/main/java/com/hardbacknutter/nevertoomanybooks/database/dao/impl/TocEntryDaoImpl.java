@@ -424,9 +424,9 @@ public class TocEntryDaoImpl
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (rowsAffected > 0) {
-                tocEntry.setId(0);
                 fixPositions(context);
 
+                tocEntry.setId(0);
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }

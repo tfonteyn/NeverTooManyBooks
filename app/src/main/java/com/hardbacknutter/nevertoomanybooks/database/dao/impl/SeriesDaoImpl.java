@@ -458,9 +458,9 @@ public class SeriesDaoImpl
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (rowsAffected > 0) {
-                series.setId(0);
                 fixPositions(context);
 
+                series.setId(0);
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }

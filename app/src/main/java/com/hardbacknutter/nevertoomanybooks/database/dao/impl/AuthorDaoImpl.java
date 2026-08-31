@@ -735,11 +735,10 @@ public class AuthorDaoImpl
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (rowsAffected > 0) {
-                author.setId(0);
                 fixPositions(context);
-
                 deletePicture(author);
 
+                author.setId(0);
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }

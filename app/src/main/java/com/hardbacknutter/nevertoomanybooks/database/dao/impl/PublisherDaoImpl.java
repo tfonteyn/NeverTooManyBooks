@@ -351,9 +351,9 @@ public class PublisherDaoImpl
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (rowsAffected > 0) {
-                publisher.setId(0);
                 fixPositions(context);
 
+                publisher.setId(0);
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
