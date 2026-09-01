@@ -563,7 +563,7 @@ public class SearchBookUpdatesViewModel
                         if (delta != null) {
                             try {
                                 bookRepository.update(context, delta, Set.of());
-                            } catch (@NonNull final StorageException | DaoWriteException e) {
+                            } catch (@NonNull final DaoWriteException e) {
                                 // ignore, but log it.
                                 LoggerFactory.getLogger().e(TAG, e);
                             }

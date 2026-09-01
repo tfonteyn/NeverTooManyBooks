@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
@@ -63,14 +62,14 @@ public class BookRepository {
     public long insert(@NonNull final Context context,
                        @NonNull final Book book,
                        @NonNull final Set<BookDao.BookFlag> flags)
-            throws StorageException, DaoWriteException {
+            throws DaoWriteException {
         return bookDao.insert(context, userLocale, bookDaoHelper, book, flags);
     }
 
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
                        @NonNull final Set<BookDao.BookFlag> flags)
-            throws StorageException, DaoWriteException {
+            throws DaoWriteException {
         bookDao.update(context, userLocale, bookDaoHelper, book, flags);
     }
 }

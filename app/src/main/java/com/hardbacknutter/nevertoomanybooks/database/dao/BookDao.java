@@ -37,7 +37,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -85,7 +84,6 @@ public interface BookDao {
      *
      * @return the row id of the newly inserted row
      *
-     * @throws StorageException  The covers directory is not available
      * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
@@ -94,7 +92,7 @@ public interface BookDao {
                 @NonNull BookDaoHelper bookDaoHelper,
                 @NonNull Book book,
                 @NonNull Set<BookFlag> flags)
-            throws StorageException, DaoWriteException;
+            throws DaoWriteException;
 
     /**
      * Update the given {@link Book}.
@@ -115,7 +113,6 @@ public interface BookDao {
      *                      May contain extra data which will be ignored.
      * @param flags         See {@link BookFlag} for flag definitions
      *
-     * @throws StorageException  The covers directory is not available
      * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
@@ -123,7 +120,7 @@ public interface BookDao {
                 @NonNull BookDaoHelper bookDaoHelper,
                 @NonNull Book book,
                 @NonNull Set<BookFlag> flags)
-            throws StorageException, DaoWriteException;
+            throws DaoWriteException;
 
     /**
      * Delete the given {@link Book} (and its covers).
@@ -186,6 +183,7 @@ public interface BookDao {
      *
      * @return {@code true} for success.
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setLocation(@NonNull Collection<Long> bookIds,
                         @NonNull String location);
 

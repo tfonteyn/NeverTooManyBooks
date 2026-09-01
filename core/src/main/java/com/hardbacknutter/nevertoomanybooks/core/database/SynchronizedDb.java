@@ -326,15 +326,17 @@ public class SynchronizedDb
      *               row. The keys should be the column names and the values the
      *               column values
      *
-     * @return the row id of the newly inserted row <s>, or {@code -1} if an error occurred</s>
+     * @return the row id of the newly inserted row;
+     *         or {@code -1} if no inserts were done (but NOT due to an error)
      *
-     * @throws SQLException         if the inserts fails
+     * @throws SQLException         on unexpected failures
      * @throws TransactionException when currently inside a shared lock
      *
      * @see SQLiteDatabase#insertWithOnConflict(String, String, ContentValues, int)
      */
-    public long insertOrThrow(@NonNull final String table,
-                              @NonNull final ContentValues values)
+    @IntRange(from = -1)
+    public long insert(@NonNull final String table,
+                       @NonNull final ContentValues values)
             throws TransactionException, SQLException {
 
         Synchronizer.SyncLock txLock = null;
@@ -373,13 +375,15 @@ public class SynchronizedDb
      *
      * @return the number of rows affected
      *
+     * @throws SQLException         on any failure
      * @throws TransactionException when currently inside a shared lock
      */
+    @IntRange(from = 0)
     public int update(@NonNull final String table,
                       @NonNull final ContentValues values,
                       @NonNull final String whereClause,
                       @Nullable final String[] whereArgs)
-            throws TransactionException {
+            throws SQLException, TransactionException {
 
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock != null) {

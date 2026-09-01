@@ -84,7 +84,6 @@ public class BookDaoImpl
 
     private static final String ERROR_CREATING_BOOK_FROM = "Failed creating book from\n";
     private static final String ERROR_UPDATING_BOOK_FROM = "Failed updating book from\n";
-    private static final String ERROR_STORING_COVERS = "Failed storing the covers for book from\n";
     private static final String ERROR_UUID = "Invalid UUID";
 
     @NonNull
@@ -219,10 +218,6 @@ public class BookDaoImpl
             }
             return newBookId;
 
-        } catch (@NonNull final StorageException | IOException e) {
-            removeIds(book, flags);
-            throw new DaoImageException(ERROR_STORING_COVERS + book, e);
-
         } catch (@NonNull final SQLException e) {
             removeIds(book, flags);
             throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
@@ -230,6 +225,10 @@ public class BookDaoImpl
         } catch (@NonNull final DaoWriteException e) {
             removeIds(book, flags);
             throw e;
+
+        } catch (@NonNull final StorageException | IOException e) {
+            removeIds(book, flags);
+            throw new DaoImageException(e);
 
         } finally {
             if (txLock != null) {
@@ -305,11 +304,11 @@ public class BookDaoImpl
                 db.setTransactionSuccessful();
             }
 
-        } catch (@NonNull final StorageException | IOException e) {
-            throw new DaoImageException(ERROR_STORING_COVERS + book, e);
-
         } catch (@NonNull final SQLException e) {
             throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
+
+        } catch (@NonNull final StorageException | IOException e) {
+            throw new DaoImageException(e);
 
         } finally {
             if (txLock != null) {

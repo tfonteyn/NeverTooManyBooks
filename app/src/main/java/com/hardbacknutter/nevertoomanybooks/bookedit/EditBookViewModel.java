@@ -541,11 +541,10 @@ public class EditBookViewModel
      *
      * @param context Current context
      *
-     * @throws StorageException  The covers directory is not available
      * @throws DaoWriteException on failure
      */
     void saveBook(@NonNull final Context context)
-            throws StorageException, DaoWriteException {
+            throws DaoWriteException {
 
         if (book.isNew()) {
             bookRepository.insert(context, book, Set.of());

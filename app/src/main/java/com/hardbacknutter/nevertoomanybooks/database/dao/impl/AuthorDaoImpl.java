@@ -43,7 +43,7 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -565,6 +565,10 @@ public class AuthorDaoImpl
             author.setId(0);
             throw e;
 
+        } catch (@NonNull final StorageException | IOException e) {
+            author.setId(0);
+            throw new DaoImageException(e);
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -610,6 +614,10 @@ public class AuthorDaoImpl
             }
         } catch (@NonNull final SQLException e) {
             throw new DaoWriteException(e);
+
+        } catch (@NonNull final StorageException | IOException e) {
+            throw new DaoImageException(e);
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -687,34 +695,32 @@ public class AuthorDaoImpl
      *
      * @param author to store
      *
-     * @throws DaoImageException on any error.
-     *                           Note this will wrap any IOException or ImageStorageException
+     * @throws IOException      on any error.
+     * @throws StorageException The covers directory is not available
      */
     private void persistPicture(@NonNull final Author author)
-            throws DaoImageException {
+            throws StorageException, IOException {
         final Optional<String> fileSpec = author.getTmpPictureFileSpec();
-        if (fileSpec.isPresent()) {
-            try {
-                final File file = new File(fileSpec.get());
-                // Check existence! We can run into situations where we had a
-                // pen-name author and the real-author both having the same temp image file.
-                // The pen-name author would have stored/renamed the file,
-                // and the real-author would end up with the temp file set, but physical file
-                // already gone.
-                // This could be a bug... it's getting pretty complicated dealing with
-                // multiple resolvers and multiple sites.
-                // Call it a workaround/bug/solution/paranoia... it works.
-                if (file.exists() && file.length() > 0) {
-                    final String uuid = UUID.randomUUID().toString();
-                    ServiceLocator.getInstance().getCoverStorage()
-                                  .persist(file, uuid, 0);
-                    author.setImageUuid(uuid);
-                }
-                author.setTmpPictureFileSpec(null);
-            } catch (@NonNull final IOException | ImageStorageException e) {
-                throw new DaoImageException(ERROR_STORING_IMAGES + author, e);
-            }
+        if (fileSpec.isEmpty()) {
+            return;
         }
+
+        final File file = new File(fileSpec.get());
+        // Check existence! We can run into situations where we had a
+        // pen-name author and the real-author both having the same temp image file.
+        // The pen-name author would have stored/renamed the file,
+        // and the real-author would end up with the temp file set, but physical file
+        // already gone.
+        // This could be a bug... it's getting pretty complicated dealing with
+        // multiple resolvers and multiple sites.
+        // Call it a workaround/bug/solution/paranoia... it works.
+        if (file.exists() && file.length() > 0) {
+            final String uuid = UUID.randomUUID().toString();
+            ServiceLocator.getInstance().getCoverStorage()
+                          .persist(file, uuid, 0);
+            author.setImageUuid(uuid);
+        }
+        author.setTmpPictureFileSpec(null);
     }
 
     @Override

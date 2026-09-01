@@ -32,8 +32,7 @@ public class DaoImageException
 
     private static final long serialVersionUID = -1050011407564569965L;
 
-    public DaoImageException(@NonNull final String message,
-                             @NonNull final Throwable cause) {
-        super(message, cause);
+    public DaoImageException(@NonNull final Throwable cause) {
+        super(cause);
     }
 }
