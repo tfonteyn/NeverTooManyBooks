@@ -406,14 +406,12 @@ public class IdentifiersEditorFragment
                 // we should also warn the user that this is ALL entity-types
                 // but oh well...
                 // In reality, there will be a miniscule number of users using this editor.
-                try {
-                    //noinspection DataFlowIssue
-                    vm.restoreBuiltin(getContext());
-                } catch (@NonNull final DaoWriteException e) {
-                    ErrorDialog.show(getContext(), TAG, e);
-                }
+
+                //noinspection DataFlowIssue
+                vm.restoreBuiltin(getContext());
                 return true;
             }
+
             return false;
         }
     }

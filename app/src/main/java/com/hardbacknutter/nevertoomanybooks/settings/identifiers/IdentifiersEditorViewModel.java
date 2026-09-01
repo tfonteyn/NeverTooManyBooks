@@ -110,8 +110,7 @@ public class IdentifiersEditorViewModel
         return identifiers;
     }
 
-    void restoreBuiltin(@NonNull final Context context)
-            throws DaoWriteException {
+    void restoreBuiltin(@NonNull final Context context) {
         identifierDao.restore(context);
         identifiers.clear();
         identifiers.addAll(identifierDao.getAll(entityType));

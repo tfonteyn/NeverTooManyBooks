@@ -141,9 +141,6 @@ public interface IdentifierDao {
      * but users can edit JSON imports... in which case ... "oops, to bad".
      *
      * @param context Current context
-     *
-     * @throws DaoWriteException on failure
      */
-    void restore(@NonNull Context context)
-            throws DaoWriteException;
+    void restore(@NonNull Context context);
 }

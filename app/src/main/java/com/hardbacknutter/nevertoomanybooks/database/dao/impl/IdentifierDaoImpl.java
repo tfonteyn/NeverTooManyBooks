@@ -190,8 +190,7 @@ public class IdentifierDaoImpl
      * @see #onPostCreate(Context, SQLiteDatabase)
      */
     @Override
-    public void restore(@NonNull final Context context)
-            throws DaoWriteException {
+    public void restore(@NonNull final Context context) {
         final Collection<Identifier> identifierList = Identifier.createInitialList(context);
         Synchronizer.SyncLock txLock = null;
         try {
@@ -206,8 +205,6 @@ public class IdentifierDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
