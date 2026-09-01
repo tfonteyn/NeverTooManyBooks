@@ -513,6 +513,19 @@ public class Book
     }
 
     /**
+     * <strong>DAO use only.</strong>
+     *
+     * @param id to set; a {@code 0} will remove the field
+     */
+    public void setId(final long id) {
+        if (id != 0) {
+            putLong(DBKey.PK_ID, id);
+        } else {
+            remove(DBKey.PK_ID);
+        }
+    }
+
+    /**
      * Get the {@code UUID}.
      * <p>
      * <strong>IMPORTANT</strong> (but not really...)
@@ -526,6 +539,19 @@ public class Book
     @NonNull
     public String getUuid() {
         return getString(DBKey.BOOK_UUID);
+    }
+
+    /**
+     * <strong>DAO use only.</strong>
+     *
+     * @param uuid to set; a {@code null} or an empty string will remove the field
+     */
+    public void setUuid(@Nullable final String uuid) {
+        if (uuid != null && !uuid.isEmpty()) {
+            putString(DBKey.BOOK_UUID, uuid);
+        } else {
+            remove(DBKey.BOOK_UUID);
+        }
     }
 
     @NonNull
