@@ -366,11 +366,6 @@ public class StylesHelper {
      * @param style to purge
      */
     public void purgeNodeStates(@NonNull final Style style) {
-        try {
-            styleDaoSupplier.get().purgeNodeStates(style);
-        } catch (@NonNull final DaoWriteException e) {
-            // ignore, but log it.
-            LoggerFactory.getLogger().e(TAG, e);
-        }
+       styleDaoSupplier.get().purgeNodeStates(style);
     }
 }

@@ -123,10 +123,6 @@ public interface StyleDao {
      * {@link Style} management context menu.
      *
      * @param style to purge
-     *
-     * @throws DaoWriteException on failure
      */
-    void purgeNodeStates(@NonNull Style style)
-            throws DaoWriteException;
-
+    void purgeNodeStates(@NonNull Style style);
 }

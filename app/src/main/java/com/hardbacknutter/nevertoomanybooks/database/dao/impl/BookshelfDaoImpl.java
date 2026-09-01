@@ -659,8 +659,6 @@ public class BookshelfDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoWriteException e) {
-            return false;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -734,8 +732,7 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void purgeNodeStates(final long bookshelfId)
-            throws DaoWriteException {
+    public void purgeNodeStates(final long bookshelfId) {
         try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.DELETE_NODE_STATE_BY_BOOKSHELF_ID)) {
             stmt.bindLong(1, bookshelfId);

@@ -207,11 +207,6 @@ public class EditBookshelvesViewModel
      */
     void purgeNodeStates(final long bookshelfId) {
         // don't set the modified flag, don't care
-        try {
-            bookshelfDao.purgeNodeStates(bookshelfId);
-        } catch (@NonNull final DaoWriteException e) {
-            // ignore, but log it.
-            LoggerFactory.getLogger().e(TAG, e);
-        }
+        bookshelfDao.purgeNodeStates(bookshelfId);
     }
 }

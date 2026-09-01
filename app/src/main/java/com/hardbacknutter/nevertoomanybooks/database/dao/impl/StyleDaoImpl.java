@@ -399,8 +399,6 @@ public class StyleDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoWriteException e) {
-            return false;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -409,8 +407,7 @@ public class StyleDaoImpl
     }
 
     @Override
-    public void purgeNodeStates(@NonNull final Style style)
-            throws DaoWriteException {
+    public void purgeNodeStates(@NonNull final Style style) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_NODE_STATE_BY_STYLE_ID)) {
             stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete(null);

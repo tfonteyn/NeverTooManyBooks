@@ -168,11 +168,8 @@ public interface BookshelfDao {
      * {@link Bookshelf} management context menu.
      *
      * @param bookshelfId id of the Bookshelf
-     *
-     * @throws DaoWriteException on failure
      */
-    void purgeNodeStates(long bookshelfId)
-            throws DaoWriteException;
+    void purgeNodeStates(long bookshelfId);
 
     /**
      * Get a list of book ID's for the given {@link Bookshelf}.
