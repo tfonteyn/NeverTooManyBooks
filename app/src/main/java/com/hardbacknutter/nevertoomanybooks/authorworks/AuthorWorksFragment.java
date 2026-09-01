@@ -301,6 +301,7 @@ public class AuthorWorksFragment
         closeProgressDialog();
 
         message.process(e -> {
+            // The dialog title should really be "author resolving failed"
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_unexpected),
                              (d, w) -> getActivity().finish());
