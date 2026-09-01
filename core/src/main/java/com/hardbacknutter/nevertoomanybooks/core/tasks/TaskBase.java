@@ -31,9 +31,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
-
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
  * <p>
@@ -156,9 +153,7 @@ public abstract class TaskBase<Result>
                 status = Status.Cancelled;
                 setTaskCancelled(null);
 
-            } catch (@NonNull final UncheckedStorageException
-                                    | UncheckedDaoWriteException
-                                    | UncheckedIOException e) {
+            } catch (@NonNull final UncheckedIOException e) {
                 status = Status.Failed;
                 //noinspection DataFlowIssue
                 setTaskFailure(e.getCause());

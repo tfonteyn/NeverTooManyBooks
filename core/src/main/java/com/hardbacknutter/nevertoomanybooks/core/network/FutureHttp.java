@@ -63,7 +63,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -949,11 +948,7 @@ public class FutureHttp<R> {
 
         final Throwable cause = e.getCause();
 
-        if (cause instanceof UncheckedStorageException) {
-            //noinspection DataFlowIssue
-            throw (StorageException) cause.getCause();
-
-        } else if (cause instanceof StorageException) {
+        if (cause instanceof StorageException) {
             throw (StorageException) cause;
 
         } else if (cause instanceof UncheckedIOException) {
@@ -962,11 +957,6 @@ public class FutureHttp<R> {
 
         } else if (cause instanceof IOException) {
             throw (IOException) cause;
-
-        } else if (cause instanceof UncheckedSAXException) {
-            final SAXException saxException = Objects.requireNonNull(
-                    ((UncheckedSAXException) cause).getCause());
-            unpackSAXException(saxException);
 
         } else if (cause instanceof SAXException) {
             final SAXException saxException = (SAXException) cause;

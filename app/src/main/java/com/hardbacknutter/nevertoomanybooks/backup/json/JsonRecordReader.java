@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -326,8 +325,7 @@ public class JsonRecordReader
                     // of the wikidata author claim id, instead of the id itself.
                     IdentifierMigration.repairBuiltinIdentifiersWikidataClaim(context);
                 }
-            } catch (@NonNull final JSONException
-                                    | UncheckedDaoWriteException | DaoWriteException e) {
+            } catch (@NonNull final JSONException | DaoWriteException e) {
                 // Unpack if possible
                 if (e.getCause() instanceof DaoWriteException) {
                     throw new DataReaderException(context.getString(
@@ -483,8 +481,7 @@ public class JsonRecordReader
     }
 
     private void readCalibreCustomFields(@NonNull final JSONObject root)
-            throws JSONException,
-                   UncheckedDaoWriteException, DaoWriteException {
+            throws JSONException, DaoWriteException {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreCustomFields.getName());
         if (jsonRoot != null) {

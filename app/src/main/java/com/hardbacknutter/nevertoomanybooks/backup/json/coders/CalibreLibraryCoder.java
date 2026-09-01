@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
+import android.database.SQLException;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class CalibreLibraryCoder
         implements JsonCoder<CalibreLibrary> {
@@ -279,7 +280,15 @@ public class CalibreLibraryCoder
                 try {
                     bookshelfDao.insert(context, bookshelf, userLocale);
                 } catch (@NonNull final DaoWriteException e) {
-                    throw new UncheckedDaoWriteException(e);
+                    // URGENT: this is a hack...  until we decide on using DaoWriteException or not
+                    // This should ALWAYS be so.
+                    if (e.getCause() instanceof SQLException) {
+                        throw (SQLException) e.getCause();
+                    } else {
+                        // This should NEVER happen
+                        LoggerFactory.getLogger().e(TAG_VL, e);
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

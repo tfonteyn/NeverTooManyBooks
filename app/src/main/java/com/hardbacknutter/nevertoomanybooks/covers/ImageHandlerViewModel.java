@@ -46,7 +46,6 @@ import androidx.lifecycle.viewmodel.CreationExtras;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -56,8 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageExternalContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
@@ -174,16 +171,9 @@ public class ImageHandlerViewModel
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    try {
-                        final File srcFile = createSourceTempImageFile(context, imageOwner);
-                        final File dstFile = createDestinationTempImageFile();
-                        return EditImageExternalContract.Input.create(srcFile, dstFile);
-
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+                    final File srcFile = createSourceTempImageFile(context, imageOwner);
+                    final File dstFile = createDestinationTempImageFile();
+                    return EditImageExternalContract.Input.create(srcFile, dstFile);
                 },
                 input -> onStartExternalEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
@@ -201,13 +191,8 @@ public class ImageHandlerViewModel
         STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
-                    try {
-                        final File dstFile = createDestinationTempImageFile();
-                        return EditImageExternalContract.Input.create(srcFile, dstFile);
-
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    }
+                    final File dstFile = createDestinationTempImageFile();
+                    return EditImageExternalContract.Input.create(srcFile, dstFile);
                 },
                 input -> onStartExternalEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
@@ -226,15 +211,9 @@ public class ImageHandlerViewModel
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    try {
-                        final File srcFile = createSourceTempImageFile(context, imageOwner);
-                        final File dstFile = createDestinationTempImageFile();
-                        return EditImageContract.Input.create(srcFile, dstFile);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+                    final File srcFile = createSourceTempImageFile(context, imageOwner);
+                    final File dstFile = createDestinationTempImageFile();
+                    return EditImageContract.Input.create(srcFile, dstFile);
                 },
                 input -> onStartEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
@@ -252,12 +231,8 @@ public class ImageHandlerViewModel
         STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
-                    try {
-                        final File dstFile = createDestinationTempImageFile();
-                        return EditImageContract.Input.create(srcFile, dstFile);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    }
+                    final File dstFile = createDestinationTempImageFile();
+                    return EditImageContract.Input.create(srcFile, dstFile);
                 },
                 input -> onStartEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
@@ -273,12 +248,8 @@ public class ImageHandlerViewModel
         STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
-                    try {
-                        final File tempFile = createDestinationTempImageFile();
-                        return TakePictureContract.Input.create(tempFile);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    }
+                    final File tempFile = createDestinationTempImageFile();
+                    return TakePictureContract.Input.create(tempFile);
                 },
                 input -> onStartTakePicture.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
@@ -301,19 +272,12 @@ public class ImageHandlerViewModel
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    try {
-                        final File srcFile = createSourceTempImageFile(context, imageOwner);
-                        return transform(new Transformation()
-                                                 .setSource(srcFile)
-                                                 .setRotation(angle),
-                                         srcFile,
-                                         NextAction.Done);
-
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    }
+                    final File srcFile = createSourceTempImageFile(context, imageOwner);
+                    return transform(new Transformation()
+                                             .setSource(srcFile)
+                                             .setRotation(angle),
+                                     srcFile,
+                                     NextAction.Done);
                 },
                 result -> {
                     if (result == null) {
@@ -354,19 +318,13 @@ public class ImageHandlerViewModel
                         return null;
                     }
 
-                    try {
-                        return transform(new Transformation()
-                                                 .setSource(file)
-                                                 .setScale(true)
-                                                 .setSurfaceRotation(surfaceRotation)
-                                                 .setRotation(explicitRotation),
-                                         file,
-                                         action);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+                    return transform(new Transformation()
+                                             .setSource(file)
+                                             .setScale(true)
+                                             .setSurfaceRotation(surfaceRotation)
+                                             .setRotation(explicitRotation),
+                                     file,
+                                     action);
                 },
                 result -> {
                     if (result == null) {
@@ -405,17 +363,12 @@ public class ImageHandlerViewModel
                         return null;
                     }
 
-                    try {
-                        return transform(new Transformation()
-                                                 .setSource(file)
-                                                 .setScale(true),
-                                         file,
-                                         NextAction.Done);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+                    return transform(new Transformation()
+                                             .setSource(file)
+                                             .setScale(true),
+                                     file,
+                                     NextAction.Done);
+
                 },
                 result -> {
                     if (result == null) {
@@ -455,7 +408,6 @@ public class ImageHandlerViewModel
                      When we open the Uri, the systems tells us
                      the file does not exist ¯\_(ツ)_/¯
                     */
-
                     final ServiceLocator serviceLocator = ServiceLocator.getInstance();
                     try (InputStream is = serviceLocator.getAppContext()
                                                         .getContentResolver()
@@ -473,10 +425,6 @@ public class ImageHandlerViewModel
                                                  .setScale(true),
                                          file,
                                          NextAction.Done);
-                    } catch (@NonNull final ImageStorageException e) {
-                        throw new UncheckedStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
                     }
                 },
                 result -> {
@@ -509,11 +457,7 @@ public class ImageHandlerViewModel
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     final File file = new File(fileSpec);
                     if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-                        try {
-                            imageOwner.setImage(context, cIdx, file);
-                        } catch (@NonNull final StorageException | IOException ignore) {
-                            // safe to ignore, we just checked existence...
-                        }
+                        imageOwner.setImage(context, cIdx, file);
                     } else {
                         imageOwner.removeImage(context, cIdx);
                         onInvalidImage.postValue(LiveDataEvent.ofNullable(null));
@@ -530,13 +474,7 @@ public class ImageHandlerViewModel
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    try {
-                        imageOwner.setImage(context, cIdx, file);
-                    } catch (@NonNull final StorageException e) {
-                        throw new UncheckedStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+                    imageOwner.setImage(context, cIdx, file);
                     return (Void) null;
                 },
                 aVoid -> onReloadImage.setValue(null),
@@ -558,15 +496,9 @@ public class ImageHandlerViewModel
     void restore(@NonNull final String uuid) {
         STask.execute(
                 ASyncExecutor.IMAGES,
-                () -> {
-                    try {
-                        return ServiceLocator.getInstance()
-                                             .getCoverStorage()
-                                             .restore(uuid, cIdx);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                },
+                () -> ServiceLocator.getInstance()
+                                .getCoverStorage()
+                                .restore(uuid, cIdx),
                 restored -> {
                     if (restored) {
                         onRestore.setValue(LiveDataEvent.of(true));
@@ -629,7 +561,8 @@ public class ImageHandlerViewModel
     @SuppressLint("WrongThread")
     @AnyThread
     @NonNull
-    private File createDestinationTempImageFile() throws ImageStorageException {
+    private File createDestinationTempImageFile()
+            throws ImageStorageException {
         final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
 
         final String path = tempFile.getAbsolutePath();
@@ -641,8 +574,8 @@ public class ImageHandlerViewModel
         if (Looper.myLooper() == Looper.getMainLooper()) {
             savedStateHandle.set(savedStateTempDestFilePath, path);
         } else {
-            new Handler(Looper.getMainLooper()).post(() ->
-                    savedStateHandle.set(savedStateTempDestFilePath, path));
+            new Handler(Looper.getMainLooper()).post(
+                    () -> savedStateHandle.set(savedStateTempDestFilePath, path));
         }
 
         return tempFile;

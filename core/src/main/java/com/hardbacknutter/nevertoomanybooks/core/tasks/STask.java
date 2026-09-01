@@ -30,11 +30,6 @@ import java.io.UncheckedIOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.network.UncheckedSAXException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 
 /**
  * A simplified alternative to the {@link MTask}.
@@ -63,7 +58,7 @@ public final class STask {
      */
     @UiThread
     public static <T> Future<?> execute(@NonNull final ExecutorService executor,
-                                        @NonNull final Supplier<T> worker,
+                                        @NonNull final Worker<T, ?> worker,
                                         @NonNull final Consumer<T> onFinished,
                                         @NonNull final Consumer<Throwable> onFailure) {
         return executor.submit(() -> {
@@ -77,15 +72,19 @@ public final class STask {
                     return;
                 }
                 UI_HANDLER.post(() -> onFinished.accept(result));
-            } catch (@NonNull final UncheckedIOException
-                                    | UncheckedStorageException
-                                    | UncheckedDaoWriteException
-                                    | UncheckedSAXException e) {
+            } catch (@NonNull final UncheckedIOException e) {
                 UI_HANDLER.post(() -> onFailure.accept(e.getCause()));
             } catch (@NonNull final Throwable t) {
                 UI_HANDLER.post(() -> onFailure.accept(t));
             }
         });
+    }
+
+    @FunctionalInterface
+    public interface Worker<T, E extends Exception> {
+
+        T get()
+            throws E;
     }
 
     /**

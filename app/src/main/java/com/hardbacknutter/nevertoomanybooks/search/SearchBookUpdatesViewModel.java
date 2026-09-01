@@ -552,20 +552,11 @@ public class SearchBookUpdatesViewModel
                     //noinspection ConstantValue
                     if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
                         final Book delta;
-                        try {
-                            //noinspection DataFlowIssue
-                            delta = syncProcessor.process(context, currentBookId, currentBook,
+                        //noinspection DataFlowIssue
+                        delta = syncProcessor.process(context, currentBookId, currentBook,
                                                           remoteBook, currentFieldsWanted);
-                        } catch (@NonNull final IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
                         if (delta != null) {
-                            try {
-                                bookRepository.update(context, delta, Set.of());
-                            } catch (@NonNull final DaoWriteException e) {
-                                // ignore, but log it.
-                                LoggerFactory.getLogger().e(TAG, e);
-                            }
+                            bookRepository.update(context, delta, Set.of());
                         }
                     }
                     return (Void) null;
