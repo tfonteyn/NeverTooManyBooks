@@ -498,8 +498,8 @@ public class JsonRecordReader
         }
     }
 
-    private void processCalibreCustomField(final CalibreCustomFieldDao dao,
-                                           final CalibreCustomField field)
+    private void processCalibreCustomField(@NonNull final CalibreCustomFieldDao dao,
+                                           @NonNull final CalibreCustomField field)
             throws DaoWriteException {
         dao.fixId(field);
         if (field.getId() > 0) {
