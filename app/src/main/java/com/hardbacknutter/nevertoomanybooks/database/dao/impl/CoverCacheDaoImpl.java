@@ -128,11 +128,10 @@ public class CoverCacheDaoImpl
 
     @Override
     public void deleteAll() {
-        //noinspection OverlyBroadCatchBlock
-        try {
-            db.execSQL(Sql.DELETE_ALL);
-        } catch (@NonNull final SQLException e) {
-            LoggerFactory.getLogger().e(TAG, e);
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_ALL)) {
+            stmt.executeUpdateDelete(null);
+        } catch (@NonNull final SQLException ignore) {
+            // ignore
         }
     }
 

@@ -281,8 +281,11 @@ public class DBCleaner {
             final StringJoiner sj = new StringJoiner(",", "(", ")");
             toDelete.forEach(id -> sj.add(String.valueOf(id)));
             // just the one execute for performance
-            db.execSQL(UPDATE_BOOKS_SET + ',' + DBKey.RATING + "=null"
-                       + _WHERE_ + DBKey.PK_ID + _IN_ + sj);
+            try (SynchronizedStatement stmt = db.compileStatement(
+                    UPDATE_BOOKS_SET + ',' + DBKey.RATING + "=null"
+                    + _WHERE_ + DBKey.PK_ID + _IN_ + sj)) {
+                stmt.executeUpdateDelete(null);
+            }
         }
         if (!toUpdate.isEmpty()) {
             try (SynchronizedStatement stmt = db.compileStatement(

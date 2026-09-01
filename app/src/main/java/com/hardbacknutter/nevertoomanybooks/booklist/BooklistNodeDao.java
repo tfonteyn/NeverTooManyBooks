@@ -106,7 +106,9 @@ public class BooklistNodeDao {
      * @param db Database Access
      */
     public static void clearAll(@NonNull final SynchronizedDb db) {
-        db.execSQL(Sql.DELETE_ALL);
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_ALL)) {
+            stmt.executeUpdateDelete(null);
+        }
     }
 
     /**

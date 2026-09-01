@@ -447,10 +447,11 @@ public class SynchronizedDb
      *
      * @param sql The raw SQL statement
      *
+     * @throws SQLException         on failures
      * @throws TransactionException when currently inside a shared lock
      */
     public void execSQL(@NonNull final String sql)
-            throws TransactionException {
+            throws SQLException, TransactionException {
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger().d(TAG, "execSQL", sql);
         }

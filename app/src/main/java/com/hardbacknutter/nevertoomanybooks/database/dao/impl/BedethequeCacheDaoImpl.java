@@ -262,7 +262,10 @@ public class BedethequeCacheDaoImpl
 
     @Override
     public void clearCache() {
-        db.execSQL(DELETE_FROM_ + CacheDbHelper.TBL_BDT_AUTHORS.getName());
+        try (SynchronizedStatement stmt = db.compileStatement(
+                DELETE_FROM_ + CacheDbHelper.TBL_BDT_AUTHORS.getName())) {
+            stmt.executeUpdateDelete(null);
+        }
     }
 
     private static final class Sql {
