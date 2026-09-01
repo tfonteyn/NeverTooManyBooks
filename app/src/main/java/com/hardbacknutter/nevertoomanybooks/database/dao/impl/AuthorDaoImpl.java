@@ -635,12 +635,13 @@ public class AuthorDaoImpl
      * @param locale  Locale to use if the item has none set
      *
      * @throws DaoWriteException    on failure
+     * @throws SQLException         on failure
      * @throws TransactionException (debug)
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Author author,
                                           @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws DaoWriteException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -774,7 +775,7 @@ public class AuthorDaoImpl
 
     private void insertPseudonymLink(final long authorId,
                                      final long realAuthorId)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, authorId);
@@ -783,8 +784,6 @@ public class AuthorDaoImpl
             stmt.executeInsert(() -> "Failed to insert PseudonymLink"
                                      + " author=" + authorId
                                      + ", real=" + realAuthorId);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 

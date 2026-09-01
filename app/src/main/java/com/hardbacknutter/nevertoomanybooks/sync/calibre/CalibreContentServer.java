@@ -675,14 +675,12 @@ public final class CalibreContentServer
      * and the {@link #calibreExtensionInstalled} flag.
      *
      * @throws IOException       on generic/other IO failures
-     * @throws StorageException  on storage related failures
      * @throws JSONException     upon any parsing error
      * @throws DaoWriteException on failure to update the database
      */
     @WorkerThread
     public void readMetaData()
             throws IOException,
-                   StorageException,
                    JSONException,
                    DaoWriteException {
 
@@ -957,7 +955,6 @@ public final class CalibreContentServer
      * @return see above
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      */
     @WorkerThread
@@ -965,9 +962,7 @@ public final class CalibreContentServer
     public JSONObject getBookIds(@NonNull final String libraryStringId,
                                  @SuppressWarnings("SameParameterValue") final int num,
                                  final int offset)
-            throws StorageException,
-                   IOException,
-                   JSONException {
+            throws IOException, JSONException {
 
         @SuppressLint("DefaultLocale")
         final String url = String.format(GET_BOOK_IDS, serverUri, libraryStringId, num, offset);
@@ -1011,7 +1006,6 @@ public final class CalibreContentServer
      * @return books matching the specified search query.
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      */
     @WorkerThread
@@ -1020,8 +1014,7 @@ public final class CalibreContentServer
                              @SuppressWarnings("SameParameterValue") final int num,
                              final int offset,
                              @NonNull final String query)
-            throws StorageException,
-                   IOException,
+            throws IOException,
                    JSONException {
 
         @SuppressLint("DefaultLocale")

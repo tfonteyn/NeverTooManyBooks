@@ -206,6 +206,8 @@ public class IdentifierDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -215,7 +217,7 @@ public class IdentifierDaoImpl
 
     @RequiresApi(Build.VERSION_CODES.R)
     private void restoreApi30(@NonNull final Collection<Identifier> identifierList)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -227,13 +229,11 @@ public class IdentifierDaoImpl
             for (final Identifier identifier : identifierList) {
                 doInsert(identifier, stmt);
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
     private void restoreApi26(@NonNull final Collection<Identifier> identifierList)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -258,16 +258,12 @@ public class IdentifierDaoImpl
                         doInsert(identifier, stmtInsert);
                     } catch (@NonNull final SQLException e) {
                         identifier.setId(0);
-                        throw new DaoWriteException(e);
+                        throw e;
                     }
                 } else {
                     // key exists, update it
                     identifier.setId(iId);
-                    try {
-                        doUpdate(identifier, stmtUpdate);
-                    } catch (@NonNull final SQLException e) {
-                        throw new DaoWriteException(e);
-                    }
+                    doUpdate(identifier, stmtUpdate);
                 }
             }
         }

@@ -178,11 +178,7 @@ public class CalibreLibraryCoder
 
         final Object tmpBS = data.opt(DBKey.FK_BOOKSHELF);
         if (tmpBS == null || tmpBS instanceof Number) {
-            try {
-                return v3decode(data);
-            } catch (@NonNull final DaoWriteException e) {
-                throw new UncheckedDaoWriteException(e);
-            }
+            return v3decode(data);
         }
 
         final Bookshelf libraryBookshelf = bookshelfCoder
@@ -229,8 +225,7 @@ public class CalibreLibraryCoder
     // This led to data loss on full imports to a clean installation.
     // There is no real (simple) recovery solution to that. So....
     @NonNull
-    private CalibreLibrary v3decode(@NonNull final JSONObject data)
-            throws DaoWriteException {
+    private CalibreLibrary v3decode(@NonNull final JSONObject data) {
 
         final String libName = data.getString(DBKey.CALIBRE.LIBRARY_NAME);
 
@@ -269,8 +264,7 @@ public class CalibreLibraryCoder
     }
 
     private long v3resolveBookshelf(@NonNull final JSONObject data,
-                                    @NonNull final String libName)
-            throws DaoWriteException {
+                                    @NonNull final String libName) {
 
         // try original
         Bookshelf bookshelf = bookshelfDao.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF))
@@ -282,7 +276,11 @@ public class CalibreLibraryCoder
             if (bookshelf == null) {
                 // make a new one
                 bookshelf = new Bookshelf(name, BuiltinStyle.HARD_DEFAULT_UUID);
-                bookshelfDao.insert(context, bookshelf, userLocale);
+                try {
+                    bookshelfDao.insert(context, bookshelf, userLocale);
+                } catch (@NonNull final DaoWriteException e) {
+                    throw new UncheckedDaoWriteException(e);
+                }
             }
         }
         return bookshelf.getId();

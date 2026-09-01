@@ -396,10 +396,10 @@ public class BookshelfDaoImpl
      *
      * @param bookshelf to store the filters of
      *
-     * @throws DaoWriteException on failure
+     * @throws SQLException on failure
      */
     private void storeFilters(@NonNull final Bookshelf bookshelf)
-            throws DaoWriteException {
+            throws SQLException {
 
         // prune the filters so we only keep the active ones
         final List<PFilter<?>> list = bookshelf.pruneFilters();
@@ -436,8 +436,6 @@ public class BookshelfDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -581,10 +579,6 @@ public class BookshelfDaoImpl
         } catch (@NonNull final SQLException e) {
             bookshelf.setId(0);
             throw new DaoWriteException(e);
-
-        } catch (@NonNull final DaoWriteException e) {
-            bookshelf.setId(0);
-            throw e;
 
         } finally {
             if (txLock != null) {

@@ -205,8 +205,7 @@ public class CalibreContentServerReader
     }
 
     private void readLibraryMetaData()
-            throws StorageException,
-                   IOException,
+            throws IOException,
                    JSONException,
                    DaoWriteException {
 
@@ -220,9 +219,7 @@ public class CalibreContentServerReader
     @WorkerThread
     @NonNull
     public Optional<SyncReaderMetaData> readMetaData(@NonNull final Context context)
-            throws DataReaderException,
-                   StorageException,
-                   IOException {
+            throws DataReaderException, IOException {
 
         try {
             readLibraryMetaData();
@@ -247,9 +244,7 @@ public class CalibreContentServerReader
     @NonNull
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws DataReaderException,
-                   StorageException,
-                   IOException {
+            throws DataReaderException, IOException {
 
         results = new ReaderResults();
 
@@ -362,7 +357,7 @@ public class CalibreContentServerReader
      * @param context     Current context
      * @param calibreBook the book data to import
      *
-     * @throws IOException      on generic/other IO failures
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     private void importBook(@NonNull final Context context,

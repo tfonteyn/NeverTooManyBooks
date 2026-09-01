@@ -87,17 +87,21 @@ public class BedethequeCacheDaoImpl
                        @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoWriteException {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insertApi30(locale, recordSupplier);
-        } else {
-            insertApi26(locale, recordSupplier);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                insertApi30(locale, recordSupplier);
+            } else {
+                insertApi26(locale, recordSupplier);
+            }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
     private void insertApi30(@NonNull final Locale locale,
                              @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoWriteException {
+            throws SQLException {
         BdtAuthor bdtAuthor;
 
         Synchronizer.SyncLock txLock = null;
@@ -117,11 +121,10 @@ public class BedethequeCacheDaoImpl
                     final long iId = stmt.executeInsert(
                             () -> ERROR_INSERT_FROM + fBdtAuthor);
                     bdtAuthor.setId(iId);
+                    // If the above fails due to an SQLException,
+                    // we can't reset previous id's unless we start keeping track
+                    // of the at least 1000+ entries we get in this loop
                 }
-            } catch (@NonNull final SQLException e) {
-                // We can't reset previous id's unless we start keeping track
-                // of the at least 1000+ entries we get in this loop
-                throw new DaoWriteException(e);
             }
 
             if (txLock != null) {
@@ -136,7 +139,7 @@ public class BedethequeCacheDaoImpl
 
     private void insertApi26(@NonNull final Locale locale,
                              @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoWriteException {
+            throws SQLException {
 
         BdtAuthor bdtAuthor;
 
@@ -169,27 +172,19 @@ public class BedethequeCacheDaoImpl
                         stmtInsert.bindString(2, textNormaliser.strict(bdtAuthor.getName(),
                                                                        locale));
                         stmtInsert.bindString(3, bdtAuthor.getUrl());
-                        try {
-                            final BdtAuthor fBdtAuthor = bdtAuthor;
-                            final long iId = stmtInsert.executeInsert(
+                        final BdtAuthor fBdtAuthor = bdtAuthor;
+                        final long iId = stmtInsert.executeInsert(
                                     () -> ERROR_INSERT_FROM + fBdtAuthor);
-                            bdtAuthor.setId(iId);
-                        } catch (@NonNull final SQLException e) {
-                            // We can't reset previous id's unless we start keeping track
-                            // of the at least 1000+ entries we get in this loop
-                            throw new DaoWriteException(e);
-                        }
+                        bdtAuthor.setId(iId);
+                        // If the above fails due to an SQLException,
+                        // we can't reset previous id's unless we start keeping track
+                        // of the at least 1000+ entries we get in this loop
                     } else {
                         // We ALWAYS update the url.
                         stmtUpdate.bindString(1, bdtAuthor.getUrl());
                         stmtUpdate.bindLong(2, bdtAuthor.getId());
-                        try {
-                            final BdtAuthor fBdtAuthor = bdtAuthor;
-                            stmtUpdate.executeUpdateDelete(
-                                    () -> ERROR_UPDATE_FROM + fBdtAuthor);
-                        } catch (@NonNull final SQLException e) {
-                            throw new DaoWriteException(e);
-                        }
+                        final BdtAuthor fBdtAuthor = bdtAuthor;
+                        stmtUpdate.executeUpdateDelete(() -> ERROR_UPDATE_FROM + fBdtAuthor);
                     }
                 }
             }

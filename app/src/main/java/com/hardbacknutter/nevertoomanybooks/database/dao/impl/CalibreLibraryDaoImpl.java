@@ -193,10 +193,6 @@ public class CalibreLibraryDaoImpl
             library.setId(0);
             throw new DaoWriteException(e);
 
-        } catch (@NonNull final DaoWriteException e) {
-            library.setId(0);
-            throw e;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -316,7 +312,7 @@ public class CalibreLibraryDaoImpl
     }
 
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -344,7 +340,7 @@ public class CalibreLibraryDaoImpl
             } catch (@NonNull final SQLException e) {
                 // Reset all id's before throwing!
                 vLibs.forEach(v -> v.setId(0));
-                throw new DaoWriteException(e);
+                throw e;
             }
         }
     }

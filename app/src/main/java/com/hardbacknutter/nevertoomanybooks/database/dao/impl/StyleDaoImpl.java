@@ -118,7 +118,7 @@ public class StyleDaoImpl
      */
     public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,
                                             @NonNull final Style style)
-        throws SQLException {
+            throws SQLException {
 
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
                 db.compileStatement(Sql.INSERT_STYLE))) {
@@ -142,14 +142,14 @@ public class StyleDaoImpl
      * @param styleName the name
      * @param stmt      statement to run
      *
-     * @throws SQLException on any failures
-     *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     *
+     * @throws SQLException on any failures
      */
     private static long doInsert(@NonNull final Style style,
                                  @Nullable final String styleName,
                                  @NonNull final ExtSQLiteStatement stmt)
-        throws SQLException {
+            throws SQLException {
 
         int c = 0;
         stmt.bindString(++c, style.getUuid());
@@ -268,15 +268,19 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoWriteException {
 
-        if (style.getType() == Style.Type.Builtin) {
-            updateBuiltinStyle(style);
-        } else {
-            updateUserStyle(context, style);
+        try {
+            if (style.getType() == Style.Type.Builtin) {
+                updateBuiltinStyle(style);
+            } else {
+                updateUserStyle(context, style);
+            }
+        } catch (@NonNull final SQLException e) {
+            throw new DaoWriteException(e);
         }
     }
 
     private void updateBuiltinStyle(@NonNull final Style style)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_BUILTIN_STYLE)) {
             int c = 0;
@@ -285,14 +289,12 @@ public class StyleDaoImpl
 
             stmt.bindLong(++c, style.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + style);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
     private void updateUserStyle(@NonNull final Context context,
                                  @NonNull final Style style)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_STYLE)) {
             int c = 0;
@@ -333,8 +335,6 @@ public class StyleDaoImpl
 
             stmt.bindLong(++c, style.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + style);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
