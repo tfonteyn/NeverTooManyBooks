@@ -40,6 +40,7 @@ import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 public class LibraryThingPreferencesFragment
         extends BaseSettingsFragment {
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

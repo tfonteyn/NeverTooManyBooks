@@ -44,6 +44,7 @@ public class BarcodePreferenceFragment
     /** Fragment/Log tag. */
     public static final String TAG = "BarcodePreferenceFrg";
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

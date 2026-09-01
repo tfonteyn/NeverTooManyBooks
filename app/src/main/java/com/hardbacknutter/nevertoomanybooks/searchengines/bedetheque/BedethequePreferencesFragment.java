@@ -52,6 +52,7 @@ public class BedethequePreferencesFragment
     private int authorCacheCount = -1;
     private BedethequeCacheDao cacheDao;
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

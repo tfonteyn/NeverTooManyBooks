@@ -73,6 +73,7 @@ public abstract class StyleBaseFragment
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
     }
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

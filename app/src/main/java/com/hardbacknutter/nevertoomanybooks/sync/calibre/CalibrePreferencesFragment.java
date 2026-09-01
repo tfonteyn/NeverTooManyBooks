@@ -90,6 +90,7 @@ public class CalibrePreferencesFragment
         hostUrlValidator = new HostUrlValidator();
     }
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     protected SettingsManager.Builder onCreateSettings() {
         final SettingsDataStore store = new SharedPreferencesDataStore(

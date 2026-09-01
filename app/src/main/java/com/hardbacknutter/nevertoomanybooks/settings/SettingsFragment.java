@@ -50,10 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
@@ -138,6 +138,7 @@ public class SettingsFragment
             };
     private StorageVolumeHelper storageVolumeHelper;
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {
@@ -174,13 +175,13 @@ public class SettingsFragment
         );
 
         factory.bool(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED,
-                     R.string.pt_allow_metered_network_data,  null, p -> {
+                     R.string.pt_allow_metered_network_data, null, p -> {
                     p.setIcon(R.drawable.data_usage_24px);
                     p.setChecked(true);
                 });
 
         factory.bool(FormatMapper.PK_SEARCH_REFORMAT_FORMAT,
-                     R.string.pt_search_reformat_format,  null, p -> {
+                     R.string.pt_search_reformat_format, null, p -> {
                     p.setIcon(R.drawable.merge_24px);
                     p.setChecked(true);
                 });
@@ -653,7 +654,7 @@ public class SettingsFragment
                 vm.setForceActivityRecreation();
                 return true;
 
-            } catch (@NonNull final StorageException e) {
+            } catch (@NonNull final ImageStorageException e) {
                 // This should never happen... flw
                 // To get here the user would have to have displayed the dialog,
                 // manually removed the SDCARD

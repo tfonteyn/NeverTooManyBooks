@@ -87,6 +87,7 @@ public class AmazonPreferencesFragment
         hostUrlValidator = new HostUrlValidator();
     }
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

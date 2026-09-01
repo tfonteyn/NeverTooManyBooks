@@ -51,6 +51,7 @@ public class IsfdbPreferencesFragment
 
     private BooleanSetting pLoginToSearch;
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

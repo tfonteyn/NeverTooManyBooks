@@ -58,6 +58,7 @@ public class UserInterfacePreferenceFragment
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
     }
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

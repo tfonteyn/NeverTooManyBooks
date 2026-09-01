@@ -59,6 +59,7 @@ public class StripInfoBePreferencesFragment
     @Nullable
     private BooleanSetting pLoginToSearch;
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

@@ -37,6 +37,7 @@ import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 public class GoodreadsPreferencesFragment
         extends BaseSettingsFragment {
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

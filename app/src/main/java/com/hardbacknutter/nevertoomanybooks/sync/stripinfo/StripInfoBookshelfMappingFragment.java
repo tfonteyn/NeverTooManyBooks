@@ -58,6 +58,7 @@ public class StripInfoBookshelfMappingFragment
         return fragment;
     }
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     protected SettingsManager.Builder onCreateSettings() {
         final SettingsDataStore store = new SharedPreferencesDataStore(

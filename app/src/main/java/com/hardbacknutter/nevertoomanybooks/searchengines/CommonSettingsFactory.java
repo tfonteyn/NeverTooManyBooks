@@ -37,6 +37,7 @@ public final class CommonSettingsFactory {
      * @param factory to use
      * @param pk      preference prefix key (site)
      */
+    @SuppressWarnings("CodeBlock2Expr")
     public static void credentials(@NonNull final SettingsManager.Builder factory,
                                    @NonNull final String pk) {
         factory.header(R.string.lbl_credentials);
@@ -81,6 +82,7 @@ public final class CommonSettingsFactory {
      * @param factory to use
      * @param pk      preference prefix key (site)
      */
+    @SuppressWarnings("CodeBlock2Expr")
     public static void troubleshoot(@NonNull final SettingsManager.Builder factory,
                                     @NonNull final String pk) {
         factory.header(R.string.lbl_troubleshooting, p -> {

@@ -60,6 +60,7 @@ public class StyleBooklistBookLevelFieldsFragment
      *
      * @return the builder
      */
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

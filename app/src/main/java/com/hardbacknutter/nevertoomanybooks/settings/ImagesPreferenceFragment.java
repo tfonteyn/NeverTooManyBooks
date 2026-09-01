@@ -46,6 +46,7 @@ public class ImagesPreferenceFragment
 
     private static final String PSK_PURGE_IMAGE_CACHE = "psk_purge_image_cache";
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

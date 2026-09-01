@@ -36,6 +36,7 @@ public class TuningFragment
 
     public static final String TAG = "TuningFragment";
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

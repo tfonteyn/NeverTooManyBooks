@@ -43,6 +43,7 @@ public class BertrandPtPreferencesFragment
             EngineId.BertrandPt.getPreferenceKey()
             + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
+    @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {

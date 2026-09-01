@@ -336,6 +336,7 @@
           <option value="StringConcatenationMissingWhitespace" />
           <option value="checkstyle:IllegalCatch" />
           <option value="OverlyBroadCatchBlock" />
+          <option value="CodeBlock2Expr" />
         </list>
       </option>
     </inspection_tool>
