@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -64,8 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
-
-import org.acra.ACRA;
 
 public class EditBookFragment
         extends BaseFragment {
@@ -300,10 +297,8 @@ public class EditBookFragment
             vm.saveBook(getContext());
             setResultsAndFinish();
 
-        } catch (@NonNull final DaoImageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
         } catch (@NonNull final DaoWriteException e) {
-            ACRA.getErrorReporter().handleException(e, false);
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 

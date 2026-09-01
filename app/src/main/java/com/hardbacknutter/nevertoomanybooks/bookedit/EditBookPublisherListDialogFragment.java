@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
@@ -65,8 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataOb
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
-
-import org.acra.ACRA;
 
 /**
  * Edit the list of Publishers of a Book.
@@ -379,7 +378,7 @@ public class EditBookPublisherListDialogFragment
             adapter.notifyDataSetChanged();
 
         } catch (@NonNull final DaoWriteException e) {
-            ACRA.getErrorReporter().handleException(e, false);
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 
@@ -396,7 +395,7 @@ public class EditBookPublisherListDialogFragment
             adapter.notifyDataSetChanged();
 
         } catch (@NonNull final DaoWriteException e) {
-            ACRA.getErrorReporter().handleException(e, false);
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 

@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -114,7 +113,7 @@ public class SearchBookByIsbnViewModel
 
     void onSaveBook(@NonNull final Context context,
                     @NonNull final Book book)
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException {
         // DATE_ACQUIRED is always used
         book.ensureDateAcquired();
         // if BOOK_CONDITION is wanted, assume the user got a new book.

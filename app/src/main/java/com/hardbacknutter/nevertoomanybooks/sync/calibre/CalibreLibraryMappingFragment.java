@@ -53,8 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
-import org.acra.ACRA;
-
 public class CalibreLibraryMappingFragment
         extends BaseFragment {
 
@@ -104,6 +102,7 @@ public class CalibreLibraryMappingFragment
         return vb.getRoot();
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -130,7 +129,7 @@ public class CalibreLibraryMappingFragment
                 vm.mapBookshelfToLibrary(bookshelf);
                 vb.bookshelf.setText(bookshelf.getName());
             } catch (@NonNull final DaoWriteException e) {
-                ACRA.getErrorReporter().handleException(e, false);
+                ErrorDialog.show(getContext(), TAG, e);
             }
         });
 
@@ -142,7 +141,7 @@ public class CalibreLibraryMappingFragment
                 addBookshelf(bookshelf, vb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                ACRA.getErrorReporter().handleException(e, false);
+                ErrorDialog.show(getContext(), TAG, e);
             }
         });
 
@@ -309,7 +308,8 @@ public class CalibreLibraryMappingFragment
                     vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
                     holder.vb.bookshelf.setText(bookshelf.getName());
                 } catch (@NonNull final DaoWriteException e) {
-                    ACRA.getErrorReporter().handleException(e, false);
+                    //noinspection DataFlowIssue
+                    ErrorDialog.show(getContext(), TAG, e);
                 }
             });
 
@@ -321,7 +321,8 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    ACRA.getErrorReporter().handleException(e, false);
+                    //noinspection DataFlowIssue
+                    ErrorDialog.show(getContext(), TAG, e);
                 }
             });
 

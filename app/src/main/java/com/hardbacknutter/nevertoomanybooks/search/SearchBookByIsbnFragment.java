@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRe
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.IsbnTextInputEditText;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
@@ -102,8 +101,6 @@ import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
-
-import org.acra.ACRA;
 
 /**
  * Use-cases / logic flow....   might contain errors...
@@ -1013,10 +1010,8 @@ public class SearchBookByIsbnFragment
             //noinspection DataFlowIssue
             vm.onSaveBook(context, book);
 
-        } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
         } catch (@NonNull final DaoWriteException e) {
-            ACRA.getErrorReporter().handleException(e, false);
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 

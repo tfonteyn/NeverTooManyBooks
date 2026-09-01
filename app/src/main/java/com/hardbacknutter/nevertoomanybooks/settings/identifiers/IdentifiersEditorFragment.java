@@ -50,6 +50,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -67,8 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
-
-import org.acra.ACRA;
 
 @Keep
 public class IdentifiersEditorFragment
@@ -411,7 +410,7 @@ public class IdentifiersEditorFragment
                     //noinspection DataFlowIssue
                     vm.restoreBuiltin(getContext());
                 } catch (@NonNull final DaoWriteException e) {
-                    ACRA.getErrorReporter().handleException(e, false);
+                    ErrorDialog.show(getContext(), TAG, e);
                 }
                 return true;
             }

@@ -28,11 +28,13 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -43,12 +45,16 @@ import org.acra.ACRA;
  * Done this way to ensure specific exceptions are ALWAYS showing the same message
  * and to allow {@link #showDialog} to recurse.
  */
-@SuppressWarnings("ChainOfInstanceofChecks")
 public final class ErrorDialog {
 
     private static final String DOUBLE_LF = "\n\n";
 
     private ErrorDialog() {
+    }
+
+    private static boolean isSQLException(@NonNull final Throwable e) {
+        return e instanceof DaoWriteException && e.getCause() instanceof SQLException
+               || e instanceof SQLException;
     }
 
     /**
@@ -58,10 +64,11 @@ public final class ErrorDialog {
      * @param tag     log tag
      * @param e       the error
      */
+    @SuppressWarnings("ChainOfInstanceofChecks")
     public static void show(@NonNull final Context context,
                             @NonNull final String tag,
                             @NonNull final Throwable e) {
-        if (e instanceof DaoWriteException) {
+        if (isSQLException(e)) {
             ACRA.getErrorReporter().handleException(e, false);
             return;
         }
@@ -70,7 +77,9 @@ public final class ErrorDialog {
 
         @Nullable
         final String title;
-        if (e instanceof StorageException) {
+        if (e instanceof DaoImageException) {
+            title = context.getString(R.string.error_storage_not_writable);
+        } else if (e instanceof StorageException) {
             title = context.getString(R.string.error_storage_not_accessible);
         } else {
             title = null;
@@ -93,7 +102,7 @@ public final class ErrorDialog {
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
-        if (e instanceof DaoWriteException) {
+        if (isSQLException(e)) {
             ACRA.getErrorReporter().handleException(e, false);
             return;
         }
@@ -116,7 +125,7 @@ public final class ErrorDialog {
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message) {
-        if (e instanceof DaoWriteException) {
+        if (isSQLException(e)) {
             ACRA.getErrorReporter().handleException(e, false);
             return;
         }
@@ -141,7 +150,7 @@ public final class ErrorDialog {
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
-        if (e instanceof DaoWriteException) {
+        if (isSQLException(e)) {
             ACRA.getErrorReporter().handleException(e, false);
             return;
         }
@@ -152,6 +161,8 @@ public final class ErrorDialog {
 
     /**
      * Show the dialog.
+     * <p>
+     * <strong>Called recursively!</strong>
      *
      * @param context       Current context
      * @param e             The error. SHOULD NOT be {@code null}.
