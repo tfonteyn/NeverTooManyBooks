@@ -82,8 +82,7 @@ public class DbArchiveReader
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
-            throws DataReaderException,
-                   IOException, CredentialsException {
+            throws DataReaderException, IOException, CredentialsException {
 
         // copy from the Uri and open the (now private) database
         if (sqLiteDatabase == null) {
@@ -122,7 +121,6 @@ public class DbArchiveReader
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws DataReaderException,
                    CredentialsException,
-                   StorageException,
                    IOException {
         if (delegateDataReader != null) {
             return delegateDataReader.readMetaData(context);

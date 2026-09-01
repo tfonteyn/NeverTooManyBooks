@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -236,7 +235,6 @@ public class JsonRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,
-                   StorageException,
                    IOException {
 
         results = new ImportResults();
@@ -613,8 +611,7 @@ public class JsonRecordReader
                            @NonNull final JSONObject root,
                            @NonNull final Style defaultStyle,
                            @NonNull final ProgressListener progressListener)
-            throws StorageException,
-                   JSONException {
+            throws JSONException {
 
         progressListener.publishProgress(0, context.getString(R.string.lbl_books));
 

@@ -362,14 +362,12 @@ public class CalibreContentServerReader
      * @param context     Current context
      * @param calibreBook the book data to import
      *
-     * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
     @WorkerThread
     private void importBook(@NonNull final Context context,
                             @NonNull final Book calibreBook)
-            throws StorageException,
-                   IOException {
+            throws IOException {
         try {
             final String calibreUuid = calibreBook.getString(DBKey.CALIBRE.BOOK_UUID);
             // check if we already have the calibre book in the local database
@@ -439,7 +437,7 @@ public class CalibreContentServerReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book calibreBook,
                             @NonNull final Book book)
-            throws StorageException, IOException, DaoWriteException {
+            throws IOException, DaoWriteException {
 
         // The delta values we'll be updating
         final Book delta;
@@ -467,8 +465,7 @@ public class CalibreContentServerReader
 
     private void insertBook(@NonNull final Context context,
                             @NonNull final Book book)
-            throws StorageException,
-                   DaoWriteException {
+            throws DaoWriteException {
 
         // it's an eBook - duh!
         book.setFormat(eBookString);

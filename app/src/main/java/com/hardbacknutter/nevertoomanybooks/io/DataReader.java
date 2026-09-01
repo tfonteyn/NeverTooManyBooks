@@ -55,8 +55,6 @@ public interface DataReader<METADATA, RESULT>
      *                              The embedded Exception has the details,
      *                              should be reported to the user,
      *                              but action is optional.
-     * @throws StorageException     on storage related failures
-     *                              The user MUST take action on it NOW.
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
      *                              The user MUST take action on it NOW.
@@ -66,7 +64,6 @@ public interface DataReader<METADATA, RESULT>
     default Optional<METADATA> readMetaData(@NonNull final Context context)
             throws DataReaderException,
                    CredentialsException,
-                   StorageException,
                    IOException {
         return Optional.empty();
     }

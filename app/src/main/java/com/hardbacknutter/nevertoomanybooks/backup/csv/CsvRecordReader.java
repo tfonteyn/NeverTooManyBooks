@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -293,9 +292,7 @@ public class CsvRecordReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ProgressListener progressListener)
-            throws DataReaderException,
-                   StorageException,
-                   IOException {
+            throws DataReaderException, IOException {
 
         results = new ImportResults();
 
@@ -332,8 +329,7 @@ public class CsvRecordReader
     private void readBooks(@NonNull final Context context,
                            @NonNull final List<String> books,
                            @NonNull final ProgressListener progressListener)
-            throws StorageException,
-                   DataReaderException {
+            throws DataReaderException {
 
         // First line in the import file must be the column names.
         final String rawHeader = books.get(0);

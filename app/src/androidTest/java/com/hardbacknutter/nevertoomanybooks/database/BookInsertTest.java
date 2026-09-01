@@ -81,7 +81,7 @@ class BookInsertTest
      */
     @Test
     void inserting()
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException {
         List<Long> bookIdList;
         List<AuthorWork> works;
 

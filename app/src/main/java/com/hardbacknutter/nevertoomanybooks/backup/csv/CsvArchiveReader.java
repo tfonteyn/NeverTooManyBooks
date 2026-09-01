@@ -94,7 +94,7 @@ public class CsvArchiveReader
     @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
-            throws DataReaderException, CredentialsException, StorageException, IOException {
+            throws DataReaderException, CredentialsException, IOException {
 
         // Sample the first line to get the (raw/lowercase) column names
         final String rawHeader;

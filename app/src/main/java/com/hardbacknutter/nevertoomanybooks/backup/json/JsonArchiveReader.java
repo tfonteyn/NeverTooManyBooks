@@ -83,8 +83,7 @@ public class JsonArchiveReader
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
-            throws DataReaderException,
-                   IOException {
+            throws DataReaderException, IOException {
         if (metaData == null) {
             // reading it will either assign a value to metaData, or throw exceptions
             readMetaData(context);
@@ -98,8 +97,7 @@ public class JsonArchiveReader
     @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
-            throws DataReaderException,
-                   IOException {
+            throws DataReaderException, IOException {
 
         if (metaData == null) {
             @Nullable

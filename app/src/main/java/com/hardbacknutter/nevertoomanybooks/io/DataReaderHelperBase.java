@@ -151,7 +151,6 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      * @throws DataReaderException  on failure to produce a supported reader
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     @NonNull
@@ -159,7 +158,6 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
             throws DataReaderException,
                    CredentialsException,
                    CertificateException,
-                   StorageException,
                    IOException;
 
     /**

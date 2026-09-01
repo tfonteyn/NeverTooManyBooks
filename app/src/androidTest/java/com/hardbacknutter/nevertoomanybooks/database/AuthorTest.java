@@ -101,7 +101,7 @@ class AuthorTest
      */
     @Test
     void renameAuthor()
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException {
 
         final List<Long> bookIdList;
 
@@ -187,7 +187,7 @@ class AuthorTest
 
     @Test
     void renameAuthorWithTocs()
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException {
 
         final List<Long> bookIdList;
         final List<AuthorWork> works;

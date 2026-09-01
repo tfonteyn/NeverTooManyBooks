@@ -349,8 +349,7 @@ public class StripInfoReader
 
     private void insertBook(@NonNull final Context context,
                             @NonNull final Book book)
-            throws StorageException,
-                   DaoWriteException {
+            throws DaoWriteException {
 
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf();
@@ -375,7 +374,7 @@ public class StripInfoReader
                             @NonNull final String externalId,
                             @NonNull final Book book,
                             @NonNull final Book delta)
-            throws StorageException, DaoWriteException {
+            throws DaoWriteException {
         bookRepository.update(context, delta,
                               EnumSet.of(BookDao.BookFlag.RunInBatch,
                                          BookDao.BookFlag.UseUpdateDateIfPresent));

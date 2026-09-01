@@ -93,7 +93,7 @@ class BookDaoImplTest
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     void insertDuplicate()
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException {
 
         final Publisher publisher = Publisher.from("Reprodukt");
         final long p1 = publisherDao.insert(context, publisher, Locale.GERMANY);
