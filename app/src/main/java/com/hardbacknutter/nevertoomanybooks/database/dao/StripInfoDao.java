@@ -54,14 +54,12 @@ public interface StripInfoDao {
             throws DaoWriteException;
 
     /**
-     * Delete all data related to StripInfo from the database.
-     * The StripInfo specific fields are however left in the {@link Book} object.
+     * Delete all data related to StripInfo for the given book.
+     * The StripInfo specific fields are left in the {@link Book} object.
      *
      * @param book to process
-     *
-     * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull Book book);
+    void delete(@NonNull Book book);
 
     /**
      * Get the StripInfo data for the given local book id.

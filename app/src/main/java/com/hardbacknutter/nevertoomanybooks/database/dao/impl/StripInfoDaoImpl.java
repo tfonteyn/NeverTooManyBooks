@@ -125,13 +125,11 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final Book book) {
-        final int rowsAffected;
+    public void delete(@NonNull final Book book) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
             stmt.bindLong(1, book.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        return rowsAffected > 0;
     }
 
     private static final class Sql {
