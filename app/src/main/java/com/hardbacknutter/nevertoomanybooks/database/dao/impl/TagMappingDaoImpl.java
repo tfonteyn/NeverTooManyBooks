@@ -192,17 +192,12 @@ public class TagMappingDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final TagMapping mapping) {
-        final int rowsAffected;
+    public void delete(@NonNull final TagMapping mapping) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, mapping.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        if (rowsAffected > 0) {
-            mapping.setId(0);
-            return true;
-        }
-        return false;
+        mapping.setId(0);
     }
 
     private static final class Sql {

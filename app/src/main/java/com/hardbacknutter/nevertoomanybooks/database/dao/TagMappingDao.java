@@ -74,10 +74,8 @@ public interface TagMappingDao {
      * Delete the given {@link TagMapping}.
      *
      * @param mapping to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull TagMapping mapping);
+    void delete(@NonNull TagMapping mapping);
 
     /**
      * Find a {@link TagMapping} by using the <strong>name</strong> fields
