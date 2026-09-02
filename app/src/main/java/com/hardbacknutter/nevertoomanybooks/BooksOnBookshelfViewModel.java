@@ -1352,9 +1352,8 @@ public class BooksOnBookshelfViewModel
     public void delete(@NonNull final Context context,
                        @NonNull final Tag tag) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            if (tagDao.delete(tag)) {
-                triggerRebuildList.postValue(LiveDataEvent.of(false));
-            }
+            tagDao.delete(tag);
+            triggerRebuildList.postValue(LiveDataEvent.of(false));
         });
     }
 

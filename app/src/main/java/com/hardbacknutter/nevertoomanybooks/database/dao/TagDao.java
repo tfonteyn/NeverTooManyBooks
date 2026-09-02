@@ -113,10 +113,8 @@ public interface TagDao {
      * Delete the given {@link Tag}.
      *
      * @param tag to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull Tag tag);
+    void delete(@NonNull Tag tag);
 
     /**
      * Get the list of all tags, ordered by name.

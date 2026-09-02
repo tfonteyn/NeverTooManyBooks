@@ -309,17 +309,12 @@ public class TagDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final Tag tag) {
-        final int rowsAffected;
+    public void delete(@NonNull final Tag tag) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, tag.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        if (rowsAffected > 0) {
-            tag.setId(0);
-            return true;
-        }
-        return false;
+        tag.setId(0);
     }
 
     @Override
