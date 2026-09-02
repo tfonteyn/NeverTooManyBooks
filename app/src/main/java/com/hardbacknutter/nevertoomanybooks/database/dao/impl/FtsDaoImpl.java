@@ -80,6 +80,7 @@ public class FtsDaoImpl
     /** Name of the temporary table used during {@link #rebuild()}. */
     private static final String TMP_TABLE_FOR_REBUILDING = "books_fts_rebuilding";
     private static final String LIST_DELIMITER = "; ";
+    private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
 
     @NonNull
     private final Supplier<FtsDaoHelper> ftsDaoHelperSupplier;
@@ -210,7 +211,7 @@ public class FtsDaoImpl
             }
         } catch (@NonNull final RuntimeException e) {
             // we're running as a task thread, just clean-up, and let the task handle the exception
-            db.drop(TMP_TABLE_FOR_REBUILDING);
+            db.execSQL(DROP_TABLE_IF_EXISTS_ + TMP_TABLE_FOR_REBUILDING);
             throw e;
 
         } finally {
@@ -222,7 +223,7 @@ public class FtsDaoImpl
         // FTS tables should only be renamed outside of transactions.
         // http://sqlite.1065341.n5.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td11430.html
         // Delete old table and rename the new table
-        db.drop(TBL_FTS_BOOKS.getName());
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + TBL_FTS_BOOKS.getName());
         db.execSQL("ALTER TABLE " + TMP_TABLE_FOR_REBUILDING
                    + " RENAME TO " + TBL_FTS_BOOKS.getName());
 

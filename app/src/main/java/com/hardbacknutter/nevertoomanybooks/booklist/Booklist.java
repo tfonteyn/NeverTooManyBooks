@@ -63,6 +63,7 @@ public class Booklist
     @NonNull
     static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
+    private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
     private static final String SELECT_ = "SELECT ";
     private static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     private static final String UPDATE_ = "UPDATE ";
@@ -844,8 +845,8 @@ public class Booklist
         if (listCursor != null) {
             listCursor.close();
         }
-        db.drop(listTable.getName());
-        db.drop(navTable.getName());
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + listTable.getName());
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + navTable.getName());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "close",

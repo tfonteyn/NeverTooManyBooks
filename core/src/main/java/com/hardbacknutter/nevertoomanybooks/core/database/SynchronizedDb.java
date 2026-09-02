@@ -577,15 +577,6 @@ public class SynchronizedDb
     }
 
     /**
-     * Drop the given table, if it exists.
-     *
-     * @param tableName to drop
-     */
-    public void drop(@NonNull final String tableName) {
-        execSQL(DROP_TABLE_IF_EXISTS_ + tableName);
-    }
-
-    /**
      * Run '<a href="https://www.sqlite.org/pragma.html#pragma_optimize">optimize</a>'
      * on the whole database.
      */

@@ -1314,7 +1314,7 @@ class BooklistBuilder {
                   .forEach(db::execSQL);
         }
         if (triggerHelperTable != null) {
-            db.drop(triggerHelperTable.getName());
+            db.execSQL(DROP_TABLE_IF_EXISTS_ + triggerHelperTable.getName());
         }
     }
 
