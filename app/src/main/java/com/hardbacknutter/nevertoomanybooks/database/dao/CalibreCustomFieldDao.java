@@ -66,11 +66,8 @@ public interface CalibreCustomFieldDao {
      * Delete the given {@link CalibreCustomField}.
      *
      * @param field to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean delete(@NonNull CalibreCustomField field);
+    void delete(@NonNull CalibreCustomField field);
 
     /**
      * Get a list of all the custom fields we have local knowledge of.
@@ -79,6 +76,4 @@ public interface CalibreCustomFieldDao {
      */
     @NonNull
     List<CalibreCustomField> getCustomFields();
-
-
 }

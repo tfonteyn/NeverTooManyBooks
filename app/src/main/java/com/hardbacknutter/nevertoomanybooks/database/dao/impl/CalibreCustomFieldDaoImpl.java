@@ -49,7 +49,6 @@ public class CalibreCustomFieldDaoImpl
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
 
-
     /**
      * Constructor.
      *
@@ -165,17 +164,12 @@ public class CalibreCustomFieldDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final CalibreCustomField calibreCustomField) {
-        final int rowsAffected;
+    public void delete(@NonNull final CalibreCustomField calibreCustomField) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        if (rowsAffected > 0) {
-            calibreCustomField.setId(0);
-            return true;
-        }
-        return false;
+        calibreCustomField.setId(0);
     }
 
     @NonNull
