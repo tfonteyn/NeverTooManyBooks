@@ -209,13 +209,10 @@ public class ShowBookDetailsViewModel
      * <p>
      * <strong>Important:</strong> we're not using {@link #onBookLoaded}.
      * The caller MUST manually update the display and result-data.
-     *
-     * @return {@code false} on any failure
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean deleteLoan() {
+    void deleteLoan() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        return loaneeDao.delete(book);
+        loaneeDao.delete(book);
     }
 
     /**

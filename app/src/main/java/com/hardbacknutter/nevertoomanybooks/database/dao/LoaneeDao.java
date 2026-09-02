@@ -56,10 +56,8 @@ public interface LoaneeDao {
      * Delete a loan.
      *
      * @param book to process
-     *
-     * @return {@code true} for success.
      */
-    boolean delete(@NonNull Book book);
+    void delete(@NonNull Book book);
 
     /**
      * Delete a loan.
@@ -68,10 +66,8 @@ public interface LoaneeDao {
      * If the full Book is available, use {@link #delete(Book)} instead.
      *
      * @param bookId to process
-     *
-     * @return {@code true} for success.
      */
-    boolean delete(@IntRange(from = 1) long bookId);
+    void delete(@IntRange(from = 1) long bookId);
 
     /**
      * Get the name of the loanee for a given book, if any.

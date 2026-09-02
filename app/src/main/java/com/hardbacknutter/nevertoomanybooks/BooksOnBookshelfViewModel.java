@@ -1173,9 +1173,8 @@ public class BooksOnBookshelfViewModel
      * @param bookId Book to return
      */
     public void deleteLoan(@IntRange(from = 1) final long bookId) {
-        if (loaneeDao.delete(bookId)) {
-            onBookLoaneeChanged(bookId, null);
-        }
+        loaneeDao.delete(bookId);
+        onBookLoaneeChanged(bookId, null);
     }
 
     /**

@@ -52,7 +52,8 @@ public class LoaneeDaoImpl
     public boolean setLoanee(@NonNull final Book book) {
         final String loanee = book.getString(DBKey.LOANEE_NAME);
         if (loanee.isEmpty()) {
-            return delete(book);
+            delete(book);
+            return true;
         } else {
             return insertOrUpdate(book.getId(), loanee);
         }
@@ -62,7 +63,8 @@ public class LoaneeDaoImpl
     public boolean setLoanee(@IntRange(from = 1) final long bookId,
                              @Nullable final String loanee) {
         if (loanee == null || loanee.isEmpty()) {
-            return delete(bookId);
+            delete(bookId);
+            return true;
         } else {
             return insertOrUpdate(bookId, loanee);
         }
@@ -86,7 +88,7 @@ public class LoaneeDaoImpl
     }
 
     private void insert(@IntRange(from = 1) final long bookId,
-                           @NonNull final String loanee) {
+                        @NonNull final String loanee) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindLong(1, bookId);
             stmt.bindString(2, loanee);
@@ -95,7 +97,7 @@ public class LoaneeDaoImpl
     }
 
     private void update(@IntRange(from = 1) final long bookId,
-                           @NonNull final String loanee) {
+                        @NonNull final String loanee) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, loanee);
             stmt.bindLong(2, bookId);
@@ -104,22 +106,17 @@ public class LoaneeDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final Book book) {
-        if (delete(book.getId())) {
-            book.remove(DBKey.LOANEE_NAME);
-            return true;
-        }
-        return false;
+    public void delete(@NonNull final Book book) {
+        delete(book.getId());
+        book.remove(DBKey.LOANEE_NAME);
     }
 
     @Override
-    public boolean delete(@IntRange(from = 1) final long bookId) {
-        final int rowsAffected;
+    public void delete(@IntRange(from = 1) final long bookId) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        return rowsAffected > 0;
     }
 
     @Override
