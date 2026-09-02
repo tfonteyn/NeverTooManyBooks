@@ -336,9 +336,7 @@ public interface BookshelfDao {
      *
      * @param context   Current context
      * @param bookshelf to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull Context context,
-                   @NonNull Bookshelf bookshelf);
+    void delete(@NonNull Context context,
+                @NonNull Bookshelf bookshelf);
 }

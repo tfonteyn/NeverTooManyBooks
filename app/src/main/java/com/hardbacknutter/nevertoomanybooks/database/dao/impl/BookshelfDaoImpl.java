@@ -628,13 +628,13 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final Context context,
+    public void delete(@NonNull final Context context,
                           @NonNull final Bookshelf bookshelf) {
         // Sanity check; we cannot delete 0==new; or -1==all_books,
         // and we're not allowed to delete the default shelf
         // The latter is normally prevented in the UI, but paranoia...
         if (bookshelf.getId() <= 0 || bookshelf.getId() == getDefault().getId()) {
-            return false;
+            return;
         }
 
         Synchronizer.SyncLock txLock = null;
@@ -645,20 +645,15 @@ public class BookshelfDaoImpl
 
             purgeNodeStates(bookshelf.getId());
 
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(null);
             }
-            if (rowsAffected > 0) {
-                bookshelf.setId(0);
+            bookshelf.setId(0);
 
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return true;
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-            return false;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

@@ -1337,9 +1337,8 @@ public class BooksOnBookshelfViewModel
     public void delete(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            if (bookshelfDao.delete(context, bookshelf)) {
-                triggerRebuildList.postValue(LiveDataEvent.of(false));
-            }
+            bookshelfDao.delete(context, bookshelf);
+            triggerRebuildList.postValue(LiveDataEvent.of(false));
         });
     }
 
