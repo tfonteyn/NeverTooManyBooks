@@ -66,15 +66,13 @@ public interface SeriesDao
     /**
      * Update the 'complete' status for the given {@link Series}.
      * <p>
-     * If successful, the series object will have been updated with the new status.
+     * The series object is updated with the new status.
      *
      * @param series   to update
      * @param complete Flag indicating the user considers this item to be 'complete'
-     *
-     * @return {@code true} for success.
      */
-    boolean setComplete(@NonNull Series series,
-                        boolean complete);
+    void setComplete(@NonNull Series series,
+                     boolean complete);
 
     /**
      * Remove duplicates. We keep the first occurrence.

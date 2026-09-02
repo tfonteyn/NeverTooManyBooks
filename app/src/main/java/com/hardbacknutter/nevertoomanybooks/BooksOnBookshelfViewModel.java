@@ -47,10 +47,8 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesOutput;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -87,6 +85,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesOutput;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleOutput;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesOutput;
@@ -1031,15 +1031,15 @@ public class BooksOnBookshelfViewModel
     public void setAuthorComplete(@NonNull final Author author,
                                   final boolean complete) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            if (authorDao.setComplete(author, complete)) {
-                Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-                final List<Integer> positions =
-                        booklist.updateAuthorComplete(author.getId(), author.isComplete())
-                                .stream()
-                                .map(BooklistNode::getAdapterPosition)
-                                .collect(Collectors.toList());
-                positionsUpdated.postValue(positions);
-            }
+            authorDao.setComplete(author, complete);
+
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            final List<Integer> positions =
+                    booklist.updateAuthorComplete(author.getId(), author.isComplete())
+                            .stream()
+                            .map(BooklistNode::getAdapterPosition)
+                            .collect(Collectors.toList());
+            positionsUpdated.postValue(positions);
         });
     }
 
@@ -1054,15 +1054,15 @@ public class BooksOnBookshelfViewModel
     public void setSeriesComplete(@NonNull final Series series,
                                   final boolean complete) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            if (seriesDao.setComplete(series, complete)) {
-                Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-                final List<Integer> positions =
-                        booklist.updateSeriesComplete(series.getId(), series.isComplete())
-                                .stream()
-                                .map(BooklistNode::getAdapterPosition)
-                                .collect(Collectors.toList());
-                positionsUpdated.postValue(positions);
-            }
+            seriesDao.setComplete(series, complete);
+
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            final List<Integer> positions =
+                    booklist.updateSeriesComplete(series.getId(), series.isComplete())
+                            .stream()
+                            .map(BooklistNode::getAdapterPosition)
+                            .collect(Collectors.toList());
+            positionsUpdated.postValue(positions);
         });
     }
 
@@ -1306,7 +1306,7 @@ public class BooksOnBookshelfViewModel
      * @param series  to delete
      */
     public void delete(@NonNull final Context context,
-                @NonNull final Series series) {
+                       @NonNull final Series series) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (seriesDao.delete(context, series)) {
                 triggerRebuildList.postValue(LiveDataEvent.of(false));
@@ -1321,7 +1321,7 @@ public class BooksOnBookshelfViewModel
      * @param publisher to delete
      */
     public void delete(@NonNull final Context context,
-                @NonNull final Publisher publisher) {
+                       @NonNull final Publisher publisher) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (publisherDao.delete(context, publisher)) {
                 triggerRebuildList.postValue(LiveDataEvent.of(false));

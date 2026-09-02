@@ -86,15 +86,13 @@ public interface AuthorDao
     /**
      * Update the 'complete' status for the given {@link Author}.
      * <p>
-     * If successful, the author object will have been updated with the new status.
+     * The author object is updated with the new status.
      *
      * @param author   to update
      * @param complete Flag indicating the user considers this item to be 'complete'
-     *
-     * @return {@code true} for success.
      */
-    boolean setComplete(@NonNull Author author,
-                        boolean complete);
+    void setComplete(@NonNull Author author,
+                     boolean complete);
 
     /**
      * Remove duplicates. We keep the first occurrence.

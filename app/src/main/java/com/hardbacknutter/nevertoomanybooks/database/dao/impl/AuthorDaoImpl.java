@@ -352,20 +352,14 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public boolean setComplete(@NonNull final Author author,
-                               final boolean complete) {
-        final int rowsAffected;
+    public void setComplete(@NonNull final Author author,
+                            final boolean complete) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.SET_COMPLETE)) {
             stmt.bindBoolean(1, complete);
             stmt.bindLong(2, author.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-
-        if (rowsAffected > 0) {
-            author.setComplete(complete);
-            return true;
-        }
-        return false;
+        author.setComplete(complete);
     }
 
     /**
