@@ -376,7 +376,7 @@ public class StyleDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final Style style) {
+    public void delete(@NonNull final Style style) {
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -385,20 +385,15 @@ public class StyleDaoImpl
 
             purgeNodeStates(style);
 
-            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
-                rowsAffected = stmt.executeUpdateDelete(null);
+                stmt.executeUpdateDelete(null);
             }
-            if (rowsAffected > 0) {
-                style.setId(0);
+            style.setId(0);
 
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
-                }
-                return true;
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
-            return false;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

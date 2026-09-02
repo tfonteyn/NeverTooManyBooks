@@ -333,11 +333,9 @@ public class StylesHelper {
      *
      * @param style to delete
      *
-     * @return {@code true} on success
-     *
-     * @throws IllegalStateException if the UUID is missing
+     * @throws IllegalStateException (debug) if the UUID is missing or the style was builtin
      */
-    public boolean delete(@NonNull final Style style) {
+    public void delete(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             if (style.getUuid().isEmpty()) {
                 throw new IllegalStateException(ERROR_MISSING_UUID);
@@ -347,14 +345,11 @@ public class StylesHelper {
             }
         }
 
-        if (styleDaoSupplier.get().delete(style)) {
-            // Sanity check, it should always be a Style.Type.User
-            if (style.getType() == Style.Type.User) {
-                cache.remove(style.getUuid());
-            }
-            return true;
+        styleDaoSupplier.get().delete(style);
+        // Sanity check, it should always be a Style.Type.User
+        if (style.getType() == Style.Type.User) {
+            cache.remove(style.getUuid());
         }
-        return false;
     }
 
     /**

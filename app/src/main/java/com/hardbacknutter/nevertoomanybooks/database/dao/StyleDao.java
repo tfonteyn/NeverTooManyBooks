@@ -110,11 +110,8 @@ public interface StyleDao {
      * Delete the given {@link Style}.
      *
      * @param style to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean delete(@NonNull Style style);
+    void delete(@NonNull Style style);
 
     /**
      * Purge book list node state data for the given {@link Style}.
