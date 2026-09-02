@@ -41,19 +41,13 @@ public interface CoverCacheDao {
 
     /**
      * Delete the cached covers associated with the passed {@link Book} uuid.
-     * <p>
-     * <strong>All Exceptions are ignored, and {@code false} is returned instead.</strong>
      *
      * @param uuid of the book to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull String uuid);
+    void delete(@NonNull String uuid);
 
     /**
      * delete all rows.
-     * <p>
-     * <strong>All Exceptions are ignored.</strong>
      **/
     void deleteAll();
 
