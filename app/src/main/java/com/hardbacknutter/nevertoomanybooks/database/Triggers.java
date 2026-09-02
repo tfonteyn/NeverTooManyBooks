@@ -43,19 +43,27 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
-/** @noinspection CheckStyle */
 final class Triggers {
-    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS";
-    private static final String CREATE_TRIGGER_ = "CREATE TRIGGER ";
 
     private static final String AFTER_DELETE_ON_ = "AFTER DELETE ON ";
     private static final String AFTER_UPDATE_ON_ = "AFTER UPDATE ON ";
     private static final String AFTER_INSERT_ON_ = "AFTER INSERT ON ";
     private static final String AFTER_UPDATE_OF_ = "AFTER UPDATE OF ";
 
+    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS";
+    private static final String CREATE_TRIGGER_ = "CREATE TRIGGER ";
+
+    private static final String _FOR_EACH_ROW = " FOR EACH ROW";
+    private static final String _BEGIN_ = " BEGIN ";
+    private static final String _END = " END";
+    private static final String _WHERE_ = " WHERE ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _IN_ = " IN ";
+
     private static final String UPDATE_BOOKS_SET =
             "UPDATE " + TBL_BOOKS.getName()
             + " SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
+    private static final String SELECT_ = "SELECT ";
 
     private Triggers() {
     }
@@ -116,29 +124,29 @@ final class Triggers {
          *
          * Update the books last-update-date.
          *
-         * dev note: "after_update_on" is missing a "_" at the end!
+         * dev note: the name "after_update_on" is missing a "_" at the end!
          */
         name = "after_update_on" + TBL_AUTHORS.getName();
         body = AFTER_UPDATE_ON_ + TBL_AUTHORS.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + UPDATE_BOOKS_SET
-               + " WHERE " + DBKey.PK_ID + " IN "
+               + _WHERE_ + DBKey.PK_ID + _IN_
                // actual books by this Author
-               + "(SELECT " + DBKey.FK_BOOK
-               + " FROM " + TBL_BOOK_AUTHOR.getName()
-               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
+               + '(' + SELECT_ + DBKey.FK_BOOK
+               + _FROM_ + TBL_BOOK_AUTHOR.getName()
+               + _WHERE_ + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
 
                + UPDATE_BOOKS_SET
-               + " WHERE " + DBKey.PK_ID + " IN "
+               + _WHERE_ + DBKey.PK_ID + _IN_
                // books with entries in anthologies by this Author
-               + "(SELECT " + DBKey.FK_BOOK
-               + " FROM " + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
-               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
+               + '(' + SELECT_ + DBKey.FK_BOOK
+               + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
+               + _WHERE_ + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
 
-               + " END";
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
 
@@ -147,19 +155,19 @@ final class Triggers {
          *
          * Update the books last-update-date.
          *
-         * dev note: "after_update_on" is missing a "_" at the end!
+         * dev note: the name "after_update_on" is missing a "_" at the end!
          */
         name = "after_update_on" + TBL_SERIES.getName();
         body = AFTER_UPDATE_ON_ + TBL_SERIES.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + UPDATE_BOOKS_SET
-               + " WHERE " + DBKey.PK_ID + " IN "
-               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
-               + " WHERE " + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");"
-               + " END";
+               + _WHERE_ + DBKey.PK_ID + _IN_
+               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_SERIES.getName()
+               + _WHERE_ + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");"
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
 
@@ -168,39 +176,40 @@ final class Triggers {
          *
          * Update the books last-update-date.
          *
-         * dev note: "after_update_on" is missing a "_" at the end!
+         * dev note: the name "after_update_on" is missing a "_" at the end!
          */
         name = "after_update_on" + TBL_PUBLISHERS.getName();
         body = AFTER_UPDATE_ON_ + TBL_PUBLISHERS.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + UPDATE_BOOKS_SET
-               + " WHERE " + DBKey.PK_ID + " IN "
-               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_PUBLISHER.getName()
-               + " WHERE " + DBKey.FK_PUBLISHER + "=OLD." + DBKey.PK_ID + ");"
-               + " END";
+               + _WHERE_ + DBKey.PK_ID + _IN_
+               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_PUBLISHER.getName()
+               + _WHERE_ + DBKey.FK_PUBLISHER + "=OLD." + DBKey.PK_ID + ");"
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+
 
         /*
          * Update a {@link Tag}
          *
          * Update the books last-update-date.
          *
-         * dev note: "after_update_on" is missing a "_" at the end!
+         * dev note: the name "after_update_on" is missing a "_" at the end!
          */
         name = "after_update_on" + TBL_TAGS.getName();
         body = AFTER_UPDATE_ON_ + TBL_TAGS.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + UPDATE_BOOKS_SET
-               + " WHERE " + DBKey.PK_ID + " IN "
-               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_TAG.getName()
-               + " WHERE " + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
-               + " END";
+               + _WHERE_ + DBKey.PK_ID + _IN_
+               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_TAG.getName()
+               + _WHERE_ + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
 
@@ -211,13 +220,13 @@ final class Triggers {
          */
         name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
         body = AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + UPDATE_BOOKS_SET
-               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
-               + " END";
+               + _WHERE_ + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
         /*
@@ -229,13 +238,13 @@ final class Triggers {
          */
         name = "after_update_on_" + TBL_BOOK_LOANEE.getName();
         body = AFTER_UPDATE_ON_ + TBL_BOOK_LOANEE.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + UPDATE_BOOKS_SET
-               + "  WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
-               + " END";
+               + _WHERE_ + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
 
@@ -249,18 +258,18 @@ final class Triggers {
          */
         name = "after_delete_on_" + TBL_BOOKS.getName();
         body = AFTER_DELETE_ON_ + TBL_BOOKS.getName()
-               + " FOR EACH ROW"
-               + " BEGIN "
+               + _FOR_EACH_ROW
+               + _BEGIN_
                + " DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + "  WHERE " + DBKey.FTS.PK_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
+               + _WHERE_ + DBKey.FTS.PK_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
                // we must use IGNORE for when we do a sync. i.e.
                // the TBL_DELETED_BOOKS contains a UUID which we imported from another device,
                // and we're syncing the delete operation on the local device.
                + " INSERT OR IGNORE INTO " + TBL_DELETED_BOOKS.getName()
                + " (" + DBKey.BOOK_UUID + ") VALUES(OLD." + DBKey.BOOK_UUID + ");"
-               + " END";
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
         /*
@@ -268,14 +277,14 @@ final class Triggers {
          */
         name = "after_update_of_" + DBKey.ISBN + "_on_" + TBL_BOOKS.getName();
         body = AFTER_UPDATE_OF_ + DBKey.ISBN + " ON " + TBL_BOOKS.getName()
-               + " FOR EACH ROW"
+               + _FOR_EACH_ROW
                + " WHEN NEW." + DBKey.ISBN + " <> OLD." + DBKey.ISBN
-               + " BEGIN "
+               + _BEGIN_
                + "  DELETE FROM " + TBL_BOOK_IDENTIFIER.getName()
-               + "  WHERE " + DBKey.FK_BOOK + "=NEW." + DBKey.PK_ID + ";"
-               + " END";
+               + _WHERE_ + DBKey.FK_BOOK + "=NEW." + DBKey.PK_ID + ";"
+               + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
     }
 
@@ -294,13 +303,13 @@ final class Triggers {
 
         final String name = "after_delete_on_" + linkTable.getName();
         final String body = AFTER_DELETE_ON_ + linkTable.getName()
-                            + " FOR EACH ROW"
-                            + " BEGIN "
+                            + _FOR_EACH_ROW
+                            + _BEGIN_
                             + UPDATE_BOOKS_SET
-                            + "  WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
-                            + " END";
+                            + _WHERE_ + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
+                            + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
     }
 }
