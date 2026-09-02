@@ -123,11 +123,8 @@ public interface IdentifierDao {
      * Delete the given {@link Identifier}.
      *
      * @param identifier to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull Identifier identifier);
-
+    void delete(@NonNull Identifier identifier);
 
     /**
      * Re-insert, or update the Identifiers which were set up

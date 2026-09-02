@@ -382,17 +382,12 @@ public class IdentifierDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final Identifier identifier) {
-        final int rowsAffected;
+    public void delete(@NonNull final Identifier identifier) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, identifier.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        if (rowsAffected > 0) {
-            identifier.setId(0);
-            return true;
-        }
-        return false;
+        identifier.setId(0);
     }
 
     private static final class Sql {
