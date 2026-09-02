@@ -31,8 +31,6 @@ public interface PublicationFrequencyDao {
      * Set or delete the frequency.
      *
      * @param series to process
-     *
-     * @return {@code true} for success.
      */
-    boolean setFrequency(@NonNull Series series);
+    void setFrequency(@NonNull Series series);
 }

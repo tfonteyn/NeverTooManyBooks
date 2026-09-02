@@ -26,8 +26,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Optional;
-
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -54,35 +52,39 @@ public class PublicationFrequencyDaoImpl
     }
 
     @Override
-    public boolean setFrequency(@NonNull final Series series) {
+    public void setFrequency(@NonNull final Series series) {
         @Nullable
         final PublicationFrequency frequency = series.getPublicationFrequency();
 
-        if (frequency == null) {
-            return delete(series);
+        // Do NOT store when Unknown, just delete it
+        if (frequency == null || frequency.getType() == PublicationFrequency.Type.Unknown) {
+            deleteFrom(series);
+            return;
         }
 
-        // Do NOT store when unknown, just delete it
-        // This is paranoia, as the series should in theory never contain an unknown value
-        if (frequency.getType() == PublicationFrequency.Type.Unknown) {
-            return delete(series);
-        }
-
-        return insertOrUpdate(series.getId(), frequency);
+        insertOrUpdate(series.getId(), frequency);
     }
 
-    private boolean insertOrUpdate(@IntRange(from = 1) final long seriesId,
-                                   @NonNull final PublicationFrequency frequency) {
-        final Optional<PublicationFrequency> current = findBySeriesId(seriesId);
-        if (current.isEmpty()) {
+    private void insertOrUpdate(@IntRange(from = 1) final long seriesId,
+                                @NonNull final PublicationFrequency frequency) {
+        final PublicationFrequency current = findBySeriesId(seriesId);
+        if (current == null) {
             insert(seriesId, frequency);
-            return true;
-
-        } else if (!frequency.equals(current.get())) {
+        } else if (!frequency.equals(current)) {
             update(seriesId, frequency);
-            return true;
         }
-        return false;
+    }
+
+    @Nullable
+    private PublicationFrequency findBySeriesId(@IntRange(from = 1) final long seriesId) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_SERIES_ID,
+                                         new String[]{String.valueOf(seriesId)})) {
+            final CursorRow rowData = new CursorRow(cursor);
+            if (cursor.moveToFirst()) {
+                return new PublicationFrequency(rowData);
+            }
+        }
+        return null;
     }
 
     private void insert(@IntRange(from = 1) final long seriesId,
@@ -108,33 +110,12 @@ public class PublicationFrequencyDaoImpl
         }
     }
 
-    @NonNull
-    private Optional<PublicationFrequency> findBySeriesId(@IntRange(from = 1) final long seriesId) {
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_SERIES_ID,
-                                         new String[]{String.valueOf(seriesId)})) {
-            final CursorRow rowData = new CursorRow(cursor);
-            if (cursor.moveToFirst()) {
-                return Optional.of(new PublicationFrequency(rowData));
-            }
-        }
-        return Optional.empty();
-    }
-
-    private boolean delete(@NonNull final Series series) {
-        if (delete(series.getId())) {
-            series.setPublicationFrequency(null);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean delete(@IntRange(from = 1) final long seriesId) {
-        final int rowsAffected;
+    private void deleteFrom(@NonNull final Series series) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_SERIES_ID)) {
-            stmt.bindLong(1, seriesId);
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.bindLong(1, series.getId());
+            stmt.executeUpdateDelete(null);
         }
-        return rowsAffected > 0;
+        series.setPublicationFrequency(null);
     }
 
     private static final class Sql {
