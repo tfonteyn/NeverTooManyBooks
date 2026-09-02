@@ -167,23 +167,6 @@ public class SynchronizedDb
     }
 
     /**
-     * Open the database for reading. {@see SqLiteOpenHelper#getReadableDatabase()}
-     *
-     * @return database
-     *
-     * @throws SQLiteException if the database cannot be opened for reading
-     */
-    @NonNull
-    private SQLiteDatabase getReadableDatabase() {
-        final SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
-        // only set when bigger than the default
-        if (preparedStmtCacheSize > DEFAULT_STMT_CACHE_SIZE) {
-            db.setMaxSqlCacheSize(preparedStmtCacheSize);
-        }
-        return db;
-    }
-
-    /**
      * Open the database for writing. {@see SqLiteOpenHelper#getWritableDatabase()}
      *
      * @return database
@@ -240,9 +223,7 @@ public class SynchronizedDb
 
         try {
             // Drop the table in case there is an orphaned instance with the same name.
-            if (tableExists(table)) {
-                sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS_ + table.getName());
-            }
+            sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS_ + table.getName());
             table.create(sqLiteDatabase, withDomainConstraints);
             table.createIndices(sqLiteDatabase, collationCaseSensitive);
         } finally {
