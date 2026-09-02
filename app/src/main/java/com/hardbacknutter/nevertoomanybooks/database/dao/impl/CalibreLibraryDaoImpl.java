@@ -241,17 +241,12 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final CalibreLibrary library) {
-        final int rowsAffected;
+    public void delete(@NonNull final CalibreLibrary library) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
-            rowsAffected = stmt.executeUpdateDelete(null);
+            stmt.executeUpdateDelete(null);
         }
-        if (rowsAffected > 0) {
-            library.setId(0);
-            return true;
-        }
-        return false;
+        library.setId(0);
     }
 
     /**

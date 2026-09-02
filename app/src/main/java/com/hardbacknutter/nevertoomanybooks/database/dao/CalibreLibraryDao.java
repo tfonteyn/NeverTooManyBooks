@@ -124,11 +124,8 @@ public interface CalibreLibraryDao {
      * Delete the given {@link CalibreLibrary}.
      *
      * @param library to delete
-     *
-     * @return {@code true} if a row was deleted
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean delete(@NonNull CalibreLibrary library);
+    void delete(@NonNull CalibreLibrary library);
 
     /**
      * Update the given {@link CalibreVirtualLibrary}.
