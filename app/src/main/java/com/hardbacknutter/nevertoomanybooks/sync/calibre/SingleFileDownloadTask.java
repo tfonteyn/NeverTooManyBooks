@@ -31,7 +31,6 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -94,10 +93,8 @@ class SingleFileDownloadTask
     protected Uri doWork()
             throws IOException,
                    StorageException,
-                   JSONException,
-                   DaoWriteException {
+                   JSONException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));

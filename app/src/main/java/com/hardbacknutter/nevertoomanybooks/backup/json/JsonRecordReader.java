@@ -447,7 +447,7 @@ public class JsonRecordReader
     private void readCalibreLibraries(@NonNull final Context context,
                                       @NonNull final JSONObject root,
                                       @NonNull final Style defaultStyle)
-            throws JSONException, DaoWriteException {
+            throws JSONException {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
         if (jsonRoot != null) {
@@ -461,8 +461,7 @@ public class JsonRecordReader
 
     private void processCalibreLibrary(@NonNull final Context context,
                                        @NonNull final CalibreLibraryDao dao,
-                                       @NonNull final CalibreLibrary library)
-            throws DaoWriteException {
+                                       @NonNull final CalibreLibrary library) {
         dao.fixId(context, library);
         if (library.getId() > 0) {
             // The library already exists

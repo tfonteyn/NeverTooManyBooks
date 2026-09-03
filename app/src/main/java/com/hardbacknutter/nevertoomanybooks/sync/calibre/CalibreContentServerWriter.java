@@ -182,7 +182,7 @@ public class CalibreContentServerWriter
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
                 calibreLibraryDao.update(library);
             }
-        } catch (@NonNull final JSONException | DaoWriteException e) {
+        } catch (@NonNull final JSONException e) {
             throw new DataWriterException(e);
         }
         return results;

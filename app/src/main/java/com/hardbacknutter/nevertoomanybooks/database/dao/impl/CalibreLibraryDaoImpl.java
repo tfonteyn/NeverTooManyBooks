@@ -32,7 +32,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -161,7 +160,7 @@ public class CalibreLibraryDaoImpl
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final CalibreLibrary library)
-            throws DaoWriteException {
+            throws SQLException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -191,7 +190,7 @@ public class CalibreLibraryDaoImpl
 
         } catch (@NonNull final SQLException e) {
             library.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
 
         } finally {
             if (txLock != null) {
@@ -202,7 +201,7 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public void update(@NonNull final CalibreLibrary library)
-            throws DaoWriteException {
+            throws SQLException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -230,9 +229,6 @@ public class CalibreLibraryDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -241,7 +237,8 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    public void delete(@NonNull final CalibreLibrary library) {
+    public void delete(@NonNull final CalibreLibrary library)
+            throws SQLException {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
             stmt.executeUpdateDelete(null);
@@ -289,7 +286,7 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public void update(@NonNull final CalibreVirtualLibrary library)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_VIRTUAL_LIBRARY)) {
             int c = 0;
@@ -300,9 +297,6 @@ public class CalibreLibraryDaoImpl
 
             stmt.bindLong(++c, library.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + library);
-
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 

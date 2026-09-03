@@ -79,7 +79,6 @@ import com.burgstaller.okhttp.digest.Credentials;
 import com.burgstaller.okhttp.digest.DigestAuthenticator;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
@@ -674,15 +673,12 @@ public final class CalibreContentServer
      * Populates {@link #defaultLibrary}, {@link #libraries}
      * and the {@link #calibreExtensionInstalled} flag.
      *
-     * @throws IOException       on generic/other IO failures
-     * @throws JSONException     upon any parsing error
-     * @throws DaoWriteException on failure to update the database
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     @WorkerThread
     public void readMetaData()
-            throws IOException,
-                   JSONException,
-                   DaoWriteException {
+            throws IOException, JSONException {
 
         libraries.clear();
         defaultLibrary = null;
@@ -954,8 +950,8 @@ public final class CalibreContentServer
      *
      * @return see above
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -1005,8 +1001,8 @@ public final class CalibreContentServer
      *
      * @return books matching the specified search query.
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -1362,13 +1358,13 @@ public final class CalibreContentServer
      *
      * @return Calibre book object
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     @WorkerThread
     @NonNull
     private JSONObject getBook(@NonNull final String libraryStringId,
-                              final int calibreId)
+                               final int calibreId)
             throws IOException, JSONException {
 
         @SuppressLint("DefaultLocale")

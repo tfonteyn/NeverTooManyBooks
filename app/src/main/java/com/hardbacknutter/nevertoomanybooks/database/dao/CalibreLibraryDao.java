@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -103,22 +102,16 @@ public interface CalibreLibraryDao {
      * @param library object to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
-    long insert(@NonNull CalibreLibrary library)
-            throws DaoWriteException;
+    long insert(@NonNull CalibreLibrary library);
 
     /**
      * Update the given {@link CalibreLibrary}.
      *
      * @param library to update
-     *
-     * @throws DaoWriteException on failure
      */
-    void update(@NonNull CalibreLibrary library)
-            throws DaoWriteException;
+    void update(@NonNull CalibreLibrary library);
 
     /**
      * Delete the given {@link CalibreLibrary}.
@@ -131,11 +124,8 @@ public interface CalibreLibraryDao {
      * Update the given {@link CalibreVirtualLibrary}.
      *
      * @param library to update
-     *
-     * @throws DaoWriteException on failure
      */
-    void update(@NonNull CalibreVirtualLibrary library)
-            throws DaoWriteException;
+    void update(@NonNull CalibreVirtualLibrary library);
 
     /**
      * Check that a book with the passed Calibre UUID exists and return the id of the book, or zero.

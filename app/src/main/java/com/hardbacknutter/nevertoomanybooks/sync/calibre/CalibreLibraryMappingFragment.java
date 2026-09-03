@@ -303,14 +303,9 @@ public class CalibreLibraryMappingFragment
             holder.vb.bookshelf.setAdapter(bookshelfAdapter);
             holder.vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
                 final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
-                try {
-                    //noinspection DataFlowIssue
-                    vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
-                    holder.vb.bookshelf.setText(bookshelf.getName());
-                } catch (@NonNull final DaoWriteException e) {
-                    //noinspection DataFlowIssue
-                    ErrorDialog.show(getContext(), TAG, e);
-                }
+                //noinspection DataFlowIssue
+                vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
+                holder.vb.bookshelf.setText(bookshelf.getName());
             });
 
             holder.vb.btnCreate.setOnClickListener(btn -> {

@@ -205,9 +205,7 @@ public class CalibreContentServerReader
     }
 
     private void readLibraryMetaData()
-            throws IOException,
-                   JSONException,
-                   DaoWriteException {
+            throws IOException, JSONException {
 
         server.readMetaData();
         if (library == null) {
@@ -223,7 +221,7 @@ public class CalibreContentServerReader
 
         try {
             readLibraryMetaData();
-        } catch (@NonNull final JSONException | DaoWriteException e) {
+        } catch (@NonNull final JSONException e) {
             throw new DataReaderException(e);
         }
 
@@ -344,7 +342,7 @@ public class CalibreContentServerReader
             library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
             calibreLibraryDao.update(library);
 
-        } catch (@NonNull final JSONException | DaoWriteException e) {
+        } catch (@NonNull final JSONException e) {
             throw new DataReaderException(e);
         }
 
