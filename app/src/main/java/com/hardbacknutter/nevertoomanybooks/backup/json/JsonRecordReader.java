@@ -480,7 +480,7 @@ public class JsonRecordReader
     }
 
     private void readCalibreCustomFields(@NonNull final JSONObject root)
-            throws JSONException, DaoWriteException {
+            throws JSONException {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreCustomFields.getName());
         if (jsonRoot != null) {
@@ -493,8 +493,7 @@ public class JsonRecordReader
     }
 
     private void processCalibreCustomField(@NonNull final CalibreCustomFieldDao dao,
-                                           @NonNull final CalibreCustomField field)
-            throws DaoWriteException {
+                                           @NonNull final CalibreCustomField field) {
         dao.fixId(field);
         if (field.getId() > 0) {
             // The field already exists

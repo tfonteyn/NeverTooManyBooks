@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 
 public interface CalibreCustomFieldDao {
@@ -45,22 +44,16 @@ public interface CalibreCustomFieldDao {
      * @param field object to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
-    long insert(@NonNull CalibreCustomField field)
-            throws DaoWriteException;
+    long insert(@NonNull CalibreCustomField field);
 
     /**
      * Update the given {@link CalibreCustomField}.
      *
      * @param field to update
-     *
-     * @throws DaoWriteException on failure
      */
-    void update(@NonNull CalibreCustomField field)
-            throws DaoWriteException;
+    void update(@NonNull CalibreCustomField field);
 
     /**
      * Delete the given {@link CalibreCustomField}.
