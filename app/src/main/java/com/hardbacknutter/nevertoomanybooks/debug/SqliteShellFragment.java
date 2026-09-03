@@ -221,7 +221,7 @@ public class SqliteShellFragment
 
                 try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                     // throws SQLException
-                    stmt.execute();
+                    stmt.execute(null);
                 }
                 final String result = getString(R.string.action_done);
                 vb.output.loadDataWithBaseURL(null, result, TEXT_HTML, UTF_8, null);

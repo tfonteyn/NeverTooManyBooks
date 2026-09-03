@@ -105,7 +105,7 @@ public class SynchronizedStatement
     }
 
     @Override
-    public void execute()
+    public void execute(@Nullable final Supplier<String> errMsgSupplier)
             throws SQLException {
         final Synchronizer.SyncLock txLock;
         if (readOnly) {
@@ -114,7 +114,7 @@ public class SynchronizedStatement
             txLock = synchronizer.getExclusiveLock();
         }
         try {
-            super.execute();
+            super.execute(errMsgSupplier);
         } finally {
             txLock.unlock();
         }

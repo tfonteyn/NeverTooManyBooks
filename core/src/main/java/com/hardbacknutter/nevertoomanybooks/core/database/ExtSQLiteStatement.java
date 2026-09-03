@@ -260,15 +260,18 @@ public class ExtSQLiteStatement
      * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
      * CREATE / DROP table, view, trigger, index etc.
      *
+     * @param errMsgSupplier error message supplier for logging
+     *
      * @throws SQLException on unexpected failures
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    protected void execute()
+    protected void execute(@Nullable final Supplier<String> errMsgSupplier)
             throws SQLException {
         try {
             statement.execute();
         } catch (@NonNull final SQLException e) {
-            LoggerFactory.getLogger().e(TAG, e, statement);
+            final String errMsg = errMsgSupplier != null ? errMsgSupplier.get() : null;
+            LoggerFactory.getLogger().e(TAG, e, errMsg, statement);
             throw e;
         }
     }

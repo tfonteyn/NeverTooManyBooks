@@ -302,7 +302,7 @@ public class FtsDaoImpl
             stmt.bindLong(11, book.getId());
 
             // throws SQLException
-            stmt.execute();
+            stmt.execute(null);
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -464,7 +464,7 @@ public class FtsDaoImpl
                 stmt.bindLong(11, bookId);
 
                 // throws SQLException
-                stmt.execute();
+                stmt.execute(null);
             }
         }
     }
