@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -183,107 +184,98 @@ public class SynchronizedDb
         return db;
     }
 
-    @Override
-    public void close() {
-        sqLiteDatabase.close();
+    /**
+     * Wrapper.
+     *
+     * @return {@code true} if the current thread is in a transaction.
+     */
+    public boolean inTransaction() {
+        return sqLiteDatabase.inTransaction();
     }
 
     /**
-     * Locking-aware recreating {@link TableDefinition.TableType#Temporary} tables.
-     * <p>
-     * If the table has no references to it, this method can also
-     * be used on {@link TableDefinition.TableType#Standard}.
-     * <p>
-     * Drop this table (if it exists) and (re)create it including its indexes.
+     * Locking-aware wrapper for underlying database method.
      *
-     * @param table                 to recreate
-     * @param withDomainConstraints Indicates if fields should have constraints applied
+     * @param isUpdate Indicates if updates will be done in TX
      *
-     * @throws TransactionException if paranoia was justified
+     * @return the lock
+     *
+     * @throws TransactionException when there is already an active transaction
      */
-    public void recreate(@NonNull final TableDefinition table,
-                         final boolean withDomainConstraints)
+    @NonNull
+    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate)
             throws TransactionException {
-
-        // We're being paranoid here... we should always be called in a transaction,
-        // which means we should not bother with LOCK_EXCLUSIVE.
-        // But having the logic in place because: 1) future-proof + 2) developer boo-boo,
-        if (!sqLiteDatabase.inTransaction()) {
-            throw new TransactionException(TransactionException.REQUIRED);
+        final Synchronizer.SyncLock txLock;
+        if (isUpdate) {
+            txLock = synchronizer.getExclusiveLock();
+        } else {
+            txLock = synchronizer.getSharedLock();
         }
 
-        Synchronizer.SyncLock txLock = null;
-        if (currentTxLock != null) {
-            if (currentTxLock.getType() != Synchronizer.LockType.Exclusive) {
-                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
+        if (currentTxLock == null) {
+            // We have the lock, but if the real beginTransaction() throws an exception,
+            // we need to release the lock.
+            //noinspection CheckStyle
+            try {
+                sqLiteDatabase.beginTransaction();
+            } catch (@NonNull final RuntimeException e) {
+                txLock.unlock();
+                throw e;
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            // If we have a lock, and there is currently a TX active...die
+            // Note: because we get a lock, two 'isUpdate' transactions will
+            // block, this is only likely to happen with two TXs on the current thread
+            // or two non-update TXs on different thread.
+            throw new TransactionException(ERROR_TX_ALREADY_STARTED);
+        }
+
+        currentTxLock = txLock;
+        return txLock;
+    }
+
+    /**
+     * Wrapper for underlying database method.
+     */
+    public void setTransactionSuccessful() {
+        // We could pass in the lock and do the same checks as we do in #endTransaction
+        sqLiteDatabase.setTransactionSuccessful();
+    }
+
+    /**
+     * Locking-aware wrapper for underlying database method.
+     * <p>
+     * <strong>MUST</strong> be called from a 'finally' block.
+     *
+     * @param txLock Lock returned from {@link #beginTransaction(boolean)}.
+     *
+     * @throws TransactionException on any failure
+     */
+    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock)
+            throws TransactionException {
+        if (txLock == null) {
+            throw new TransactionException(ERROR_TX_LOCK_WAS_NULL);
+        }
+        if (currentTxLock == null) {
+            throw new TransactionException(ERROR_TX_NEVER_STARTED);
+        }
+        if (!currentTxLock.equals(txLock)) {
+            throw new TransactionException(ERROR_TX_WRONG_LOCK);
         }
 
         try {
-            // Drop the table in case there is an orphaned instance with the same name.
-            sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS_ + table.getName());
-            table.create(sqLiteDatabase, withDomainConstraints);
-            table.createIndices(sqLiteDatabase, collationCaseSensitive);
+            sqLiteDatabase.endTransaction();
         } finally {
-            if (txLock != null) {
-                txLock.unlock();
-            }
+            // Always clear the current one before unlocking so another thread does not
+            // see the old lock when it gets the lock
+            currentTxLock = null;
+            txLock.unlock();
         }
     }
 
-    /**
-     * Check if the given table exists.
-     * <p>
-     * Both the table name and the {@link TableDefinition.TableType} are used for this check.
-     *
-     * @param tableDefinition to check
-     *
-     * @return flag
-     *
-     * @see #tableExists(String)
-     */
-    @SuppressWarnings("WeakerAccess")
-    public boolean tableExists(@NonNull final TableDefinition tableDefinition) {
-        final String sql;
-        if (tableDefinition.getType() == TableDefinition.TableType.Standard) {
-            sql = TABLE_EXISTS_SQL_STANDARD;
-        } else {
-            sql = TABLE_EXISTS_SQL_TEMP;
-        }
-
-        try (SynchronizedStatement stmt = compileStatement(sql)) {
-            stmt.bindString(1, tableDefinition.getName());
-            return stmt.simpleQueryForLongOrZero() > 0;
-        }
-    }
-
-    /**
-     * Check if the given table exists.
-     * <p>
-     * The name is checked in both {@link TableDefinition.TableType#Temporary}
-     * and {@link TableDefinition.TableType#Standard} table-spaces.
-     *
-     * @param name to check
-     *
-     * @return flag
-     *
-     * @see #tableExists(TableDefinition)
-     */
-    @SuppressWarnings("WeakerAccess")
-    public boolean tableExists(@NonNull final String name) {
-        for (final String sql : List.of(TABLE_EXISTS_SQL_TEMP,
-                                        TABLE_EXISTS_SQL_STANDARD)) {
-            try (SynchronizedStatement stmt = compileStatement(sql)) {
-                stmt.bindString(1, name);
-                if (stmt.simpleQueryForLongOrZero() > 0) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+    @Override
+    public void close() {
+        sqLiteDatabase.close();
     }
 
     /**
@@ -315,6 +307,7 @@ public class SynchronizedDb
      *
      * @see SQLiteDatabase#insertWithOnConflict(String, String, ContentValues, int)
      */
+    @Discouraged(message = "Use compileStatement instead")
     @IntRange(from = -1)
     public long insert(@NonNull final String table,
                        @NonNull final ContentValues values)
@@ -359,6 +352,7 @@ public class SynchronizedDb
      * @throws SQLException         on any failure
      * @throws TransactionException when currently inside a shared lock
      */
+    @Discouraged(message = "Use compileStatement instead")
     @IntRange(from = 0)
     public int update(@NonNull final String table,
                       @NonNull final ContentValues values,
@@ -560,6 +554,103 @@ public class SynchronizedDb
     }
 
     /**
+     * Check if the given table exists.
+     * <p>
+     * Both the table name and the {@link TableDefinition.TableType} are used for this check.
+     *
+     * @param tableDefinition to check
+     *
+     * @return flag
+     *
+     * @see #tableExists(String)
+     */
+    public boolean tableExists(@NonNull final TableDefinition tableDefinition) {
+        final String sql;
+        if (tableDefinition.getType() == TableDefinition.TableType.Standard) {
+            sql = TABLE_EXISTS_SQL_STANDARD;
+        } else {
+            sql = TABLE_EXISTS_SQL_TEMP;
+        }
+
+        try (SynchronizedStatement stmt = compileStatement(sql)) {
+            stmt.bindString(1, tableDefinition.getName());
+            return stmt.simpleQueryForLongOrZero() > 0;
+        }
+    }
+
+    /**
+     * Check if the given table exists.
+     * <p>
+     * The name is checked in both {@link TableDefinition.TableType#Temporary}
+     * and {@link TableDefinition.TableType#Standard} table-spaces.
+     *
+     * @param name to check
+     *
+     * @return flag
+     *
+     * @see #tableExists(TableDefinition)
+     */
+    public boolean tableExists(@NonNull final String name) {
+        for (final String sql : List.of(TABLE_EXISTS_SQL_TEMP,
+                                        TABLE_EXISTS_SQL_STANDARD)) {
+            try (SynchronizedStatement stmt = compileStatement(sql)) {
+                stmt.bindString(1, name);
+                if (stmt.simpleQueryForLongOrZero() > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Locking-aware recreating {@link TableDefinition.TableType#Temporary} tables.
+     * <p>
+     * If the table has no references to it, this method can also
+     * be used on {@link TableDefinition.TableType#Standard}.
+     * <p>
+     * Drop this table (if it exists) and (re)create it including its indexes.
+     *
+     * @param table                 to recreate
+     * @param withDomainConstraints Indicates if fields should have constraints applied
+     *
+     * @throws TransactionException if paranoia was justified
+     */
+    public void recreate(@NonNull final TableDefinition table,
+                         final boolean withDomainConstraints)
+            throws TransactionException {
+
+        // We're being paranoid here... we should always be called in a transaction,
+        // which means we should not bother with LOCK_EXCLUSIVE.
+        // But having the logic in place because: 1) future-proof + 2) developer boo-boo,
+        if (!sqLiteDatabase.inTransaction()) {
+            throw new TransactionException(TransactionException.REQUIRED);
+        }
+
+        Synchronizer.SyncLock txLock = null;
+        if (currentTxLock != null) {
+            if (currentTxLock.getType() != Synchronizer.LockType.Exclusive) {
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
+            }
+        } else {
+            txLock = synchronizer.getExclusiveLock();
+        }
+
+        try {
+            // Drop the table in case there is an orphaned instance with the same name.
+            sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS_ + table.getName());
+            table.create(sqLiteDatabase, withDomainConstraints);
+            table.createIndices(sqLiteDatabase, collationCaseSensitive);
+        } finally {
+            if (txLock != null) {
+                txLock.unlock();
+            }
+        }
+    }
+
+
+    /**
      * Run '<a href="https://www.sqlite.org/pragma.html#pragma_optimize">optimize</a>'
      * on the whole database.
      */
@@ -576,101 +667,12 @@ public class SynchronizedDb
     }
 
     /**
-     * Run 'analyse' on a table.
+     * Run '<a href="https://www.sqlite.org/lang_analyze.html">analyse</a>' on the given table.
      *
      * @param table to analyse.
      */
     public void analyze(@NonNull final TableDefinition table) {
         execSQL("analyze " + table);
-    }
-
-    /**
-     * Wrapper.
-     *
-     * @return {@code true} if the current thread is in a transaction.
-     */
-    public boolean inTransaction() {
-        return sqLiteDatabase.inTransaction();
-    }
-
-    /**
-     * Locking-aware wrapper for underlying database method.
-     *
-     * @param isUpdate Indicates if updates will be done in TX
-     *
-     * @return the lock
-     *
-     * @throws TransactionException when there is already an active transaction
-     */
-    @NonNull
-    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate)
-            throws TransactionException {
-        final Synchronizer.SyncLock txLock;
-        if (isUpdate) {
-            txLock = synchronizer.getExclusiveLock();
-        } else {
-            txLock = synchronizer.getSharedLock();
-        }
-
-        if (currentTxLock == null) {
-            // We have the lock, but if the real beginTransaction() throws an exception,
-            // we need to release the lock.
-            //noinspection CheckStyle
-            try {
-                sqLiteDatabase.beginTransaction();
-            } catch (@NonNull final RuntimeException e) {
-                txLock.unlock();
-                throw e;
-            }
-        } else {
-            // If we have a lock, and there is currently a TX active...die
-            // Note: because we get a lock, two 'isUpdate' transactions will
-            // block, this is only likely to happen with two TXs on the current thread
-            // or two non-update TXs on different thread.
-            throw new TransactionException(ERROR_TX_ALREADY_STARTED);
-        }
-
-        currentTxLock = txLock;
-        return txLock;
-    }
-
-    /**
-     * Wrapper for underlying database method.
-     */
-    public void setTransactionSuccessful() {
-        // We could pass in the lock and do the same checks as we do in #endTransaction
-        sqLiteDatabase.setTransactionSuccessful();
-    }
-
-    /**
-     * Locking-aware wrapper for underlying database method.
-     * <p>
-     * <strong>MUST</strong> be called from a 'finally' block.
-     *
-     * @param txLock Lock returned from {@link #beginTransaction(boolean)}.
-     *
-     * @throws TransactionException on any failure
-     */
-    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock)
-            throws TransactionException {
-        if (txLock == null) {
-            throw new TransactionException(ERROR_TX_LOCK_WAS_NULL);
-        }
-        if (currentTxLock == null) {
-            throw new TransactionException(ERROR_TX_NEVER_STARTED);
-        }
-        if (!currentTxLock.equals(txLock)) {
-            throw new TransactionException(ERROR_TX_WRONG_LOCK);
-        }
-
-        try {
-            sqLiteDatabase.endTransaction();
-        } finally {
-            // Always clear the current one before unlocking so another thread does not
-            // see the old lock when it gets the lock
-            currentTxLock = null;
-            txLock.unlock();
-        }
     }
 
     /**
