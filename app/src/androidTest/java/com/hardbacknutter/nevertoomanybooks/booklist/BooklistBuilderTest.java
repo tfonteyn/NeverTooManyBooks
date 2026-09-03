@@ -103,7 +103,7 @@ class BooklistBuilderTest
         assertNotNull(booklist);
 
         final TableDefinition listTable = booklist.getListTable();
-        final TableInfo listTableInfo = listTable.getTableInfo(db.getSQLiteDatabase());
+        final TableInfo listTableInfo = db.getTableInfo(listTable);
         assertNotNull(listTableInfo);
         Log.d(TAG, listTableInfo.getColumns()
                                 .stream()
@@ -112,7 +112,7 @@ class BooklistBuilderTest
                                 .toString()
         );
         final TableDefinition navTable = booklist.getNavTable();
-        final TableInfo navTableInfo = navTable.getTableInfo(db.getSQLiteDatabase());
+        final TableInfo navTableInfo = db.getTableInfo(navTable);
         assertNotNull(navTableInfo);
         Log.d(TAG, navTableInfo.getColumns()
                                .stream()

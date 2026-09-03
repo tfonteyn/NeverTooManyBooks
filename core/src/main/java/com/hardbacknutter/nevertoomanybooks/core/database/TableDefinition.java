@@ -567,8 +567,9 @@ public class TableDefinition {
      * @param db Underlying database
      *
      * @return info object; its details might be empty if the table does not exist.
+     *
+     * @see SynchronizedDb#getTableInfo(TableDefinition)
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public TableInfo getTableInfo(@NonNull final SQLiteDatabase db) {
         return new TableInfo(db, name);

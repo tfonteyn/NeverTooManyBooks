@@ -540,7 +540,9 @@ public class SynchronizedDb
      *
      * @param tableDefinition to get
      *
-     * @return info object
+     * @return info object; its details might be empty if the table does not exist.
+     *
+     * @see TableDefinition#getTableInfo(SQLiteDatabase)
      */
     @NonNull
     public TableInfo getTableInfo(@NonNull final TableDefinition tableDefinition) {
