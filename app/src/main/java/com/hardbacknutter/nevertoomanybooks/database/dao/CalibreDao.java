@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -38,12 +37,9 @@ public interface CalibreDao {
      *
      * @param context Current context
      * @param book    to process
-     *
-     * @throws DaoWriteException on failure
      */
     void insertOrUpdate(@NonNull Context context,
-                        @NonNull Book book)
-            throws DaoWriteException;
+                        @NonNull Book book);
 
     /**
      * Store the Calibre data for the given {@link Book}.
@@ -57,12 +53,9 @@ public interface CalibreDao {
      *
      * @return {@code true} if an insert was done.
      *         {@code false} if no insert was <strong>attempted</strong>
-     *
-     * @throws DaoWriteException on failure to insert
      */
     boolean insert(@NonNull Context context,
-                   @NonNull Book book)
-            throws DaoWriteException;
+                   @NonNull Book book);
 
     /**
      * Delete all data related to Calibre for the given book.

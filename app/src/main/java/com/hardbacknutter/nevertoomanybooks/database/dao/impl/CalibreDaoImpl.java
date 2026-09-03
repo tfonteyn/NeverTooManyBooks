@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -31,7 +30,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
@@ -79,8 +77,7 @@ public class CalibreDaoImpl
 
     @Override
     public void insertOrUpdate(@NonNull final Context context,
-                               @NonNull final Book book)
-            throws DaoWriteException {
+                               @NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -95,8 +92,7 @@ public class CalibreDaoImpl
 
     @Override
     public boolean insert(@NonNull final Context context,
-                          @NonNull final Book book)
-            throws DaoWriteException {
+                          @NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -151,8 +147,6 @@ public class CalibreDaoImpl
             stmt.bindLong(5, library.getId());
 
             stmt.executeInsert(() -> ERROR_INSERT_FROM + book);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         return true;
