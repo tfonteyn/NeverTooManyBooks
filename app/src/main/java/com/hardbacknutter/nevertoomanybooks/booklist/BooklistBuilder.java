@@ -613,14 +613,18 @@ class BooklistBuilder {
         // The latter is needed for a RecyclerView adapter.
         // Don't apply constraints (no need)
         db.recreate(navTable, false);
-        db.execSQL(INSERT_INTO_ + navTable.getName()
+
+        try (SynchronizedStatement stmt = db.compileStatement(
+                     INSERT_INTO_ + navTable.getName()
                    + " (" + DBKey.FK_BOOK + ',' + FK_ROW_ID + ") "
                    + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                    + _FROM_ + listTable.getName()
                    // MUST be limited to BooklistGroup.BOOK;
                    // the FK_BOOK fields on other groups represents the book-count for that group
                    + _WHERE_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK
-                   + _ORDER_BY_ + DBKey.PK_ID);
+                   + _ORDER_BY_ + DBKey.PK_ID)) {
+            stmt.execute(null);
+        }
 
         return new Pair<>(listTable, navTable);
     }
@@ -1415,7 +1419,9 @@ class BooklistBuilder {
                 + ')';
         }
 
-        db.execSQL(s);
+        try (SynchronizedStatement stmt = db.compileStatement(s)) {
+            stmt.executeUpdateDelete(null);
+        }
         // No longer needed
         db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
     }

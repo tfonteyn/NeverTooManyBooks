@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -111,8 +112,11 @@ final class TestConstants {
                                  @NonNull final TableDefinition table,
                                  @NonNull final String column,
                                  @NonNull final String list) {
-        db.execSQL("DELETE FROM " + table.getName()
-                   + " WHERE " + column + " IN (" + list + ")");
+        try (SynchronizedStatement stmt = db.compileStatement(
+                "DELETE FROM " + table.getName()
+                + " WHERE " + column + " IN (" + list + ")")) {
+            stmt.executeUpdateDelete(null);
+        }
     }
 
     static void deleteBookshelves(@NonNull final SynchronizedDb db) {

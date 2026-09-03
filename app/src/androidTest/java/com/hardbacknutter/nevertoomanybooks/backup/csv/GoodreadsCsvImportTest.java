@@ -32,11 +32,11 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestUtils;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -82,19 +82,21 @@ class GoodreadsCsvImportTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        final ServiceLocator locator = ServiceLocator.getInstance();
-
-        bookIdentifierDao = locator.getBookIdentifierDao();
-        bookDao = locator.getBookDao();
+        bookIdentifierDao = serviceLocator.getBookIdentifierDao();
+        bookDao = serviceLocator.getBookDao();
         booksPresent = bookDao.count();
 
-        final long grId = locator.getIdentifierDao()
-                                 .find(Identifier.SID_GOODREADS,
-                                       Identifier.EntityType.Book)
-                                 .get()
-                                 .getId();
-        locator.getDb().execSQL("DELETE FROM " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
-                                + " WHERE " + DBKey.FK_IDENTIFIER + "=" + grId);
+        final long grId = serviceLocator
+                .getIdentifierDao()
+                .find(Identifier.SID_GOODREADS, Identifier.EntityType.Book)
+                .get()
+                .getId();
+
+        try (SynchronizedStatement stmt = serviceLocator.getDb().compileStatement(
+                "DELETE FROM " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
+                + " WHERE " + DBKey.FK_IDENTIFIER + "=" + grId)) {
+            stmt.executeUpdateDelete(null);
+        }
     }
 
     @SuppressWarnings("LocalCanBeFinal")

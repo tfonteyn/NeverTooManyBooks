@@ -27,6 +27,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,10 +56,15 @@ class GermanEszettTest
         super.setup("de_DE");
 
         final SynchronizedDb db = serviceLocator.getDb();
-        db.execSQL("DELETE FROM " + TBL_AUTHORS.getName()
-                   + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "='Groß'");
-        db.execSQL("DELETE FROM " + TBL_AUTHORS.getName()
-                   + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "='Gross'");
+
+        final String sql = "DELETE FROM " + TBL_AUTHORS.getName()
+                           + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "=?";
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+            stmt.bindString(1, GERMAN_GROSS_1F);
+            stmt.executeUpdateDelete(null);
+            stmt.bindString(1, GERMAN_GROSS_2F);
+            stmt.executeUpdateDelete(null);
+        }
 
         authorDao = serviceLocator.getAuthorDao();
 
