@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
-import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -28,7 +27,6 @@ import androidx.annotation.NonNull;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -72,8 +70,7 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Book book)
-            throws DaoWriteException {
+    public void insertOrUpdate(@NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -87,8 +84,7 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public boolean insert(@NonNull final Book book)
-            throws DaoWriteException {
+    public boolean insert(@NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -116,9 +112,6 @@ public class StripInfoDaoImpl
             stmt.bindString(++i, dateTime);
 
             stmt.executeInsert(() -> ERROR_INSERT_FROM + data);
-
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         return true;
