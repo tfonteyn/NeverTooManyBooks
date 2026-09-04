@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 
 // 2026-08-22: First steps in splitting the BookDao....
 public class BookRepository {
@@ -45,6 +46,16 @@ public class BookRepository {
     private final BookDaoHelper bookDaoHelper;
     private final Locale userLocale;
 
+    /**
+     * Constructor.
+     * <p>
+     * ENHANCE: pass in {@link DataReader.Updates} option to propagate to Authors
+     *  and eventually to other linked objects.
+     * <p>
+     * Dev. note: This class is used/created in ViewModels, do NOT store the Context!
+     *
+     * @param context Current context (noy stored)
+     */
     public BookRepository(@NonNull final Context context) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         bookDao = serviceLocator.getBookDao();
@@ -58,6 +69,17 @@ public class BookRepository {
         userLocale = userLocales.get(0);
     }
 
+    /**
+     * Create a new {@link Book}.
+     *
+     * @param context Current context
+     * @param book    object to insert. Will be updated with the id.
+     * @param flags   See {@link BookDao.ImportFlag} for flag definitions
+     *
+     * @return the row id of the newly inserted row
+     *
+     * @throws DaoWriteException on failure
+     */
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Book book,
@@ -66,6 +88,22 @@ public class BookRepository {
         return bookDao.insert(context, userLocale, bookDaoHelper, book, flags);
     }
 
+    /**
+     * Update the given {@link Book}.
+     * <p>
+     * This will update <strong>ONLY</strong> the fields present in the given Book.
+     * Non-present fields will not be touched. i.e. this is a delta operation.
+     * <p>
+     * TRIGGERS:
+     * - If the Code of a {@link Book} is changed, reset external ID's and sync dates.
+     *
+     * @param context Current context
+     * @param book    A collection with the columns to be set.
+     *                May contain extra data which will be ignored.
+     * @param flags   See {@link BookDao.ImportFlag} for flag definitions
+     *
+     * @throws DaoWriteException on failure
+     */
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
                        @NonNull final Set<BookDao.ImportFlag> flags)

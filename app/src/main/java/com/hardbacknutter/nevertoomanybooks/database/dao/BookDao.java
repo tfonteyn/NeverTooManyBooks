@@ -73,9 +73,6 @@ public interface BookDao {
 
     /**
      * Create a new {@link Book}.
-     * <p>
-     * ENHANCE: pass in {@link DataReader.Updates} option to propagate to Authors
-     *  and eventually to other linked objects.
      *
      * @param context       Current context
      * @param userLocale    to use
@@ -97,9 +94,6 @@ public interface BookDao {
 
     /**
      * Update the given {@link Book}.
-     * <p>
-     * ENHANCE: pass in {@link DataReader.Updates} option to propagate to Authors
-     *  and eventually to other linked objects.
      * <p>
      * This will update <strong>ONLY</strong> the fields present in the given Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
