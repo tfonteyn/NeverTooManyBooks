@@ -539,7 +539,7 @@ public class BookDaoImpl
                 db.setTransactionSuccessful();
             }
 
-        } catch (@NonNull final SQLException | DaoWriteException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
 
         } finally {

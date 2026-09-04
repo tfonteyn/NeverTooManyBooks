@@ -424,7 +424,7 @@ public class TocEntryDaoImpl
             }
             return false;
 
-        } catch (@NonNull final SQLException | DaoWriteException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
 
         } finally {
