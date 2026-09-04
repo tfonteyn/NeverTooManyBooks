@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface BookDao {
@@ -73,14 +74,14 @@ public interface BookDao {
     /**
      * Create a new {@link Book}.
      * <p>
-     * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
+     * ENHANCE: pass in {@link DataReader.Updates} option to propagate to Authors
      *  and eventually to other linked objects.
      *
      * @param context       Current context
      * @param userLocale    to use
      * @param bookDaoHelper to use
      * @param book          object to insert. Will be updated with the id.
-     * @param flags         See {@link BookFlag} for flag definitions
+     * @param flags         See {@link ImportFlag} for flag definitions
      *
      * @return the row id of the newly inserted row
      *
@@ -91,13 +92,13 @@ public interface BookDao {
                 @NonNull Locale userLocale,
                 @NonNull BookDaoHelper bookDaoHelper,
                 @NonNull Book book,
-                @NonNull Set<BookFlag> flags)
+                @NonNull Set<ImportFlag> flags)
             throws DaoWriteException;
 
     /**
      * Update the given {@link Book}.
      * <p>
-     * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
+     * ENHANCE: pass in {@link DataReader.Updates} option to propagate to Authors
      *  and eventually to other linked objects.
      * <p>
      * This will update <strong>ONLY</strong> the fields present in the given Book.
@@ -111,7 +112,7 @@ public interface BookDao {
      * @param bookDaoHelper to use
      * @param book          A collection with the columns to be set.
      *                      May contain extra data which will be ignored.
-     * @param flags         See {@link BookFlag} for flag definitions
+     * @param flags         See {@link ImportFlag} for flag definitions
      *
      * @throws DaoWriteException on failure
      */
@@ -119,7 +120,7 @@ public interface BookDao {
                 @NonNull Locale userLocale,
                 @NonNull BookDaoHelper bookDaoHelper,
                 @NonNull Book book,
-                @NonNull Set<BookFlag> flags)
+                @NonNull Set<ImportFlag> flags)
             throws DaoWriteException;
 
     /**
@@ -400,7 +401,7 @@ public interface BookDao {
     /**
      * Flags used during {@link BookDao#insert} and {@link BookDao#update}.
      */
-    enum BookFlag {
+    enum ImportFlag {
         /**
          * If set, relax some rules which would affect performance otherwise.
          * This is/should only be used during imports.
@@ -413,7 +414,8 @@ public interface BookDao {
          */
         UseIdIfPresent,
         /**
-         * If set, the {@link DBKey#DATE_LAST_UPDATED__UTC} field from the bundle should be trusted.
+         * If set, the {@link DBKey#DATE_LAST_UPDATED__UTC} field from the bundle
+         * should be trusted.
          * If this flag is not set, the current date/time will be used.
          */
         UseUpdateDateIfPresent

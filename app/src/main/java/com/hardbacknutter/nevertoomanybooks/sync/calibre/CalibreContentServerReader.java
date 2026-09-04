@@ -442,8 +442,8 @@ public class CalibreContentServerReader
 
         if (delta != null) {
             bookRepository.update(context, delta,
-                                  EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                             BookDao.BookFlag.UseUpdateDateIfPresent));
+                                  EnumSet.of(BookDao.ImportFlag.RunInBatch,
+                                             BookDao.ImportFlag.UseUpdateDateIfPresent));
             results.bookUpdated(book.getId());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -467,7 +467,7 @@ public class CalibreContentServerReader
         book.ensureBookshelf();
 
         final long id = bookRepository.insert(context, book,
-                                              EnumSet.of(BookDao.BookFlag.RunInBatch));
+                                              EnumSet.of(BookDao.ImportFlag.RunInBatch));
         results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {

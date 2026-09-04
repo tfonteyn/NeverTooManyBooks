@@ -61,14 +61,14 @@ public class BookRepository {
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Book book,
-                       @NonNull final Set<BookDao.BookFlag> flags)
+                       @NonNull final Set<BookDao.ImportFlag> flags)
             throws DaoWriteException {
         return bookDao.insert(context, userLocale, bookDaoHelper, book, flags);
     }
 
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
-                       @NonNull final Set<BookDao.BookFlag> flags)
+                       @NonNull final Set<BookDao.ImportFlag> flags)
             throws DaoWriteException {
         bookDao.update(context, userLocale, bookDaoHelper, book, flags);
     }

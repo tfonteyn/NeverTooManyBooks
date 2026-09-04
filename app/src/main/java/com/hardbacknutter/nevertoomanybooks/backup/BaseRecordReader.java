@@ -169,8 +169,8 @@ public abstract class BaseRecordReader
 
         // explicitly allow the id to be reused if present
         final long id = bookRepository.insert(context, book,
-                                              EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                                         BookDao.BookFlag.UseIdIfPresent));
+                                              EnumSet.of(BookDao.ImportFlag.RunInBatch,
+                                                         BookDao.ImportFlag.UseIdIfPresent));
         results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
@@ -239,8 +239,8 @@ public abstract class BaseRecordReader
                             @NonNull final Book book)
             throws DaoWriteException {
         bookRepository.update(context, book,
-                              EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                         BookDao.BookFlag.UseUpdateDateIfPresent));
+                              EnumSet.of(BookDao.ImportFlag.RunInBatch,
+                                         BookDao.ImportFlag.UseUpdateDateIfPresent));
         results.bookUpdated(book.getId());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {

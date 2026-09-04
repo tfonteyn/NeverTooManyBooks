@@ -358,7 +358,7 @@ public class StripInfoReader
         final long preImportId = book.getId();
 
         final long id = bookRepository.insert(context, book,
-                                              EnumSet.of(BookDao.BookFlag.RunInBatch));
+                                              EnumSet.of(BookDao.ImportFlag.RunInBatch));
         results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
@@ -376,8 +376,8 @@ public class StripInfoReader
                             @NonNull final Book delta)
             throws DaoWriteException {
         bookRepository.update(context, delta,
-                              EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                         BookDao.BookFlag.UseUpdateDateIfPresent));
+                              EnumSet.of(BookDao.ImportFlag.RunInBatch,
+                                         BookDao.ImportFlag.UseUpdateDateIfPresent));
         results.bookUpdated(book.getId());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {

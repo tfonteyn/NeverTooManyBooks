@@ -145,7 +145,7 @@ public class BookDaoImpl
                        @NonNull final Locale userLocale,
                        @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
-                       @NonNull final Set<BookFlag> flags)
+                       @NonNull final Set<ImportFlag> flags)
             throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
@@ -176,7 +176,7 @@ public class BookDaoImpl
             // This flag is only set during imports to make sure we preserve id/uuid.
             // If we hit a duplicate, an error will be thrown and the import for this
             // particular book will be skipped and reported to the user.
-            if (flags.contains(BookFlag.UseIdIfPresent)) {
+            if (flags.contains(ImportFlag.UseIdIfPresent)) {
                 if (book.getId() > 0) {
                     cv.put(DBKey.PK_ID, book.getId());
                 }
@@ -239,9 +239,9 @@ public class BookDaoImpl
 
     // helper for 'insert'
     private void removeIds(@NonNull final Book book,
-                           @NonNull final Set<BookFlag> flags) {
+                           @NonNull final Set<ImportFlag> flags) {
         // Do NOT remove them if we're importing
-        if (flags.contains(BookFlag.UseIdIfPresent)) {
+        if (flags.contains(ImportFlag.UseIdIfPresent)) {
             return;
         }
         book.setId(0);
@@ -253,7 +253,7 @@ public class BookDaoImpl
                        @NonNull final Locale userLocale,
                        @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
-                       @NonNull final Set<BookFlag> flags)
+                       @NonNull final Set<ImportFlag> flags)
             throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
@@ -272,7 +272,7 @@ public class BookDaoImpl
             // This flag is only set during imports to make sure we preserve last-update-date.
             // Set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
             // or if it's not already present.
-            if (!flags.contains(BookFlag.UseUpdateDateIfPresent)
+            if (!flags.contains(ImportFlag.UseUpdateDateIfPresent)
                 || !cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
                 cv.put(DBKey.DATE_LAST_UPDATED__UTC,
                        SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC)));
@@ -404,22 +404,22 @@ public class BookDaoImpl
      * @param context    Current context
      * @param userLocale Current Locale
      * @param book       A collection with the columns to be set. May contain extra data.
-     * @param flags      See {@link BookFlag} for flag definitions
+     * @param flags      See {@link ImportFlag} for flag definitions
      *
      * @throws DaoWriteException on failure
      */
     private void insertBookLinks(@NonNull final Context context,
                                  @NonNull final Locale userLocale,
                                  @NonNull final Book book,
-                                 @NonNull final Set<BookFlag> flags)
+                                 @NonNull final Set<ImportFlag> flags)
             throws DaoWriteException {
 
         // Only lookup locales
         // when we're NOT in batch mode (i.e. NOT doing an import)
-        final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
+        final boolean lookupLocale = !flags.contains(ImportFlag.RunInBatch);
 
         // FIXME: apply useIdIfPresent to the tags collection, perhaps to others as well
-        //final boolean useIdIfPresent = !flags.contains(BookFlag.UseIdIfPresent);
+        //final boolean useIdIfPresent = !flags.contains(ImportFlag.UseIdIfPresent);
 
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
