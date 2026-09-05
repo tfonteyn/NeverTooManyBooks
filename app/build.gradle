@@ -221,6 +221,8 @@ android {
         // in my "raw" xml test files...
         // We should log this with Google, but they would ignore it for the next 5 years anyhow.
         disable 'UnusedResources'
+        // prevent false-positives...  or, yet another fight to stop google getting it wrong...
+        disable 'DynamicLocale'
     }
 
     // https://developer.android.com/build/dependencies#dependency-info-play
