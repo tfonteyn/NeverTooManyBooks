@@ -518,6 +518,8 @@ class BooklistBuilder {
     /**
      * Using the collected domain info, create the various SQL phrases used to build
      * the resulting flat list table and build the SQL that does the initial table load.
+     * <p>
+     * <strong>Transaction:</strong> required
      *
      * @param context        Current context
      * @param db             Database Access
@@ -526,7 +528,7 @@ class BooklistBuilder {
      *
      * @return a Pair with the fully populated list-table and the navigation-table
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     @NonNull
     Pair<TableDefinition, TableDefinition> build(@NonNull final Context context,

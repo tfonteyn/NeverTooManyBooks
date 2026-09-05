@@ -172,7 +172,7 @@ public class BooklistNodeDao {
      * @param expand       state to set
      * @param visible      visibility to set
      *
-     * @throws TransactionException     (debug)
+     * @throws TransactionException     (debug) if there is no current transaction
      * @throws IllegalArgumentException (debug)
      */
     private void updateAllNodesForLevel(@NonNull final CharSequence levelOperand,
@@ -342,7 +342,7 @@ public class BooklistNodeDao {
      * @param rowId  the row/node to update
      * @param expand state to set
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void updateNode(final long rowId,
                             final boolean expand) {
@@ -377,7 +377,7 @@ public class BooklistNodeDao {
      *
      * @return row id
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private long findNextNode(final long rowId,
                               @IntRange(from = 1) final int nodeLevel) {
@@ -413,7 +413,7 @@ public class BooklistNodeDao {
      * @param nodeLevel          the level which was clicked
      * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level.
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void showAndExpandNodesBetween(final long startRowExcl,
                                            final long endRowExcl,
@@ -476,7 +476,7 @@ public class BooklistNodeDao {
      * @param startRowExcl between this row
      * @param endRowExcl   and this row
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void collapseAndHideNodesBetween(final long startRowExcl,
                                              final long endRowExcl) {
@@ -512,7 +512,7 @@ public class BooklistNodeDao {
      * @param endRowExcl   and this row (exclusive)
      * @param nodeLevel    from this level onwards
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void saveNodesBetween(final long startRowIncl,
                                   final long endRowExcl,
@@ -587,7 +587,7 @@ public class BooklistNodeDao {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     void restoreSavedState() {
         if (BuildConfig.DEBUG /* always */) {
@@ -626,11 +626,13 @@ public class BooklistNodeDao {
 
     /**
      * {@link #restoreSavedState()} 1. Update visibility/expanded flag (single column at a time)
+     * <p>
+     * <strong>Transaction:</strong> required
      *
      * @param sqlTemplate SQL with placeholders for the column name
      * @param columnName  to use
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void restoreSavedState(@NonNull final String sqlTemplate,
                                    @NonNull final String columnName) {
@@ -661,8 +663,10 @@ public class BooklistNodeDao {
 
     /**
      * {@link #restoreSavedState()} 2. Update branches which were not in the saved data.
+     * <p>
+     * <strong>Transaction:</strong> required
      *
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void adjustVisibility() {
         if (BuildConfig.DEBUG /* always */) {

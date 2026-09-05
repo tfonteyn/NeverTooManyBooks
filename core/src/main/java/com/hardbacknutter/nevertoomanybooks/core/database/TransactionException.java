@@ -27,6 +27,9 @@ import androidx.annotation.Nullable;
 public class TransactionException
         extends SQLException {
 
+    /**
+     * Debug usage only.
+     */
     public static final String REQUIRED = "TX required";
 
     private static final long serialVersionUID = 8342179163992505514L;

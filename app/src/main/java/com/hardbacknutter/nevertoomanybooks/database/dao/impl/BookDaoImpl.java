@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -400,6 +402,8 @@ public class BookDaoImpl
      * Called during book insert & update.
      * Each step in this method will first delete all entries in the Book-[tableX] table
      * for this bookId, and then insert the new links.
+     * <p>
+     * <strong>Transaction:</strong> required
      *
      * @param context    Current context
      * @param userLocale Current Locale
@@ -407,12 +411,19 @@ public class BookDaoImpl
      * @param flags      See {@link ImportFlag} for flag definitions
      *
      * @throws DaoWriteException on failure
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void insertBookLinks(@NonNull final Context context,
                                  @NonNull final Locale userLocale,
                                  @NonNull final Book book,
                                  @NonNull final Set<ImportFlag> flags)
             throws DaoWriteException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
 
         // Only lookup locales
         // when we're NOT in batch mode (i.e. NOT doing an import)

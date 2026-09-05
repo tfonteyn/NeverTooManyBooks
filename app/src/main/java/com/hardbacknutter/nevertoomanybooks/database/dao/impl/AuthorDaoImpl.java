@@ -630,7 +630,7 @@ public class AuthorDaoImpl
      *
      * @throws DaoWriteException    on failure
      * @throws SQLException         on failure
-     * @throws TransactionException (debug)
+     * @throws TransactionException (debug) if there is no current transaction
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Author author,
