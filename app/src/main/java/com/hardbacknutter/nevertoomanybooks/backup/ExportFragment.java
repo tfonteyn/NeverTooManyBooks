@@ -432,7 +432,8 @@ public class ExportFragment
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
                     .putExtra(Intent.EXTRA_TEXT, report)
-                    .putExtra(Intent.EXTRA_STREAM, uri);
+                    .putExtra(Intent.EXTRA_STREAM, uri)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(intent);
             //noinspection DataFlowIssue
             getActivity().setResult(Activity.RESULT_OK, null);
