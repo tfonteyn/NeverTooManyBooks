@@ -175,12 +175,9 @@ public interface BookDao {
      *
      * @param bookIds  to update
      * @param location to set
-     *
-     * @return {@code true} for success.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean setLocation(@NonNull Collection<Long> bookIds,
-                        @NonNull String location);
+    void setLocation(@NonNull Collection<Long> bookIds,
+                     @NonNull String location);
 
     /**
      * Update the 'read' status of a book.
@@ -191,11 +188,9 @@ public interface BookDao {
      *
      * @param book to update
      * @param read the status to set
-     *
-     * @return {@code true} for success.
      */
-    boolean setRead(@NonNull Book book,
-                    boolean read);
+    void setRead(@NonNull Book book,
+                 boolean read);
 
     /**
      * Update the 'read-progress' status of a book.
@@ -205,11 +200,9 @@ public interface BookDao {
      *
      * @param book            to update
      * @param readingProgress the progress data to set
-     *
-     * @return {@code true} for success.
      */
-    boolean setReadingProgress(@NonNull Book book,
-                               @NonNull ReadingProgress readingProgress);
+    void setReadingProgress(@NonNull Book book,
+                            @NonNull ReadingProgress readingProgress);
 
     /**
      * Count all books.
