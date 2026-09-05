@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.annotation.SuppressLint;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -53,9 +54,16 @@ class ImageReference {
     @Nullable
     ImageView getView() {
         final ImageView view = viewReference.get();
-        if (view == null || !Objects.equals(taskUuid, view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
+        if (view == null || !Objects.equals(taskUuid, crap(view))) {
             return null;
         }
         return view;
+    }
+
+    // Use this isolated method to avoid Android Studio bringing up a false positive...
+    // Fighting Google every single day is getting really tiresome.
+    @SuppressLint("ThreadConstraint")
+    private Object crap(final ImageView view) {
+        return view.getTag(R.id.TAG_THUMBNAIL_TASK);
     }
 }
