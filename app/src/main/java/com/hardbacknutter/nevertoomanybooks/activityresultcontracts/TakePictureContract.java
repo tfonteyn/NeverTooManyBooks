@@ -52,13 +52,15 @@ public class TakePictureContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input args) {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                .putExtra(MediaStore.EXTRA_OUTPUT, args.dstUri);
+                .putExtra(MediaStore.EXTRA_OUTPUT, args.dstUri)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                          | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
 
     @Override
     @NonNull
     public Boolean parseResult(final int resultCode,
-                                      @Nullable final Intent intent) {
+                               @Nullable final Intent intent) {
 
         // GitHub #11: the Google camera app returns an empty Intent, while
         // OpenCamera returns a null for the Intent.
