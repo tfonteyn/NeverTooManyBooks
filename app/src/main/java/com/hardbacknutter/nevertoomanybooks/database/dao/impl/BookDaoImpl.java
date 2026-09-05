@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -54,19 +52,15 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -84,8 +78,6 @@ public class BookDaoImpl
     /** Log tag. */
     private static final String TAG = "BookDaoImpl";
 
-    private static final String ERROR_CREATING_BOOK_FROM = "Failed creating book from\n";
-    private static final String ERROR_UPDATING_BOOK_FROM = "Failed updating book from\n";
     private static final String ERROR_UUID = "Invalid UUID";
 
     @NonNull
@@ -144,179 +136,111 @@ public class BookDaoImpl
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
-                       @NonNull final Locale userLocale,
                        @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
                        @NonNull final Set<ImportFlag> flags)
-            throws DaoWriteException {
+            throws SQLException {
 
-        Synchronizer.SyncLock txLock = null;
-        try {
+        if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            // Make sure we have at least one author
-            final List<Author> authors = book.getAuthors();
-            if (authors.isEmpty()) {
-                authors.add(Author.createUnknownAuthor(context));
-            }
-
-            final ContentValues cv = bookDaoHelper.process(context, book, true);
-
-            final String addedOrUpdatedNow = SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC));
-
-            // if we do NOT have a date set, use 'now'
-            if (!cv.containsKey(DBKey.DATE_ADDED__UTC)) {
-                cv.put(DBKey.DATE_ADDED__UTC, addedOrUpdatedNow);
-            }
-            // if we do NOT have a date set, use 'now'
-            if (!cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
-                cv.put(DBKey.DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
-            }
-
-            // This flag is only set during imports to make sure we preserve id/uuid.
-            // If we hit a duplicate, an error will be thrown and the import for this
-            // particular book will be skipped and reported to the user.
-            if (flags.contains(ImportFlag.UseIdIfPresent)) {
-                if (book.getId() > 0) {
-                    cv.put(DBKey.PK_ID, book.getId());
-                }
-                if (!book.getUuid().isEmpty()) {
-                    cv.put(DBKey.BOOK_UUID, book.getUuid());
-                }
-            } else {
-                // in all other circumstances, make absolutely sure we DO NOT pass in id/uuid
-                // or we can potentially violate UNIQUE constraints.
-                // The user will already have been notified that they are storing a duplicate
-                // and they confirmed this is what they wanted.
-                cv.remove(DBKey.PK_ID);
-                cv.remove(DBKey.BOOK_UUID);
-            }
-
-            // go!
-            // throws SQLException
-            final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
-
-            // Set the new id/uuid on the Book itself
-            // We will manually remove them again (see #removeIds) upon any error
-            book.setId(newBookId);
-            // always lookup the UUID
-            final String uuid = getBookUuid(newBookId);
-            SanityCheck.requireValue(uuid, ERROR_UUID);
-            book.setUuid(uuid);
-
-            // next we add the links to series, authors,...
-            insertBookLinks(context, userLocale, book, flags);
-
-            // and populate the search suggestions table
-            ServiceLocator.getInstance().getFtsDao().insert(book);
-
-            // lastly we move the covers from the cache dir to their permanent dir/name
-            bookDaoHelper.persistCovers(book);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-            return newBookId;
-
-        } catch (@NonNull final SQLException e) {
-            removeIds(book, flags);
-            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
-
-        } catch (@NonNull final DaoWriteException e) {
-            removeIds(book, flags);
-            throw e;
-
-        } catch (@NonNull final StorageException | IOException e) {
-            removeIds(book, flags);
-            throw new DaoImageException(e);
-
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
+                throw new TransactionException(TransactionException.REQUIRED);
             }
         }
-    }
 
-    // helper for 'insert'
-    private void removeIds(@NonNull final Book book,
-                           @NonNull final Set<ImportFlag> flags) {
-        // Do NOT remove them if we're importing
+        // Make sure we have at least one author
+        final List<Author> authors = book.getAuthors();
+        if (authors.isEmpty()) {
+            authors.add(Author.createUnknownAuthor(context));
+        }
+
+        final ContentValues cv = bookDaoHelper.process(context, book, true);
+
+        final String addedOrUpdatedNow = SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC));
+
+        // if we do NOT have a date set, use 'now'
+        if (!cv.containsKey(DBKey.DATE_ADDED__UTC)) {
+            cv.put(DBKey.DATE_ADDED__UTC, addedOrUpdatedNow);
+        }
+        // if we do NOT have a date set, use 'now'
+        if (!cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
+            cv.put(DBKey.DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
+        }
+
+        // This flag is only set during imports to make sure we preserve id/uuid.
+        // If we hit a duplicate, an error will be thrown and the import for this
+        // particular book will be skipped and reported to the user.
         if (flags.contains(ImportFlag.UseIdIfPresent)) {
-            return;
+            if (book.getId() > 0) {
+                cv.put(DBKey.PK_ID, book.getId());
+            }
+            if (!book.getUuid().isEmpty()) {
+                cv.put(DBKey.BOOK_UUID, book.getUuid());
+            }
+        } else {
+            // in all other circumstances, make absolutely sure we DO NOT pass in id/uuid
+            // or we can potentially violate UNIQUE constraints.
+            // The user will already have been notified that they are storing a duplicate
+            // and they confirmed this is what they wanted.
+            cv.remove(DBKey.PK_ID);
+            cv.remove(DBKey.BOOK_UUID);
         }
-        book.setId(0);
-        book.setUuid(null);
+
+        // go!
+        // throws SQLException
+        final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
+
+        // Set the new id/uuid on the Book itself
+        // We will manually remove them again upon any error
+        book.setId(newBookId);
+        // always lookup the UUID
+        final String uuid = getBookUuid(newBookId);
+        SanityCheck.requireValue(uuid, ERROR_UUID);
+        book.setUuid(uuid);
+
+        return newBookId;
     }
 
     @Override
     public void update(@NonNull final Context context,
-                       @NonNull final Locale userLocale,
                        @NonNull final BookDaoHelper bookDaoHelper,
                        @NonNull final Book book,
                        @NonNull final Set<ImportFlag> flags)
-            throws DaoWriteException {
+            throws SQLException {
 
-        Synchronizer.SyncLock txLock = null;
-        try {
+        if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            final ContentValues cv = bookDaoHelper.process(context, book, false);
-
-            // Disallow UUID updates
-            if (cv.containsKey(DBKey.BOOK_UUID)) {
-                cv.remove(DBKey.BOOK_UUID);
-            }
-
-            // This flag is only set during imports to make sure we preserve last-update-date.
-            // Set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
-            // or if it's not already present.
-            if (!flags.contains(ImportFlag.UseUpdateDateIfPresent)
-                || !cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
-                cv.put(DBKey.DATE_LAST_UPDATED__UTC,
-                       SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC)));
-            }
-
-            // Reminder: We're updating ONLY the fields present in the ContentValues.
-            // Other fields in the database row are not affected.
-
-            // go !
-            // throws SQLException
-            db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
-                      new String[]{String.valueOf(book.getId())});
-
-            // always lookup the UUID
-            final String uuid = getBookUuid(book.getId());
-            SanityCheck.requireValue(uuid, ERROR_UUID);
-            book.setUuid(uuid);
-
-            // next we add the links to series, authors,...
-            insertBookLinks(context, userLocale, book, flags);
-
-            // and populate the search suggestions table
-            ServiceLocator.getInstance().getFtsDao().update(book.getId());
-
-            // lastly we move the covers from the cache dir to their permanent dir/name
-            bookDaoHelper.persistCovers(book);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
-
-        } catch (@NonNull final StorageException | IOException e) {
-            throw new DaoImageException(e);
-
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
+                throw new TransactionException(TransactionException.REQUIRED);
             }
         }
+
+        final ContentValues cv = bookDaoHelper.process(context, book, false);
+
+        // Disallow UUID updates
+        if (cv.containsKey(DBKey.BOOK_UUID)) {
+            cv.remove(DBKey.BOOK_UUID);
+        }
+
+        // This flag is only set during imports to make sure we preserve last-update-date.
+        // Set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
+        // or if it's not already present.
+        if (!flags.contains(ImportFlag.UseUpdateDateIfPresent)
+            || !cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
+            cv.put(DBKey.DATE_LAST_UPDATED__UTC,
+                   SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC)));
+        }
+
+        // Reminder: We're updating ONLY the fields present in the ContentValues.
+        // Other fields in the database row are not affected.
+
+        // go !
+        // throws SQLException
+        db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
+                  new String[]{String.valueOf(book.getId())});
+
+        // always lookup the UUID
+        final String uuid = getBookUuid(book.getId());
+        SanityCheck.requireValue(uuid, ERROR_UUID);
+        book.setUuid(uuid);
     }
 
     @Override
@@ -396,130 +320,6 @@ public class BookDaoImpl
         }
 
         return actuallyDeleted.size();
-    }
-
-    /**
-     * Called during book insert & update.
-     * Each step in this method will first delete all entries in the Book-[tableX] table
-     * for this bookId, and then insert the new links.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context    Current context
-     * @param userLocale Current Locale
-     * @param book       A collection with the columns to be set. May contain extra data.
-     * @param flags      See {@link ImportFlag} for flag definitions
-     *
-     * @throws DaoWriteException on failure
-     * @throws TransactionException (debug) if there is no current transaction
-     */
-    private void insertBookLinks(@NonNull final Context context,
-                                 @NonNull final Locale userLocale,
-                                 @NonNull final Book book,
-                                 @NonNull final Set<ImportFlag> flags)
-            throws DaoWriteException {
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (!db.inTransaction()) {
-                throw new TransactionException(TransactionException.REQUIRED);
-            }
-        }
-
-        // Only lookup locales
-        // when we're NOT in batch mode (i.e. NOT doing an import)
-        final boolean lookupLocale = !flags.contains(ImportFlag.RunInBatch);
-
-        // FIXME: apply useIdIfPresent to the tags collection, perhaps to others as well
-        //final boolean useIdIfPresent = !flags.contains(ImportFlag.UseIdIfPresent);
-
-        // unconditional lookup of the book locale!
-        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-
-        if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
-            // Bookshelves will be inserted if new, but never updated
-            serviceLocator.getBookshelfDao().insertOrUpdate(context,
-                                                            book.getId(),
-                                                            book.getBookshelves());
-        }
-
-        if (book.contains(Book.BKEY_AUTHOR_LIST)) {
-            serviceLocator.getAuthorDao().insertOrUpdate(context,
-                                                         book.getId(), true,
-                                                         book.getAuthors(),
-                                                         author -> bookLocale);
-        }
-
-
-        if (book.contains(Book.BKEY_SERIES_LIST)) {
-            final Function<Series, Locale> localeSupplier = series -> {
-                if (lookupLocale) {
-                    return series.getLocale(userLocale).orElse(bookLocale);
-                } else {
-                    return bookLocale;
-                }
-            };
-            serviceLocator.getSeriesDao().insertOrUpdate(context,
-                                                         book.getId(), true,
-                                                         book.getSeries(),
-                                                         localeSupplier);
-        }
-
-        if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
-            serviceLocator.getPublisherDao().insertOrUpdate(context,
-                                                            book.getId(), true,
-                                                            book.getPublishers(),
-                                                            publisher -> bookLocale);
-        }
-
-        if (book.contains(Book.BKEY_TOC_LIST)) {
-            // TOC entries are two steps away; they can exist in other books
-            // Hence we will both insert new entries
-            // AND update existing ones as needed.
-            serviceLocator.getTocEntryDao().insertOrUpdate(context,
-                                                           book.getId(),
-                                                           book.getToc(),
-                                                           tocEntry -> bookLocale);
-        }
-
-        if (book.contains(Book.BKEY_TAG_LIST)) {
-            // These are two steps away; they can exist in other books.
-            // We will insert new entries
-            // AND update existing ones as needed.
-            serviceLocator.getTagDao().insertOrUpdate(context,
-                                                      book.getId(),
-                                                      book.getTags(),
-                                                      tag -> bookLocale);
-        }
-
-        if (book.contains(Identifier.Value.BKEY_LIST)) {
-            // These are two steps away; they can exist in other books.
-            // However, we in fact do NOT use id's except for the internal database references.
-            // Instead, we always work with the String key.
-            // We will insert new entries
-            // but there is nothing to update as such.
-            serviceLocator.getBookIdentifierDao()
-                          .insertOrUpdate(Identifier.EntityType.Book,
-                                          book.getId(), book.getIdentifiers());
-        }
-
-        // Returning a book == deleting the loanee,
-        // is handled directly, here we only need to bother with insert/update
-        if (book.contains(DBKey.LOANEE_NAME)) {
-            serviceLocator.getLoaneeDao().setLoanee(book);
-        }
-
-        // Handle synchronisation field.
-        if (book.contains(DBKey.CALIBRE.BOOK_UUID)) {
-            // Calibre libraries will be inserted if new, but not updated
-            serviceLocator.getCalibreDao().insertOrUpdate(context, book);
-        }
-
-        // Handle synchronisation field.
-        if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
-            serviceLocator.getStripInfoDao().insertOrUpdate(book);
-        }
     }
 
     @Override

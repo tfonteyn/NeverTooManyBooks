@@ -26,8 +26,6 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +34,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
@@ -47,11 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -63,16 +57,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
- * <p>
- * Normal flow:
- * <ol>
- *     <li>Create this object</li>
- *     <li>Call {@link #process(Context, Book, boolean)}</li>
- *     <li>insert or update the book to the database</li>
- *     <li>Call {@link #persistCovers(Book)}</li>
- * </ol>
- * <p>
- * Processing and filtering is done in two methods to facilitate testing.
  */
 public class BookDaoHelper {
 
@@ -532,45 +516,5 @@ public class BookDaoHelper {
             }
         }
         return cv;
-    }
-
-    /**
-     * Called during {@link BookDao#insert} and {@link BookDao#update}.
-     *
-     * @param book to process
-     *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
-     */
-    @SuppressWarnings("OverlyBroadThrowsClause")
-    void persistCovers(@NonNull final Book book)
-            throws StorageException, IOException {
-
-        final String uuid = book.getUuid();
-        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
-
-        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
-            if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
-                final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-                    LoggerFactory.getLogger()
-                                 .d(TAG, "persistCovers",
-                                    "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
-                }
-
-                if (fileSpec.isEmpty()) {
-                    // A *present* but empty fileSpec indicates we need to delete the cover
-                    final int finalCIdx = cIdx;
-                    ASyncExecutor.STORAGE_WRITES.execute(
-                            () -> coverStorage.delete(uuid, finalCIdx));
-                } else {
-                    // Rename the temp file to the uuid permanent file name
-                    coverStorage.persist(new File(fileSpec), uuid, cIdx);
-                }
-
-                book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-            }
-        }
     }
 }

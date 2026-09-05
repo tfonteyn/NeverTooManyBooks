@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -35,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface BookDao {
@@ -75,22 +74,23 @@ public interface BookDao {
      * Create a new {@link Book}.
      *
      * @param context       Current context
-     * @param userLocale    to use
      * @param bookDaoHelper to use
      * @param book          object to insert. Will be updated with the id.
+     *                      May contain extra data which will be ignored.
      * @param flags         See {@link ImportFlag} for flag definitions
+     * <p>
+     * <strong>Transaction:</strong> required
      *
      * @return the row id of the newly inserted row
      *
-     * @throws DaoWriteException on failure
+     * @throws SQLException on failure
      */
     @IntRange(from = 1)
     long insert(@NonNull Context context,
-                @NonNull Locale userLocale,
                 @NonNull BookDaoHelper bookDaoHelper,
                 @NonNull Book book,
                 @NonNull Set<ImportFlag> flags)
-            throws DaoWriteException;
+            throws SQLException;
 
     /**
      * Update the given {@link Book}.
@@ -98,24 +98,24 @@ public interface BookDao {
      * This will update <strong>ONLY</strong> the fields present in the given Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
      * <p>
-     * TRIGGERS:
-     * - If the Code of a {@link Book} is changed, reset external ID's and sync dates.
+     * <strong>Transaction:</strong> required
+     * <p>
+     * TRIGGERS: If the {@link ProductCode} of a {@link Book} is changed,
+     * all external ID's and sync dates are reset.
      *
      * @param context       Current context
-     * @param userLocale    to use
      * @param bookDaoHelper to use
      * @param book          A collection with the columns to be set.
      *                      May contain extra data which will be ignored.
      * @param flags         See {@link ImportFlag} for flag definitions
      *
-     * @throws DaoWriteException on failure
+     * @throws SQLException on failure
      */
     void update(@NonNull Context context,
-                @NonNull Locale userLocale,
                 @NonNull BookDaoHelper bookDaoHelper,
                 @NonNull Book book,
                 @NonNull Set<ImportFlag> flags)
-            throws DaoWriteException;
+            throws SQLException;
 
     /**
      * Delete the given {@link Book} (and its covers).
