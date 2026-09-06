@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,6 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 
 //TODO: Maybe run TagMapperTask as part of the startup tasks?
@@ -53,8 +52,7 @@ public class TagMapperTask
     @Override
     @WorkerThread
     @NonNull
-    protected Map<Options, Integer> doWork()
-            throws DaoWriteException {
+    protected Map<Options, Integer> doWork() {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 

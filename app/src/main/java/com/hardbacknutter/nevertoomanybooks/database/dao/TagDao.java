@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -91,23 +90,16 @@ public interface TagDao {
      * @param tag to insert. Will be updated with the id
      *
      * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
      */
-
     @IntRange(from = 1)
-    long insert(@NonNull Tag tag)
-            throws DaoWriteException;
+    long insert(@NonNull Tag tag);
 
     /**
      * Update the given {@link Tag}.
      *
      * @param tag to update
-     *
-     * @throws DaoWriteException on failure
      */
-    void update(@NonNull Tag tag)
-            throws DaoWriteException;
+    void update(@NonNull Tag tag);
 
     /**
      * Delete the given {@link Tag}.
@@ -146,7 +138,7 @@ public interface TagDao {
                               @NonNull final Collection<Tag> list,
                               @NonNull final Function<Tag, Locale> localeSupplier) {
         return pruneList(context, list, localeSupplier,
-                // Don't look up the locale a 2nd time.
+                         // Don't look up the locale a 2nd time.
                          (current, locale) -> fixId(current));
     }
 
@@ -195,14 +187,11 @@ public interface TagDao {
      * @param bookId         of the book
      * @param list           the list of {@link Tag}s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
-     *
-     * @throws DaoWriteException on failure
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
                         @NonNull Collection<Tag> list,
-                        @NonNull Function<Tag, Locale> localeSupplier)
-            throws DaoWriteException;
+                        @NonNull Function<Tag, Locale> localeSupplier);
 
     /**
      * Get a list of the {@link Tag}s for a book.
@@ -233,15 +222,12 @@ public interface TagDao {
      * @param options a set of {@link TagMapperTask.Options}
      *
      * @return options + number of books modified
-     *
-     * @throws DaoWriteException on any failure
      */
     @NonNull
     Map<TagMapperTask.Options, Integer> applyTagMappings(
             @NonNull Context context,
             @NonNull Locale locale,
-            @NonNull Set<TagMapperTask.Options> options)
-            throws DaoWriteException;
+            @NonNull Set<TagMapperTask.Options> options);
 
     /**
      * Bulk import the given list of {@link Tag}s.
@@ -251,6 +237,7 @@ public interface TagDao {
      *
      * @return the number of entries actually inserted; can be {@code 0}.
      */
+    @SuppressWarnings("UnusedReturnValue")
     @WorkerThread
     int importRecords(@NonNull Collection<Tag> list);
 
@@ -263,12 +250,9 @@ public interface TagDao {
      * @param target  to move to
      *
      * @return amount of books moved
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Tag source,
-                  @NonNull Tag target)
-            throws DaoWriteException;
+                  @NonNull Tag target);
 }

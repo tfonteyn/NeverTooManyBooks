@@ -188,36 +188,29 @@ class EditTagDelegate
             return true;
         }
 
-        try {
-            final Optional<Tag> existingEntity = vm.saveIfUnique();
-            if (existingEntity.isEmpty()) {
-                // Success
-                new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                        .send(owner, requestKey);
-                return true;
-            }
-
-            // There is one with the same name; ask whether to merge the 2
-            StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
-                                       vm.getOriginal().getLabel(context), () -> {
-                        owner.dismiss();
-                        try {
-                            vm.move(context, existingEntity.get());
-                            // return the item which 'lost' it's books
-                            new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                                    .send(owner, requestKey);
-                        } catch (@NonNull final DaoWriteException e) {
-                            // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-                        }
-                    });
-            return false;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-            return false;
+        final Optional<Tag> existingEntity = vm.saveIfUnique();
+        if (existingEntity.isEmpty()) {
+            // Success
+            new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                    .send(owner, requestKey);
+            return true;
         }
+
+        // There is one with the same name; ask whether to merge the 2
+        StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
+                                   vm.getOriginal().getLabel(context), () -> {
+                    owner.dismiss();
+                    try {
+                        vm.move(context, existingEntity.get());
+                        // return the item which 'lost' it's books
+                        new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                                .send(owner, requestKey);
+                    } catch (@NonNull final DaoWriteException e) {
+                        // log, but ignore - should never happen unless disk full
+                        LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+                    }
+                });
+        return false;
     }
 
     @Override

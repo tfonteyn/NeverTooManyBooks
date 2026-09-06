@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
 import android.content.Context;
+import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -39,13 +40,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
 public class TagAdminViewModel
         extends ViewModel {
-
-    private static final String TAG = "TagAdminViewModel";
 
     private final TagMapperTask mapperTask = new TagMapperTask();
     private final TagDao tagDao;
@@ -104,10 +102,9 @@ public class TagAdminViewModel
      *
      * @return the <strong>position</strong> in the list
      *
-     * @throws DaoWriteException on failure
+     * @throws SQLException on failure
      */
-    int insert(@NonNull final Tag tag)
-            throws DaoWriteException {
+    int insert(@NonNull final Tag tag) {
 
         tagDao.insert(tag);
 
@@ -121,8 +118,14 @@ public class TagAdminViewModel
         return position;
     }
 
-    void update(@NonNull final Tag tag)
-            throws DaoWriteException {
+    /**
+     * Update the given {@link Tag} into the database.
+     *
+     * @param tag to update
+     *
+     * @throws SQLException on failure
+     */
+    void update(@NonNull final Tag tag) {
         tagDao.update(tag);
     }
 
@@ -137,15 +140,10 @@ public class TagAdminViewModel
                       final int existingPos) {
         final Tag source = tags.get(position);
         final Tag target = tags.get(existingPos);
-        try {
-            tagDao.moveBooks(context, source, target);
-            tags.remove(position);
-            return true;
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, source);
-            return false;
-        }
+
+        tagDao.moveBooks(context, source, target);
+        tags.remove(position);
+        return true;
     }
 
     @NonNull

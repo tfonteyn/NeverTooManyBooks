@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag;
 
 import android.content.Context;
+import android.database.SQLException;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -100,11 +101,10 @@ public class EditTagViewModel
      *
      * @return an empty Optional for SUCCESS, or else the existing Tag.
      *
-     * @throws DaoWriteException on failure
+     * @throws SQLException on failure
      */
     @NonNull
-    Optional<Tag> saveIfUnique()
-            throws DaoWriteException {
+    Optional<Tag> saveIfUnique() {
 
         // FIRST check if the name was changed
         final boolean sameName = original.isSameName(currentEdit);

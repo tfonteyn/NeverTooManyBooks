@@ -46,12 +46,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagNamesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagNameBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -80,14 +78,6 @@ public class TagEditorFragment
     private static final String RK_TAG = TAG + ":rk:tag";
     private static final String BKEY_POSITION = TAG + ":pos";
     private static final int POS_NEW_ENTRY = -1;
-
-    private FragmentEditTagNamesBinding vb;
-    private TagAdapter adapter;
-    private ExtMenuLauncher menuLauncher;
-    private EditStringLauncher editLauncher;
-
-    private TagAdminViewModel vm;
-
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
@@ -101,6 +91,11 @@ public class TagEditorFragment
             showContextMenu(v, position);
         }
     };
+    private FragmentEditTagNamesBinding vb;
+    private TagAdapter adapter;
+    private ExtMenuLauncher menuLauncher;
+    private EditStringLauncher editLauncher;
+    private TagAdminViewModel vm;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -239,26 +234,20 @@ public class TagEditorFragment
         // brute force... the user modified something
         vm.setModified();
 
-        try {
-            Objects.requireNonNull(extras);
-            final int position = extras.getInt(BKEY_POSITION);
+        Objects.requireNonNull(extras);
+        final int position = extras.getInt(BKEY_POSITION);
 
-            if (position == POS_NEW_ENTRY) {
-                // User was adding a new tag
-                addEntry(tagName);
-            } else {
-                // User was editing an existing tag
-                updateEntry(tagName, position);
-            }
-        } catch (@NonNull final DaoWriteException e) {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), TAG, e);
+        if (position == POS_NEW_ENTRY) {
+            // User was adding a new tag
+            addEntry(tagName);
+        } else {
+            // User was editing an existing tag
+            updateEntry(tagName, position);
         }
     }
 
 
-    private void addEntry(@NonNull final String tagName)
-            throws DaoWriteException {
+    private void addEntry(@NonNull final String tagName) {
         // check by NAME it's not already in the list.
         final int existingPos = vm.findTagPosition(tagName);
 
@@ -276,8 +265,7 @@ public class TagEditorFragment
     }
 
     private void updateEntry(@NonNull final String tagName,
-                             final int position)
-            throws DaoWriteException {
+                             final int position) {
 
         // check by NAME it's not already in the list.
         final int existingPos = vm.findTagPosition(tagName);
