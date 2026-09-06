@@ -146,9 +146,9 @@ public class EditBookshelvesViewModel
         return findSelectedPosition(selectedBookshelfId);
     }
 
-    void setSelectedPosition(final int position) {
+    void setSelectedPosition(final int listIndex) {
         modified = true;
-        selectedBookshelfId = list.get(position).getId();
+        selectedBookshelfId = list.get(listIndex).getId();
     }
 
     /**

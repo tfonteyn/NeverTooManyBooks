@@ -108,14 +108,14 @@ public class EditBookshelvesFragment
         }
 
         @Override
-        public void setSelectedPosition(final int position) {
-            vm.setSelectedPosition(position);
+        public void setSelectedPosition(final int listIndex) {
+            vm.setSelectedPosition(listIndex);
         }
 
         @Override
         public void onShowContextMenu(@NonNull final View anchor,
-                                      final int position) {
-            showContextMenu(anchor, position);
+                                      final int listIndex) {
+            showContextMenu(anchor, listIndex);
         }
     };
     /** View Binding. */
@@ -197,19 +197,19 @@ public class EditBookshelvesFragment
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showContextMenu(@NonNull final View anchor,
-                                 final int position) {
+                                 final int listIndex) {
         final Context context = anchor.getContext();
         final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
 
         final boolean isDefaultBookshelf =
-                vm.getBookshelf(position).getId() == vm.getDefaultBookshelf().getId();
+                vm.getBookshelf(listIndex).getId() == vm.getDefaultBookshelf().getId();
         // enable/disable as needed
         menu.findItem(R.id.MENU_SET_DEFAULT).setEnabled(!isDefaultBookshelf);
         // - deleting the default is not allowed
         // - prevents deleting the last/only shelf, as that would also be the default.
         menu.findItem(R.id.MENU_DELETE).setEnabled(!isDefaultBookshelf);
 
-        menuLauncher.launch(anchor, null, null, position, menu);
+        menuLauncher.launch(anchor, null, null, listIndex, menu);
     }
 
     /**
@@ -286,16 +286,16 @@ public class EditBookshelvesFragment
 
         int getSelectedPosition();
 
-        void setSelectedPosition(int position);
+        void setSelectedPosition(int listIndex);
 
         /**
          * Show the menu.
          *
          * @param anchor   view
-         * @param position the position (index) in the list of items.
+         * @param listIndex the index in the list of items.
          */
         void onShowContextMenu(@NonNull View anchor,
-                               int position);
+                               int listIndex);
     }
 
     public static class Holder
