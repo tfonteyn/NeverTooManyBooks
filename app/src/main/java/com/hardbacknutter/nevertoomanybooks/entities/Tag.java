@@ -193,6 +193,6 @@ public class Tag
 
     @Override
     public int compareTo(@NonNull final Tag o) {
-        return name.compareTo(o.name);
+        return name.compareToIgnoreCase(o.name);
     }
 }
