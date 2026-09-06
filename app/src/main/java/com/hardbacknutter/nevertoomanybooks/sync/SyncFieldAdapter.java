@@ -78,9 +78,9 @@ public class SyncFieldAdapter
 
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
-                                 final int position) {
+                                 final int gridPosition) {
 
-        final int listIndex = gridToListPosition(position);
+        final int listIndex = gridToListPosition(gridPosition);
         if (listIndex == RecyclerView.NO_POSITION) {
             holder.onBind(null);
         } else {
