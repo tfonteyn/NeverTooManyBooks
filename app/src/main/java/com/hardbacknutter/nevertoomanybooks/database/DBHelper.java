@@ -91,7 +91,7 @@ public class DBHelper
      * v7.13.0: 50
      * v7.16.0: 51
      * v8.0.0: 52
-     * v8.1.0: 53
+     * v8.0.1: 53
      * <p>
      * Current version.
      */
