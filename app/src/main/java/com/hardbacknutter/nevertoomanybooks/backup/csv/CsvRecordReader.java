@@ -150,6 +150,7 @@ public class CsvRecordReader
      * @return a list with the row fields. The case is preserved.
      *
      * @throws DataReaderException on failure to parse this line
+     *                             or wrapping a {@code StackOverflowError}.
      */
     @AnyThread
     @NonNull
@@ -379,6 +380,7 @@ public class CsvRecordReader
                 txLock = db.beginTransaction(true);
             }
             try {
+                // throws DataReaderException
                 final List<String> csvDataRow = parse(context, row, books.get(row));
 
                 if (csvDataRow.size() == csvColumnNames.size()) {

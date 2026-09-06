@@ -117,7 +117,7 @@ public class BookRepository {
             final long iId = bookDao.insert(context, bookDaoHelper, book, flags);
 
             // add the links to series, authors,...
-            insertBookLinks(context, userLocale, book, flags);
+            insertBookLinks(context, book, flags);
 
             // populate the search suggestions table
             ServiceLocator.getInstance().getFtsDao().insert(book);
@@ -191,7 +191,7 @@ public class BookRepository {
             bookDao.update(context, bookDaoHelper, book, flags);
 
             // add the links to series, authors,...
-            insertBookLinks(context, userLocale, book, flags);
+            insertBookLinks(context, book, flags);
 
             // populate the search suggestions table
             ServiceLocator.getInstance().getFtsDao().update(book.getId());
@@ -224,7 +224,6 @@ public class BookRepository {
      * <strong>Transaction:</strong> required
      *
      * @param context    Current context
-     * @param userLocale Current Locale
      * @param book       A collection with the columns to be set. May contain extra data.
      * @param flags      See {@link BookDao.ImportFlag} for flag definitions
      *
@@ -232,7 +231,6 @@ public class BookRepository {
      * @throws TransactionException (debug) if there is no current transaction
      */
     private void insertBookLinks(@NonNull final Context context,
-                                 @NonNull final Locale userLocale,
                                  @NonNull final Book book,
                                  @NonNull final Set<BookDao.ImportFlag> flags)
             throws DaoWriteException {
@@ -243,8 +241,7 @@ public class BookRepository {
             }
         }
 
-        // Only lookup locales
-        // when we're NOT in batch mode (i.e. NOT doing an import)
+        // Only lookup locales when we're NOT in batch mode (i.e. NOT doing an import)
         final boolean lookupLocale = !flags.contains(BookDao.ImportFlag.RunInBatch);
 
         // FIXME: apply useIdIfPresent to the tags collection, perhaps to others as well
