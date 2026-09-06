@@ -105,8 +105,12 @@ public class RowViewHolder
      */
     public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
         if (listener != null) {
-            clickTargetView.setOnClickListener(v -> listener
-                    .onClick(v, getBindingAdapterPosition()));
+            clickTargetView.setOnClickListener(v -> {
+                final int gridPosition = getBindingAdapterPosition();
+                if (gridPosition != RecyclerView.NO_POSITION) {
+                    listener.onClick(v, gridPosition);
+                }
+            });
         } else {
             clickTargetView.setOnClickListener(null);
         }
@@ -125,14 +129,22 @@ public class RowViewHolder
         if (listener != null && contextMenuMode != null) {
             // long-click on the background
             clickTargetView.setOnLongClickListener(v -> {
-                listener.onClick(v, getBindingAdapterPosition());
-                return true;
+                final int gridPosition = getBindingAdapterPosition();
+                if (gridPosition != RecyclerView.NO_POSITION) {
+                    listener.onClick(v, gridPosition);
+                    return true;
+                }
+                return false;
             });
 
             // Add a dedicated button as per user-preference.
             if (btnRowMenu != null) {
-                btnRowMenu.setOnClickListener(
-                        v -> listener.onClick(v, getBindingAdapterPosition()));
+                btnRowMenu.setOnClickListener(v -> {
+                    final int gridPosition = getBindingAdapterPosition();
+                    if (gridPosition != RecyclerView.NO_POSITION) {
+                        listener.onClick(v, gridPosition);
+                    }
+                });
 
                 final int visibility = getButtonVisibility(contextMenuMode);
                 btnRowMenu.setVisibility(visibility);
