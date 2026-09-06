@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagMappingsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagMappingBinding;
@@ -251,26 +250,20 @@ public class TagMappingEditorFragment
             return;
         }
 
-        try {
-            Objects.requireNonNull(extras);
-            final int listIndex = extras.getInt(BKEY_LIST_INDEX);
+        Objects.requireNonNull(extras);
+        final int listIndex = extras.getInt(BKEY_LIST_INDEX);
 
-            if (listIndex == POS_NEW_ENTRY) {
-                // User was adding a new mapping
-                addEntry(edit);
-            } else {
-                // User was editing an existing mapping
-                updateEntry(original, listIndex, edit);
-            }
-        } catch (@NonNull final DaoWriteException e) {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), TAG, e);
+        if (listIndex == POS_NEW_ENTRY) {
+            // User was adding a new mapping
+            addEntry(edit);
+        } else {
+            // User was editing an existing mapping
+            updateEntry(original, listIndex, edit);
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void addEntry(@NonNull final TagMapping tagMapping)
-            throws DaoWriteException {
+    private void addEntry(@NonNull final TagMapping tagMapping) {
 
         // check by NAME it's not already in the list.
         final int existingListIndex = vm.findTagMappingListIndex(tagMapping.getTagName());
@@ -298,8 +291,7 @@ public class TagMappingEditorFragment
 
     private void updateEntry(@NonNull final TagMapping original,
                              final int listIndex,
-                             @NonNull final TagMapping tagMapping)
-            throws DaoWriteException {
+                             @NonNull final TagMapping tagMapping) {
 
         // check by NAME it's not already in the list.
         final int existingListIndex = vm.findTagMappingListIndex(tagMapping.getTagName());

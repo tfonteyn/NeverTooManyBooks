@@ -314,7 +314,8 @@ public class TagDaoImpl
     @IntRange(from = 0)
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Tag source,
-                         @NonNull final Tag target) {
+                         @NonNull final Tag target)
+            throws SQLException {
 
         int booksMoved;
 

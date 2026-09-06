@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
 import android.content.Context;
-import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -34,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -103,11 +101,8 @@ public class TagAdminViewModel
      * @param tag to insert
      *
      * @return the <strong>index</strong> in the list
-     *
-     * @throws SQLException on failure
      */
     int insert(@NonNull final Tag tag) {
-
         tagDao.insert(tag);
 
         // find insertion point using a brute-force sequential search...
@@ -124,15 +119,13 @@ public class TagAdminViewModel
      * Update the given {@link Tag} into the database.
      *
      * @param tag to update
-     *
-     * @throws SQLException on failure
      */
     void update(@NonNull final Tag tag) {
         tagDao.update(tag);
     }
 
     /**
-     * Delete a tag.
+     * Delete a {@link Tag}.
      *
      * @param listIndex the index of the item in the list
      */
@@ -150,8 +143,8 @@ public class TagAdminViewModel
      * @param existingListIndex of the tag <strong>to</strong> which the books will be moved
      */
     void moveBooks(@NonNull final Context context,
-                      final int listIndex,
-                      final int existingListIndex) {
+                   final int listIndex,
+                   final int existingListIndex) {
         final Tag source = tags.get(listIndex);
         final Tag target = tags.get(existingListIndex);
 
@@ -187,12 +180,8 @@ public class TagAdminViewModel
      * @param tagMapping to insert
      *
      * @return the <strong>index</strong> in the list
-     *
-     * @throws DaoWriteException on failure
      */
-    int insert(@NonNull final TagMapping tagMapping)
-            throws DaoWriteException {
-
+    int insert(@NonNull final TagMapping tagMapping) {
         tagMappingDao.insert(tagMapping);
 
         // find insertion point using a brute-force sequential search...
@@ -206,13 +195,17 @@ public class TagAdminViewModel
         return listIndex;
     }
 
-    void update(@NonNull final TagMapping tagMapping)
-            throws DaoWriteException {
+    /**
+     * Update the given {@link TagMapping} into the database.
+     *
+     * @param tagMapping to update
+     */
+    void update(@NonNull final TagMapping tagMapping) {
         tagMappingDao.update(tagMapping);
     }
 
     /**
-     * Delete a mapping.
+     * Delete a {@link TagMapping}.
      *
      * @param listIndex the index of the item in the list
      */

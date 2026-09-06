@@ -568,9 +568,7 @@ public class JsonRecordReader
         }
     }
 
-    private void readTagMappings(@NonNull final JSONObject root)
-            throws DaoWriteException {
-
+    private void readTagMappings(@NonNull final JSONObject root) {
         // a sub container for {@link TagMapping} objects.
         final JSONArray elements = root.optJSONArray(DBKey.TAGS.TAG_MAPPING);
         if (elements != null) {
@@ -578,13 +576,11 @@ public class JsonRecordReader
             for (final TagMapping tagMapping : new TagMappingCoder().decode(elements)) {
                 processTagMapping(dao, tagMapping);
             }
-
         }
     }
 
     private void processTagMapping(@NonNull final TagMappingDao dao,
-                                   @NonNull final TagMapping tagMapping)
-            throws DaoWriteException {
+                                   @NonNull final TagMapping tagMapping) {
         dao.fixId(tagMapping);
         if (tagMapping.getId() > 0) {
             // The field already exists

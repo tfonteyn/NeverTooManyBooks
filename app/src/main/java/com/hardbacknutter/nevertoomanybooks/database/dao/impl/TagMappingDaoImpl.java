@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -164,7 +163,7 @@ public class TagMappingDaoImpl
     @IntRange(from = 1)
     @Override
     public long insert(@NonNull final TagMapping mapping)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             final long iId = doInsert(mapping.getTagName(), mapping.getMappings(), stmt);
@@ -172,13 +171,13 @@ public class TagMappingDaoImpl
             return iId;
         } catch (@NonNull final SQLException e) {
             mapping.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
         }
     }
 
     @Override
     public void update(@NonNull final TagMapping mapping)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, mapping.getTagName());
@@ -186,13 +185,12 @@ public class TagMappingDaoImpl
 
             stmt.bindLong(3, mapping.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + mapping);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
     @Override
-    public void delete(@NonNull final TagMapping mapping) {
+    public void delete(@NonNull final TagMapping mapping)
+            throws SQLException {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, mapping.getId());
             stmt.executeUpdateDelete(null);
