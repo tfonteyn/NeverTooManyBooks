@@ -40,11 +40,9 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Languages.
@@ -441,11 +439,7 @@ public class Languages {
             return;
         }
 
-        try {
-            isoLanguageDao.get().add(locale);
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-        }
+        isoLanguageDao.get().add(locale);
 
         // remember this Locale was done
         preferences.edit()
