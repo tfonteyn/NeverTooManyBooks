@@ -76,21 +76,23 @@ public class TagEditorFragment
     private static final String TAG = "TagEditorFragment";
     private static final String RK_MENU = TAG + ":rk:menu";
     private static final String RK_TAG = TAG + ":rk:tag";
-    private static final String BKEY_POSITION = TAG + ":pos";
+    private static final String BKEY_LIST_INDEX = TAG + ":idx";
     private static final int POS_NEW_ENTRY = -1;
+
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
-        public void onEdit(final int position) {
-            editEntry(vm.getTags().get(position), position);
+        public void onEdit(final int listIndex) {
+            editEntry(vm.getTags().get(listIndex), listIndex);
         }
 
         @Override
         public void onShowContextMenu(@NonNull final View v,
-                                      final int position) {
-            showContextMenu(v, position);
+                                      final int listIndex) {
+            showContextMenu(v, listIndex);
         }
     };
+
     private FragmentEditTagNamesBinding vb;
     private TagAdapter adapter;
     private ExtMenuLauncher menuLauncher;
@@ -162,33 +164,33 @@ public class TagEditorFragment
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showContextMenu(@NonNull final View anchor,
-                                 final int position) {
+                                 final int listIndex) {
         final Context context = anchor.getContext();
         final Menu menu = MenuUtils.createEditDeleteContextMenu(context);
         menu.add(Menu.NONE, R.id.MENU_ACTION_ADD, 999,
                  R.string.lbl_add_or_edit_substitution)
             .setIcon(R.drawable.add_24px);
 
-        menuLauncher.launch(anchor, null, null, position, menu);
+        menuLauncher.launch(anchor, null, null, listIndex, menu);
     }
 
     /**
      * Menu selection listener.
      *
-     * @param position   in the list
+     * @param listIndex  the index of the item in the list
      * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(final int position,
+    private boolean onMenuItemSelected(final int listIndex,
                                        @IdRes final int menuItemId) {
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editEntry(vm.getTags().get(position), position);
+            editEntry(vm.getTags().get(listIndex), listIndex);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
-            deleteEntry(position);
+            deleteEntry(listIndex);
             return true;
 
         } else if (menuItemId == R.id.MENU_ACTION_ADD) {
@@ -198,7 +200,7 @@ public class TagEditorFragment
                     .filter(f -> f instanceof TagAdminFragment)
                     .findFirst()
                     .ifPresent(f -> ((TagAdminFragment) f)
-                            .editOrCreateMapping(vm.getTags().get(position)));
+                            .editOrCreateMapping(vm.getTags().get(listIndex)));
             return true;
         }
         return false;
@@ -207,13 +209,14 @@ public class TagEditorFragment
     /**
      * Start the fragment dialog to edit an entry.
      *
-     * @param tag      to edit
-     * @param position the position of the item; use {@link #POS_NEW_ENTRY} for a new entry.
+     * @param tag       to edit
+     * @param listIndex the index of the item in the list;
+     *                  Use {@link #POS_NEW_ENTRY} for a new entry.
      */
     private void editEntry(@NonNull final Tag tag,
-                           final int position) {
+                           final int listIndex) {
         final Bundle extras = new Bundle();
-        extras.putInt(BKEY_POSITION, position);
+        extras.putInt(BKEY_LIST_INDEX, listIndex);
         //noinspection DataFlowIssue
         editLauncher.launch(getActivity(),
                             getString(R.string.lbl_tag), null,
@@ -235,60 +238,75 @@ public class TagEditorFragment
         vm.setModified();
 
         Objects.requireNonNull(extras);
-        final int position = extras.getInt(BKEY_POSITION);
+        final int listIndex = extras.getInt(BKEY_LIST_INDEX);
 
-        if (position == POS_NEW_ENTRY) {
+        if (listIndex == POS_NEW_ENTRY) {
             // User was adding a new tag
             addEntry(tagName);
         } else {
             // User was editing an existing tag
-            updateEntry(tagName, position);
+            updateEntry(tagName, listIndex);
         }
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private void addEntry(@NonNull final String tagName) {
-        // check by NAME it's not already in the list.
-        final int existingPos = vm.findTagPosition(tagName);
 
-        if (existingPos >= 0) {
-            // Trying to add a NEW one already there. Just reject it...
+        // check by NAME it's not already in the list.
+        final int existingListIndex = vm.findTagListIndex(tagName);
+
+        if (existingListIndex == -1) {
+            // It's a new entry, add it
+            final int listIndex = vm.insert(new Tag(tagName));
+            // due to transposing row and columns, we MUST refresh the whole set.
+            adapter.notifyDataSetChanged();
+
+            final int gridPosition = adapter.listIndexToGridPosition(listIndex);
+            if (gridPosition != RecyclerView.NO_POSITION) {
+                vb.tagList.scrollToPosition(gridPosition);
+            }
+        } else {
+            // Trying to add a NEW one already there, reject it
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
                           Snackbar.LENGTH_LONG).show();
-            vb.tagList.scrollToPosition(existingPos);
-        } else {
-            // It's a new entry, add it
-            final int position = vm.insert(new Tag(tagName));
-            adapter.notifyItemInserted(position);
-            vb.tagList.scrollToPosition(position);
+            vb.tagList.scrollToPosition(adapter.listIndexToGridPosition(existingListIndex));
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void updateEntry(@NonNull final String tagName,
-                             final int position) {
+                             final int listIndex) {
 
         // check by NAME it's not already in the list.
-        final int existingPos = vm.findTagPosition(tagName);
+        final int existingListIndex = vm.findTagListIndex(tagName);
 
         // we only get here if the new name IS different from the previous name
         // ... no need to compare positions
-        if (existingPos == -1) {
+        if (existingListIndex == -1) {
             // update with the new data.
-            final Tag tag = vm.getTags().get(position);
+            final Tag tag = vm.getTags().get(listIndex);
             tag.setName(tagName);
 
             vm.update(tag);
-            adapter.notifyItemChanged(position);
-            vb.tagList.scrollToPosition(position);
+
+            final int gridPosition = adapter.listIndexToGridPosition(listIndex);
+            adapter.notifyItemChanged(gridPosition);
+            vb.tagList.scrollToPosition(gridPosition);
 
         } else {
             // Renaming a tag to have the same name as another/existing tag, propose to merge
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.askToMerge(context, R.string.confirm_merge_tags, tagName, () -> {
-                if (vm.moveBooks(context, position, existingPos)) {
-                    adapter.notifyItemRemoved(position);
-                    vb.tagList.scrollToPosition(existingPos);
+                vm.moveBooks(context, listIndex, existingListIndex);
+
+                // due to transposing row and columns, we MUST refresh the whole set.
+                adapter.notifyDataSetChanged();
+
+                final int gridPosition = adapter.listIndexToGridPosition(existingListIndex);
+                if (gridPosition != RecyclerView.NO_POSITION) {
+                    vb.tagList.scrollToPosition(gridPosition);
                 }
             });
         }
@@ -297,14 +315,16 @@ public class TagEditorFragment
     /**
      * Prompt the user to delete the given item.
      *
-     * @param position the position of the item
+     * @param listIndex the index of the item in the list
      */
-    private void deleteEntry(final int position) {
-        final Tag tag = vm.getTags().get(position);
+    @SuppressLint("NotifyDataSetChanged")
+    private void deleteEntry(final int listIndex) {
+        final Tag tag = vm.getTags().get(listIndex);
         //noinspection DataFlowIssue
         StandardDialogs.deleteTag(getContext(), tag, vm.countBooks(tag), () -> {
-            vm.deleteTag(position);
-            adapter.notifyItemRemoved(position);
+            vm.deleteTag(listIndex);
+            // due to transposing row and columns, we MUST refresh the whole set.
+            adapter.notifyDataSetChanged();
         });
     }
 
@@ -313,20 +333,20 @@ public class TagEditorFragment
      */
     private interface PositionHandler {
         /**
-         * Edit the given position.
+         * Edit the given listIndex.
          *
-         * @param position the position (index) in the list of items.
+         * @param listIndex the index of the item in the list
          */
-        void onEdit(int position);
+        void onEdit(int listIndex);
 
         /**
          * Show the menu.
          *
-         * @param anchor   view
-         * @param position the position (index) in the list of items.
+         * @param anchor    view
+         * @param listIndex the index of the item in the list
          */
         void onShowContextMenu(@NonNull View anchor,
-                               int position);
+                               int listIndex);
     }
 
     /**
@@ -388,7 +408,7 @@ public class TagEditorFragment
 
             // click -> edit
             holder.setOnRowClickListener((v, gridPosition) -> {
-                final int listIndex = gridToListPosition(gridPosition);
+                final int listIndex = gridPositionToListIndex(gridPosition);
                 requireValidOrThrow(listIndex, gridPosition);
                 positionHandler.onEdit(listIndex);
             });
@@ -396,7 +416,7 @@ public class TagEditorFragment
             // long-click -> context menu
             holder.setOnRowLongClickListener(
                     ExtMenuButton.getPreferredMode(), (v, gridPosition) -> {
-                        final int listIndex = gridToListPosition(gridPosition);
+                        final int listIndex = gridPositionToListIndex(gridPosition);
                         requireValidOrThrow(listIndex, gridPosition);
                         positionHandler.onShowContextMenu(v, listIndex);
                     });
@@ -407,7 +427,7 @@ public class TagEditorFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int gridPosition) {
-            final int listIndex = gridToListPosition(gridPosition);
+            final int listIndex = gridPositionToListIndex(gridPosition);
             if (listIndex == RecyclerView.NO_POSITION) {
                 holder.onBind(null);
             } else {
@@ -416,7 +436,7 @@ public class TagEditorFragment
         }
 
         @Override
-        protected int getListSize() {
+        public int getItemCount() {
             return items.size();
         }
     }

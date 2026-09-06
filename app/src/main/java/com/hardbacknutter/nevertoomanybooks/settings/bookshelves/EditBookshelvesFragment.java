@@ -242,16 +242,14 @@ public class EditBookshelvesFragment
             StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
                 //noinspection DataFlowIssue
                 vm.deleteBookshelf(getContext(), bookshelf);
-                // - we're transposing row and columns
-                // - and potentially changing the default/selected shelf
-                // => we always MUST refresh the whole set.
+                // due to transposing row and columns, we MUST refresh the whole set.
                 adapter.notifyDataSetChanged();
             });
             return true;
 
         } else if (menuItemId == R.id.MENU_SET_DEFAULT) {
             vm.setDefaultBookshelf(bookshelf);
-            // see above
+            // due to transposing row and columns, we MUST refresh the whole set.
             adapter.notifyDataSetChanged();
             return true;
 
@@ -370,10 +368,10 @@ public class EditBookshelvesFragment
             // click -> select the row
             holder.setOnRowClickListener((v, gridPosition) -> {
                 // first update the previous, now unselected, row.
-                notifyItemChanged(listToGridPosition(positionHandler.getSelectedPosition()));
+                notifyItemChanged(listIndexToGridPosition(positionHandler.getSelectedPosition()));
 
                 // store the newly selected row.
-                final int listIndex = gridToListPosition(gridPosition);
+                final int listIndex = gridPositionToListIndex(gridPosition);
                 requireValidOrThrow(listIndex, gridPosition);
                 positionHandler.setSelectedPosition(listIndex);
 
@@ -384,7 +382,7 @@ public class EditBookshelvesFragment
             // long-click -> context menu
             holder.setOnRowLongClickListener(
                     ExtMenuButton.getPreferredMode(), (v, gridPosition) -> {
-                        final int listIndex = gridToListPosition(gridPosition);
+                        final int listIndex = gridPositionToListIndex(gridPosition);
                         requireValidOrThrow(listIndex, gridPosition);
                         positionHandler.onShowContextMenu(v, listIndex);
                     });
@@ -395,7 +393,7 @@ public class EditBookshelvesFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int gridPosition) {
-            final int listIndex = gridToListPosition(gridPosition);
+            final int listIndex = gridPositionToListIndex(gridPosition);
             if (listIndex == RecyclerView.NO_POSITION) {
                 holder.onBind(null, false);
             } else {
@@ -407,7 +405,7 @@ public class EditBookshelvesFragment
         }
 
         @Override
-        protected int getListSize() {
+        public int getItemCount() {
             return items.size();
         }
     }

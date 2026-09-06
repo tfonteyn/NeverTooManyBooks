@@ -31,7 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<HOLDER> {
 
-    private static final String ERROR_NO_LIST_INDEX_FOR_POSITION = "No ListIndex for position=";
+    private static final String ERROR_NO_LIST_INDEX_FOR_POSITION =
+            "No listIndex for gridPosition=";
 
     private final int columnCount;
 
@@ -44,9 +45,9 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
         this.columnCount = columnCount;
     }
 
-    protected void requireValidOrThrow(final int position,
+    protected void requireValidOrThrow(final int listIndex,
                                        final int gridPosition) {
-        if (position == RecyclerView.NO_POSITION) {
+        if (listIndex == RecyclerView.NO_POSITION) {
             // Should never get here
             throw new IllegalStateException(ERROR_NO_LIST_INDEX_FOR_POSITION + gridPosition);
         }
@@ -72,65 +73,96 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
     }
 
     /**
-     * Convert the given grid-position to the list-index (position).
+     * Convert the given grid-position to the list-index.
      *
      * @param gridPosition to convert
      *
-     * @return the index (position) into the item-list
+     * @return the index of the item in the list
      */
-    protected int gridToListPosition(final int gridPosition) {
-        final int listSize = getListSize();
-        final int rowCount = getRowCount(listSize);
+    protected int gridPositionToListIndex(final int gridPosition) {
+        final int listSize = getItemCount();
+        // Paranoia
+        if (listSize <= 0 || gridPosition < 0) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        final int maxRowCount = getRowCount(listSize);
+        final int remainder = listSize % columnCount;
 
         final int column = gridPosition % columnCount;
         final int row = gridPosition / columnCount;
 
-        final int listIndex = row + (column * rowCount);
+        // Determine exact height of *this* specific column
+        final int thisColHeight = (remainder == 0 || column < remainder)
+                                  ? maxRowCount
+                                  : maxRowCount - 1;
 
-        if (listIndex < listSize) {
-            return listIndex;
+        // Paranoia: Check if it is outside the populated rows of this column
+        // This should never be the case
+        if (row >= thisColHeight) {
+            return RecyclerView.NO_POSITION;
         }
-        return RecyclerView.NO_POSITION;
+
+        final int listIndex;
+        if (remainder == 0 || column < remainder) {
+            listIndex = row + (column * maxRowCount);
+        } else {
+            final int fullColsItems = remainder * maxRowCount;
+            final int shortColsItems = (column - remainder) * (maxRowCount - 1);
+            listIndex = row + fullColsItems + shortColsItems;
+        }
+
+        return (listIndex < listSize) ? listIndex : RecyclerView.NO_POSITION;
     }
 
     /**
-     * Convert the given list-index (position) to the grid-position.
+     * Convert the given list-index to the grid-position.
      *
      * @param listIndex to convert
      *
      * @return grid-position
      */
-    protected int listToGridPosition(final int listIndex) {
-        final int listSize = getListSize();
-        final int rowCount = getRowCount(listSize);
+    public int listIndexToGridPosition(final int listIndex) {
+        final int listSize = getItemCount();
+        // Paranoia
+        if (listIndex < 0 || listIndex >= listSize || columnCount <= 0) {
+            return RecyclerView.NO_POSITION;
+        }
 
-        final int column = listIndex / rowCount;
-        final int row = listIndex % rowCount;
+        final int maxRowCount = getRowCount(listSize);
+        final int remainder = listSize % columnCount;
+
+        // Total items stored in the taller columns on the left
+        final int fullColsCapacity = (remainder == 0)
+                                     ? listSize
+                                     : remainder * maxRowCount;
+
+        final int column;
+        final int row;
+
+        if (remainder == 0 || listIndex < fullColsCapacity) {
+            // 'Full' column
+            column = listIndex / maxRowCount;
+            row = listIndex % maxRowCount;
+        } else {
+            // Shorter column
+            final int shortRowCount = maxRowCount - 1;
+            final int offsetIndex = listIndex - fullColsCapacity;
+
+            column = remainder + (offsetIndex / shortRowCount);
+            row = offsetIndex % shortRowCount;
+        }
 
         return (row * columnCount) + column;
     }
 
     @SuppressWarnings("WeakerAccess")
     protected int getRowCount(final int listSize) {
-        return (int) Math.ceil((double) listSize / columnCount);
-    }
-
-    /**
-     * Acts like the original getItemCount() method.
-     *
-     * @return the actual item count in the list of items
-     */
-    protected abstract int getListSize();
-
-    /**
-     * Return the <strong>CELL COUNT</strong> for the grid.
-     *
-     * @return cell count
-     */
-    @Override
-    public int getItemCount() {
-        final int listSize = getListSize();
-        final int rowCount = getRowCount(listSize);
-        return rowCount * columnCount;
+        // Paranoia checks
+        if (listSize <= 0 || columnCount <= 0) {
+            return 0;
+        }
+        // Math.ceil((double) listSize / columnCount)
+        return (listSize + columnCount - 1) / columnCount;
     }
 }

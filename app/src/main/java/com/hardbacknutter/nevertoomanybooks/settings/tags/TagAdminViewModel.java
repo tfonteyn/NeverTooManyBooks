@@ -77,6 +77,7 @@ public class TagAdminViewModel
 
     @NonNull
     List<Tag> getTags() {
+        // used directly by the adapter.
         return tags;
     }
 
@@ -85,10 +86,11 @@ public class TagAdminViewModel
      *
      * @param tagName to find
      *
-     * @return position, or {@code -1} if not found
+     * @return the <strong>index</strong> in the list,
+     *         or {@code -1} if not found
      */
     @IntRange(from = -1)
-    int findTagPosition(@NonNull final String tagName) {
+    int findTagListIndex(@NonNull final String tagName) {
         return tags.stream()
                    .map(Tag::getName)
                    .collect(Collectors.toList())
@@ -100,7 +102,7 @@ public class TagAdminViewModel
      *
      * @param tag to insert
      *
-     * @return the <strong>position</strong> in the list
+     * @return the <strong>index</strong> in the list
      *
      * @throws SQLException on failure
      */
@@ -109,13 +111,13 @@ public class TagAdminViewModel
         tagDao.insert(tag);
 
         // find insertion point using a brute-force sequential search...
-        int position = 0;
-        while (position < tags.size() && tags.get(position).compareTo(tag) < 0) {
-            position++;
+        int listIndex = 0;
+        while (listIndex < tags.size() && tags.get(listIndex).compareTo(tag) < 0) {
+            listIndex++;
         }
-        tags.add(position, tag);
+        tags.add(listIndex, tag);
 
-        return position;
+        return listIndex;
     }
 
     /**
@@ -129,21 +131,32 @@ public class TagAdminViewModel
         tagDao.update(tag);
     }
 
-    void deleteTag(final int position) {
-        final Tag tag = tags.remove(position);
+    /**
+     * Delete a tag.
+     *
+     * @param listIndex the index of the item in the list
+     */
+    void deleteTag(final int listIndex) {
+        final Tag tag = tags.remove(listIndex);
         tagDao.delete(tag);
         setModified();
     }
 
-    boolean moveBooks(@NonNull final Context context,
-                      final int position,
-                      final int existingPos) {
-        final Tag source = tags.get(position);
-        final Tag target = tags.get(existingPos);
+    /**
+     * Move books from one tag to another.
+     *
+     * @param context           Current context
+     * @param listIndex         of the tag <strong>from</strong> which the books will be moved
+     * @param existingListIndex of the tag <strong>to</strong> which the books will be moved
+     */
+    void moveBooks(@NonNull final Context context,
+                      final int listIndex,
+                      final int existingListIndex) {
+        final Tag source = tags.get(listIndex);
+        final Tag target = tags.get(existingListIndex);
 
         tagDao.moveBooks(context, source, target);
-        tags.remove(position);
-        return true;
+        tags.remove(listIndex);
     }
 
     @NonNull
@@ -157,10 +170,11 @@ public class TagAdminViewModel
      *
      * @param mappingName to find
      *
-     * @return position, or {@code -1} if not found
+     * @return the <strong>index</strong> in the list,
+     *         or {@code -1} if not found
      */
     @IntRange(from = -1)
-    int findTagMappingPosition(@NonNull final String mappingName) {
+    int findTagMappingListIndex(@NonNull final String mappingName) {
         return mappings.stream()
                        .map(TagMapping::getTagName)
                        .collect(Collectors.toList())
@@ -172,7 +186,7 @@ public class TagAdminViewModel
      *
      * @param tagMapping to insert
      *
-     * @return the <strong>position</strong> in the list
+     * @return the <strong>index</strong> in the list
      *
      * @throws DaoWriteException on failure
      */
@@ -182,14 +196,14 @@ public class TagAdminViewModel
         tagMappingDao.insert(tagMapping);
 
         // find insertion point using a brute-force sequential search...
-        int position = 0;
-        while (position < mappings.size()
-               && mappings.get(position).compareTo(tagMapping) < 0) {
-            position++;
+        int listIndex = 0;
+        while (listIndex < mappings.size()
+               && mappings.get(listIndex).compareTo(tagMapping) < 0) {
+            listIndex++;
         }
-        mappings.add(position, tagMapping);
+        mappings.add(listIndex, tagMapping);
 
-        return position;
+        return listIndex;
     }
 
     void update(@NonNull final TagMapping tagMapping)
@@ -197,8 +211,13 @@ public class TagAdminViewModel
         tagMappingDao.update(tagMapping);
     }
 
-    void deleteTagMapping(final int position) {
-        final TagMapping mapping = mappings.remove(position);
+    /**
+     * Delete a mapping.
+     *
+     * @param listIndex the index of the item in the list
+     */
+    void deleteTagMapping(final int listIndex) {
+        final TagMapping mapping = mappings.remove(listIndex);
         tagMappingDao.delete(mapping);
         setModified();
     }

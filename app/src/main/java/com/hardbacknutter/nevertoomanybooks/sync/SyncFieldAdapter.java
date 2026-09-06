@@ -65,7 +65,7 @@ public class SyncFieldAdapter
 
         holder.vb.cbxUsage.setOnClickListener(v -> {
             final int gridPosition = holder.getBindingAdapterPosition();
-            final int listIndex = gridToListPosition(gridPosition);
+            final int listIndex = gridPositionToListIndex(gridPosition);
             requireValidOrThrow(listIndex, gridPosition);
 
             final SyncField fs = syncFields[listIndex];
@@ -80,7 +80,7 @@ public class SyncFieldAdapter
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int gridPosition) {
 
-        final int listIndex = gridToListPosition(gridPosition);
+        final int listIndex = gridPositionToListIndex(gridPosition);
         if (listIndex == RecyclerView.NO_POSITION) {
             holder.onBind(null);
         } else {
@@ -89,7 +89,7 @@ public class SyncFieldAdapter
     }
 
     @Override
-    protected int getListSize() {
+    public int getItemCount() {
         return syncFields.length;
     }
 

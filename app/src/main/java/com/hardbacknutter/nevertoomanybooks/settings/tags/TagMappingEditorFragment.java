@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -86,27 +87,29 @@ public class TagMappingEditorFragment
     private static final String TAG = "TagMappingEditorFrag";
     private static final String RK_MENU = TAG + ":rk:menu";
     private static final String RK_TAG = TAG + ":rk:tag";
-    private static final String BKEY_POSITION = TAG + ":pos";
+    private static final String BKEY_LIST_INDEX = TAG + ":idx";
     private static final int POS_NEW_ENTRY = -1;
 
-    private FragmentEditTagMappingsBinding vb;
-    private TagAdapter adapter;
-    private ExtMenuLauncher menuLauncher;
-    private EditTagMappingLauncher editLauncher;
-    private TagAdminViewModel vm;
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
-        public void onEdit(final int position) {
-            editEntry(vm.getTagMappings().get(position), position);
+        public void onEdit(final int listIndex) {
+            editEntry(vm.getTagMappings().get(listIndex), listIndex);
         }
 
         @Override
         public void onShowContextMenu(@NonNull final View v,
-                                      final int position) {
-            showContextMenu(v, position);
+                                      final int listIndex) {
+            showContextMenu(v, listIndex);
         }
     };
+
+    private FragmentEditTagMappingsBinding vb;
+    private TagMappingAdapter adapter;
+    private ExtMenuLauncher menuLauncher;
+    private EditTagMappingLauncher editLauncher;
+    private TagAdminViewModel vm;
+
     @Nullable
     private ProgressDelegate progressDelegate;
 
@@ -150,8 +153,8 @@ public class TagMappingEditorFragment
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.tagList.getLayoutManager();
         //noinspection DataFlowIssue
-        adapter = new TagAdapter(layoutManager.getSpanCount(), vm.getTagMappings(),
-                                 positionHandler);
+        adapter = new TagMappingAdapter(layoutManager.getSpanCount(), vm.getTagMappings(),
+                                        positionHandler);
 
         //noinspection DataFlowIssue
         final GridDividerItemDecoration decoration =
@@ -183,41 +186,41 @@ public class TagMappingEditorFragment
     void editOrCreateMapping(@NonNull final Tag tag) {
         final String tagName = tag.getName();
 
-        final int position = vm.findTagMappingPosition(tagName);
+        final int listIndex = vm.findTagMappingListIndex(tagName);
         final TagMapping tagMapping;
-        if (position >= 0) {
-            tagMapping = vm.getTagMappings().get(position);
+        if (listIndex >= 0) {
+            tagMapping = vm.getTagMappings().get(listIndex);
         } else {
             tagMapping = new TagMapping(tagName, Set.of());
         }
 
-        editEntry(tagMapping, position);
+        editEntry(tagMapping, listIndex);
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showContextMenu(@NonNull final View anchor,
-                                 final int position) {
+                                 final int listIndex) {
         final Menu menu = MenuUtils.createEditDeleteContextMenu(anchor.getContext());
-        menuLauncher.launch(anchor, null, null, position, menu);
+        menuLauncher.launch(anchor, null, null, listIndex, menu);
     }
 
     /**
      * Menu selection listener.
      *
-     * @param position   in the list
+     * @param listIndex  the index of the item in the list
      * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(final int position,
+    private boolean onMenuItemSelected(final int listIndex,
                                        @IdRes final int menuItemId) {
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editEntry(vm.getTagMappings().get(position), position);
+            editEntry(vm.getTagMappings().get(listIndex), listIndex);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
-            deleteEntry(position);
+            deleteEntry(listIndex);
             return true;
         }
         return false;
@@ -226,13 +229,14 @@ public class TagMappingEditorFragment
     /**
      * Start the fragment dialog to edit an entry.
      *
-     * @param mapping  to edit
-     * @param position the position of the item; use {@link #POS_NEW_ENTRY} for a new entry.
+     * @param mapping   to edit
+     * @param listIndex the index of the item in the list;
+     *                  Use {@link #POS_NEW_ENTRY} for a new entry.
      */
     private void editEntry(@NonNull final TagMapping mapping,
-                           final int position) {
+                           final int listIndex) {
         final Bundle extras = new Bundle();
-        extras.putInt(BKEY_POSITION, position);
+        extras.putInt(BKEY_LIST_INDEX, listIndex);
 
         //noinspection DataFlowIssue
         editLauncher.launch(getActivity(), mapping, extras);
@@ -249,14 +253,14 @@ public class TagMappingEditorFragment
 
         try {
             Objects.requireNonNull(extras);
-            final int position = extras.getInt(BKEY_POSITION);
+            final int listIndex = extras.getInt(BKEY_LIST_INDEX);
 
-            if (position == POS_NEW_ENTRY) {
+            if (listIndex == POS_NEW_ENTRY) {
                 // User was adding a new mapping
                 addEntry(edit);
             } else {
                 // User was editing an existing mapping
-                updateEntry(original, position, edit);
+                updateEntry(original, listIndex, edit);
             }
         } catch (@NonNull final DaoWriteException e) {
             //noinspection DataFlowIssue
@@ -264,63 +268,75 @@ public class TagMappingEditorFragment
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void addEntry(@NonNull final TagMapping tagMapping)
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = vm.findTagMappingPosition(tagMapping.getTagName());
+        final int existingListIndex = vm.findTagMappingListIndex(tagMapping.getTagName());
 
-        if (existingPos == -1) {
+        if (existingListIndex == -1) {
             // It's a new entry, add it
-            final int position = vm.insert(tagMapping);
-            adapter.notifyItemInserted(position);
-            vb.tagList.scrollToPosition(position);
+            final int listIndex = vm.insert(tagMapping);
+
+            // due to transposing row and columns, we MUST refresh the whole set.
+            adapter.notifyDataSetChanged();
+
+            final int gridPosition = adapter.listIndexToGridPosition(listIndex);
+            if (gridPosition != RecyclerView.NO_POSITION) {
+                vb.tagList.scrollToPosition(gridPosition);
+            }
         } else {
-            // Trying to add a NEW one already there, reject
+            // Trying to add a NEW one already there, reject it
             // TODO: propose merge/overwrite
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
                           Snackbar.LENGTH_LONG).show();
-            vb.tagList.scrollToPosition(existingPos);
+            final int gridPosition = adapter.listIndexToGridPosition(existingListIndex);
+            vb.tagList.scrollToPosition(gridPosition);
         }
     }
 
     private void updateEntry(@NonNull final TagMapping original,
-                             final int position,
+                             final int listIndex,
                              @NonNull final TagMapping tagMapping)
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = vm.findTagMappingPosition(tagMapping.getTagName());
+        final int existingListIndex = vm.findTagMappingListIndex(tagMapping.getTagName());
 
         // '==' when the name was NOT modified and we found ourselves.
         // '-1' when the name WAS modified and there is no other match
-        if (existingPos == position || existingPos == -1) {
+        if (existingListIndex == listIndex || existingListIndex == -1) {
             //  Update with the new data.
             original.copyFrom(tagMapping);
 
             vm.update(original);
-            adapter.notifyItemChanged(position);
-            vb.tagList.scrollToPosition(position);
+
+            final int gridPosition = adapter.listIndexToGridPosition(listIndex);
+            adapter.notifyItemChanged(gridPosition);
+            vb.tagList.scrollToPosition(gridPosition);
         } else {
             // We found another entry with the same external tag-name, reject.
             // TODO: propose merge/overwrite
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
                           Snackbar.LENGTH_LONG).show();
-            vb.tagList.scrollToPosition(existingPos);
+            vb.tagList.scrollToPosition(adapter.listIndexToGridPosition(existingListIndex));
         }
     }
 
     /**
      * Prompt the user to delete the given item.
      *
-     * @param position the position of the item
+     * @param listIndex the index of the item in the list
      */
-    private void deleteEntry(final int position) {
-        final TagMapping tagMapping = vm.getTagMappings().get(position);
+    @SuppressLint("NotifyDataSetChanged")
+    private void deleteEntry(final int listIndex) {
+        final TagMapping tagMapping = vm.getTagMappings().get(listIndex);
         //noinspection DataFlowIssue
         StandardDialogs.deleteTagMapping(getContext(), tagMapping, () -> {
-            vm.deleteTagMapping(position);
-            adapter.notifyItemRemoved(position);
+            vm.deleteTagMapping(listIndex);
+            // due to transposing row and columns, we MUST refresh the whole set.
+            adapter.notifyDataSetChanged();
         });
     }
 
@@ -431,20 +447,20 @@ public class TagMappingEditorFragment
      */
     private interface PositionHandler {
         /**
-         * Edit the given position.
+         * Edit the given listIndex.
          *
-         * @param position the position (index) in the list of items.
+         * @param listIndex the index of the item in the list
          */
-        void onEdit(int position);
+        void onEdit(int listIndex);
 
         /**
          * Show the menu.
          *
-         * @param anchor   view
-         * @param position the position (index) in the list of items.
+         * @param anchor    view
+         * @param listIndex the index of the item in the list
          */
         void onShowContextMenu(@NonNull View anchor,
-                               int position);
+                               int listIndex);
     }
 
     /**
@@ -482,7 +498,7 @@ public class TagMappingEditorFragment
         }
     }
 
-    private static class TagAdapter
+    private static class TagMappingAdapter
             extends MultiColumnRecyclerViewAdapter<Holder> {
 
         @NonNull
@@ -497,9 +513,9 @@ public class TagMappingEditorFragment
          * @param items           to display
          * @param positionHandler Proxy between adapter and ViewModel.
          */
-        TagAdapter(@IntRange(from = 1) final int columnCount,
-                   @NonNull final List<TagMapping> items,
-                   @NonNull final PositionHandler positionHandler) {
+        TagMappingAdapter(@IntRange(from = 1) final int columnCount,
+                          @NonNull final List<TagMapping> items,
+                          @NonNull final PositionHandler positionHandler) {
             super(columnCount);
             this.items = items;
             this.positionHandler = positionHandler;
@@ -516,7 +532,7 @@ public class TagMappingEditorFragment
 
             // click -> edit
             holder.setOnRowClickListener((v, gridPosition) -> {
-                final int listIndex = gridToListPosition(gridPosition);
+                final int listIndex = gridPositionToListIndex(gridPosition);
                 requireValidOrThrow(listIndex, gridPosition);
                 positionHandler.onEdit(listIndex);
             });
@@ -524,7 +540,7 @@ public class TagMappingEditorFragment
             // long-click -> context menu
             holder.setOnRowLongClickListener(
                     ExtMenuButton.getPreferredMode(), (v, gridPosition) -> {
-                        final int listIndex = gridToListPosition(gridPosition);
+                        final int listIndex = gridPositionToListIndex(gridPosition);
                         requireValidOrThrow(listIndex, gridPosition);
                         positionHandler.onShowContextMenu(v, listIndex);
                     });
@@ -534,7 +550,7 @@ public class TagMappingEditorFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int gridPosition) {
-            final int listIndex = gridToListPosition(gridPosition);
+            final int listIndex = gridPositionToListIndex(gridPosition);
             if (listIndex == RecyclerView.NO_POSITION) {
                 holder.onBind(null);
             } else {
@@ -543,7 +559,7 @@ public class TagMappingEditorFragment
         }
 
         @Override
-        protected int getListSize() {
+        public int getItemCount() {
             return items.size();
         }
     }
