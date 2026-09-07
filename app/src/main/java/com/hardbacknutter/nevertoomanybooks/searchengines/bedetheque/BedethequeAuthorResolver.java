@@ -32,7 +32,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
@@ -45,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -205,12 +203,7 @@ public class BedethequeAuthorResolver
             final String realName = realAuthor.getFormattedName(false);
             if (!realName.equals(bdtAuthor.getRealName())) {
                 bdtAuthor.setRealName(realName);
-                try {
-                    cacheDao.update(bdtAuthor, siteLocale);
-                } catch (@NonNull final DaoWriteException e) {
-                    // log, but ignore - should never happen unless disk full
-                    LoggerFactory.getLogger().e(TAG, e);
-                }
+                cacheDao.update(bdtAuthor, siteLocale);
             }
         }
     }

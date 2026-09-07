@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BdtAuthor;
 
 public interface BedethequeCacheDao {
@@ -67,24 +66,18 @@ public interface BedethequeCacheDao {
      * @param locale         Current Locale
      * @param recordSupplier a supplier which delivers a {@link BdtAuthor} to insert,
      *                       or {@code null} when done.
-     *
-     * @throws DaoWriteException on failure
      */
     void insert(@NonNull Locale locale,
-                @NonNull Supplier<BdtAuthor> recordSupplier)
-            throws DaoWriteException;
+                @NonNull Supplier<BdtAuthor> recordSupplier);
 
     /**
      * Update the given {@link BdtAuthor}.
      *
      * @param bdtAuthor to update
      * @param locale    Current Locale
-     *
-     * @throws DaoWriteException on failure
      */
     void update(@NonNull BdtAuthor bdtAuthor,
-                @NonNull Locale locale)
-            throws DaoWriteException;
+                @NonNull Locale locale);
 
     /**
      * Check if there is at least one {@link BdtAuthor} in the database whose name

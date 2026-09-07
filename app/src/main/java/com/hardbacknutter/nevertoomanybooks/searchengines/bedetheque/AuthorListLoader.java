@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,10 +30,8 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -48,8 +46,6 @@ import org.jsoup.nodes.Element;
  * @see BedethequeCacheDao
  */
 class AuthorListLoader {
-
-    private static final String TAG = "AuthorListLoader";
 
     @NonNull
     private final Context context;
@@ -113,26 +109,20 @@ class AuthorListLoader {
         final Iterator<Element> iterator = document.select("ul.nav-liste > li > a")
                                                    .iterator();
 
-        try {
-            bedethequeCacheDao.insert(siteLocale, () -> {
-                if (iterator.hasNext()) {
-                    final Element a = iterator.next();
-                    final String url = a.attr("href");
-                    final Element span = a.selectFirst("span.libelle");
-                    if (span != null) {
-                        final String name = span.text();
-                        return new BdtAuthor(name, url);
-                    }
+        bedethequeCacheDao.insert(siteLocale, () -> {
+            if (iterator.hasNext()) {
+                final Element a = iterator.next();
+                final String url = a.attr("href");
+                final Element span = a.selectFirst("span.libelle");
+                if (span != null) {
+                    final String name = span.text();
+                    return new BdtAuthor(name, url);
                 }
-                // End-of-list indication
-                //noinspection ReturnOfNull
-                return null;
-            });
-            return true;
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e);
-            return false;
-        }
+            }
+            // End-of-list indication
+            //noinspection ReturnOfNull
+            return null;
+        });
+        return true;
     }
 }

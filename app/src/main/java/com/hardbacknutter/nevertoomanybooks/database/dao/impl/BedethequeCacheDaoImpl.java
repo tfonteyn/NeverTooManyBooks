@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -85,16 +84,12 @@ public class BedethequeCacheDaoImpl
     @Override
     public void insert(@NonNull final Locale locale,
                        @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoWriteException {
+            throws SQLException {
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                insertApi30(locale, recordSupplier);
-            } else {
-                insertApi26(locale, recordSupplier);
-            }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insertApi30(locale, recordSupplier);
+        } else {
+            insertApi26(locale, recordSupplier);
         }
     }
 
@@ -201,7 +196,7 @@ public class BedethequeCacheDaoImpl
     @Override
     public void update(@NonNull final BdtAuthor bdtAuthor,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         final String realName = bdtAuthor.getRealName();
 
@@ -234,9 +229,6 @@ public class BedethequeCacheDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
