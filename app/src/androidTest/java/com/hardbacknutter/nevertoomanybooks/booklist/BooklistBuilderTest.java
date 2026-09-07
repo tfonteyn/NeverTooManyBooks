@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
@@ -62,7 +61,7 @@ class BooklistBuilderTest
 
     @BeforeEach
     void setup()
-            throws DaoWriteException, StorageException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         style = (UserStyle) getBuiltinStyle().clone(context);
@@ -76,8 +75,7 @@ class BooklistBuilderTest
     }
 
     @AfterEach
-    void breakdown()
-            throws DaoWriteException {
+    void breakdown() {
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
         serviceLocator.getStyles().delete(style);

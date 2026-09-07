@@ -25,7 +25,6 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.DBExpr;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -48,7 +47,7 @@ class DomainExpressionsTest
 
     @BeforeEach
     void setup()
-            throws DaoWriteException, StorageException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         style = (UserStyle) getBuiltinStyle().clone(context);
@@ -62,8 +61,7 @@ class DomainExpressionsTest
     }
 
     @AfterEach
-    void breakdown()
-            throws DaoWriteException {
+    void breakdown() {
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
         serviceLocator.getStyles().delete(style);

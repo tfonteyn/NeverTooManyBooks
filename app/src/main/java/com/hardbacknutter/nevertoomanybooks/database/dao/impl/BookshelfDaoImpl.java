@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -299,7 +298,7 @@ public class BookshelfDaoImpl
 
     @Override
     public void validate(@NonNull final Context context)
-            throws DaoWriteException {
+            throws SQLException {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         for (final Bookshelf bookshelf : getAll()) {
@@ -498,7 +497,7 @@ public class BookshelfDaoImpl
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Bookshelf> list)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -513,8 +512,6 @@ public class BookshelfDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -537,8 +534,6 @@ public class BookshelfDaoImpl
 
                 stmt.executeInsert(() -> "insert Book-Bookshelf");
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
@@ -547,7 +542,7 @@ public class BookshelfDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
@@ -578,7 +573,7 @@ public class BookshelfDaoImpl
 
         } catch (@NonNull final SQLException e) {
             bookshelf.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
 
         } finally {
             if (txLock != null) {
@@ -591,7 +586,7 @@ public class BookshelfDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
@@ -618,8 +613,6 @@ public class BookshelfDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -666,7 +659,7 @@ public class BookshelfDaoImpl
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Bookshelf source,
                          @NonNull final Bookshelf target)
-            throws DaoWriteException {
+            throws SQLException {
 
         int booksMoved;
 

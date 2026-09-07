@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -111,8 +110,7 @@ public class CalibreLibraryMappingViewModel
     }
 
 
-    void mapBookshelfToLibrary(@NonNull final Bookshelf bookshelf)
-            throws DaoWriteException {
+    void mapBookshelfToLibrary(@NonNull final Bookshelf bookshelf) {
         if (bookshelf.getId() != currentLibrary.getMappedBookshelfId()) {
             currentLibrary.setMappedBookshelf(bookshelf.getId());
             calibreLibraryDao.update(currentLibrary);
@@ -130,8 +128,7 @@ public class CalibreLibraryMappingViewModel
     }
 
     @NonNull
-    Bookshelf createLibraryAsBookshelf(@NonNull final Context context)
-            throws DaoWriteException {
+    Bookshelf createLibraryAsBookshelf(@NonNull final Context context) {
 
         final Bookshelf mappedBookshelf = createAsBookshelf(context, currentLibrary);
         calibreLibraryDao.update(currentLibrary);
@@ -140,8 +137,7 @@ public class CalibreLibraryMappingViewModel
 
     @NonNull
     Bookshelf createVirtualLibraryAsBookshelf(@NonNull final Context context,
-                                              final int position)
-            throws DaoWriteException {
+                                              final int position) {
 
         final CalibreVirtualLibrary vlib = currentLibrary.getVirtualLibraries().get(position);
         final Bookshelf mappedBookshelf = createAsBookshelf(context, vlib);
@@ -157,13 +153,10 @@ public class CalibreLibraryMappingViewModel
      * @param library to use
      *
      * @return the new and mapped bookshelf
-     *
-     * @throws DaoWriteException on failure
      */
     @NonNull
     private Bookshelf createAsBookshelf(@NonNull final Context context,
-                                        @NonNull final LibraryBase library)
-            throws DaoWriteException {
+                                        @NonNull final LibraryBase library) {
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 

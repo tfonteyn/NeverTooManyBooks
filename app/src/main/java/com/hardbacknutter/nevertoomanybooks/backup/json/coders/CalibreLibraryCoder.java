@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
-import android.database.SQLException;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +31,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -41,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class CalibreLibraryCoder
         implements JsonCoder<CalibreLibrary> {
@@ -266,7 +263,6 @@ public class CalibreLibraryCoder
 
     private long v3resolveBookshelf(@NonNull final JSONObject data,
                                     @NonNull final String libName) {
-
         // try original
         Bookshelf bookshelf = bookshelfDao.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF))
                                           .orElse(null);
@@ -277,19 +273,7 @@ public class CalibreLibraryCoder
             if (bookshelf == null) {
                 // make a new one
                 bookshelf = new Bookshelf(name, BuiltinStyle.HARD_DEFAULT_UUID);
-                try {
-                    bookshelfDao.insert(context, bookshelf, userLocale);
-                } catch (@NonNull final DaoWriteException e) {
-                    // URGENT: this is a hack...  until we decide on using DaoWriteException or not
-                    // This should ALWAYS be so.
-                    if (e.getCause() instanceof SQLException) {
-                        throw (SQLException) e.getCause();
-                    } else {
-                        // This should NEVER happen
-                        LoggerFactory.getLogger().e(TAG_VL, e);
-                        throw new RuntimeException(e);
-                    }
-                }
+                bookshelfDao.insert(context, bookshelf, userLocale);
             }
         }
         return bookshelf.getId();

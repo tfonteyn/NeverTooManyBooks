@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -89,12 +88,9 @@ public class EditBookshelfViewModel
      * @param context Current context
      *
      * @return an empty Optional for SUCCESS, or else the existing Bookshelf.
-     *
-     * @throws DaoWriteException on failure
      */
     @NonNull
-    Optional<Bookshelf> saveIfUnique(@NonNull final Context context)
-            throws DaoWriteException {
+    Optional<Bookshelf> saveIfUnique(@NonNull final Context context) {
         // The logic flow here is different from the default one as used for e.g. an Author.
         // See the code which is calling this method
 
@@ -118,8 +114,7 @@ public class EditBookshelfViewModel
     }
 
     void move(@NonNull final Context context,
-              @NonNull final Bookshelf destination)
-            throws DaoWriteException {
+              @NonNull final Bookshelf destination) {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
         dao.moveBooks(context, original, destination);

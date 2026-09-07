@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -46,7 +45,7 @@ class MapDBKeyTest
 
     @BeforeEach
     void setup()
-            throws DaoWriteException, StorageException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         style = (UserStyle) getBuiltinStyle().clone(context);
@@ -60,8 +59,7 @@ class MapDBKeyTest
     }
 
     @AfterEach
-    void breakdown()
-            throws DaoWriteException {
+    void breakdown() {
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
         serviceLocator.getStyles().delete(style);

@@ -325,7 +325,7 @@ public class JsonRecordReader
                     // of the wikidata author claim id, instead of the id itself.
                     IdentifierMigration.repairBuiltinIdentifiersWikidataClaim(context);
                 }
-            } catch (@NonNull final JSONException | DaoWriteException e) {
+            } catch (@NonNull final JSONException e) {
                 // Unpack if possible
                 if (e.getCause() instanceof DaoWriteException) {
                     throw new DataReaderException(context.getString(
@@ -402,7 +402,7 @@ public class JsonRecordReader
     private void readBookshelves(@NonNull final Context context,
                                  @NonNull final JSONObject root,
                                  @NonNull final Style defaultStyle)
-            throws JSONException, DaoWriteException {
+            throws JSONException {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
         if (jsonRoot != null) {
@@ -423,8 +423,7 @@ public class JsonRecordReader
     private void processBookshelf(@NonNull final Context context,
                                   @NonNull final BookshelfDao bookshelfDao,
                                   @NonNull final Locale locale,
-                                  @NonNull final Bookshelf bookshelf)
-            throws DaoWriteException {
+                                  @NonNull final Bookshelf bookshelf) {
 
         bookshelfDao.fixId(context, bookshelf, locale);
         if (bookshelf.getId() > 0) {

@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -349,10 +348,6 @@ public class BookDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-
-        } catch (@NonNull final DaoWriteException e) {
-            return false;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

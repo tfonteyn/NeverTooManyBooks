@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
@@ -45,9 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelab
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
-import com.hardbacknutter.util.logger.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Bookshelf}.
@@ -173,47 +171,34 @@ class EditBookshelfDelegate
             return true;
         }
 
+        final Optional<Bookshelf> existingEntity = vm.saveIfUnique(context);
+        if (existingEntity.isEmpty()) {
+            // Success
+            new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                    .send(owner, requestKey);
+            return true;
+        }
 
-        try {
-            final Optional<Bookshelf> existingEntity = vm.saveIfUnique(context);
-            if (existingEntity.isEmpty()) {
-                // Success
-                new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                        .send(owner, requestKey);
-                return true;
-            }
-
-            // The logic flow here is different from the default one as used for e.g. an Author.
-            // IF the user meant to create a NEW Bookshelf
-            // REJECT an already existing Bookshelf with the same name.
-            if (vm.getOriginal().getId() == 0) {
-                vb.lblBookshelf.setError(context.getString(
-                        R.string.warning_x_already_exists,
-                        context.getString(R.string.lbl_bookshelf)));
-                return false;
-            }
-
-            // There is one with the same name; ask whether to merge the 2
-            StandardDialogs.askToMerge(context, R.string.confirm_merge_bookshelves,
-                                       vm.getOriginal().getLabel(context), () -> {
-                        owner.dismiss();
-                        try {
-                            vm.move(context, existingEntity.get());
-                            // return the item which 'lost' it's books
-                            new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                                    .send(owner, requestKey);
-                        } catch (@NonNull final DaoWriteException e) {
-                            // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-                        }
-                    });
-            return false;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+        // The logic flow here is different from the default one as used for e.g. an Author.
+        // IF the user meant to create a NEW Bookshelf
+        // REJECT an already existing Bookshelf with the same name.
+        if (vm.getOriginal().getId() == 0) {
+            vb.lblBookshelf.setError(context.getString(
+                    R.string.warning_x_already_exists,
+                    context.getString(R.string.lbl_bookshelf)));
             return false;
         }
+
+        // There is one with the same name; ask whether to merge the 2
+        StandardDialogs.askToMerge(context, R.string.confirm_merge_bookshelves,
+                                   vm.getOriginal().getLabel(context), () -> {
+                    owner.dismiss();
+                    vm.move(context, existingEntity.get());
+                    // return the item which 'lost' it's books
+                    new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                            .send(owner, requestKey);
+                });
+        return false;
     }
 
     @Override

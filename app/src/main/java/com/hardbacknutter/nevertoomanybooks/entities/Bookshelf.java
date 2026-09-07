@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,10 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Represents a Bookshelf.
@@ -307,13 +305,8 @@ public class Bookshelf
      * @param context Current context
      */
     private void doUpdate(@NonNull final Context context) {
-        try {
-            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-            ServiceLocator.getInstance().getBookshelfDao().update(context, this, locale);
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, this);
-        }
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        ServiceLocator.getInstance().getBookshelfDao().update(context, this, locale);
     }
 
     /**

@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -123,11 +122,8 @@ public interface BookshelfDao {
      * Updates all affected Bookshelves as needed.
      *
      * @param context Current context
-     *
-     * @throws DaoWriteException on failure
      */
-    void validate(@NonNull Context context)
-            throws DaoWriteException;
+    void validate(@NonNull Context context);
 
     /**
      * Passed a list of Objects, remove duplicates. We keep the first occurrence.
@@ -202,13 +198,10 @@ public interface BookshelfDao {
      * @param context Current context
      * @param bookId  of the book
      * @param list    the list of bookshelves
-     *
-     * @throws DaoWriteException on failure
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
-                        @NonNull Collection<Bookshelf> list)
-            throws DaoWriteException;
+                        @NonNull Collection<Bookshelf> list);
 
     /**
      * Moves all books from the 'source' {@link Bookshelf}, to the 'target' {@link Bookshelf}.
@@ -219,14 +212,11 @@ public interface BookshelfDao {
      * @param target  to move to
      *
      * @return amount of books moved
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Bookshelf source,
-                  @NonNull Bookshelf target)
-            throws DaoWriteException;
+                  @NonNull Bookshelf target);
 
     /**
      * Find a {@link Bookshelf} based on the given id.
@@ -308,14 +298,11 @@ public interface BookshelfDao {
      * @param locale  The Locale of the item
      *
      * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
     long insert(@NonNull Context context,
                 @NonNull Bookshelf item,
-                @NonNull Locale locale)
-            throws DaoWriteException;
+                @NonNull Locale locale);
 
     /**
      * Update the given {@link Bookshelf}.
@@ -323,13 +310,10 @@ public interface BookshelfDao {
      * @param context Current context
      * @param item    to update
      * @param locale  The Locale of the item
-     *
-     * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
                 @NonNull Bookshelf item,
-                @NonNull Locale locale)
-            throws DaoWriteException;
+                @NonNull Locale locale);
 
     /**
      * Delete the given {@link Bookshelf}.
