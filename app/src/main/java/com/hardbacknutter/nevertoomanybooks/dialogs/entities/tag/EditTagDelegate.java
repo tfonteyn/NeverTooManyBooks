@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditTagContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -47,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelab
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This is the editor for the BoB {@link Tag} BooklistGroup.
@@ -65,8 +63,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 class EditTagDelegate
         implements FlexDialogDelegate {
-
-    private static final String TAG = "EditTagDelegate";
 
     private final EditTagViewModel vm;
 
@@ -200,15 +196,10 @@ class EditTagDelegate
         StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
                                    vm.getOriginal().getLabel(context), () -> {
                     owner.dismiss();
-                    try {
-                        vm.move(context, existingEntity.get());
-                        // return the item which 'lost' it's books
-                        new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                                .send(owner, requestKey);
-                    } catch (@NonNull final DaoWriteException e) {
-                        // log, but ignore - should never happen unless disk full
-                        LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-                    }
+                    vm.move(context, existingEntity.get());
+                    // return the item which 'lost' it's books
+                    new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                            .send(owner, requestKey);
                 });
         return false;
     }

@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -136,11 +135,9 @@ public class EditTagViewModel
     }
 
     void move(@NonNull final Context context,
-              @NonNull final Tag destination)
-            throws DaoWriteException {
+              @NonNull final Tag destination) {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
         dao.moveBooks(context, original, destination);
     }
-
 }
