@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -360,29 +359,28 @@ public class IdentifierDaoImpl
     @IntRange(from = 1)
     @Override
     public long insert(@NonNull final Identifier identifier)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             return doInsert(identifier, stmt);
         } catch (@NonNull final SQLException e) {
             identifier.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
         }
     }
 
     @Override
     public void update(@NonNull final Identifier identifier)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             doUpdate(identifier, stmt);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
     @Override
-    public void delete(@NonNull final Identifier identifier) {
+    public void delete(@NonNull final Identifier identifier)
+            throws SQLException {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, identifier.getId());
             stmt.executeUpdateDelete(null);

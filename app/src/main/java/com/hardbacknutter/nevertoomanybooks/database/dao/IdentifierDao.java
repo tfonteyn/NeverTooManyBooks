@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 public interface IdentifierDao {
@@ -102,22 +101,16 @@ public interface IdentifierDao {
      * @param identifier to insert. Will be updated with the id
      *
      * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
-    long insert(@NonNull Identifier identifier)
-            throws DaoWriteException;
+    long insert(@NonNull Identifier identifier);
 
     /**
      * Update the given {@link Identifier}.
      *
      * @param identifier to update
-     *
-     * @throws DaoWriteException on failure
      */
-    void update(@NonNull Identifier identifier)
-            throws DaoWriteException;
+    void update(@NonNull Identifier identifier);
 
     /**
      * Delete the given {@link Identifier}.

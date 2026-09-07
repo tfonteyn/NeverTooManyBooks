@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.UrlPatterns;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditIdentifierContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -50,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This is the editor for the {@link IdentifiersEditorFragment}.
@@ -216,36 +214,29 @@ class EditIdentifierDelegate
             return true;
         }
 
-        try {
-            final Optional<Identifier> existingEntity = vm.saveIfUnique();
-            if (existingEntity.isEmpty()) {
-                // Success
-                new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                        .send(owner, requestKey);
-                return true;
-            }
-            // Note that the EntityType of the existingEntity will
-            // always be the same as the currentEdit.
-
-            // REJECT an already existing Identifier with the same name.
-            if (existingEntity.get().getName().equalsIgnoreCase(currentEdit.getName())) {
-                vb.lblIdentifierName.setError(context.getString(
-                        R.string.warning_x_already_exists,
-                        context.getString(R.string.lbl_identifier)));
-            }
-            // REJECT an already existing Identifier with the same key.
-            if (existingEntity.get().getKey().equalsIgnoreCase(currentEdit.getKey())) {
-                vb.lblIdentifierKey.setError(context.getString(
-                        R.string.warning_x_already_exists,
-                        context.getString(R.string.lbl_identifier)));
-            }
-            return false;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-            return false;
+        final Optional<Identifier> existingEntity = vm.saveIfUnique();
+        if (existingEntity.isEmpty()) {
+            // Success
+            new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                    .send(owner, requestKey);
+            return true;
         }
+        // Note that the EntityType of the existingEntity will
+        // always be the same as the currentEdit.
+
+        // REJECT an already existing Identifier with the same name.
+        if (existingEntity.get().getName().equalsIgnoreCase(currentEdit.getName())) {
+            vb.lblIdentifierName.setError(context.getString(
+                    R.string.warning_x_already_exists,
+                    context.getString(R.string.lbl_identifier)));
+        }
+        // REJECT an already existing Identifier with the same key.
+        if (existingEntity.get().getKey().equalsIgnoreCase(currentEdit.getKey())) {
+            vb.lblIdentifierKey.setError(context.getString(
+                    R.string.warning_x_already_exists,
+                    context.getString(R.string.lbl_identifier)));
+        }
+        return false;
     }
 
     @Override

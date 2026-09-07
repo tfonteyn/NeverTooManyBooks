@@ -523,8 +523,7 @@ public class JsonRecordReader
         }
     }
 
-    private void readIdentifiers(@NonNull final JSONObject root)
-            throws DaoWriteException {
+    private void readIdentifiers(@NonNull final JSONObject root) {
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Identifiers.getName());
         if (jsonRoot != null) {
@@ -536,8 +535,7 @@ public class JsonRecordReader
     }
 
     private void processIdentifier(@NonNull final IdentifierDao dao,
-                                   @NonNull final Identifier identifier)
-            throws DaoWriteException {
+                                   @NonNull final Identifier identifier) {
 
         dao.fixId(identifier);
         if (identifier.getId() > 0) {

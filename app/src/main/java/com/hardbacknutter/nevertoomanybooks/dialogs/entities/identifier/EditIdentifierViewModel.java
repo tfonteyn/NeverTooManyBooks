@@ -26,7 +26,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -91,12 +90,9 @@ public class EditIdentifierViewModel
      * If it does, return the existing Identifier indicating failure to save.
      *
      * @return an empty Optional for SUCCESS, or else the existing Identifier.
-     *
-     * @throws DaoWriteException on failure
      */
     @NonNull
-    Optional<Identifier> saveIfUnique()
-            throws DaoWriteException {
+    Optional<Identifier> saveIfUnique() {
 
         // FIRST check if the name was changed
         final boolean sameName = original.isSameName(currentEdit);
