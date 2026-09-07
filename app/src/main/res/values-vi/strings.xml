@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -261,7 +262,7 @@
     <string name="info_builtin_style_asterix">(* kiểu mặc định)</string>
     <string name="info_bulk_set_bookshelves">Chọn giá sách bạn muốn gán cho tất cả sách được liệt kê trong nút đã chọn.</string>
     <string name="info_bulk_set_location">Chọn vị trí bạn muốn chỉ định cho tất cả sách được liệt kê trong nút đã chọn.</string>
-    <string name="info_calibre_content_server_extension">Tiện ích mở rộng Máy chủ Nội dung Calibre chưa được cài đặt. Thư viện ảo sẽ không có sẵn.</string>
+    <string name="info_calibre_content_server_plugin">Apt-in máy chủ nội dung Calibre chưa được cài đặt. Thư viện ảo sẽ không khả dụng.</string>
     <string name="info_cleanup_files">Các tệp có thể xóa hiện đang sử dụng %1$s trên thẻ SD. Các tệp nhật ký và dữ liệu khác được lưu trên thẻ SD mỗi lần nâng cấp, khi bạn sao lưu cơ sở dữ liệu hoặc khi ứng dụng gặp sự cố. Nhấn vào nút bên dưới để xóa các tệp này khỏi thẻ SD của bạn. Nếu bạn gặp sự cố hoặc lỗi khác, trước tiên hãy cân nhắc sử dụng nút “%2$s”.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d sách, trong %2$d mục</string>
     <string name="info_tap_to_move_tag">Chạm vào thẻ để di chuyển nó đến/ra khỏi cuốn sách.</string>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -312,7 +313,7 @@
     <string name="lbl_bookshelf">Bücherregal</string>
     <string name="lbl_bookshelves">Bücherregale</string>
     <string name="lbl_calibre_content_server">Calibre Inhalteserver</string>
-    <string name="info_calibre_content_server_extension">Die Calibre-Inhaltsservererweiterung ist nicht installiert. Virtuelle Bibliotheken werden nicht verfügbar sein.</string>
+    <string name="info_calibre_content_server_plugin">Das Plugin für den Calibre-Inhalteserver ist nicht installiert. Virtuelle Bibliotheken werden nicht verfügbar sein.</string>
     <string name="lbl_certificate_ca">CA-Zertifikat</string>
     <string name="lbl_certificates">Zertifikate</string>
     <string name="lbl_clone_style">Stil klonen</string>

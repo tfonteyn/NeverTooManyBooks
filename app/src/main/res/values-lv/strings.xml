@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -715,7 +716,7 @@
     <string name="lbl_add_or_edit_substitution">Pievienot/rediģēt aizstāšanas nosacījumu</string>
     <string name="info_substitutions_one_per_line">Pievieno vienu aizstājēju katrā rindā vai atstāj tukšu, lai dzēstu tagu</string>
     <string name="info_download_successful">Lejupielāde veiksmīga</string>
-    <string name="info_calibre_content_server_extension">Calibre Content Server paplašinājums nav instalēts. Virtuālās bibliotēkas nebūs pieejamas.</string>
+    <string name="info_calibre_content_server_plugin">Calibre satura servera spraudnis nav instalēts. Virtuālās bibliotēkas nebūs pieejamas.</string>
     <string name="cd_btn_drag_handle">Velciet, lai pārkārtotu šo sarakstu</string>
     <string name="cd_clear_text_end_icon">Notīrīt tekstu</string>
     <string name="info_partial_date_picker">Pieskarieties iepriekš atlasītajam mēnesim vai dienai, lai atceltu atlasi.</string>

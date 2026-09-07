@@ -232,7 +232,7 @@ public class CalibreContentServerReader
         args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST,
                                     new ArrayList<>(server.getLibraries()));
 
-        args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED, server.isExtensionInstalled());
+        args.putBoolean(CalibreContentServer.BKEY_PLUGIN_INSTALLED, server.isPluginInstalled());
 
         return Optional.of(new SyncReaderMetaData(args));
     }

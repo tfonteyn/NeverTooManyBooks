@@ -19,6 +19,8 @@
  */
 //file:noinspection LongLine
 
+
+import com.android.build.api.variant.ScopedArtifacts
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -358,5 +360,30 @@ dependencies {
     }
     androidTestImplementation(libs.androidx.test.runner) {
         exclude group: "junit", module: "junit"
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def variantName = variant.name.capitalize()
+        def buildType = variant.buildType
+        def versionName = android.defaultConfig.versionName
+
+        def zipTask = tasks.register("zipCalibrePlugin${variantName}", Zip) {
+            from("${project.rootDir}/calibre-plugin") {
+                include '__init__.py'
+            }
+
+            archiveFileName = "ntmb-calibre-plugin-${versionName}-${buildType}.zip"
+            destinationDirectory = layout.buildDirectory.dir("outputs/apk/${buildType}")
+        }
+
+        variant.artifacts.forScope(ScopedArtifacts.Scope.PROJECT)
+
+        tasks.configureEach { task ->
+            if (task.name == "assemble${variantName}") {
+                task.finalizedBy(zipTask)
+            }
+        }
     }
 }

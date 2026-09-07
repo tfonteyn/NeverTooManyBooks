@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -485,7 +486,7 @@
     <string name="pe_bob_cover_long_click_popupmenu">Com um clique longo na imagem da capa.</string>
     <string name="pt_bob_cover_scale">Tamanho da imagem de capa</string>
     <string name="error_import_csv_column_count_mismatch">Incompatibilidade de contagem de colunas na linha %1$d</string>
-    <string name="info_calibre_content_server_extension">A extensão do servidor de conteúdo do Calibre não está instalada. As bibliotecas virtuais não estarão disponíveis.</string>
+    <string name="info_calibre_content_server_plugin">O plugin do servidor de conteúdos do Calibre não está instalado. As bibliotecas virtuais não estarão disponíveis.</string>
     <string name="tip_booklist_style_properties">Utilize este ecrã para definir as características de um estilo específico. Pode alterar o nome, editar os agrupamentos para alterar a hierarquia e ajustar uma variedade de outras preferências para criar um estilo que considere útil.</string>
     <string name="tip_series_book_may_appear_more_than_once">Se os livros forem apresentados em todas as séries a que pertencem, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>
     <string name="size_x_small">Muito Pequeno</string>

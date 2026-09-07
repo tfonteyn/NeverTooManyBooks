@@ -211,12 +211,12 @@ public class CalibreLibraryMappingFragment
         onLibrarySelected(0);
         vb.getRoot().setVisibility(View.VISIBLE);
 
-        if (vm.isExtInstalled()) {
+        if (vm.isPluginInstalled()) {
             vb.infExtNotInstalled.setVisibility(View.GONE);
         } else {
             final String msg =
                     getString(R.string.a_space_b,
-                              getString(R.string.info_calibre_content_server_extension),
+                              getString(R.string.info_calibre_content_server_plugin),
                               "<a href=\"" + getString(R.string.github_help_calibre_url) + "\">"
                               + getString(R.string.action_help)
                               + "</a>");

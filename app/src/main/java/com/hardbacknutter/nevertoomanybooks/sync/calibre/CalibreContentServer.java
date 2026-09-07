@@ -77,6 +77,7 @@ import com.burgstaller.okhttp.basic.BasicAuthenticator;
 import com.burgstaller.okhttp.digest.CachingAuthenticator;
 import com.burgstaller.okhttp.digest.Credentials;
 import com.burgstaller.okhttp.digest.DigestAuthenticator;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -84,15 +85,16 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -161,16 +163,14 @@ public final class CalibreContentServer
     public static final String PREFERENCE_KEY = "calibre";
 
     static final String PK_HOST_URL = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
-
-    private static final String PK_HOST_USER = PREFERENCE_KEY
-                                               + '.' + SearchEngineConfig.PK_HOST_USER;
-    private static final String PK_HOST_PASS = PREFERENCE_KEY
-                                               + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
-
+    private static final String PK_HOST_USER = PREFERENCE_KEY
+                                               + '.' + SearchEngineConfig.PK_HOST_USER;
+    private static final String PK_HOST_PASS = PREFERENCE_KEY
+                                               + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
     /** The local download folder. */
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
@@ -181,7 +181,7 @@ public final class CalibreContentServer
     public static final String BKEY_LIBRARY = TAG + ":defLib";
     /** Custom field for {@link SyncReaderMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
-    static final String BKEY_EXT_INSTALLED = TAG + ":extInst";
+    static final String BKEY_PLUGIN_INSTALLED = TAG + ":plugin";
 
     /**
      * The buffer used for all small reads.
@@ -220,6 +220,16 @@ public final class CalibreContentServer
     private static final String GET_LIBRARY_INFO = "%1$s/ajax/library-info";
 
     /**
+     * The custom plugin request to get information about the libraries available
+     * on the server.
+     * <p>
+     * Param 1: serverUri
+     *
+     * @see #isPluginInstalled()
+     */
+    private static final String NTMB_GET_LIBRARY_INFO = "%1$s/nevertoomanybooks/library-info";
+
+    /**
      * Request the list of virtual libraries.
      * <p>
      * Param 1: serverUri
@@ -227,7 +237,7 @@ public final class CalibreContentServer
      * Param 3: libraryStringId
      */
     private static final String NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS =
-            "%1$s/ntmb/virtual-libraries-for-books/%2$s/%3$s";
+            "%1$s/nevertoomanybooks/virtual-libraries-for-books/%2$s/%3$s";
 
     private static final String SEARCH = "%1$s/ajax/search/%2$s?num=%3$d&offset=%4$d&query=%5$s";
 
@@ -279,7 +289,7 @@ public final class CalibreContentServer
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
     /**
-     * Present in the response from {@link #GET_LIBRARY_INFO}.
+     * Present in the response from {@link #GET_LIBRARY_INFO} and {@link #NTMB_GET_LIBRARY_INFO}.
      * Contains the {@link #RESPONSE_TAG_DEFAULT_LIBRARY} and a list of key=value
      * pairs with the libraries.
      */
@@ -290,8 +300,8 @@ public final class CalibreContentServer
      */
     private static final String RESPONSE_TAG_DEFAULT_LIBRARY = "default_library";
     /**
-     * Potentially present in the response from {@link #GET_LIBRARY_INFO}
-     * when our calibre ajax extension is installed on the server.
+     * Present in the response from {@link #NTMB_GET_LIBRARY_INFO}
+     * when our calibre ajax plugin is installed on the server.
      * This JSONObject will contain extra information:
      * - library uuid.
      * - virtual libraries.
@@ -326,7 +336,15 @@ public final class CalibreContentServer
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary defaultLibrary;
-    private boolean calibreExtensionInstalled;
+    /**
+     * The default or plugin url to get Library info.
+     * <p>
+     * Initially set to our plugin endpoint; will be replaced by the default
+     * if our plugin is not installed.
+     */
+    private String urlGetLibraryInfo = NTMB_GET_LIBRARY_INFO;
+    private boolean pluginInstalled;
+
     @Nullable
     private HttpCall jsonFetchCall;
     @Nullable
@@ -431,7 +449,7 @@ public final class CalibreContentServer
     /**
      * Get the default/stored host url for the Calibre Content Server instance.
      *
-     * @return url
+     * @return url; will be empty if not configured.
      */
     @NonNull
     @AnyThread
@@ -639,6 +657,7 @@ public final class CalibreContentServer
     @Override
     public boolean validateConnection(@NonNull final Context context)
             throws IOException {
+        // Just use the default GET_LIBRARY_INFO for validation. It's short and fast.
         final String url = String.format(GET_LIBRARY_INFO, serverUri);
         return !fetch(url, BUFFER_SMALL).isEmpty();
     }
@@ -671,7 +690,7 @@ public final class CalibreContentServer
      * }
      * </pre>
      * Populates {@link #defaultLibrary}, {@link #libraries}
-     * and the {@link #calibreExtensionInstalled} flag.
+     * and the {@link #pluginInstalled} flag.
      *
      * @throws IOException   on generic/other IO failures
      * @throws JSONException upon any parsing error
@@ -688,14 +707,15 @@ public final class CalibreContentServer
                                                     .orElseGet(bookshelfDao::getDefault)
                                                     .getId();
 
-        final String url = String.format(GET_LIBRARY_INFO, serverUri);
-        final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
+        final String fetch = fetchLibraryInfo();
+
+        final JSONObject source = new JSONObject(fetch);
 
         final JSONObject libraryMap = source.getJSONObject(RESPONSE_TAG_LIBRARY_MAP);
         final String defaultLibraryId = source.getString(RESPONSE_TAG_DEFAULT_LIBRARY);
-        // only present if our extension is installed
+        // only present if our plugin is installed
+        @Nullable
         final JSONObject libraryDetails = source.optJSONObject(RESPONSE_TAG_LIBRARY_DETAILS);
-        calibreExtensionInstalled = libraryDetails != null;
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
@@ -710,7 +730,7 @@ public final class CalibreContentServer
                 // read the standard info
                 final String name = libraryMap.getString(libraryId);
 
-                // read the extended info if present
+                // read the plugin info if present
                 final String uuid;
                 @Nullable
                 final JSONObject vlibs;
@@ -789,6 +809,44 @@ public final class CalibreContentServer
         Objects.requireNonNull(defaultLibrary, ERROR_NULL_DEFAULT_LIBRARY);
     }
 
+    /**
+     * Fetch the library information.
+     * First tries the endpoint for our plugin,
+     * and if not found falls back to the default endpoint.
+     * <p>
+     * Sets {@link #pluginInstalled} and {@link #urlGetLibraryInfo}
+     * accordingly.
+     *
+     * @return the library information as a json string
+     *
+     * @throws IOException on any issue
+     */
+    @NonNull
+    private String fetchLibraryInfo()
+            throws IOException {
+        String fetch;
+        try {
+            // Try our plugin endpoint first
+            fetch = fetch(String.format(urlGetLibraryInfo, serverUri), BUFFER_SMALL);
+            // if we don't get an exception, our plugin is installed
+            pluginInstalled = true;
+
+        } catch (@NonNull final HttpNotFoundException e) {
+            // our plugin is not installed
+            pluginInstalled = false;
+            // from now on, use the default endpoint
+            urlGetLibraryInfo = GET_LIBRARY_INFO;
+            // and retry
+            fetch = fetch(String.format(urlGetLibraryInfo, serverUri), BUFFER_SMALL);
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, "pluginInstalled=" + pluginInstalled);
+        }
+
+        return fetch;
+    }
+
     private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
                                          @NonNull final CalibreLibrary library,
                                          @NonNull final JSONObject virtualLibraries)
@@ -840,10 +898,10 @@ public final class CalibreContentServer
     }
 
     /**
-     * Check if the virtual-library support extension has been installed
+     * Check if the virtual-library support plugin has been installed
      * on the Calibre Content Server.
      * <p>
-     * Only valid if the meta-data has been read.
+     * Only valid after an attempt to read the meta-data.
      *
      * @return flag
      *
@@ -851,8 +909,8 @@ public final class CalibreContentServer
      * @see #isMetaDataRead()
      */
     @AnyThread
-    boolean isExtensionInstalled() {
-        return calibreExtensionInstalled;
+    boolean isPluginInstalled() {
+        return pluginInstalled;
     }
 
     /**
@@ -880,12 +938,13 @@ public final class CalibreContentServer
      * Return the book ids with their virtual libraries.
      * <pre>
      * {@code
-     *      endpoint('/ntmb/virtual-libraries-for-books/{library_id=None}', postprocess=json)
+     *      endpoint('/NeverTooManyBooks/virtual-libraries-for-books/{book_ids}/{library_id=None}',
+     *               postprocess=json)
      * }
      * </pre>
-     * Mandatory Query parameters; example: ?ids=271,7,200
+     * {book_ids} a simple csv list; example: 271,7,200
      * <p>
-     * This method uses an extension which needs to be installed on the Calibre Content Server.
+     * This method uses a plugin which needs to be installed on the Calibre Content Server.
      * <p>
      * Example response:
      * <pre>
@@ -899,11 +958,11 @@ public final class CalibreContentServer
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
      * @param calibreIds      the list of books (id only)
      *
-     * @return see above, or {@code null} if the extension is missing
+     * @return see above, or {@code null} if the plugin is missing
      *
      * @throws IOException   on generic/other IO failures
      * @throws JSONException upon any parsing error
-     * @see #isExtensionInstalled()
+     * @see #isPluginInstalled()
      */
     @WorkerThread
     @Nullable
@@ -911,7 +970,7 @@ public final class CalibreContentServer
                                            @NonNull final JSONArray calibreIds)
             throws IOException,
                    JSONException {
-        if (!calibreExtensionInstalled) {
+        if (!pluginInstalled) {
             return null;
         }
 
@@ -1524,7 +1583,7 @@ public final class CalibreContentServer
         final String fileName = createFilename(context, book);
         final String fileExt = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
 
-        // FIRST check if it exists using the format extension
+        // FIRST check if it exists using the format (file) extension
         DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileExt);
         if (bookFile == null) {
             if (creating) {
@@ -1688,28 +1747,62 @@ public final class CalibreContentServer
         @Nullable
         private HostnameVerifier hostnameVerifier;
 
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         */
         public Builder(@NonNull final Context context) {
             this.context = context;
         }
 
+        /**
+         * Set the url for the connection.
+         *
+         * @param url to use
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder setUrl(@NonNull final String url) {
             this.url = url;
             return this;
         }
 
+        /**
+         * Set the username for the connection.
+         *
+         * @param username to use
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder setUser(@NonNull final String username) {
             this.username = username;
             return this;
         }
 
+        /**
+         * Set the password for the connection.
+         *
+         * @param password to use
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder setPassword(@NonNull final String password) {
             this.password = password;
             return this;
         }
 
+        /**
+         * Set a custom SSL/X509 configuration.
+         *
+         * @param sslContext   to use
+         * @param trustManager to use
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder setSSLContext(@NonNull final SSLContext sslContext,
                                      @NonNull final X509TrustManager trustManager) {
@@ -1732,6 +1825,13 @@ public final class CalibreContentServer
             return this;
         }
 
+        /**
+         * Create the server.
+         *
+         * @return new instance
+         *
+         * @throws CertificateException on failures related to a user installed CA
+         */
         @NonNull
         public CalibreContentServer build()
                 throws CertificateException {

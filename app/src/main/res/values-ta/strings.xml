@@ -253,7 +253,7 @@
     <string name="info_tap_to_move_tag">ஒரு குறிச்சொல்லை புத்தகத்திலிருந்து/நகர்த்தத் தட்டவும்.</string>
     <string name="info_substitutions_one_per_line">ஒரு வரிசைக்கு ஒரு மாற்றினை சேர்க்கவும், அல்லது டேக்கை நீக்க வெறுமையாக விடவும்</string>
     <string name="info_download_successful">வெற்றிகரமாக பதிவிறக்கவும்</string>
-    <string name="info_calibre_content_server_extension">காலிபர் உள்ளடக்க சேவையக நீட்டிப்பு நிறுவப்படவில்லை. மெய்நிகர் நூலகங்கள் கிடைக்காது.</string>
+    <string name="info_calibre_content_server_plugin">Calibre உள்ளடக்க சேவையகத்தின் செருகுநிரல் நிறுவப்படவில்லை. மெய்நிகர் நூலகங்கள் கிடைக்காது.</string>
     <string name="cd_btn_drag_handle">இந்த பட்டியலை மறுதொடக்கம் செய்ய இழுக்கவும்</string>
     <string name="cd_clear_text_end_icon">உரையை அழிக்கவும்</string>
     <string name="info_site_list">தேடல்கள் மட்டுப்படுத்தப்பட்டவை: %1$s</string>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -331,7 +332,7 @@
     <string name="info_tap_on_thumbnail_to_zoom">Toca nunha miniatura para ver unha imaxe máis grande.</string>
     <string name="progress_msg_optimizing">Optimizando…</string>
     <string name="progress_msg_authenticating_to_site">Autenticándose en %1$s</string>
-    <string name="info_calibre_content_server_extension">A extensión Calibre Content Server non está instalada. As librarías virtuais no estarán dispoñibles.</string>
+    <string name="info_calibre_content_server_plugin">O complemento do servidor de contidos de Calibre non está instalado. As librarías virtuais no estarán dispoñibles.</string>
     <string name="info_partial_date_picker">Preme sobre un mes ou día previamente seleccionado para quitalo.</string>
     <string name="site_description_english_and_more">Inglés e outros</string>
     <string name="tip_book_search_by_text">Engadir libros por ISBN é moito máis preciso que facelo por autoría e título e, en xeral, preferible. Lembra que ás veces pódese atopar o código de barras correcto no interior da cuberta.</string>

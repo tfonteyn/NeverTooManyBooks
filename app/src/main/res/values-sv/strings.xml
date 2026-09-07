@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -273,7 +274,7 @@
     <string name="info_builtin_style_asterix">(* standardstilar)</string>
     <string name="info_bulk_set_bookshelves">Välj bokhyllorna du vill tilldela alla böcker som listas under den valda noden.</string>
     <string name="info_bulk_set_location">Välj platsen du vill tilldela alla böcker som listas under den valda noden.</string>
-    <string name="info_calibre_content_server_extension">Calibre Content Server-tillägget är inte installerat. Virtuella bibliotek kommer inte vara tillgängliga.</string>
+    <string name="info_calibre_content_server_plugin">Tillägget för calibres innehållsserver är inte installerat. Virtuella bibliotek kommer inte att vara tillgängliga.</string>
     <string name="info_cleanup_files">Rensningsbara filer använder för närvarande %1$s på SD-kortet. Loggfiler och annan data sparas på SD-kortet vid varje uppgradering, när du säkerhetskopierar databasen eller om appen kraschar. Tryck på knappen nedan för att rensa dessa filer från ditt SD-kort. Om du har problem med krascher eller andra fel, överväg att använda ”%2$s”-knappen först.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d böcker, i %2$d poster</string>
     <string name="info_download_successful">Nedladdningen lyckades</string>

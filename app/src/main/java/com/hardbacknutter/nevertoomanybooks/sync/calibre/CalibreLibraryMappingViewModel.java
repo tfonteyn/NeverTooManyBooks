@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ public class CalibreLibraryMappingViewModel
     private CalibreLibraryDao calibreLibraryDao;
 
     private CalibreLibrary currentLibrary;
-    private boolean extInstalled;
+    private boolean pluginInstalled;
 
     /**
      * Pseudo constructor.
@@ -90,11 +90,11 @@ public class CalibreLibraryMappingViewModel
                 data.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
                 CalibreContentServer.BKEY_LIBRARY_LIST));
 
-        extInstalled = data.getBoolean(CalibreContentServer.BKEY_EXT_INSTALLED);
+        pluginInstalled = data.getBoolean(CalibreContentServer.BKEY_PLUGIN_INSTALLED);
     }
 
-    boolean isExtInstalled() {
-        return extInstalled;
+    boolean isPluginInstalled() {
+        return pluginInstalled;
     }
 
     @NonNull

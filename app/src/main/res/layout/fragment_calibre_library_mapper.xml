@@ -47,7 +47,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="UseCompatTextViewDrawableXml"
-            tools:text="@string/info_calibre_content_server_extension"
+            tools:text="@string/info_calibre_content_server_plugin"
             tools:visibility="visible" />
 
         <TextView

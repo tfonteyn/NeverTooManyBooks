@@ -540,10 +540,12 @@
     <string name="info_substitutions_one_per_line">Add one substitution per line or leave empty to delete the tag</string>
 
     <string name="info_download_successful">Download successful</string>
-    <!-- See GitHub docs... there is optional code to be added to Calibre.
-         The product name IS translated. We follow the translation as used by the product itself.
+    <!-- See GitHub docs... there is an optional plugin which can be added to Calibre.
+
+         The product name "Calibre Content Server" IS translated.
+          We follow the translation as used by the product itself.
     -->
-    <string name="info_calibre_content_server_extension">Calibre Content Server extension is not installed. Virtual libraries will not be available.</string>
+    <string name="info_calibre_content_server_plugin">Calibre Content Server plugin is not installed. Virtual libraries will not be available.</string>
     <!-- ContentDescription text for the drag handle button in re-order-able lists -->
     <string name="cd_btn_drag_handle">Drag to reorder this list</string>
     <!-- [VERIFIED] ContentDescription text for the delete (cross) icon at the end of an input box. -->

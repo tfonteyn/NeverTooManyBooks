@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -255,7 +256,7 @@
     <string name="info_builtin_style_asterix">（* 預設樣式）</string>
     <string name="info_bulk_set_bookshelves">選取要指定給所選節點下列出的所有書籍的書架。</string>
     <string name="info_bulk_set_location">選擇你要把所選節點下列舉的所有書籍分配到的位置。</string>
-    <string name="info_calibre_content_server_extension">沒有安裝Calibre內容伺服器擴充。不提供虛擬圖書館。</string>
+    <string name="info_calibre_content_server_plugin">未安裝 Calibre 內容伺服器外掛程式。虛擬書庫將無法使用。</string>
     <string name="info_cleanup_files">可刪除檔案目前佔用 SD 卡 %1$s 空間。當您備份資料庫或應用程式崩潰時，會將日誌與其他資料檔案儲存在 SD 卡上。點擊下方按鈕以從 SD 卡刪除這些檔案。如果您遇到了崩潰或其他問題，請考慮先使用「%2$s」按鈕。</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d書，在 %2$d條目中</string>
     <string name="lbl_add_or_edit_substitution">新增/編輯替換規則</string>

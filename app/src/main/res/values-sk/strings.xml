@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -675,7 +676,7 @@
     <string name="vldt_blank_required_for_x">Vyžaduje sa prázdna hodnota pre „%1$s“</string>
     <string name="site_description_german">Nemčina</string>
     <string name="info_all_books_have_covers">Všetky knihy na tejto polici majú obálky</string>
-    <string name="info_calibre_content_server_extension">Rozšírenie Calibre Content Server nie je nainštalované. Virtuálne knižnice nebudú dostupné.</string>
+    <string name="info_calibre_content_server_plugin">Zásuvný modul pre Obsahový server Calibre nie je nainštalovaný. Virtuálne knižnice nebudú dostupné.</string>
     <string name="site_description_catalog">Katalóg</string>
     <string name="site_description_comics">Komiksy</string>
     <string name="option_reset_all_tips">Resetovať tipy</string>
