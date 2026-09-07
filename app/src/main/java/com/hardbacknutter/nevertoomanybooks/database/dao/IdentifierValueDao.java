@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.IdentifierOwner;
 
@@ -52,13 +51,10 @@ public interface IdentifierValueDao {
      * @param entityType type of the foreign key entity
      * @param fkId       foreign-key id
      * @param list       the list of {@link Identifier.Value}s
-     *
-     * @throws DaoWriteException on failure
      */
     void insertOrUpdate(@NonNull Identifier.EntityType entityType,
                         @IntRange(from = 1) long fkId,
-                        @NonNull Collection<Identifier.Value> list)
-            throws DaoWriteException;
+                        @NonNull Collection<Identifier.Value> list);
 
     /**
      * Get a list of all {@link Identifier.Value}s for the given foreign-key id.

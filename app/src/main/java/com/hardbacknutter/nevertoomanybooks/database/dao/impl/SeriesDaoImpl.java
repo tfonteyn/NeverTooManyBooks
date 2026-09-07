@@ -380,10 +380,6 @@ public class SeriesDaoImpl
             series.setId(0);
             throw new DaoWriteException(e);
 
-        } catch (@NonNull final DaoWriteException e) {
-            series.setId(0);
-            throw e;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

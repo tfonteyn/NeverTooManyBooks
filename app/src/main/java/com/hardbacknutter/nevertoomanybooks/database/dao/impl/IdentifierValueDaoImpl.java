@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -72,7 +71,7 @@ public class IdentifierValueDaoImpl
     public void insertOrUpdate(@NonNull final Identifier.EntityType entityType,
                                @IntRange(from = 1) final long fkId,
                                @NonNull final Collection<Identifier.Value> list)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -86,8 +85,6 @@ public class IdentifierValueDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(sql.DELETE_LINK_BY_FK)) {
             stmt1.bindLong(1, fkId);
             stmt1.executeUpdateDelete(null);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -109,8 +106,6 @@ public class IdentifierValueDaoImpl
 
                 stmt.executeInsert(() -> "insert FK-Identifier");
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
