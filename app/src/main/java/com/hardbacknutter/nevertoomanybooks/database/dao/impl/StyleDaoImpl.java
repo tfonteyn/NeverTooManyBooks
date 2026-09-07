@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -251,7 +250,7 @@ public class StyleDaoImpl
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Style style)
-            throws DaoWriteException {
+            throws SQLException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_STYLE)) {
             final long iId = doInsert(style, style.getLabel(context), stmt);
@@ -259,23 +258,19 @@ public class StyleDaoImpl
             return iId;
         } catch (@NonNull final SQLException e) {
             style.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
         }
     }
 
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Style style)
-            throws DaoWriteException {
+            throws SQLException {
 
-        try {
-            if (style.getType() == Style.Type.Builtin) {
-                updateBuiltinStyle(style);
-            } else {
-                updateUserStyle(context, style);
-            }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
+        if (style.getType() == Style.Type.Builtin) {
+            updateBuiltinStyle(style);
+        } else {
+            updateUserStyle(context, style);
         }
     }
 
@@ -340,8 +335,7 @@ public class StyleDaoImpl
 
     @Override
     public void update(@NonNull final Context context,
-                       @NonNull final Collection<Style> styles)
-            throws DaoWriteException {
+                       @NonNull final Collection<Style> styles) {
 
         Synchronizer.SyncLock txLock = null;
         try {

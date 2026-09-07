@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 
 public interface StyleDao {
 
@@ -74,37 +73,28 @@ public interface StyleDao {
      * @param style   to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
     long insert(@NonNull Context context,
-                @NonNull Style style)
-            throws DaoWriteException;
+                @NonNull Style style);
 
     /**
      * Update the given {@link Style}.
      *
      * @param context Current context
      * @param style   to update
-     *
-     * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
-                @NonNull Style style)
-            throws DaoWriteException;
+                @NonNull Style style);
 
     /**
      * Update the given list of {@link Style}s.
      *
      * @param context Current context
      * @param styles  to update
-     *
-     * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
-                @NonNull Collection<Style> styles)
-            throws DaoWriteException;
+                @NonNull Collection<Style> styles);
 
     /**
      * Delete the given {@link Style}.

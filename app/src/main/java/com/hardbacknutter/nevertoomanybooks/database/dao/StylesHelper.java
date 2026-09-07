@@ -38,15 +38,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Helper class encapsulating {@link StyleDao} access and internal in-memory caches.
  */
 public class StylesHelper {
-
-    private static final String TAG = "StylesHelper";
 
     /** Preference for the current default style UUID to use. */
     private static final String PK_DEFAULT_STYLE = "bookList.style.current";
@@ -232,14 +228,9 @@ public class StylesHelper {
             }
         }
 
-        try {
-            final StyleDao dao = styleDaoSupplier.get();
-            for (final Style style : sortedStyles) {
-                dao.update(context, style);
-            }
-        } catch (@NonNull final DaoWriteException e) {
-            // ignore, but log it.
-            LoggerFactory.getLogger().e(TAG, e);
+        final StyleDao dao = styleDaoSupplier.get();
+        for (final Style style : sortedStyles) {
+            dao.update(context, style);
         }
         // keep it safe and easy, just clear the caches; almost certainly overkill
         cache.clear();
@@ -282,13 +273,10 @@ public class StylesHelper {
 
     private boolean insert(@NonNull final Context context,
                            @NonNull final Style style) {
-        try {
-            if (styleDaoSupplier.get().insert(context, style) > 0) {
-                cache.put(style.getUuid(), style);
-                return true;
-            }
-        } catch (@NonNull final DaoWriteException ignore) {
-            // ignore
+
+        if (styleDaoSupplier.get().insert(context, style) > 0) {
+            cache.put(style.getUuid(), style);
+            return true;
         }
         return false;
     }
@@ -305,27 +293,20 @@ public class StylesHelper {
      */
     public boolean update(@NonNull final Context context,
                           @NonNull final Style... styles) {
-        try {
-            // Update the database first, and commit the transaction
-            styleDaoSupplier.get().update(context, List.of(styles));
-            // Now update the caches.
-            for (final Style style : styles) {
-                if (style.getType() == Style.Type.Global) {
-                    // ensure both the global style and any inheriting styles get reloaded
-                    globalStyle = null;
-                    cache.clear();
-                } else {
-                    // replace (or insert) in the cache
-                    cache.put(style.getUuid(), style);
-                }
+        // Update the database first, and commit the transaction
+        styleDaoSupplier.get().update(context, List.of(styles));
+        // Now update the caches.
+        for (final Style style : styles) {
+            if (style.getType() == Style.Type.Global) {
+                // ensure both the global style and any inheriting styles get reloaded
+                globalStyle = null;
+                cache.clear();
+            } else {
+                // replace (or insert) in the cache
+                cache.put(style.getUuid(), style);
             }
-            return true;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // ignore, but log it.
-            LoggerFactory.getLogger().e(TAG, e);
         }
-        return false;
+        return true;
     }
 
     /**
