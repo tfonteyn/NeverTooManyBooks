@@ -123,7 +123,7 @@ public class BookRepository {
             ServiceLocator.getInstance().getFtsDao().insert(book);
 
             // move the covers from the cache dir to their permanent dir/name
-            persistCovers(book);
+            persistImages(book);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -197,7 +197,7 @@ public class BookRepository {
             ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
             // move the covers from the cache dir to their permanent dir/name
-            persistCovers(book);
+            persistImages(book);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -339,14 +339,16 @@ public class BookRepository {
 
     /**
      * Called during {@link #insert} and {@link #update}.
+     * <p>
+     * Handles both storing and delete operations.
      *
      * @param book to process
      *
+     * @throws IOException      on image I/O related errors.
      * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
      */
     @SuppressWarnings("OverlyBroadThrowsClause")
-    private void persistCovers(@NonNull final Book book)
+    private void persistImages(@NonNull final Book book)
             throws StorageException, IOException {
 
         final String uuid = book.getUuid();

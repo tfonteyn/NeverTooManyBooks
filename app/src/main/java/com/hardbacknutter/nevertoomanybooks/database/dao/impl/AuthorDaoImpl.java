@@ -43,8 +43,6 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -52,11 +50,13 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
@@ -526,7 +526,7 @@ public class AuthorDaoImpl
             }
 
             // Store first, this will update the author fields if successful
-            persistPicture(author);
+            persistImages(author);
 
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
@@ -583,7 +583,7 @@ public class AuthorDaoImpl
             }
 
             // Store first, this will update the author fields if successful
-            persistPicture(author);
+            persistImages(author);
 
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
@@ -687,13 +687,16 @@ public class AuthorDaoImpl
     /**
      * Persist the temporary FileSpec to a permanent UUID based filename.
      * Hardcoded to using one image {@code cIdx=0}.
+     * <p>
+     * Handles storing images only.
+     * For deletions, see {@link #deletePicture(Author)}.
      *
      * @param author to store
      *
-     * @throws IOException      on any error.
+     * @throws IOException      on image I/O related errors.
      * @throws StorageException The covers directory is not available
      */
-    private void persistPicture(@NonNull final Author author)
+    private void persistImages(@NonNull final Author author)
             throws StorageException, IOException {
         final Optional<String> fileSpec = author.getTmpPictureFileSpec();
         if (fileSpec.isEmpty()) {
