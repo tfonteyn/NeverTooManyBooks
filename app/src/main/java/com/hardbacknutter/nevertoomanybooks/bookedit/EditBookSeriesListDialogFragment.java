@@ -45,14 +45,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
@@ -390,14 +388,9 @@ public class EditBookSeriesListDialogFragment
     private void changeForAllBooks(@NonNull final Series original,
                                    @NonNull final Series modified) {
         // This change is done in the database right NOW!
-        try {
-            //noinspection DataFlowIssue
-            vm.changeForAllBooks(getContext(), original, modified);
-            adapter.notifyDataSetChanged();
-
-        } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
-        }
+        //noinspection DataFlowIssue
+        vm.changeForAllBooks(getContext(), original, modified);
+        adapter.notifyDataSetChanged();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -407,14 +400,9 @@ public class EditBookSeriesListDialogFragment
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Series. That's OK, it will get
         // garbage collected from the database sooner or later.
-        try {
-            //noinspection DataFlowIssue
-            vm.changeForThisBook(getContext(), original, modified);
-            adapter.notifyDataSetChanged();
-
-        } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
-        }
+        //noinspection DataFlowIssue
+        vm.changeForThisBook(getContext(), original, modified);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

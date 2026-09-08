@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -120,12 +119,9 @@ public class EditSeriesViewModel
      * @param context Current context
      *
      * @return an empty Optional for SUCCESS, or else the existing Series.
-     *
-     * @throws DaoWriteException on failure
      */
     @NonNull
-    Optional<Series> saveIfUnique(@NonNull final Context context)
-            throws DaoWriteException {
+    Optional<Series> saveIfUnique(@NonNull final Context context) {
 
         // FIRST check if the name was changed
         final boolean sameName = original.isSameName(currentEdit);
@@ -165,8 +161,7 @@ public class EditSeriesViewModel
     }
 
     void move(@NonNull final Context context,
-              @NonNull final Series destination)
-            throws DaoWriteException {
+              @NonNull final Series destination) {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
         dao.moveBooks(context, original, destination);

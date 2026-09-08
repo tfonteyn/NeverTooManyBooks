@@ -38,7 +38,6 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -272,7 +271,7 @@ public class SeriesDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Series> list,
                                @NonNull final Function<Series, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -286,8 +285,6 @@ public class SeriesDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -332,8 +329,6 @@ public class SeriesDaoImpl
 
                 stmt.executeInsert(() -> "insert Book-Series");
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
@@ -342,7 +337,7 @@ public class SeriesDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -378,7 +373,7 @@ public class SeriesDaoImpl
 
         } catch (@NonNull final SQLException e) {
             series.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
 
         } finally {
             if (txLock != null) {
@@ -391,7 +386,7 @@ public class SeriesDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         // REMINDER: do NOT resolve the locale using series.getLocale!
         // It's explicitly set as a parameter!
@@ -422,9 +417,6 @@ public class SeriesDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -434,7 +426,9 @@ public class SeriesDaoImpl
 
     @Override
     public boolean delete(@NonNull final Context context,
-                          @NonNull final Series series) {
+                          @NonNull final Series series)
+        throws SQLException {
+
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -456,8 +450,6 @@ public class SeriesDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoWriteException e) {
-            return false;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -470,7 +462,7 @@ public class SeriesDaoImpl
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Series source,
                          @NonNull final Series target)
-            throws DaoWriteException {
+            throws SQLException {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         int booksMoved;
@@ -568,7 +560,7 @@ public class SeriesDaoImpl
 
     @Override
     public int fixPositions(@NonNull final Context context)
-            throws DaoWriteException {
+            throws SQLException {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
