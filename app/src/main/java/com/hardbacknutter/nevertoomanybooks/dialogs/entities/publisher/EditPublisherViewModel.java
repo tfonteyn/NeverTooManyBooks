@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -102,12 +101,9 @@ public class EditPublisherViewModel
      * @param context Current context
      *
      * @return an empty Optional for SUCCESS, or else the existing Publisher.
-     *
-     * @throws DaoWriteException on failure
      */
     @NonNull
-    Optional<Publisher> saveIfUnique(@NonNull final Context context)
-            throws DaoWriteException {
+    Optional<Publisher> saveIfUnique(@NonNull final Context context) {
 
         // FIRST check if the name was changed
         final boolean sameName = original.isSameName(currentEdit);
@@ -146,8 +142,7 @@ public class EditPublisherViewModel
     }
 
     void move(@NonNull final Context context,
-              @NonNull final Publisher destination)
-            throws DaoWriteException {
+              @NonNull final Publisher destination) {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
         dao.moveBooks(context, original, destination);

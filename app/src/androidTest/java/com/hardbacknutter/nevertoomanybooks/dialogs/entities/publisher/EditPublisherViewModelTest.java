@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
@@ -76,8 +75,7 @@ class EditPublisherViewModelTest
     }
 
     @Test
-    void rename()
-            throws DaoWriteException {
+    void rename() {
 
         dao.insert(context, new Publisher(WRONG), locale);
 

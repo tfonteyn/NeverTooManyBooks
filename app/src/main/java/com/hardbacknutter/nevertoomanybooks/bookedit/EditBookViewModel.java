@@ -1085,8 +1085,7 @@ public class EditBookViewModel
 
     void changeForThisBook(@NonNull final Context context,
                            @NonNull final Publisher original,
-                           @NonNull final Publisher modified)
-            throws DaoWriteException {
+                           @NonNull final Publisher modified) {
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
@@ -1103,8 +1102,7 @@ public class EditBookViewModel
 
     void changeForAllBooks(@NonNull final Context context,
                            @NonNull final Publisher original,
-                           @NonNull final Publisher modified)
-            throws DaoWriteException {
+                           @NonNull final Publisher modified) {
         // copy all new data
         original.copyFrom(modified);
 

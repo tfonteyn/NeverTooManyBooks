@@ -45,14 +45,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
@@ -81,13 +79,6 @@ public class EditBookPublisherListDialogFragment
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookPubListDlg";
     private static final String RK_MENU = TAG + ":rk:menu";
-
-    /** Book View model. Activity scope. */
-    private EditBookViewModel vm;
-    /** View Binding. */
-    private DialogEditBookPublisherListBinding vb;
-    /** the rows. */
-    private List<Publisher> publisherList;
     /** React to list changes. */
     private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -97,6 +88,12 @@ public class EditBookPublisherListDialogFragment
                     vm.updatePublishers(publisherList);
                 }
             };
+    /** Book View model. Activity scope. */
+    private EditBookViewModel vm;
+    /** View Binding. */
+    private DialogEditBookPublisherListBinding vb;
+    /** the rows. */
+    private List<Publisher> publisherList;
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
     private EditParcelableLauncher<Publisher> editLauncher;
@@ -370,16 +367,10 @@ public class EditBookPublisherListDialogFragment
     @SuppressLint("NotifyDataSetChanged")
     private void changeForAllBooks(@NonNull final Publisher original,
                                    @NonNull final Publisher modified) {
-
         // This change is done in the database right NOW!
-        try {
-            //noinspection DataFlowIssue
-            vm.changeForAllBooks(getContext(), original, modified);
-            adapter.notifyDataSetChanged();
-
-        } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
-        }
+        //noinspection DataFlowIssue
+        vm.changeForAllBooks(getContext(), original, modified);
+        adapter.notifyDataSetChanged();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -389,14 +380,9 @@ public class EditBookPublisherListDialogFragment
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Publisher. That's OK, it will get
         // garbage collected from the database sooner or later.
-        try {
-            //noinspection DataFlowIssue
-            vm.changeForThisBook(getContext(), original, modified);
-            adapter.notifyDataSetChanged();
-
-        } catch (@NonNull final DaoWriteException e) {
-            ErrorDialog.show(getContext(), TAG, e);
-        }
+        //noinspection DataFlowIssue
+        vm.changeForThisBook(getContext(), original, modified);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -458,8 +444,9 @@ public class EditBookPublisherListDialogFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = LayoutInflater.from(parent.getContext())
-                                            .inflate(R.layout.row_edit_publisher_list, parent, false);
+            final View view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

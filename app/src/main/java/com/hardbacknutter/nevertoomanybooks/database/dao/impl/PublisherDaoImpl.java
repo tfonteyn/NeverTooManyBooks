@@ -37,7 +37,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -220,7 +219,7 @@ public class PublisherDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Publisher> list,
                                @NonNull final Function<Publisher, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -234,8 +233,6 @@ public class PublisherDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -278,8 +275,6 @@ public class PublisherDaoImpl
 
                 stmt.executeInsert(() -> "insert Book-Publisher");
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
@@ -288,7 +283,7 @@ public class PublisherDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Publisher publisher,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         final String name = publisher.getName();
         final String obName = new ReorderHelper(LocaleListUtils.asList(
@@ -304,7 +299,7 @@ public class PublisherDaoImpl
 
         } catch (@NonNull final SQLException e) {
             publisher.setId(0);
-            throw new DaoWriteException(e);
+            throw e;
         }
     }
 
@@ -312,7 +307,7 @@ public class PublisherDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Publisher publisher,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws SQLException {
 
         final String text = publisher.getName();
         final String obName = new ReorderHelper(LocaleListUtils.asList(
@@ -325,9 +320,6 @@ public class PublisherDaoImpl
 
             stmt.bindLong(3, publisher.getId());
             stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + publisher);
-
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
@@ -355,8 +347,6 @@ public class PublisherDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoWriteException e) {
-            return false;
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -369,7 +359,7 @@ public class PublisherDaoImpl
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Publisher source,
                          @NonNull final Publisher target)
-            throws DaoWriteException {
+            throws SQLException {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         int booksMoved;
@@ -465,7 +455,7 @@ public class PublisherDaoImpl
 
     @Override
     public int fixPositions(@NonNull final Context context)
-            throws DaoWriteException {
+            throws SQLException {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);

@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -166,15 +165,12 @@ public interface PublisherDao
      *                       Do not set this during for example an import.
      * @param list           the list of {@link Publisher}'s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
-     *
-     * @throws DaoWriteException on failure
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
                         boolean doUpdates,
                         @NonNull Collection<Publisher> list,
-                        @NonNull Function<Publisher, Locale> localeSupplier)
-            throws DaoWriteException;
+                        @NonNull Function<Publisher, Locale> localeSupplier);
 
     /**
      * Moves all books from the 'source' {@link Publisher}, to the 'target' {@link Publisher}.
@@ -185,14 +181,11 @@ public interface PublisherDao
      * @param target  to move to
      *
      * @return amount of books moved
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 0)
     int moveBooks(@NonNull Context context,
                   @NonNull Publisher source,
-                  @NonNull Publisher target)
-            throws DaoWriteException;
+                  @NonNull Publisher target);
 
     /**
      * Find a {@link Publisher} based on the given id.
@@ -267,14 +260,11 @@ public interface PublisherDao
      * @param locale  The Locale of the item
      *
      * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
     long insert(@NonNull Context context,
                 @NonNull Publisher item,
-                @NonNull Locale locale)
-            throws DaoWriteException;
+                @NonNull Locale locale);
 
     /**
      * Update the given {@link Publisher}.
@@ -282,13 +272,10 @@ public interface PublisherDao
      * @param context Current context
      * @param item    to update
      * @param locale  The Locale of the item
-     *
-     * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
                 @NonNull Publisher item,
-                @NonNull Locale locale)
-            throws DaoWriteException;
+                @NonNull Locale locale);
 
     /**
      * Delete the given {@link Publisher}.

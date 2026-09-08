@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -47,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelab
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Publisher}.
@@ -62,8 +60,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 class EditPublisherDelegate
         implements FlexDialogDelegate {
-
-    private static final String TAG = "EditPublisherDelegate";
 
     private final EditPublisherViewModel vm;
 
@@ -184,36 +180,24 @@ class EditPublisherDelegate
             return true;
         }
 
-        try {
-            final Optional<Publisher> existingEntity = vm.saveIfUnique(context);
-            if (existingEntity.isEmpty()) {
-                // Success
-                new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                        .send(owner, requestKey);
-                return true;
-            }
-
-            // There is one with the same name; ask whether to merge the 2
-            StandardDialogs.askToMerge(context, R.string.confirm_merge_publishers,
-                                       vm.getOriginal().getLabel(context), () -> {
-                        owner.dismiss();
-                        try {
-                            vm.move(context, existingEntity.get());
-                            // return the item which 'lost' it's books
-                            new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                                    .send(owner, requestKey);
-                        } catch (@NonNull final DaoWriteException e) {
-                            // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-                        }
-                    });
-            return false;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-            return false;
+        final Optional<Publisher> existingEntity = vm.saveIfUnique(context);
+        if (existingEntity.isEmpty()) {
+            // Success
+            new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                    .send(owner, requestKey);
+            return true;
         }
+
+        // There is one with the same name; ask whether to merge the 2
+        StandardDialogs.askToMerge(context, R.string.confirm_merge_publishers,
+                                   vm.getOriginal().getLabel(context), () -> {
+                    owner.dismiss();
+                    vm.move(context, existingEntity.get());
+                    // return the item which 'lost' it's books
+                    new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                            .send(owner, requestKey);
+                });
+        return false;
     }
 
     @Override
