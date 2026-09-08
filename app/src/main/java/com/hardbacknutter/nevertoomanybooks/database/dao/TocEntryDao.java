@@ -255,37 +255,6 @@ public interface TocEntryDao
                  @NonNull Locale locale);
 
     /**
-     * Insert a new {@link TocEntry}.
-     *
-     * @param context Current context
-     * @param item    to insert. Will be updated with the id
-     * @param locale  The Locale of the item
-     *
-     * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
-     */
-    @IntRange(from = 1)
-    long insert(@NonNull Context context,
-                @NonNull TocEntry item,
-                @NonNull Locale locale)
-            throws DaoWriteException;
-
-    /**
-     * Update the given {@link TocEntry}.
-     *
-     * @param context Current context
-     * @param item    to update
-     * @param locale  The Locale of the item
-     *
-     * @throws DaoWriteException on failure
-     */
-    void update(@NonNull Context context,
-                @NonNull TocEntry item,
-                @NonNull Locale locale)
-            throws DaoWriteException;
-
-    /**
      * Delete the given {@link TocEntry}.
      *
      * @param context  Current context

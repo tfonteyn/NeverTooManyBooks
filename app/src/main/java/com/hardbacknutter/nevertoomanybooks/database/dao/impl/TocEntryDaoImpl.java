@@ -75,7 +75,6 @@ public class TocEntryDaoImpl
     private static final String TAG = "TocEntryDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
-    private static final String ERROR_USE_INSERT_OR_UPDATE_INSTEAD = "use insertOrUpdate instead";
 
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
@@ -381,22 +380,6 @@ public class TocEntryDaoImpl
             actualInserts.forEach(entry -> entry.setId(0));
             throw new DaoWriteException(e);
         }
-    }
-
-    @Override
-    public long insert(@NonNull final Context context,
-                       @NonNull final TocEntry item,
-                       @NonNull final Locale locale)
-            throws DaoWriteException {
-        throw new UnsupportedOperationException(ERROR_USE_INSERT_OR_UPDATE_INSTEAD);
-    }
-
-    @Override
-    public void update(@NonNull final Context context,
-                       @NonNull final TocEntry item,
-                       @NonNull final Locale locale)
-            throws DaoWriteException {
-        throw new UnsupportedOperationException(ERROR_USE_INSERT_OR_UPDATE_INSTEAD);
     }
 
     @Override
