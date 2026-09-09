@@ -36,7 +36,6 @@ import java.io.File;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 
 public class EditImageExternalContract
@@ -78,15 +77,12 @@ public class EditImageExternalContract
     @Override
     @NonNull
     public Boolean parseResult(final int resultCode,
-                                      @Nullable final Intent intent) {
+                               @Nullable final Intent intent) {
 
         return resultCode == Activity.RESULT_OK;
     }
 
     public static final class Input {
-
-        private static final String ERROR_GENERIC_FILE_PROVIDER =
-                "GenericFileProvider/IllegalArgumentException";
 
         @NonNull
         final Uri srcUri;
@@ -104,29 +100,24 @@ public class EditImageExternalContract
          * <p>
          * Make sure to keep a reference to the {@code dstFile}
          * as {@link Intent#ACTION_EDIT}, and hence,
-         * this contract does not produce output.
+         * this contract, does not produce output.
          *
          * @param srcFile the input file
          * @param dstFile the output file (name)
          *
          * @return instance
          *
-         * @throws ImageStorageException When a given {@link File} is outside
-         *                               the paths supported by the provider.
+         * @throws IllegalArgumentException (debug) When a given {@link File} is outside
+         *                                  the paths supported by the provider.
          */
         @NonNull
         public static Input create(@NonNull final File srcFile,
                                    @NonNull final File dstFile)
-                throws ImageStorageException {
-            try {
-                final Uri srcUri = GenericFileProvider.createUri(srcFile);
-                final Uri dstUri = GenericFileProvider.createUri(dstFile);
-                return new Input(srcUri, dstUri);
+                throws IllegalArgumentException {
 
-            } catch (@NonNull final IllegalArgumentException e) {
-                // This would be a bug; a permission issue with the GenericFileProvider
-                throw new ImageStorageException(ERROR_GENERIC_FILE_PROVIDER, e);
-            }
+            final Uri srcUri = GenericFileProvider.createUri(srcFile);
+            final Uri dstUri = GenericFileProvider.createUri(dstFile);
+            return new Input(srcUri, dstUri);
         }
     }
 }

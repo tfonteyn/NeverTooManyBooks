@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 
 /**
@@ -70,9 +69,6 @@ public class TakePictureContract
 
     public static final class Input {
 
-        private static final String ERROR_GENERIC_FILE_PROVIDER =
-                "GenericFileProvider/IllegalArgumentException";
-
         @NonNull
         final Uri dstUri;
 
@@ -85,26 +81,21 @@ public class TakePictureContract
          * <p>
          * Make sure to keep a reference to the {@code dstFile}
          * as {@link MediaStore#ACTION_IMAGE_CAPTURE}, and hence,
-         * this contract does not produce output.
+         * this contract, does not produce output.
          *
          * @param dstFile the output file (name)
          *
          * @return instance
          *
-         * @throws ImageStorageException When a given {@link File} is outside
-         *                               the paths supported by the provider.
+         * @throws IllegalArgumentException (debug) When a given {@link File} is outside
+         *                                  the paths supported by the provider.
          */
         @NonNull
         public static Input create(@NonNull final File dstFile)
-                throws ImageStorageException {
-            try {
-                final Uri dstUri = GenericFileProvider.createUri(dstFile);
-                return new Input(dstUri);
+                throws IllegalArgumentException {
 
-            } catch (@NonNull final IllegalArgumentException e) {
-                // This would be a bug; a permission issue with the GenericFileProvider
-                throw new ImageStorageException(ERROR_GENERIC_FILE_PROVIDER, e);
-            }
+            final Uri dstUri = GenericFileProvider.createUri(dstFile);
+            return new Input(dstUri);
         }
     }
 }
