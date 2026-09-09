@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -50,8 +51,8 @@ public final class STask {
      * @param executor   to use
      * @param worker     code to run
      * @param onFinished callback with the result
-     * @param onFailure  callback with an Exception, if it's an 'Unchecked' exception
-     *                   it will be unpacked and the actual cause will be passed in instead.
+     * @param onFailure  callback with an Exception, if it's an {@link UncheckedIOException}
+     *                   it will be unpacked and the {@link IOException} will be passed in instead.
      * @param <T>        result type
      *
      * @return task reference
@@ -85,14 +86,5 @@ public final class STask {
 
         T get()
             throws E;
-    }
-
-    /**
-     * Check if the current thread <strong>is</strong> the UiThread.
-     *
-     * @return {@code true} if {@code true}   (duh...)
-     */
-    public static boolean isUiThread() {
-        return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 }
