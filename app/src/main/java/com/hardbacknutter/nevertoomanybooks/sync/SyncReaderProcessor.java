@@ -286,6 +286,16 @@ public class SyncReaderProcessor {
         return false;
     }
 
+    /**
+     * Process the given book image.
+     *
+     * @param context     Current context
+     * @param localBook   the Book we're syncing
+     * @param remoteBook  the data to merge with the book;
+     * @param field       to process
+     *
+     * @throws IOException on disk-full; other exceptions are logged but ignored
+     */
     @WorkerThread
     private void doDefaultProcessing(@NonNull final Context context,
                                      @NonNull final Book localBook,
@@ -358,6 +368,15 @@ public class SyncReaderProcessor {
         return false;
     }
 
+    /**
+     * Process the given book image.
+     *
+     * @param localBook   the Book we're syncing
+     * @param remoteBook  the data to merge with the book;
+     * @param cIdx        0..n image index
+     *
+     * @throws IOException on disk-full; other exceptions are logged but ignored
+     */
     @WorkerThread
     private void processCover(@NonNull final Book localBook,
                               @NonNull final Book remoteBook,
@@ -375,7 +394,7 @@ public class SyncReaderProcessor {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 LoggerFactory.getLogger()
-                             .e(TAG, e, "processCoverImage|uuid="
+                             .e(TAG, e, "processCover|uuid="
                                         + localBook.getString(DBKey.BOOK_UUID, null)
                                         + "|cIdx=" + cIdx);
                 // except disk-full!
