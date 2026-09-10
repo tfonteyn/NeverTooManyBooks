@@ -334,13 +334,15 @@ public final class IsfdbAuthorResolver
         final Element image = root.selectFirst("img[alt='Author Picture']");
         if (image != null) {
             final String imageUrl = image.attr("src");
+            //noinspection OverlyBroadCatchBlock
             try {
 
                 searchEngine.getHttpCallFactory()
                             .saveImage(imageUrl, null, sid, 0, null)
                             .ifPresent(author::setTmpPictureFileSpec);
-            } catch (@NonNull final StorageException ignore) {
-                // ignore
+            } catch (@NonNull final StorageException e) {
+                // we ignore author-image failures; but log them
+                LoggerFactory.getLogger().e(TAG, e);
             }
         }
 

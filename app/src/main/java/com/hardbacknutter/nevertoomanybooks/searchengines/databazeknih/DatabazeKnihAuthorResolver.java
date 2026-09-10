@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -67,6 +68,8 @@ import org.jsoup.nodes.Element;
  */
 public final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
+
+    private static final String TAG = "DatabazeKnihAuthorRes";
 
     // <a href="/filtrovani-autoru?nationId=80">britská</a><span class="gray">,</span>  1916 - 1990
     // <a href="/filtrovani-autoru?nationId=79">americká</a><span class="gray">,</span>  1948
@@ -235,27 +238,36 @@ public final class DatabazeKnihAuthorResolver
 
         final Element picElement = section.selectFirst("div.img_author_detail");
         if (picElement != null) {
-            // style="background-image:url("https://www.databazeknih.cz/...")"
-            // no parsing, just brute-force-match to get the "middle" of this value -> url
-            final String[] parts = QUOTE_PATTERN.split(picElement.attr("style"));
-            if (parts.length == 3) {
-                final String url = parts[1];
-                if (!url.contains("empty-author") && !url.contains("antologie-kolektiv-autoru")) {
-                    try {
-                        searchEngine.getHttpCallFactory()
-                                    .saveImage(url, null, sid, 0, null)
-                                    .ifPresent(fileSpec -> {
-                                        author.setTmpPictureFileSpec(fileSpec);
-                                        if (realAuthor != null) {
-                                            realAuthor.setImageUuid(fileSpec);
-                                        }
-                                    });
-                    } catch (@NonNull final StorageException ignore) {
-                        // ignore
-                    }
+            parseImage(picElement, sid, author, realAuthor);
+        }
+        return author;
+    }
+
+    private void parseImage(@NonNull final Element picElement,
+                            @NonNull final String sid,
+                            @NonNull final Author author,
+                            @Nullable final Author realAuthor) {
+        // style="background-image:url("https://www.databazeknih.cz/...")"
+        // no parsing, just brute-force-match to get the "middle" of this value -> url
+        final String[] parts = QUOTE_PATTERN.split(picElement.attr("style"));
+        if (parts.length == 3) {
+            final String url = parts[1];
+            if (!url.contains("empty-author") && !url.contains("antologie-kolektiv-autoru")) {
+                //noinspection OverlyBroadCatchBlock
+                try {
+                    searchEngine.getHttpCallFactory()
+                                .saveImage(url, null, sid, 0, null)
+                                .ifPresent(fileSpec -> {
+                                    author.setTmpPictureFileSpec(fileSpec);
+                                    if (realAuthor != null) {
+                                        realAuthor.setImageUuid(fileSpec);
+                                    }
+                                });
+                } catch (@NonNull final StorageException e) {
+                    // we ignore author-image failures; but log them
+                    LoggerFactory.getLogger().e(TAG, e);
                 }
             }
         }
-        return author;
     }
 }

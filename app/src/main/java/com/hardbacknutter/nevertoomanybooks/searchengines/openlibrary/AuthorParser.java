@@ -31,10 +31,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -361,9 +361,9 @@ class AuthorParser {
         try {
             searchEngine.fetchImageByKey('a', "OLID", sid, 0, null)
                         .ifPresent(author::setTmpPictureFileSpec);
-        } catch (@NonNull final StorageException ignore) {
-            // ignore; keep in mind that OpenLibrary often fails to return images even
-            // when they exist
+        } catch (@NonNull final StorageException e) {
+            // we ignore author-image failures; but log them
+            LoggerFactory.getLogger().e(TAG, e);
         }
         return author;
     }

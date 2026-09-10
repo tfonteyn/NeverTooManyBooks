@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -467,12 +468,14 @@ public class BedethequeAuthorResolver
         if (a != null) {
             final String url = a.attr("href");
             if (!"https://www.bdgest.com/skin/nophoto.png".equals(url)) {
+                //noinspection OverlyBroadCatchBlock
                 try {
                     final String bookId = String.valueOf(bdtId);
                     return searchEngine.getHttpCallFactory()
                                        .saveImage(url, null, bookId, 0, null);
-                } catch (@NonNull final StorageException ignore) {
-                    // ignore
+                } catch (@NonNull final StorageException e) {
+                    // we ignore author-image failures; but log them
+                    LoggerFactory.getLogger().e(TAG, e);
                 }
             }
         }

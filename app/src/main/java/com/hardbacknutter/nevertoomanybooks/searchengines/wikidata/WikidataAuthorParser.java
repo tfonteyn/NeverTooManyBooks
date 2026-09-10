@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Other Wikidata claims we could add later.
@@ -58,6 +59,8 @@ import com.hardbacknutter.org.json.JSONObject;
  *         claims</a>
  */
 class WikidataAuthorParser {
+
+    private static final String TAG = "WikidataAuthorParser";
 
     private static final String CHARSET = "UTF-8";
 
@@ -153,7 +156,6 @@ class WikidataAuthorParser {
         parseImage(claims).ifPresent(url -> {
             //noinspection OverlyBroadCatchBlock
             try {
-
                 searchEngine.getHttpCallFactory()
                             .saveImage(url, null, sid, 0, null)
                             .ifPresent(fileSpec -> {
@@ -163,8 +165,9 @@ class WikidataAuthorParser {
                                     realAuthor.setImageUuid(fileSpec);
                                 }
                             });
-            } catch (@NonNull final StorageException ignore) {
-                // ignore
+            } catch (@NonNull final StorageException e) {
+                // we ignore author-image failures; but log them
+                LoggerFactory.getLogger().e(TAG, e);
             }
         });
 

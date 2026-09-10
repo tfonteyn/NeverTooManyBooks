@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataAuthorResolver;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -60,6 +61,8 @@ import org.jsoup.nodes.Element;
  */
 public final class GoodreadsAuthorResolver
         implements AuthorResolver {
+
+    private static final String TAG = "GoodreadsAuthorResolver";
 
     /**
      * Allow with and without a slug at the end.
@@ -209,13 +212,15 @@ public final class GoodreadsAuthorResolver
             final String url = element.attr("content");
             // will contain "/nophoto/" for none
             if (url.contains("/authors/")) {
+                //noinspection OverlyBroadCatchBlock
                 try {
 
                     searchEngine.getHttpCallFactory()
                                 .saveImage(url, null, sid, 0, null)
                                 .ifPresent(author::setTmpPictureFileSpec);
-                } catch (@NonNull final StorageException ignore) {
-                    // ignore
+                } catch (@NonNull final StorageException e) {
+                    // we ignore author-image failures; but log them
+                    LoggerFactory.getLogger().e(TAG, e);
                 }
             }
         }
