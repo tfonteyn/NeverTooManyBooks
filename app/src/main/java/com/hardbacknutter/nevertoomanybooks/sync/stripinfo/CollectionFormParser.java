@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -96,7 +95,7 @@ public class CollectionFormParser {
      * Constructor.
      *
      * @param context         Current context
-     * @param httpCallFactory      to use
+     * @param httpCallFactory to use
      * @param bookshelfMapper mapper for the wishlist/owned flags
      */
     @AnyThread
@@ -119,16 +118,14 @@ public class CollectionFormParser {
      * @param collectionId website book collection-id
      * @param book         to store the results in
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws StorageException on image storage failures
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     public void parse(@NonNull final Element root,
                       @IntRange(from = 1) final long externalId,
                       @IntRange(from = 1) final long collectionId,
                       @NonNull final Book book)
-            throws IOException,
-                   StorageException {
+            throws IOException {
 
         final RequestBody postBody = new FormBody.Builder()
                 .add(SIDE_FF_STRIP_ID, String.valueOf(externalId))

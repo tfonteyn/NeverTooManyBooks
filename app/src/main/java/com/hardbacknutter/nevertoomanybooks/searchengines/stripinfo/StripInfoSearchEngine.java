@@ -1225,7 +1225,7 @@ public class StripInfoSearchEngine
                         //noinspection DataFlowIssue
                         collectionFormParser.parse(document, externalId, collectionId, book);
 
-                    } catch (@NonNull final IOException | StorageException e) {
+                    } catch (@NonNull final IOException e) {
                         if (BuildConfig.DEBUG  /* always */) {
                             LoggerFactory.getLogger()
                                          .e(TAG, e, "externalId=" + externalId
