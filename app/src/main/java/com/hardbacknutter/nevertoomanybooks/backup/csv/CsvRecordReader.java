@@ -131,16 +131,6 @@ public class CsvRecordReader
     }
 
     /**
-     * Optionally set the format if known before calling {@link #read}.
-     * If not set, a guess will be made using the first row of the CSV file.
-     *
-     * @param csvFormat (optional) the {@link CsvFormat}.
-     */
-    public void setFormat(@Nullable final CsvFormat csvFormat) {
-        this.csvFormat = csvFormat;
-    }
-
-    /**
      * This CSV parser is not a complete parser, but it is "good enough".
      *
      * @param context Current context
@@ -285,6 +275,16 @@ public class CsvRecordReader
             throw new DataReaderException(context.getString(R.string.error_import_csv_line_to_long,
                                                             row, line.length()), e);
         }
+    }
+
+    /**
+     * Optionally set the format if known before calling {@link #read}.
+     * If not set, a guess will be made using the first row of the CSV file.
+     *
+     * @param csvFormat (optional) the {@link CsvFormat}.
+     */
+    public void setFormat(@Nullable final CsvFormat csvFormat) {
+        this.csvFormat = csvFormat;
     }
 
     @Override

@@ -208,6 +208,7 @@ public final class AuthorResolverHelper {
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws StorageException     on image storage failures
      */
     @WorkerThread
     boolean resolve(@NonNull final Context context,
