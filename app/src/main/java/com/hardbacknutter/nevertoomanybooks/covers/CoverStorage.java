@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
@@ -568,12 +569,13 @@ public class CoverStorage {
      *
      * @return {@code true} if the restore was successfully
      *
-     * @throws IOException on generic/other IO failures
+     * @throws StorageException on image storage failures
+     * @throws IOException      on generic/other IO failures
      */
     @WorkerThread
     public boolean restore(@NonNull final String uuid,
                            @IntRange(from = 0, to = 3) final int cIdx)
-            throws IOException {
+            throws IOException, StorageException {
         if (!isUndoEnabled()) {
             return false;
         }
@@ -582,12 +584,7 @@ public class CoverStorage {
         // would have renamed any remaining png files to jpg by now.
         final String name = createName(uuid, cIdx) + EXT_JPG;
 
-        try {
-            return createVersionedFileService().restore(new File(getDir(), name));
-        } catch (@NonNull final ImageStorageException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            return false;
-        }
+        return createVersionedFileService().restore(new File(getDir(), name));
     }
 
     /**
