@@ -849,6 +849,14 @@ public class AuthorDaoImpl
     }
 
     @Override
+    public void setImageUuid(@Nullable final String uuid) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_IMAGE_UUID)) {
+            stmt.bindString(1, uuid);
+            stmt.executeUpdateDelete(null);
+        }
+    }
+
+    @Override
     @WorkerThread
     @IntRange(from = 0)
     public int purge() {
@@ -950,6 +958,12 @@ public class AuthorDaoImpl
                 + ',' + DBKey.AUTHOR.DEATH_DATE + "=?"
                 + ',' + DBKey.AUTHOR.PICTURE_UUID + "=?"
                 + ',' + DBKey.AUTHOR.COMPLETE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Update an {@link Author}. */
+        static final String UPDATE_IMAGE_UUID =
+                UPDATE_ + TBL_AUTHORS.getName()
+                + _SET_ + DBKey.AUTHOR.PICTURE_UUID + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String SET_COMPLETE =

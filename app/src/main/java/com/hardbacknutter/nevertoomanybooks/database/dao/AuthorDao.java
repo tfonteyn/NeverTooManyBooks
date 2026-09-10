@@ -327,6 +327,13 @@ public interface AuthorDao
                   @NonNull Author source,
                   @NonNull Author target);
 
+    /**
+     * Set or remove the image uuid.
+     *
+     * @param uuid to set; {@code null} to remove
+     */
+    void setImageUuid(@Nullable String uuid);
+
     @StringDef({
             DBKey.TITLE_OB,
             DBKey.FIRST_PUBLICATION_DATE

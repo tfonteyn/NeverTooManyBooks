@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -1114,7 +1113,7 @@ public class Author
             // we had a uuid, but no file
             // This could happen when the user imports authors without the images
             this.imageUuid = null;
-            updateInDatabase(context);
+            ServiceLocator.getInstance().getAuthorDao().setImageUuid(imageUuid);
         }
 
         return Optional.empty();
@@ -1145,7 +1144,7 @@ public class Author
                                     .delete(uuid, cIdx));
         // remove the uuid
         imageUuid = null;
-        updateInDatabase(context);
+        ServiceLocator.getInstance().getAuthorDao().setImageUuid(imageUuid);
     }
 
     /**
@@ -1197,16 +1196,7 @@ public class Author
             uuid = UUID.randomUUID().toString();
             ServiceLocator.getInstance().getCoverStorage().persist(file, uuid, cIdx);
             imageUuid = uuid;
-            updateInDatabase(context);
-        }
-    }
-
-    private void updateInDatabase(@NonNull final Context context) {
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-        try {
-            ServiceLocator.getInstance().getAuthorDao().update(context, this, locale);
-        } catch (@NonNull final StorageException e) {
-            LoggerFactory.getLogger().e(TAG, e, this);
+            ServiceLocator.getInstance().getAuthorDao().setImageUuid(imageUuid);
         }
     }
 
