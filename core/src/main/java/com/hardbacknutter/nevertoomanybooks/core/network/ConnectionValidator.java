@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-
 public interface ConnectionValidator {
 
     /**
@@ -39,13 +37,11 @@ public interface ConnectionValidator {
      * @return {@code true} if al is well.
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on image storage failures
      * @throws IOException          on generic/other IO failures
      */
     @WorkerThread
     boolean validateConnection(@NonNull Context context)
             throws CredentialsException,
-                   StorageException,
                    IOException;
 
     /**

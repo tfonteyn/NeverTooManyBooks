@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 
 public class ConnectionValidatorTask
@@ -87,7 +86,6 @@ public class ConnectionValidatorTask
      * @return {@code true} on success
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on image storage failures
      * @throws IOException          on generic/other IO failures
      */
     @Override
@@ -95,7 +93,6 @@ public class ConnectionValidatorTask
     @NonNull
     protected Boolean doWork()
             throws IOException,
-                   StorageException,
                    CertificateException,
                    CredentialsException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

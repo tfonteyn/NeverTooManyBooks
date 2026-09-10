@@ -175,7 +175,7 @@ public class OpenLibraryAuth
     @WorkerThread
     @Override
     public boolean validateConnection(@NonNull final Context context)
-            throws IOException, CredentialsException, StorageException {
+            throws IOException, CredentialsException {
         login(context);
         return true;
     }
@@ -184,7 +184,7 @@ public class OpenLibraryAuth
     @Override
     @NonNull
     public String login(@NonNull final Context context)
-            throws IOException, CredentialsException, StorageException {
+            throws IOException, CredentialsException {
 
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
 
@@ -217,6 +217,8 @@ public class OpenLibraryAuth
                     Map.of(HttpConstants.CONTENT_TYPE,
                            HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED));
             httpPost.post(url, postBody, null);
+        } catch (@NonNull final StorageException ignore) {
+            // ignore, can't happen here
         } finally {
             httpPost = null;
         }
