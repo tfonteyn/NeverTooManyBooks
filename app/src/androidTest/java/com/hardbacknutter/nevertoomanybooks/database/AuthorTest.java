@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
@@ -71,7 +70,7 @@ class AuthorTest
      */
     @Test
     void crud()
-            throws DaoWriteException {
+            throws StorageException {
 
         h.authorIdArray[0] = authorDao.insert(context, h.authorArray[0], bookLocale);
         assertTrue(h.authorIdArray[0] > 0);
@@ -101,7 +100,7 @@ class AuthorTest
      */
     @Test
     void renameAuthor()
-            throws DaoWriteException {
+            throws StorageException {
 
         final List<Long> bookIdList;
 
@@ -187,7 +186,7 @@ class AuthorTest
 
     @Test
     void renameAuthorWithTocs()
-            throws DaoWriteException {
+            throws StorageException {
 
         final List<Long> bookIdList;
         final List<AuthorWork> works;
@@ -266,7 +265,7 @@ class AuthorTest
 
     @Test
     void realAuthor()
-            throws DaoWriteException {
+            throws StorageException {
 
         int aIdx;
         Author resolved;

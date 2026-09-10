@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -237,7 +236,7 @@ public class StripInfoReader
      *
      * @throws SearchException          on generic exceptions (wrapped) during search
      * @throws CredentialsException     on authentication/login failures
-     * @throws StorageException         The covers directory is not available
+     * @throws StorageException         on image storage failures
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
      */
@@ -291,7 +290,7 @@ public class StripInfoReader
 
                 insertBook(context, book);
             }
-        } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
+        } catch (@NonNull final SQLiteDoneException | JSONException | StorageException e) {
             // log, but don't fail
             LoggerFactory.getLogger().e(TAG, e);
             results.booksFailed++;
@@ -349,7 +348,7 @@ public class StripInfoReader
 
     private void insertBook(@NonNull final Context context,
                             @NonNull final Book book)
-            throws DaoWriteException {
+            throws StorageException {
 
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf();
@@ -374,7 +373,7 @@ public class StripInfoReader
                             @NonNull final String externalId,
                             @NonNull final Book book,
                             @NonNull final Book delta)
-            throws DaoWriteException {
+            throws StorageException {
         bookRepository.update(context, delta,
                               EnumSet.of(BookDao.ImportFlag.RunInBatch,
                                          BookDao.ImportFlag.UseUpdateDateIfPresent));

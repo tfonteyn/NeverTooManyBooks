@@ -58,14 +58,13 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -1160,7 +1159,7 @@ public class Author
      *                If applicable, the caller can/must use the {@link File}
      *                as returned by this method.
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      * @throws IOException           on generic/other IO failures
      */
     @Override
@@ -1206,8 +1205,7 @@ public class Author
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         try {
             ServiceLocator.getInstance().getAuthorDao().update(context, this, locale);
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
+        } catch (@NonNull final StorageException e) {
             LoggerFactory.getLogger().e(TAG, e, this);
         }
     }

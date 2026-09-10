@@ -346,7 +346,7 @@ public class KbNlSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @WorkerThread
     @NonNull

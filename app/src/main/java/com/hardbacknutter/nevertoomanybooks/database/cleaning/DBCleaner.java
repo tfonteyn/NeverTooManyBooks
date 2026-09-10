@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -49,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -128,11 +128,11 @@ public class DBCleaner {
      *
      * @param context Current context
      *
-     * @throws DaoWriteException on any failure
+     * @throws StorageException on image storage failures
      */
     @WorkerThread
     public void clean(@NonNull final Context context)
-            throws DaoWriteException {
+            throws StorageException {
 
         final Set<CleanOptions> options = CleanOptions.readOptions();
 
@@ -185,11 +185,11 @@ public class DBCleaner {
      *
      * @return {@code true} if any updates were done
      *
-     * @throws DaoWriteException on any failure
+     * @throws StorageException on image storage failures
      */
     private boolean resolveAuthors(@NonNull final Context context,
                                    @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws StorageException {
 
         // collect the authors (id) who have a 'real' author, i.e. are pseudonym names.
         final List<Long> all = new ArrayList<>();

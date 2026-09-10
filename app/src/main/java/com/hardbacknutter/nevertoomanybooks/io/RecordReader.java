@@ -69,7 +69,7 @@ public interface RecordReader
      * @return results summary
      *
      * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws StorageException    on storage related failures
+     * @throws StorageException    on image storage failures
      * @throws IOException         on generic/other IO failures
      */
     @WorkerThread

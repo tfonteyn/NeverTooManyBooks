@@ -360,7 +360,7 @@ public class BedethequeSearchEngine
      * @param searchedIsbn ISBN from user-search
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
@@ -415,7 +415,7 @@ public class BedethequeSearchEngine
      *                     can be {@code null} if the search used different criteria
      * @param book         to update
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
@@ -733,7 +733,7 @@ public class BedethequeSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     private void handleExtraImagesAndBackCover(@NonNull final Context context,
                                                @NonNull final List<String> coverUrls,

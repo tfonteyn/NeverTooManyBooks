@@ -46,7 +46,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
@@ -382,7 +382,7 @@ public class EditBookAuthorListDialogFragment
             //noinspection DataFlowIssue
             vm.changeForAllBooks(getContext(), original, modified);
             adapter.notifyDataSetChanged();
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final StorageException e) {
             ErrorDialog.show(getContext(), TAG, e);
         }
     }
@@ -398,7 +398,7 @@ public class EditBookAuthorListDialogFragment
             //noinspection DataFlowIssue
             vm.changeForThisBook(getContext(), original, modified);
             adapter.notifyDataSetChanged();
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final StorageException e) {
             ErrorDialog.show(getContext(), TAG, e);
         }
 

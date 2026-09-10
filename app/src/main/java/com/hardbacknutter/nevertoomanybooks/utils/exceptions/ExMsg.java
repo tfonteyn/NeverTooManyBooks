@@ -33,8 +33,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
@@ -122,14 +121,9 @@ public final class ExMsg {
         } else if (e instanceof ImageStorageException) {
             return context.getString(R.string.error_storage_not_accessible);
 
-        } else if (e instanceof DaoImageException) {
+        } else if (e instanceof ImageIOException) {
             // It's very likely a disk-full, but it could be an unexpected IO issue.
             return context.getString(R.string.error_storage_not_writable);
-
-        } else if (e instanceof DaoWriteException) {
-            // There was a database write operation failure.
-            // Unlikely (but not impossible) to be disk-full.
-            return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof DataReaderException) {
             return ((DataReaderException) e).getUserMessage(context);

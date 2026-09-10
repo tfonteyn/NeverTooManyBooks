@@ -191,7 +191,7 @@ public interface SearchEngine
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
+         * @throws StorageException     on image storage failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
@@ -232,7 +232,7 @@ public interface SearchEngine
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
+         * @throws StorageException     on image storage failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          * @see ProductCodeType
          */
@@ -268,7 +268,7 @@ public interface SearchEngine
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
+         * @throws StorageException     on image storage failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          * @see ProductCodeType
          */
@@ -313,7 +313,7 @@ public interface SearchEngine
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
+         * @throws StorageException     on image storage failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          * @see ProductCodeType
          */
@@ -358,7 +358,7 @@ public interface SearchEngine
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
+         * @throws StorageException     on image storage failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
@@ -505,7 +505,7 @@ public interface SearchEngine
          * @return fileSpec
          *
          * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
+         * @throws StorageException     on image storage failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread

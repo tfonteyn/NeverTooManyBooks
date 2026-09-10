@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.DBCleaner;
@@ -63,7 +63,7 @@ public class DBCleanerTask
     @WorkerThread
     @NonNull
     protected Boolean doWork()
-            throws DaoWriteException {
+            throws StorageException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));

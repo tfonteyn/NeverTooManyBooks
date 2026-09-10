@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
@@ -81,7 +80,7 @@ class BookInsertTest
      */
     @Test
     void inserting()
-            throws DaoWriteException {
+            throws StorageException {
         List<Long> bookIdList;
         List<AuthorWork> works;
 

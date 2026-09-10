@@ -53,7 +53,7 @@ public interface SiteAuthModule {
      *
      * @throws CredentialsException on authentication/login failures
      * @throws IOException          on generic/other IO failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      */
     @WorkerThread
     @NonNull

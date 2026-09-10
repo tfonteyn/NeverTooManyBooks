@@ -2014,7 +2014,7 @@ public class Book
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
      *
-     * @throws StorageException      The covers directory is not available
+     * @throws StorageException      on image storage failures
      * @throws IOException           on generic/other IO failures
      * @throws IllegalStateException (debug) if the UUID is missing
      */

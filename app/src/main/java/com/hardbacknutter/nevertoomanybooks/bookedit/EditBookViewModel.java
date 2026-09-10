@@ -60,12 +60,12 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -540,10 +540,10 @@ public class EditBookViewModel
      *
      * @param context Current context
      *
-     * @throws DaoWriteException on failure
+     * @throws StorageException on image storage failures
      */
     void saveBook(@NonNull final Context context)
-            throws DaoWriteException {
+            throws StorageException {
 
         if (book.isNew()) {
             bookRepository.insert(context, book, Set.of());
@@ -1022,7 +1022,7 @@ public class EditBookViewModel
     void changeForThisBook(@NonNull final Context context,
                            @NonNull final Author original,
                            @NonNull final Author modified)
-            throws DaoWriteException {
+            throws StorageException {
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
@@ -1040,7 +1040,7 @@ public class EditBookViewModel
     void changeForAllBooks(@NonNull final Context context,
                            @NonNull final Author original,
                            @NonNull final Author modified)
-            throws DaoWriteException {
+            throws StorageException {
         // copy all new data
         original.copyFrom(modified, true);
 

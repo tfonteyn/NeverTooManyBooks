@@ -410,7 +410,7 @@ public class HttpFutureFactory {
 
                 } catch (@NonNull final StorageException e) {
                     // This is only here due to FutureHttp declaring StorageException;
-                    // which here will never be thrown.
+                    // which in this case is never thrown in #processResponse
                     throw new IOException(e);
 
                 } catch (@NonNull final IOException e) {

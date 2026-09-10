@@ -120,7 +120,7 @@ public class CollectionFormParser {
      * @param book         to store the results in
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @WorkerThread
     public void parse(@NonNull final Element root,

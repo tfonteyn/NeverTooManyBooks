@@ -41,12 +41,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
@@ -57,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
@@ -283,19 +283,19 @@ class EditAuthorDelegate
         // We have no book, use the Locale from the user.
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-        // We let this call go ahead even if real-author is switched off by the user
-        // so we can clean up as needed.
-        if (!vm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
-            warnThatRealAuthorMustBeValid(context);
-            return false;
-        }
-
-        // anything actually changed ? If not, we're done.
-        if (!vm.isModified()) {
-            return true;
-        }
-
         try {
+            // We let this call go ahead even if real-author is switched off by the user
+            // so we can clean up as needed.
+            if (!vm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
+                warnThatRealAuthorMustBeValid(context);
+                return false;
+            }
+
+            // anything actually changed ? If not, we're done.
+            if (!vm.isModified()) {
+                return true;
+            }
+
             final Optional<Author> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
@@ -308,21 +308,15 @@ class EditAuthorDelegate
             StandardDialogs.askToMerge(context, R.string.confirm_merge_authors,
                                        vm.getOriginal().getLabel(context), () -> {
                         owner.dismiss();
-                        try {
-                            vm.move(context, existingEntity.get());
-                            // return the item which 'lost' it's books
-                            new EditInPlaceParcelableOutput<>(vm.getOriginal())
-                                    .send(owner, requestKey);
-                        } catch (@NonNull final DaoWriteException e) {
-                            // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-                        }
+                        vm.move(context, existingEntity.get());
+                        // return the item which 'lost' it's books
+                        new EditInPlaceParcelableOutput<>(vm.getOriginal())
+                                .send(owner, requestKey);
                     });
             return false;
 
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+        } catch (@NonNull final StorageException e) {
+            ErrorDialog.show(context, TAG, e);
             return false;
         }
     }

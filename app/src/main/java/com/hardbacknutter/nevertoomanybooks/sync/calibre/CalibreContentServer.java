@@ -1395,7 +1395,7 @@ public final class CalibreContentServer
      * @return Calibre book object
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      * @throws JSONException    upon any parsing error
      */
     @WorkerThread

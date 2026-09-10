@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,22 +24,16 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-
 @FunctionalInterface
 public interface Positional {
 
     /**
-     * Check for books which do not have a {@code linked-item}
-     * at position 1.
+     * Check for books which do not have a {@code linked-item} at position 1.
      * For those that don't, read their list, and re-save them.
      *
      * @param context Current context
      *
      * @return the number of books processed
-     *
-     * @throws DaoWriteException on failure
      */
-    int fixPositions(@NonNull Context context)
-            throws DaoWriteException;
+    int fixPositions(@NonNull Context context);
 }

@@ -174,7 +174,7 @@ public final class HttpCallFactory {
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws ImageStorageException on storage related failures
+     * @throws ImageStorageException on image storage failures
      */
     @WorkerThread
     @NonNull

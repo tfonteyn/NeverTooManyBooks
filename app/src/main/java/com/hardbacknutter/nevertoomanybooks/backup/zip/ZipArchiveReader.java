@@ -291,7 +291,7 @@ public class ZipArchiveReader
      *                             The embedded Exception has the details,
      *                             should be reported to the user,
      *                             but action is optional.
-     * @throws StorageException    on storage related failures
+     * @throws StorageException    on image storage failures
      *                             The user MUST take action on it NOW.
      * @throws IOException         on generic/other IO failures
      */
@@ -464,7 +464,7 @@ public class ZipArchiveReader
      *
      * @throws DataReaderException on record format failures
      * @throws IOException         on generic/other IO failures
-     * @throws StorageException    on storage related failures
+     * @throws StorageException    on image storage failures
      */
     private void readRecord(@NonNull final Context context,
                             @NonNull final Set<RecordType> allowedTypes,

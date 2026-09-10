@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,24 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import androidx.annotation.Nullable;
+package com.hardbacknutter.nevertoomanybooks.covers;
+
+import androidx.annotation.NonNull;
+
+import java.io.IOException;
+
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
- * On purpose <strong>NOT</strong> an IOException, to force the caller to deal with it.
+ * A wrapped {@link IOException} specifically related to writing images to storage.
  */
-public class DaoWriteException
-        extends Exception {
+public class ImageIOException
+        extends StorageException {
 
-    private static final long serialVersionUID = -2857466683799399619L;
+    private static final long serialVersionUID = -1050011407564569965L;
 
-    public DaoWriteException(@Nullable final Throwable cause) {
+    public ImageIOException(@NonNull final IOException cause) {
         super(cause);
-    }
-
-    public DaoWriteException(@Nullable final String message,
-                             @Nullable final Throwable cause) {
-        super(message, cause);
     }
 }

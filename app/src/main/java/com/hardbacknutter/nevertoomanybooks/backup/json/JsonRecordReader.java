@@ -58,9 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagMappingCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -326,12 +326,6 @@ public class JsonRecordReader
                     IdentifierMigration.repairBuiltinIdentifiersWikidataClaim(context);
                 }
             } catch (@NonNull final JSONException e) {
-                // Unpack if possible
-                if (e.getCause() instanceof DaoWriteException) {
-                    throw new DataReaderException(context.getString(
-                            R.string.error_import_failed_for_record, recordType.getName()),
-                                                  e.getCause());
-                }
                 throw new DataReaderException(context.getString(
                         R.string.error_import_failed_for_record, recordType.getName()), e);
 
@@ -647,7 +641,7 @@ public class JsonRecordReader
                             R.string.error_record_must_contain_column, DBKey.BOOK_UUID);
                     results.handleRowException(context, row, new DataReaderException(msg), msg);
                 }
-            } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
+            } catch (@NonNull final StorageException | SQLiteDoneException e) {
                 results.handleRowException(context, row, e, null);
 
             } finally {

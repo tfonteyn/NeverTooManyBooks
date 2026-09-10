@@ -204,7 +204,7 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
+     * @throws StorageException         on image storage failures
      */
     @WorkerThread
     public void setRating(@NonNull final Book book,
@@ -249,7 +249,7 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
+     * @throws StorageException         on image storage failures
      */
     @WorkerThread
     public void send(@NonNull final Book book)
@@ -326,7 +326,7 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
+     * @throws StorageException         on image storage failures
      */
     @WorkerThread
     public void delete(@NonNull final Book book)

@@ -169,7 +169,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @throws DataReaderException  on failure to read the metadata
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws IOException          on generic/other IO failures
      * @throws CertificateException on failures related to a user installed CA.
      * @see DataReader
@@ -207,7 +207,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @throws DataReaderException      on failure to read the data
      * @throws CredentialsException     on authentication/login failures
-     * @throws StorageException         on storage related failures
+     * @throws StorageException         on image storage failures
      * @throws IOException              on generic/other IO failures
      * @throws CertificateException     on failures related to a user installed CA
      * @throws IllegalArgumentException if there are no record-types to read

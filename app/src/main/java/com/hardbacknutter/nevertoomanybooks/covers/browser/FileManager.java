@@ -117,7 +117,7 @@ class FileManager {
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      */
     @NonNull
     @WorkerThread

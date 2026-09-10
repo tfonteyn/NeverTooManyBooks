@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -52,7 +51,7 @@ class GermanEszettTest
 
     @BeforeEach
     void setup()
-            throws StorageException, DaoWriteException {
+            throws StorageException {
         super.setup("de_DE");
 
         final SynchronizedDb db = serviceLocator.getDb();

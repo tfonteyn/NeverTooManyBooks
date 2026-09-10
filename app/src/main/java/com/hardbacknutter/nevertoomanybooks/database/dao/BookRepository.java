@@ -36,7 +36,6 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
@@ -45,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
@@ -99,14 +99,15 @@ public class BookRepository {
      *
      * @return the row id of the newly inserted row
      *
-     * @throws DaoWriteException on failure
-     * @throws DaoImageException when saving the images failed
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
+     * @throws SQLException     on any failures
      */
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Book book,
                        @NonNull final Set<BookDao.ImportFlag> flags)
-            throws DaoWriteException, DaoImageException {
+            throws StorageException, ImageIOException, SQLException {
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -130,34 +131,20 @@ public class BookRepository {
             }
             return iId;
 
-        } catch (@NonNull final SQLException e) {
-            removeIds(book, flags);
-            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
-
-        } catch (@NonNull final DaoWriteException e) {
-            removeIds(book, flags);
+        } catch (@NonNull final SQLException | StorageException e) {
+            // DON'T remove the id's if we're importing
+            if (!flags.contains(BookDao.ImportFlag.UseIdIfPresent)) {
+                book.setId(0);
+                book.setUuid(null);
+            }
+            LoggerFactory.getLogger().e(TAG, e, ERROR_CREATING_BOOK_FROM + book);
             throw e;
-
-        } catch (@NonNull final StorageException | IOException e) {
-            removeIds(book, flags);
-            throw new DaoImageException(e);
 
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-    }
-
-    // helper for 'insert'
-    private void removeIds(@NonNull final Book book,
-                           @NonNull final Set<BookDao.ImportFlag> flags) {
-        // Do NOT remove them if we're importing
-        if (flags.contains(BookDao.ImportFlag.UseIdIfPresent)) {
-            return;
-        }
-        book.setId(0);
-        book.setUuid(null);
     }
 
     /**
@@ -174,13 +161,14 @@ public class BookRepository {
      *                May contain extra data which will be ignored.
      * @param flags   See {@link BookDao.ImportFlag} for flag definitions
      *
-     * @throws DaoWriteException on failure
-     * @throws DaoImageException when saving the images failed
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
+     * @throws SQLException     on any failures
      */
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
                        @NonNull final Set<BookDao.ImportFlag> flags)
-            throws DaoWriteException, DaoImageException {
+            throws StorageException, ImageIOException, SQLException {
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -202,12 +190,9 @@ public class BookRepository {
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
-
-        } catch (@NonNull final StorageException | IOException e) {
-            throw new DaoImageException(e);
+        } catch (@NonNull final SQLException | StorageException e) {
+            LoggerFactory.getLogger().e(TAG, e, ERROR_UPDATING_BOOK_FROM + book);
+            throw e;
 
         } finally {
             if (txLock != null) {
@@ -227,13 +212,15 @@ public class BookRepository {
      * @param book       A collection with the columns to be set. May contain extra data.
      * @param flags      See {@link BookDao.ImportFlag} for flag definitions
      *
-     * @throws DaoWriteException    on failure
+     * @throws ImageIOException     on image I/O related errors.
+     * @throws StorageException     on image storage failures
+     * @throws SQLException         on any failures
      * @throws TransactionException (debug) if there is no current transaction
      */
     private void insertBookLinks(@NonNull final Context context,
                                  @NonNull final Book book,
                                  @NonNull final Set<BookDao.ImportFlag> flags)
-            throws DaoWriteException {
+            throws StorageException, ImageIOException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -344,12 +331,12 @@ public class BookRepository {
      *
      * @param book to process
      *
-     * @throws IOException      on image I/O related errors.
-     * @throws StorageException The covers directory is not available
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
      */
     @SuppressWarnings("OverlyBroadThrowsClause")
     private void persistImages(@NonNull final Book book)
-            throws StorageException, IOException {
+            throws StorageException, ImageIOException {
 
         final String uuid = book.getUuid();
         final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
@@ -371,7 +358,11 @@ public class BookRepository {
                             () -> coverStorage.delete(uuid, finalCIdx));
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    coverStorage.persist(new File(fileSpec), uuid, cIdx);
+                    try {
+                        coverStorage.persist(new File(fileSpec), uuid, cIdx);
+                    } catch (@NonNull final IOException e) {
+                        throw new ImageIOException(e);
+                    }
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

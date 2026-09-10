@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -129,7 +128,7 @@ class JsonArchiveWriterTest
 
     @Test
     void books()
-            throws DataReaderException, DataWriterException, DaoWriteException, IOException,
+            throws DataReaderException, DataWriterException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
         final File file = new File(context.getFilesDir(), TAG + "-books.json");

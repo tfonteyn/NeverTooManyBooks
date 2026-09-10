@@ -39,7 +39,7 @@ public interface ConnectionValidator {
      * @return {@code true} if al is well.
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws IOException          on generic/other IO failures
      */
     @WorkerThread

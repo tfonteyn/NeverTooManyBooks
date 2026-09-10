@@ -172,7 +172,7 @@ public class BookFinderSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
@@ -295,7 +295,7 @@ public class BookFinderSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @WorkerThread
     @NonNull

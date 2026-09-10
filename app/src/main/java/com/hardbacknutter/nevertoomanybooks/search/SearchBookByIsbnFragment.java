@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.IsbnTextInputEditText;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
@@ -1010,7 +1010,7 @@ public class SearchBookByIsbnFragment
             //noinspection DataFlowIssue
             vm.onSaveBook(context, book);
 
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final StorageException e) {
             ErrorDialog.show(getContext(), TAG, e);
         }
     }

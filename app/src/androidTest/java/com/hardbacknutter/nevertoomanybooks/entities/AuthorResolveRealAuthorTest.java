@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -59,7 +58,7 @@ class AuthorResolveRealAuthorTest
     }
 
     private void createAuthor(@NonNull final Author author)
-            throws DaoWriteException {
+            throws StorageException {
         logger.d(TAG, "create: " + author.getFamilyName());
         authorDao.fixId(context, author, locale);
         if (author.getId() > 0) {
@@ -69,7 +68,7 @@ class AuthorResolveRealAuthorTest
     }
 
     private void createAuthorLists()
-            throws DaoWriteException {
+            throws StorageException {
         int i = 0;
 
         // root
@@ -122,7 +121,7 @@ class AuthorResolveRealAuthorTest
 
     @Test
     void resolve()
-            throws DaoWriteException {
+            throws StorageException {
 
         createAuthorLists();
 

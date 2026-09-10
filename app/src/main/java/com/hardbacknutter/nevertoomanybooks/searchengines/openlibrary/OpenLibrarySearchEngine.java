@@ -405,7 +405,7 @@ public class OpenLibrarySearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     private void fetchBook(@NonNull final Context context,
@@ -630,7 +630,7 @@ public class OpenLibrarySearchEngine
      * @param book        to update
      *
      * @throws IOException      on generic IO failures
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     private void parse(@NonNull final Context context,
                        @NonNull final JSONObject document,
@@ -1695,7 +1695,7 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @NonNull
     private Optional<String> searchBestCover(@NonNull final String key,
@@ -1728,7 +1728,7 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @NonNull
     Optional<String> fetchImageByKey(final char type,

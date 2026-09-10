@@ -104,7 +104,7 @@ public interface DataReader<METADATA, RESULT>
      *                              The embedded Exception has the details,
      *                              should be reported to the user,
      *                              but action is optional.
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      *                              The user MUST take action on it NOW.
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures

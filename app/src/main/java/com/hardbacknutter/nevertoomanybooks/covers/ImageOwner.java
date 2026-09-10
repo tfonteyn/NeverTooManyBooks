@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,7 +76,7 @@ public interface ImageOwner {
      *                If applicable, the caller can/must use the {@link File}
      *                as returned by this method.
      *
-     * @throws StorageException The covers directory is not available
+     * @throws StorageException on image storage failures
      * @throws IOException      on generic/other IO failures
      */
     @WorkerThread

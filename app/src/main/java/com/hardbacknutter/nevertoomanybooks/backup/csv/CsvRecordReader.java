@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -397,7 +397,7 @@ public class CsvRecordReader
                             R.string.error_import_csv_column_count_mismatch, row);
                     results.handleRowException(context, row, new DataReaderException(msg), msg);
                 }
-            } catch (@NonNull final DaoWriteException | DataReaderException
+            } catch (@NonNull final DataReaderException | StorageException
                                     | SQLiteDoneException e) {
                 results.handleRowException(context, row, e, null);
 

@@ -107,7 +107,7 @@ public abstract class DataWriterHelperBase<RESULTS> {
      * @return results summary
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws IOException          on generic/other IO failures
      * @throws CertificateException on failures related to a user installed CA
      * @throws DataWriterException  on a decoding/parsing of data issue

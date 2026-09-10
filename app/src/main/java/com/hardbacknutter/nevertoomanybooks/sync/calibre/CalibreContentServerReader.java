@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.calibre.CalibreBookCoder;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -419,7 +418,7 @@ public class CalibreContentServerReader
                 insertBook(context, calibreBook);
             }
 
-        } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
+        } catch (@NonNull final SQLiteDoneException | JSONException | StorageException e) {
             // log, but don't fail
             LoggerFactory.getLogger().e(TAG, e);
             results.booksFailed++;
@@ -430,7 +429,7 @@ public class CalibreContentServerReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book calibreBook,
                             @NonNull final Book book)
-            throws IOException, DaoWriteException {
+            throws IOException, StorageException {
 
         // The delta values we'll be updating
         final Book delta;
@@ -458,7 +457,7 @@ public class CalibreContentServerReader
 
     private void insertBook(@NonNull final Context context,
                             @NonNull final Book book)
-            throws DaoWriteException {
+            throws StorageException {
 
         // it's an eBook - duh!
         book.setFormat(eBookString);

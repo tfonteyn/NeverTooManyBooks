@@ -350,7 +350,7 @@ public class GoodreadsSearchEngine
      *
      * @return goodreads sid; or {@code 0} when not found
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      * @throws SearchException  on generic exceptions (wrapped) during search
      */
     private long getGoodreadsId(@NonNull final String validIsbn)
@@ -392,7 +392,7 @@ public class GoodreadsSearchEngine
      * @param book         to update
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread

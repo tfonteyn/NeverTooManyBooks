@@ -32,9 +32,8 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -53,8 +52,7 @@ public final class ErrorDialog {
     }
 
     private static boolean isSQLException(@NonNull final Throwable e) {
-        return e instanceof DaoWriteException && e.getCause() instanceof SQLException
-               || e instanceof SQLException;
+        return e instanceof SQLException || e.getCause() instanceof SQLException;
     }
 
     /**
@@ -77,7 +75,7 @@ public final class ErrorDialog {
 
         @Nullable
         final String title;
-        if (e instanceof DaoImageException) {
+        if (e instanceof ImageIOException) {
             title = context.getString(R.string.error_storage_not_writable);
         } else if (e instanceof StorageException) {
             title = context.getString(R.string.error_storage_not_accessible);

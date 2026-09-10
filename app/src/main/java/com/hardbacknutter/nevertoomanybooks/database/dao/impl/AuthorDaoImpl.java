@@ -43,7 +43,6 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -53,10 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoImageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
@@ -68,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -86,8 +86,6 @@ public class AuthorDaoImpl
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
-    private static final String ERROR_STORING_IMAGES =
-            "Failed storing the pictures for author from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
     private final IdentifierValueDao authorIdentifierDao;
@@ -448,7 +446,7 @@ public class AuthorDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Author> list,
                                @NonNull final Function<Author, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws StorageException, ImageIOException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -462,8 +460,6 @@ public class AuthorDaoImpl
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt1.bindLong(1, bookId);
             stmt1.executeUpdateDelete(null);
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
 
         // is there anything to insert ?
@@ -507,8 +503,6 @@ public class AuthorDaoImpl
 
                 stmt.executeInsert(() -> "insert Book-Author");
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
         }
     }
 
@@ -517,7 +511,7 @@ public class AuthorDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Author author,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws StorageException, ImageIOException, SQLException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -551,17 +545,9 @@ public class AuthorDaoImpl
             }
             return iId;
 
-        } catch (@NonNull final SQLException e) {
-            author.setId(0);
-            throw new DaoWriteException(e);
-
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final SQLException | StorageException e) {
             author.setId(0);
             throw e;
-
-        } catch (@NonNull final StorageException | IOException e) {
-            author.setId(0);
-            throw new DaoImageException(e);
 
         } finally {
             if (txLock != null) {
@@ -574,7 +560,7 @@ public class AuthorDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Author author,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws StorageException, ImageIOException, SQLException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -606,12 +592,6 @@ public class AuthorDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final SQLException e) {
-            throw new DaoWriteException(e);
-
-        } catch (@NonNull final StorageException | IOException e) {
-            throw new DaoImageException(e);
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -628,14 +608,15 @@ public class AuthorDaoImpl
      * @param author  the 'original' author
      * @param locale  Locale to use if the item has none set
      *
-     * @throws DaoWriteException    on failure
-     * @throws SQLException         on failure
+     * @throws ImageIOException     on image I/O related errors.
+     * @throws StorageException     on image storage failures
+     * @throws SQLException         on any failures
      * @throws TransactionException (debug) if there is no current transaction
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Author author,
                                           @NonNull final Locale locale)
-            throws DaoWriteException, SQLException {
+            throws StorageException, ImageIOException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -693,11 +674,13 @@ public class AuthorDaoImpl
      *
      * @param author to store
      *
-     * @throws IOException      on image I/O related errors.
-     * @throws StorageException The covers directory is not available
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
      */
+    @SuppressWarnings("OverlyBroadThrowsClause")
     private void persistImages(@NonNull final Author author)
-            throws StorageException, IOException {
+            throws StorageException, ImageIOException {
+
         final Optional<String> fileSpec = author.getTmpPictureFileSpec();
         if (fileSpec.isEmpty()) {
             return;
@@ -714,8 +697,12 @@ public class AuthorDaoImpl
         // Call it a workaround/bug/solution/paranoia... it works.
         if (file.exists() && file.length() > 0) {
             final String uuid = UUID.randomUUID().toString();
-            ServiceLocator.getInstance().getCoverStorage()
-                          .persist(file, uuid, 0);
+            try {
+                ServiceLocator.getInstance().getCoverStorage()
+                              .persist(file, uuid, 0);
+            } catch (@NonNull final IOException e) {
+                throw new ImageIOException(e);
+            }
             author.setImageUuid(uuid);
         }
         author.setTmpPictureFileSpec(null);
@@ -745,8 +732,6 @@ public class AuthorDaoImpl
                 }
                 return true;
             }
-            return false;
-        } catch (@NonNull final DaoWriteException e) {
             return false;
         } finally {
             if (txLock != null) {
@@ -795,8 +780,7 @@ public class AuthorDaoImpl
     @IntRange(from = 0)
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Author source,
-                         @NonNull final Author target)
-            throws DaoWriteException {
+                         @NonNull final Author target) {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         int booksMoved;
@@ -840,8 +824,13 @@ public class AuthorDaoImpl
 
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
-                insertOrUpdate(context, bookId, false, destList, author ->
-                        book.getLocale(userLocale).orElse(userLocale));
+                try {
+                    insertOrUpdate(context, bookId, false, destList, author ->
+                            book.getLocale(userLocale).orElse(userLocale));
+                } catch (@NonNull final StorageException e) {
+                    // should never happen... flw
+                    LoggerFactory.getLogger().e(TAG, e);
+                }
             }
 
             // delete the obsolete source.
@@ -903,8 +892,7 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public int fixPositions(@NonNull final Context context)
-            throws DaoWriteException {
+    public int fixPositions(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
@@ -919,9 +907,14 @@ public class AuthorDaoImpl
                     final Book book = Book.from(bookId);
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, false,
-                                   book.getAuthors(),
-                                   author -> bookLocale);
+                    try {
+                        insertOrUpdate(context, bookId, false,
+                                       book.getAuthors(),
+                                       author -> bookLocale);
+                    } catch (@NonNull final StorageException e) {
+                        // should never happen... flw
+                        LoggerFactory.getLogger().e(TAG, e);
+                    }
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

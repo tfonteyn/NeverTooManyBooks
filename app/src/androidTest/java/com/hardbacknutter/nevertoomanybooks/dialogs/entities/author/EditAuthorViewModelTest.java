@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
@@ -81,7 +80,7 @@ class EditAuthorViewModelTest
 
     @Test
     void rename()
-            throws DaoWriteException {
+            throws StorageException {
 
         dao.insert(context, new Author(WRONG_FAMILY, WRONG_GIVEN), locale);
 
@@ -105,7 +104,7 @@ class EditAuthorViewModelTest
 
     @Test
     void rename2()
-            throws DaoWriteException {
+            throws StorageException {
 
         dao.insert(context, new Author(CORRECT_FAMILY, CORRECT_GIVEN), locale);
 

@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -166,7 +166,7 @@ public final class AuthorResolverHelper {
 
         try {
             resolve(context, searchEngine, locale, book.getAuthors(), false, false);
-        } catch (@NonNull final DaoWriteException na) {
+        } catch (@NonNull final StorageException na) {
             // not applicable as we pass in "doStore=false"
         } catch (@NonNull final SearchException e) {
             // Avoid cluttering the logfile.
@@ -188,7 +188,7 @@ public final class AuthorResolverHelper {
      * Note that the resolvers will access the network, hence this method must
      * only be called from a WorkerThread.
      * <p>
-     * Any {@link SearchException} or {@code DaoWriteException} will cause an abort.
+     * Any {@link SearchException} or {@code StorageException} will cause an abort.
      * When {@code doStore} is {@code true} all database writes happen in a transaction
      * which will be aborted, but the authors in the list authors may have been modified!
      * <strong>ALL results should be discarded in this case</strong>
@@ -208,7 +208,6 @@ public final class AuthorResolverHelper {
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws DaoWriteException    on failure
      */
     @WorkerThread
     boolean resolve(@NonNull final Context context,
@@ -217,7 +216,7 @@ public final class AuthorResolverHelper {
                     @NonNull final List<Author> authors,
                     final boolean doMerge,
                     final boolean doStore)
-            throws CredentialsException, SearchException, DaoWriteException {
+            throws CredentialsException, SearchException, StorageException {
 
         final List<AuthorResolver> resolvers = getResolvers(context, searchEngine);
         boolean result = false;

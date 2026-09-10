@@ -320,7 +320,7 @@ public class FutureHttp<R> {
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws StorageException       The covers directory is not available
+     * @throws StorageException       on image storage failures
      */
     public void head(@NonNull final String url)
             throws StorageException,
@@ -345,7 +345,7 @@ public class FutureHttp<R> {
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws StorageException       The covers directory is not available
+     * @throws StorageException       on image storage failures
      */
     @Nullable
     public R get(@NonNull final String url,
@@ -383,7 +383,7 @@ public class FutureHttp<R> {
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws StorageException       The covers directory is not available
+     * @throws StorageException       on image storage failures
      */
     @NonNull
     public R getAsString(@NonNull final String url,
@@ -431,7 +431,7 @@ public class FutureHttp<R> {
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws StorageException       The covers directory is not available
+     * @throws StorageException       on image storage failures
      */
     @Nullable
     private R doGet(@NonNull final String urlStr,
@@ -679,7 +679,7 @@ public class FutureHttp<R> {
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws StorageException       The covers directory is not available
+     * @throws StorageException       on image storage failures
      */
     @Nullable
     public R post(@NonNull final String urlStr,
@@ -1065,7 +1065,7 @@ public class FutureHttp<R> {
          * @return the function result
          *
          * @throws IOException      on generic/other IO failures
-         * @throws StorageException The covers directory is not available
+         * @throws StorageException on image storage failures
          * @throws SAXException     on parser problems if a SAX parser was used
          */
         R2 apply(T t)
@@ -1096,7 +1096,7 @@ public class FutureHttp<R> {
          * @return the resulting {@code R}
          *
          * @throws IOException      on generic/other IO failures
-         * @throws StorageException The covers directory is not available
+         * @throws StorageException on image storage failures
          * @throws SAXException     on parser problems if a SAX parser was used
          */
         @Nullable

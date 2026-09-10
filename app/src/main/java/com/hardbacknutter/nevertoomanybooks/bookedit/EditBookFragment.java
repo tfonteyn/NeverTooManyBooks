@@ -52,7 +52,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -297,7 +297,7 @@ public class EditBookFragment
             vm.saveBook(getContext());
             setResultsAndFinish();
 
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final StorageException e) {
             ErrorDialog.show(getContext(), TAG, e);
         }
     }

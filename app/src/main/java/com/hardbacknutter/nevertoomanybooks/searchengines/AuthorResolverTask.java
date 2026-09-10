@@ -33,8 +33,8 @@ import java.util.concurrent.CancellationException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -91,14 +91,14 @@ public class AuthorResolverTask
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws DaoWriteException    on failure
+     * @throws StorageException     on image storage failures
      */
     @Override
     @WorkerThread
     @NonNull
     protected Boolean doWork()
             throws CancellationException,
-                   CredentialsException, SearchException, DaoWriteException {
+                   CredentialsException, SearchException, StorageException {
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);

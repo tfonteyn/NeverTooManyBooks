@@ -37,7 +37,8 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
@@ -178,49 +179,6 @@ public interface AuthorDao
     List<Author> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
-     * Insert or update a list of {@link Author}'s linked to a single {@link Book}.
-     * <p>
-     * The list is pruned before storage.
-     * New {@link Author}'s are added to the {@link Author} table, existing ones are NOT updated
-     * unless explicitly allowed by the {@code doUpdates} parameter.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context        Current context
-     * @param bookId         of the book
-     * @param doUpdates      set to {@code true} to force each {@link Author} to be updated.
-     *                       <strong>ONLY</strong> set this when actually needed.
-     * @param list           the list of {@link Author}'s
-     * @param localeSupplier a supplier to get the Locale; called for each item in the list
-     *
-     * @throws DaoWriteException on failure
-     */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        boolean doUpdates,
-                        @NonNull Collection<Author> list,
-                        @NonNull Function<Author, Locale> localeSupplier)
-            throws DaoWriteException;
-
-    /**
-     * Moves all books from the 'source' {@link Author}, to the 'target' {@link Author}.
-     * The (now unused) 'source' {@link Author} is deleted.
-     *
-     * @param context Current context
-     * @param source  from where to move
-     * @param target  to move to
-     *
-     * @return amount of books moved
-     *
-     * @throws DaoWriteException on failure
-     */
-    @IntRange(from = 0)
-    int moveBooks(@NonNull Context context,
-                  @NonNull Author source,
-                  @NonNull Author target)
-            throws DaoWriteException;
-
-    /**
      * Find a {@link Author} based on the given id.
      *
      * @param id of {@link Author} to find
@@ -285,6 +243,32 @@ public interface AuthorDao
                  @NonNull Locale locale);
 
     /**
+     * Insert or update a list of {@link Author}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New {@link Author}'s are added to the {@link Author} table, existing ones are NOT updated
+     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context        Current context
+     * @param bookId         of the book
+     * @param doUpdates      set to {@code true} to force each {@link Author} to be updated.
+     *                       <strong>ONLY</strong> set this when actually needed.
+     * @param list           the list of {@link Author}'s
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        boolean doUpdates,
+                        @NonNull Collection<Author> list,
+                        @NonNull Function<Author, Locale> localeSupplier)
+            throws StorageException, ImageIOException;
+
+    /**
      * Insert a new {@link Author}.
      *
      * @param context Current context
@@ -293,13 +277,14 @@ public interface AuthorDao
      *
      * @return the row id of the newly inserted item
      *
-     * @throws DaoWriteException on failure
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
      */
     @IntRange(from = 1)
     long insert(@NonNull Context context,
                 @NonNull Author item,
                 @NonNull Locale locale)
-            throws DaoWriteException;
+            throws StorageException, ImageIOException;
 
     /**
      * Update the given {@link Author}.
@@ -308,12 +293,13 @@ public interface AuthorDao
      * @param item    to update
      * @param locale  The Locale of the item
      *
-     * @throws DaoWriteException on failure
+     * @throws ImageIOException on image I/O related errors.
+     * @throws StorageException on image storage failures
      */
     void update(@NonNull Context context,
                 @NonNull Author item,
                 @NonNull Locale locale)
-            throws DaoWriteException;
+            throws StorageException, ImageIOException;
 
     /**
      * Delete the given {@link Author}.
@@ -325,6 +311,21 @@ public interface AuthorDao
      */
     boolean delete(@NonNull Context context,
                    @NonNull Author author);
+
+    /**
+     * Moves all books from the 'source' {@link Author}, to the 'target' {@link Author}.
+     * The (now unused) 'source' {@link Author} is deleted.
+     *
+     * @param context Current context
+     * @param source  from where to move
+     * @param target  to move to
+     *
+     * @return amount of books moved
+     */
+    @IntRange(from = 0)
+    int moveBooks(@NonNull Context context,
+                  @NonNull Author source,
+                  @NonNull Author target);
 
     @StringDef({
             DBKey.TITLE_OB,

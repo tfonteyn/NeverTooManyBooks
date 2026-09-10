@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -93,7 +92,7 @@ class BookDaoImplTest
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     void insertDuplicate()
-            throws DaoWriteException {
+            throws StorageException {
 
         final Publisher publisher = Publisher.from("Reprodukt");
         final long p1 = publisherDao.insert(context, publisher, Locale.GERMANY);

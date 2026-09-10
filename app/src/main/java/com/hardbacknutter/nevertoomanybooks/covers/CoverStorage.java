@@ -150,7 +150,7 @@ public class CoverStorage {
      * This method is called during startup, and when/if the user changes the cover volume
      * in the preferences.
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      */
     @AnyThread
     public void initDir()
@@ -224,7 +224,7 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      * @see #initDir()
      */
     @NonNull
@@ -246,7 +246,7 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      * @see #initDir()
      * @see #getDir()
      */
@@ -278,7 +278,7 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      */
     @NonNull
     public File getTempDir()
@@ -291,7 +291,7 @@ public class CoverStorage {
      *
      * @return file
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      */
     @NonNull
     File getTempFile()
@@ -388,7 +388,7 @@ public class CoverStorage {
      * @return permanent file
      *
      * @throws IOException           on generic/other IO failures
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      */
     @AnyThread
     @NonNull
@@ -421,7 +421,7 @@ public class CoverStorage {
      * @return File written to (the one passed in)
      *
      * @throws IOException           on generic/other IO failures
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      */
     @WorkerThread
     @NonNull
@@ -455,7 +455,7 @@ public class CoverStorage {
      *
      * @return File written to (the one passed in)
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */
@@ -486,7 +486,7 @@ public class CoverStorage {
      *
      * @return the File
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */

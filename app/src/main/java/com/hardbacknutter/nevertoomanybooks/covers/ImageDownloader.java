@@ -153,7 +153,7 @@ public class ImageDownloader {
      *
      * @return Downloaded File
      *
-     * @throws ImageStorageException The covers directory is not available
+     * @throws ImageStorageException on image storage failures
      * @throws IOException           on generic/other IO failures
      */
     @NonNull

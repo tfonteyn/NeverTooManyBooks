@@ -32,13 +32,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_ROLE}
@@ -177,12 +176,15 @@ public class EditAuthorViewModel
      * @param create  {@code true} if a non-existent Author should be created
      *
      * @return {@code true} if the 'real' Author was validated and set.
-     *         {@code false} if the real author did not exist, and we were not allowed to
-     *         create them (or if creating threw an error)
+     *         {@code false} if the real author did not exist,
+     *         and we were not allowed to create them
+     *
+     * @throws StorageException on image storage failures
      */
     public boolean validateAndSetRealAuthor(@NonNull final Context context,
                                             @NonNull final Locale locale,
-                                            final boolean create) {
+                                            final boolean create)
+            throws StorageException {
         // no pseudonym?
         if (currentRealAuthorName == null || currentRealAuthorName.isBlank()) {
             currentEdit.setRealAuthor(null);
@@ -211,16 +213,9 @@ public class EditAuthorViewModel
             return false;
         }
 
-        try {
-            dao.insert(context, tmpRealAuthor, locale);
-            currentEdit.setRealAuthor(tmpRealAuthor);
-            return true;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, tmpRealAuthor);
-            return false;
-        }
+        dao.insert(context, tmpRealAuthor, locale);
+        currentEdit.setRealAuthor(tmpRealAuthor);
+        return true;
     }
 
     /**
@@ -250,11 +245,11 @@ public class EditAuthorViewModel
      *
      * @return an empty Optional for SUCCESS, or else the existing Author.
      *
-     * @throws DaoWriteException on failure
+     * @throws StorageException on image storage failures
      */
     @NonNull
     Optional<Author> saveIfUnique(@NonNull final Context context)
-            throws DaoWriteException {
+            throws StorageException {
 
         // FIRST check if the name was changed
         final boolean sameName = original.isSameName(currentEdit);
@@ -288,8 +283,7 @@ public class EditAuthorViewModel
     }
 
     void move(@NonNull final Context context,
-              @NonNull final Author destination)
-            throws DaoWriteException {
+              @NonNull final Author destination) {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
         dao.moveBooks(context, original, destination);

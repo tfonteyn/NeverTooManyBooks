@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -127,11 +126,8 @@ class DuplicateRowCleaner {
      * Participates in, or creates a Transaction.
      *
      * @param context Current context
-     *
-     * @throws DaoWriteException on failure
      */
-    void dedup(@NonNull final Context context)
-            throws DaoWriteException {
+    void dedup(@NonNull final Context context) {
 
         Synchronizer.SyncLock txLock = null;
         try {

@@ -42,9 +42,11 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
@@ -80,6 +82,8 @@ import com.hardbacknutter.util.insets.Side;
  */
 class EditBookAuthorDelegate
         implements FlexDialogDelegate {
+
+    private static final String TAG = "EditBookAuthorDelegate";
 
     /**
      * We create a list of all the {@link AuthorRole.Role} checkboxes for easy handling.
@@ -344,8 +348,13 @@ class EditBookAuthorDelegate
 
         // We let this call go ahead even if real-author is switched off by the user
         // so we can clean up as needed.
-        if (!authorVm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
-            warnThatRealAuthorMustBeValid(context);
+        try {
+            if (!authorVm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
+                warnThatRealAuthorMustBeValid(context);
+                return false;
+            }
+        } catch (@NonNull final StorageException e) {
+            ErrorDialog.show(context, TAG, e);
             return false;
         }
 

@@ -39,15 +39,16 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -280,7 +281,7 @@ public class TocEntryDaoImpl
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<TocEntry> tocEntries,
                                @NonNull final Function<TocEntry, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws StorageException, ImageIOException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -376,9 +377,9 @@ public class TocEntryDaoImpl
                     }
                 }
             }
-        } catch (@NonNull final SQLException e) {
+        } catch (@NonNull final SQLException | StorageException e) {
             actualInserts.forEach(entry -> entry.setId(0));
-            throw new DaoWriteException(e);
+            throw e;
         }
     }
 
@@ -407,9 +408,6 @@ public class TocEntryDaoImpl
             }
             return false;
 
-        } catch (@NonNull final DaoWriteException e) {
-            return false;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -418,8 +416,7 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public int fixPositions(@NonNull final Context context)
-            throws DaoWriteException {
+    public int fixPositions(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
@@ -434,9 +431,14 @@ public class TocEntryDaoImpl
                     final Book book = Book.from(bookId);
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId,
-                                   book.getToc(),
-                                   tocEntry -> bookLocale);
+                    try {
+                        insertOrUpdate(context, bookId,
+                                       book.getToc(),
+                                       tocEntry -> bookLocale);
+                    } catch (@NonNull final StorageException e) {
+                        // should never happen... flw
+                        LoggerFactory.getLogger().e(TAG, e);
+                    }
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

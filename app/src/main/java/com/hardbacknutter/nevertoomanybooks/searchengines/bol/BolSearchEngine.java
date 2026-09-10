@@ -318,7 +318,7 @@ public class BolSearchEngine
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book         to update
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
@@ -392,7 +392,7 @@ public class BolSearchEngine
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book         to update
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
@@ -835,7 +835,7 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     private void parseCoversFromHtml(@NonNull final Document document,
                                      @NonNull final boolean[] fetchCovers,
@@ -881,7 +881,7 @@ public class BolSearchEngine
      * @param frontCoverUrl to fetch
      * @param book          to update
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     private void commonParseCovers(@NonNull final Document document,
                                    @NonNull final boolean[] fetchCovers,

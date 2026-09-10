@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsInput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -94,7 +93,7 @@ class BookTest
      */
     @BeforeEach
     void setup()
-            throws IOException, StorageException, DaoWriteException {
+            throws IOException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         h = new DBTestHelper(serviceLocator);
 
@@ -159,7 +158,7 @@ class BookTest
      */
     @Test
     void book()
-            throws DaoWriteException, IOException, StorageException {
+            throws IOException, StorageException {
 
         final int bookIdx = 0;
 
@@ -212,7 +211,7 @@ class BookTest
 
     @Test
     void lending()
-            throws DaoWriteException, IOException, StorageException {
+            throws IOException, StorageException {
 
         final int bookIdx = 0;
 
@@ -238,7 +237,7 @@ class BookTest
 
     @Test
     void covers()
-            throws DaoWriteException, IOException, StorageException {
+            throws IOException, StorageException {
 
         final int bookIdx = 0;
 
@@ -305,7 +304,7 @@ class BookTest
 
     @Test
     void showBookVM()
-            throws DaoWriteException, StorageException, IOException {
+            throws StorageException, IOException {
 
         final int bookIdx = 0;
 
@@ -334,7 +333,7 @@ class BookTest
      */
     private long prepareAndInsertBook(@NonNull final Context context,
                                       @SuppressWarnings("SameParameterValue") final int bookIdx)
-            throws DaoWriteException, StorageException, IOException {
+            throws StorageException, IOException {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);

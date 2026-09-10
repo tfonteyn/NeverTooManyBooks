@@ -30,9 +30,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
@@ -95,11 +95,11 @@ public abstract class BaseRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DaoWriteException on failure
+     * @throws StorageException on image storage failures
      */
     protected void importBook(@NonNull final Context context,
                               @NonNull final Book book)
-            throws DaoWriteException {
+            throws StorageException {
 
         final String importedUuid = book.getUuid();
 
@@ -158,11 +158,11 @@ public abstract class BaseRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DaoWriteException on failure
+     * @throws StorageException on image storage failures
      */
     private void insertBook(@NonNull final Context context,
                             @NonNull final Book book)
-            throws DaoWriteException {
+            throws StorageException {
 
         final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
         final long preImportId = book.getId();
@@ -191,11 +191,11 @@ public abstract class BaseRecordReader
      * @param context Current context
      * @param book    to update
      *
-     * @throws DaoWriteException on failure
+     * @throws StorageException on image storage failures
      */
     private void updateOrSkipExistingBook(@NonNull final Context context,
                                           @NonNull final Book book)
-            throws DaoWriteException {
+            throws StorageException {
         switch (updateOption) {
             case Overwrite: {
                 updateBook(context, book);
@@ -237,7 +237,7 @@ public abstract class BaseRecordReader
 
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book book)
-            throws DaoWriteException {
+            throws StorageException {
         bookRepository.update(context, book,
                               EnumSet.of(BookDao.ImportFlag.RunInBatch,
                                          BookDao.ImportFlag.UseUpdateDateIfPresent));

@@ -234,7 +234,7 @@ public class KbNlHtmlSearchEngine
      * @param book      to update
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
@@ -281,7 +281,7 @@ public class KbNlHtmlSearchEngine
      * @param document to parse
      * @param book     to update
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException     on image storage failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
@@ -579,7 +579,7 @@ public class KbNlHtmlSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @WorkerThread
     @NonNull

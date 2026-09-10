@@ -317,7 +317,7 @@ public class GoogleBooksSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException      on storage related failures
+     * @throws StorageException      on image storage failures
      * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws IllegalStateException if the SAX parser could not be created
      */
@@ -451,7 +451,7 @@ public class GoogleBooksSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @VisibleForTesting
     void parse(@NonNull final Context context,
@@ -648,7 +648,7 @@ public class GoogleBooksSearchEngine
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException on image storage failures
      */
     @NonNull
     private Optional<String> searchCover(@NonNull final JSONObject imageLinks,
