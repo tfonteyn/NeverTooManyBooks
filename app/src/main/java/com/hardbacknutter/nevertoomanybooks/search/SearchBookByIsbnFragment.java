@@ -68,9 +68,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
@@ -84,7 +84,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
-import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
@@ -97,6 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
@@ -1011,7 +1011,7 @@ public class SearchBookByIsbnFragment
             vm.onSaveBook(context, book);
 
         } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ErrorDialog.storageError(getContext(), e);
         }
     }
 

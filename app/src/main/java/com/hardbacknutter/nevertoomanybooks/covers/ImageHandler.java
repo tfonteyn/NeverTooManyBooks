@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageExt
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.browser.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.browser.CoverBrowserLauncher;
@@ -554,6 +555,9 @@ public final class ImageHandler {
             //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
                           Snackbar.LENGTH_LONG).show();
+        } else if (e instanceof StorageException) {
+            //noinspection DataFlowIssue
+            ErrorDialog.storageError(fragment.getContext(), (StorageException) e);
         } else {
             //noinspection DataFlowIssue
             ErrorDialog.show(fragment.getContext(), TAG, e);
@@ -574,9 +578,11 @@ public final class ImageHandler {
             ErrorDialog.show(context, TAG, e,
                              context.getString(R.string.warning_image_copy_failed),
                              context.getString(R.string.error_storage_not_writable));
+
+        } else if (e instanceof StorageException) {
+            //noinspection DataFlowIssue
+            ErrorDialog.storageError(fragment.getContext(), (StorageException) e);
         } else {
-            // ImageStorageException is unlikely but possible.
-            // Others very unlikely.
             //noinspection DataFlowIssue
             ErrorDialog.show(fragment.getContext(), TAG, e);
         }

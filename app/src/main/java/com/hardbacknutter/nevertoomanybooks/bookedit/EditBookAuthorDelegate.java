@@ -354,7 +354,7 @@ class EditBookAuthorDelegate
                 return false;
             }
         } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(context, TAG, e);
+            ErrorDialog.storageError(context, e);
             return false;
         }
 

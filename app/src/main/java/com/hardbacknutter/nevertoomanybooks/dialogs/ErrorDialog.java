@@ -51,6 +51,31 @@ public final class ErrorDialog {
     private ErrorDialog() {
     }
 
+    /**
+     * Show an error message after a {@link StorageException} was thrown.
+     *
+     * @param context Current context
+     * @param e       the error
+     */
+    public static void storageError(@NonNull final Context context,
+                                    @NonNull final StorageException e) {
+        final String message;
+        if (e instanceof ImageIOException) {
+            message = context.getString(R.string.error_storage_not_writable);
+        } else {
+            // ImageStorageException
+            message = context.getString(R.string.error_storage_not_accessible);
+        }
+
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.error_24px)
+                .setTitle(R.string.lbl_images)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
     private static boolean isSQLException(@NonNull final Throwable e) {
         return e instanceof SQLException || e.getCause() instanceof SQLException;
     }
@@ -62,7 +87,6 @@ public final class ErrorDialog {
      * @param tag     log tag
      * @param e       the error
      */
-    @SuppressWarnings("ChainOfInstanceofChecks")
     public static void show(@NonNull final Context context,
                             @NonNull final String tag,
                             @NonNull final Throwable e) {
@@ -72,18 +96,7 @@ public final class ErrorDialog {
         }
 
         LoggerFactory.getLogger().e(tag, e);
-
-        @Nullable
-        final String title;
-        if (e instanceof ImageIOException) {
-            title = context.getString(R.string.error_storage_not_writable);
-        } else if (e instanceof StorageException) {
-            title = context.getString(R.string.error_storage_not_accessible);
-        } else {
-            title = null;
-        }
-
-        showDialog(context, e, title, null, (d, w) -> d.dismiss());
+        showDialog(context, e, null, null, (d, w) -> d.dismiss());
     }
 
     /**

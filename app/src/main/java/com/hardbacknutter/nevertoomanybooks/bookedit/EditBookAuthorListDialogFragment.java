@@ -383,7 +383,7 @@ public class EditBookAuthorListDialogFragment
             vm.changeForAllBooks(getContext(), original, modified);
             adapter.notifyDataSetChanged();
         } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ErrorDialog.storageError(getContext(), e);
         }
     }
 
@@ -399,7 +399,7 @@ public class EditBookAuthorListDialogFragment
             vm.changeForThisBook(getContext(), original, modified);
             adapter.notifyDataSetChanged();
         } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ErrorDialog.storageError(getContext(), e);
         }
 
         // Updated author(s): Book gets them, but TocEntries remain using old set

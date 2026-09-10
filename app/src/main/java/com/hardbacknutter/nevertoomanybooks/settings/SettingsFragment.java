@@ -659,7 +659,7 @@ public class SettingsFragment
                 // To get here the user would have to have displayed the dialog,
                 // manually removed the SDCARD
                 // and then choose the removed SDCARD from the dialog.
-                ErrorDialog.show(context, TAG, e);
+                ErrorDialog.storageError(context, e);
                 return false;
             }
         }

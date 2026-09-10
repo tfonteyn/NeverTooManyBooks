@@ -298,7 +298,7 @@ public class EditBookFragment
             setResultsAndFinish();
 
         } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
+            ErrorDialog.storageError(getContext(), e);
         }
     }
 
