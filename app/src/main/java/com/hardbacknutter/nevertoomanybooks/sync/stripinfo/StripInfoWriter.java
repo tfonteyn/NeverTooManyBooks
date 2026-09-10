@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
@@ -158,8 +157,6 @@ public class StripInfoWriter
                     // ignore, just move on to the next book
                     LoggerFactory.getLogger()
                                  .e(TAG, e, "bookId=" + book.getId());
-                } catch (@NonNull final StorageException ignore) {
-                    // ignore, can't happen here
                 }
 
                 delta++;

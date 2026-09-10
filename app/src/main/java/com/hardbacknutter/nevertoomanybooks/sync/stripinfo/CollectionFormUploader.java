@@ -249,11 +249,10 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on image storage failures
      */
     @WorkerThread
     public void send(@NonNull final Book book)
-            throws IOException, IllegalArgumentException, StorageException {
+            throws IOException, IllegalArgumentException {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
         final StripInfoCollectionData collectionData =
@@ -355,8 +354,11 @@ class CollectionFormUploader {
 
         final Document form = doPost(postBody);
 
-        final OptionalLong siteExtId = jSoupParserHelper.getPositiveLong(form, FF_STRIP_ID);
-        final OptionalLong siteCollId = jSoupParserHelper.getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
+        final OptionalLong siteExtId = jSoupParserHelper
+                .getPositiveLong(form, FF_STRIP_ID);
+        final OptionalLong siteCollId = jSoupParserHelper
+                .getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
+
         if (siteExtId.isPresent() && externalId.equals(String.valueOf(siteExtId.getAsLong()))
             && siteCollId.isPresent() && collectionId == siteCollId.getAsLong()) {
             postBody = new FormBody.Builder()
