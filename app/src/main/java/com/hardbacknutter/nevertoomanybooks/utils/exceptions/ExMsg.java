@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.system.Os;
 import android.system.OsConstants;
@@ -33,7 +34,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpTooManyRequestsExce
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -142,6 +143,9 @@ public final class ExMsg {
         } else if (e instanceof com.hardbacknutter.org.json.JSONException
                    || e instanceof org.json.JSONException) {
             //TODO: a JSONException is very generic, we'd need to look at the actual text.
+            return getUnexpectedErrorMessage(context);
+
+        } else if (e instanceof ActivityNotFoundException) {
             return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof android.database.SQLException

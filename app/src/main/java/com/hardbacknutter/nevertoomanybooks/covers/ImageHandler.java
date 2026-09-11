@@ -477,12 +477,9 @@ public final class ImageHandler {
         try {
             takePictureLauncher.launch(input);
         } catch (@NonNull final ActivityNotFoundException e) {
-            // No Camera? we should not get here as we should not have been
-            // to call this method in the first place... flw
-            // Fake an IOException...
-            final Context context = fragment.requireContext();
-            ErrorDialog.show(context, TAG,
-                             new IOException(context.getString(R.string.error_unexpected), e));
+            // No Camera? we should never get here as we should not have been
+            // able to call this method in the first place... flw
+            ErrorDialog.show(fragment.requireContext(), TAG, e);
         }
     }
 
