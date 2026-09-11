@@ -179,8 +179,9 @@ public final class ErrorDialog {
      * @param e             The error. SHOULD NOT be {@code null}.
      *                      But MUST be {@code null} when called recursively.
      * @param title         optional; Dialog title; use {@code null} for none
-     * @param message       optional; The message to show; use {@code null} for none
-     * @param closingAction to use for the positive button
+     * @param message       optional; The message to show;
+     *                      when {@code null} a message will be derived from the exception
+     * @param closingAction to use for the positive/close button
      */
     private static void showDialog(@NonNull final Context context,
                                    @Nullable final Throwable e,
@@ -190,97 +191,40 @@ public final class ErrorDialog {
 
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.error_24px)
+                .setTitle(title)
                 .setPositiveButton(R.string.ok, closingAction);
 
-        // both are set
-        if (title != null && message != null) {
-            builder.setTitle(title)
-                   .setMessage(message);
+        // Try to map the exception to a user friendly message,
+        final Optional<String> mappedMsg = ExMsg.map(context, e);
 
-            // the exception MAY be absent
-            if (e != null) {
-                // Try to map the exception to a localised/simple message.
-                final Optional<String> mappedMsg = ExMsg.map(context, e);
-                // If we have no mapped message, do NOT freak out (see second section below),
-                // but show the raw exception msg as a last resort.
-                final String eMessage = mappedMsg.orElseGet(e::getLocalizedMessage);
-
-                // Don't show the "more" button if the current message and the exception message
-                // are the same.
-                if (!message.equals(eMessage)) {
-                    // If an exception is available, the "more" button will
-                    // show the message concatenated with the actual exception message.
-                    // Pass in a null exception to the recursive call to 'showDialog()'
-                    // to make sure we don't loop.
-                    builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                            showDialog(context, null, title, message + DOUBLE_LF + eMessage,
-                                       closingAction)
-                    );
-                }
-            }
-            builder.create()
-                   .show();
-            return;
+        final String message2;
+        if (message != null) {
+            // A passed in message is always used
+            message2 = message.toString();
+        } else {
+            // otherwise show the mapped message or freak-out message
+            message2 = mappedMsg.orElseGet(() -> ExMsg.getUnexpectedErrorMessage(context));
         }
 
-        // We have a title, but no message
-        if (title != null) {
-            builder.setTitle(title);
+        // the exception MAY be absent
+        if (e != null) {
+            // If we have no mapped message, check the raw localised exception msg.
+            final String eMessage = mappedMsg.orElseGet(e::getLocalizedMessage);
 
-            // Try to map the exception to a localised/simple message.
-            final Optional<String> mappedMsg = ExMsg.map(context, e);
-            // If we have no mapped message or the exception was null - freak-out!
-            final String message2 = mappedMsg.orElseGet(
-                    () -> ExMsg.getUnexpectedErrorMessage(context));
-            builder.setMessage(message2);
-
-            // The exception SHOULD be present but we're paranoid.
-            if (e != null) {
-                final String eMessage = e.getLocalizedMessage();
-                // Not all exceptions have a message; can't show 'null' messages
-                if (eMessage != null) {
-                    // Don't show the "more" button if the current message
-                    // and the exception message are the same.
-                    if (!message2.equals(eMessage)) {
-                        // If an exception is available, the "more" button will
-                        // show the derived message concatenated with the actual exception message.
+            // Show the "more" button if the current message
+            // and the exception message are different.
+            if (!message2.equals(eMessage)) {
+                // The "more" button will replace the current dialog, with a new one
+                // showing the message concatenated with the full exception message.
+                builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
                         // Pass in a null exception to the recursive call to 'showDialog()'
                         // to make sure we don't loop.
-                        builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                                showDialog(context, null, title, message2 + DOUBLE_LF + eMessage,
-                                           closingAction)
-                        );
-                    }
-                }
+                        showDialog(context, null,
+                                   title, message2 + DOUBLE_LF + eMessage,
+                                   closingAction)
+                );
             }
-            builder.create()
-                   .show();
-            return;
         }
-
-
-        // Worst case, we have no title and no message.
-        // This would typically be an IOException
-
-        // Try to map the exception to a localised/simple message.
-        final Optional<String> mappedMsg = ExMsg.map(context, e);
-        // If we have no mapped message or the exception was null - freak-out!
-        final String title2 = mappedMsg.orElseGet(() -> ExMsg.getUnexpectedErrorMessage(context));
-        // Set it as the title and leave the message itself blank.
-        builder.setTitle(title2);
-
-        // The exception SHOULD be present but we're paranoid.
-        if (e != null) {
-            // If an exception is available, the "more" button will
-            // show the actual exception message.
-            // Pass in a null exception so we don't loop.
-            builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                    showDialog(context, null,
-                               title2, e.getLocalizedMessage(),
-                               closingAction)
-            );
-        }
-
         builder.create()
                .show();
     }
