@@ -124,19 +124,26 @@ public final class ExMsg {
             return e.getLocalizedMessage();
 
         } else if (e instanceof ImageStorageException) {
+            // The image storage location is not available.
+            // Typical this can only happen when images where moved to a
+            // removable sd-card.
             return context.getString(R.string.error_storage_not_accessible);
 
         } else if (e instanceof ImageIOException) {
             // It's very likely a disk-full, but it could be an unexpected IO issue.
+            // The ImageIOException will have a wrapped IOException with the exact cause.
             return context.getString(R.string.error_storage_not_writable);
 
         } else if (e instanceof DataReaderException) {
+            // We should not get here as this exception will have been
+            // intercepted and displayed in a dedicated dialog.
             return ((DataReaderException) e).getUserMessage(context);
 
         } else if (e instanceof DataWriterException) {
+            // We should not get here as this exception will have been
+            // intercepted and displayed in a dedicated dialog.
             // Typically (but not enforced) the wrapped exception will be a JSONException
             return map(context, e.getCause())
-                    // TODO: give user detailed message
                     .orElse(context.getString(R.string.error_export_failed));
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException

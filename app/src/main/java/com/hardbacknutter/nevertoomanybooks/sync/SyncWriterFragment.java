@@ -197,7 +197,7 @@ public class SyncWriterFragment
 
     private void onExportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
-
+        // TODO: give user detailed information why the export failed
         message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_export_failed),
