@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -226,4 +228,8 @@
         <item quantity="other">%1$d ferðir um árið</item>
     </plurals>
     <string name="lbl_edition_info">Útgávuupplýsingar</string>
+    <string name="lbl_api_token">API-token</string>
+    <string name="vldt_exact_length_required">Skeið skal vera tómt ella hava neyvt %1$d tekn.</string>
+    <string name="warning_credentials_missing">Brúkaranavn og/ella loyniorð vanta fyri síðuna %1$s. Vinarliga dagfør tínar innstillingar.</string>
+    <string name="warning_api_token_issue">API-tokenið fyri %1$s vantar ella er rangt. Vinarliga dagfør tínar innstillingar.</string>
 </resources>

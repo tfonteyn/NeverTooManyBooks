@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -986,4 +988,8 @@
     </plurals>
     <string name="lbl_limit_request_speed">Ierobežot pieprasījumu ātrumu</string>
     <string name="lbl_limit_request_speed_info">Pievieno īsas aizkaves starp pieprasījumiem, lai novērstu servera pārslogošanu un IP bloķēšanu.</string>
+    <string name="lbl_api_token">API žetons</string>
+    <string name="vldt_exact_length_required">Nepieciešama tukša vērtība vai precīzs garums %1$d rakstzīmes.</string>
+    <string name="warning_credentials_missing">Vietnei %1$s trūkst lietotājvārda un/vai paroles. Lūdzu, atjauniniet iestatījumus.</string>
+    <string name="warning_api_token_issue">Vietnes %1$s API žetons ir trūkstošs vai nepareizs. Lūdzu, atjauniniet iestatījumus.</string>
 </resources>

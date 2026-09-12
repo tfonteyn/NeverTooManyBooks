@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -949,4 +951,8 @@
     </plurals>
     <string name="lbl_limit_request_speed">Giới hạn tốc độ yêu cầu</string>
     <string name="lbl_limit_request_speed_info">Thêm khoảng trễ ngắn giữa các yêu cầu để tránh quá tải máy chủ và bị chặn IP.</string>
+    <string name="lbl_api_token">Mã token API</string>
+    <string name="vldt_exact_length_required">Yêu cầu giá trị trống hoặc độ dài chính xác là %1$d ký tự.</string>
+    <string name="warning_credentials_missing">Thiếu tên người dùng và/hoặc mật khẩu cho trang web %1$s. Vui lòng cập nhật cài đặt của bạn.</string>
+    <string name="warning_api_token_issue">Mã token API cho %1$s bị thiếu hoặc không chính xác. Vui lòng cập nhật cài đặt của bạn.</string>
 </resources>

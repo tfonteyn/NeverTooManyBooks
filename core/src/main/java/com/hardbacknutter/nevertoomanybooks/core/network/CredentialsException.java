@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 /**
- * Authentication.
+ * Authentication. Typically thrown <strong>BEFORE</strong> any connection
+ * attempt is made. It is used to indicate <strong>missing or incorrectly configured</strong>
+ * credentials. It can also be used <strong>after</strong> a failed authentication attempt,
+ * if authentication was optional, as a warning.
  */
 public class CredentialsException
         extends Exception {
@@ -33,21 +36,33 @@ public class CredentialsException
     /** The site. */
     @StringRes
     private final int siteResId;
+    @NonNull
+    private final String localizedMessage;
 
     /**
      * Constructor.
      *
-     * @param siteResId  the site string res; which will be embedded in a default user message
-     * @param logMessage internal message for the log file
+     * @param siteResId        the site string res; will be embedded in a default user message
+     * @param logMessage       a message intended to be logged and NOT shown to the user
+     * @param localizedMessage a <strong>localised</strong> message which
+     *                         <strong>will</strong> be shown to the user
      */
     public CredentialsException(@StringRes final int siteResId,
-                                @NonNull final String logMessage) {
+                                @NonNull final String logMessage,
+                                @NonNull final String localizedMessage) {
         super(logMessage);
         this.siteResId = siteResId;
+        this.localizedMessage = localizedMessage;
     }
 
     @StringRes
     public int getSiteResId() {
         return siteResId;
+    }
+
+    @NonNull
+    @Override
+    public String getLocalizedMessage() {
+        return localizedMessage;
     }
 }

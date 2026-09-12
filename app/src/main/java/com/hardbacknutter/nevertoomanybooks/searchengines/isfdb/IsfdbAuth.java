@@ -229,7 +229,9 @@ public class IsfdbAuth
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
         if (username.isEmpty() || password.isEmpty()) {
-            throw new CredentialsException(R.string.site_isfdb, "missing password");
+            throw new CredentialsException(R.string.site_isfdb,
+                                           "missing username/password",
+                                           context.getString(R.string.warning_credentials_missing));
         }
 
         // Secondly check if we're already logged in ?
@@ -260,8 +262,11 @@ public class IsfdbAuth
             httpPost = null;
         }
 
-        userId = getUserId().orElseThrow(
-                () -> new CredentialsException(R.string.site_isfdb, "login failed"));
+        // we should not be throwing here, as the post should already have done so.
+        userId = getUserId().orElseThrow(() -> new CredentialsException(
+                R.string.site_isfdb, "login failed",
+                context.getString(R.string.error_site_authentication_failed,
+                                  context.getString(R.string.site_isfdb))));
 
         prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
         return userId;

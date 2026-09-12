@@ -119,6 +119,10 @@ public final class ExMsg {
             // The ValidatorException always provides a localised message.
             return e.getLocalizedMessage();
 
+        } else if (e instanceof CredentialsException) {
+            // The CredentialsException always provides a localised message.
+            return e.getLocalizedMessage();
+
         } else if (e instanceof ImageStorageException) {
             return context.getString(R.string.error_storage_not_accessible);
 
@@ -134,11 +138,6 @@ public final class ExMsg {
             return map(context, e.getCause())
                     // TODO: give user detailed message
                     .orElse(context.getString(R.string.error_export_failed));
-
-        } else if (e instanceof CredentialsException) {
-            final CredentialsException ce = (CredentialsException) e;
-            return context.getString(R.string.error_site_authentication_failed,
-                                     context.getString(ce.getSiteResId()));
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException
                    || e instanceof org.json.JSONException) {

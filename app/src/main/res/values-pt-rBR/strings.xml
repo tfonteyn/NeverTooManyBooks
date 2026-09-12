@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -351,4 +352,7 @@
     </plurals>
     <string name="lbl_limit_request_speed">Limitar velocidade das requisições</string>
     <string name="lbl_limit_request_speed_info">Adiciona pequenos atrasos entre as requisições para evitar sobrecarga no servidor e bloqueios de IP.</string>
+    <string name="vldt_exact_length_required">É necessário um valor vazio ou o tamanho exato de %1$d caracteres.</string>
+    <string name="warning_credentials_missing">Nome de usuário e/ou senha ausentes para o site %1$s. Por favor, atualize suas configurações.</string>
+    <string name="warning_api_token_issue">O token de API para %1$s está ausente ou incorreto. Por favor, atualize suas configurações.</string>
 </resources>

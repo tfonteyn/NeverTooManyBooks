@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -968,4 +970,8 @@
     </plurals>
     <string name="lbl_limit_request_speed">Kérések sebességének korlátozása</string>
     <string name="lbl_limit_request_speed_info">Rövid késleltetéseket iktat be a kérések közé a szerver túlterhelésének és az IP-cím blokkolásának elkerülése érdekében.</string>
+    <string name="lbl_api_token">API token</string>
+    <string name="vldt_exact_length_required">Üres érték vagy pontosan %1$d karakter hosszúság szükséges.</string>
+    <string name="warning_credentials_missing">A felhasználónév és/vagy a jelszó hiányzik a(z) %1$s oldalhoz. Kérjük, frissítse a beállításokat.</string>
+    <string name="warning_api_token_issue">A(z) %1$s API tokenje hiányzik vagy helytelen. Kérjük, frissítse a beállításokat.</string>
 </resources>

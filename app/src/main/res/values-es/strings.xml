@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine -->
@@ -987,4 +989,8 @@
     </plurals>
     <string name="lbl_limit_request_speed">Limitar la velocidad de las solicitudes</string>
     <string name="lbl_limit_request_speed_info">Añade breves pausas entre solicitudes para evitar la sobrecarga del servidor y bloqueos de IP.</string>
+    <string name="lbl_api_token">Token de API</string>
+    <string name="vldt_exact_length_required">Se requiere un valor vacío o una longitud exacta de %1$d caracteres.</string>
+    <string name="warning_credentials_missing">Falta el nombre de usuario y/o la contraseña para el sitio %1$s. Actualice su configuración.</string>
+    <string name="warning_api_token_issue">El token de API para %1$s falta o es incorrecto. Actualice su configuración.</string>
 </resources>

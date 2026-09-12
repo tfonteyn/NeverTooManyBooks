@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes 「…」 - Regex to find wrong ones: (“|”|'|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -951,4 +953,8 @@
     </plurals>
     <string name="lbl_limit_request_speed">限制請求速度</string>
     <string name="lbl_limit_request_speed_info">在請求之間新增短暫延遲，以防止伺服器過載與 IP 封鎖。</string>
+    <string name="lbl_api_token">API 金鑰</string>
+    <string name="vldt_exact_length_required">需要留空或長度精確為 %1$d 個字元。</string>
+    <string name="warning_credentials_missing">缺少網站 %1$s 的使用者名稱和/或密碼。請更新您的設定。</string>
+    <string name="warning_api_token_issue">%1$s 的 API 金鑰遺失或不正確。請更新您的設定。</string>
 </resources>

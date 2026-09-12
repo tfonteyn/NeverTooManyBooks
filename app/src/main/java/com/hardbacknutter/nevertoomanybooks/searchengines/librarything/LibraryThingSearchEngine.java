@@ -240,9 +240,10 @@ public class LibraryThingSearchEngine
 
         // incorrect length, abort
         if (apiToken.length() != TOKEN_LEN) {
-            throw new CredentialsException(
-                    getEngineId().getLabelResId(),
-                    context.getString(R.string.error_http_401_authorization_failed));
+            throw new CredentialsException(R.string.site_library_thing,
+                    "apiToken incorrect length=" + apiToken.length(),
+                    context.getString(R.string.warning_api_token_issue,
+                                      context.getString(R.string.site_library_thing)));
         }
 
         final String url = String.format(ALT_EDITIONS_URL, apiToken, codeStr);

@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -967,4 +969,8 @@
     </plurals>
     <string name="lbl_limit_request_speed">Anfragegeschwindigkeit begrenzen</string>
     <string name="lbl_limit_request_speed_info">Fügt kurze Verzögerungen zwischen Anfragen ein, um eine Serverüberlastung und IP-Sperren zu verhindern.</string>
+    <string name="lbl_api_token">API-Token</string>
+    <string name="vldt_exact_length_required">Leerer Wert oder genaue Länge von %1$d Zeichen erforderlich.</string>
+    <string name="warning_credentials_missing">Benutzername und/oder Passwort für die Website %1$s fehlen. Bitte aktualisieren Sie Ihre Einstellungen.</string>
+    <string name="warning_api_token_issue">Das API-Token für %1$s fehlt oder ist ungültig. Bitte aktualisieren Sie Ihre Einstellungen.</string>
 </resources>

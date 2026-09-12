@@ -416,6 +416,10 @@
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <string name="warning_restart_required">App restart required</string>
     <string name="warning_requires_android_x">Requires Android %1$d or higher</string>
+    <!-- Param 1: the website -->
+    <string name="warning_credentials_missing">The username and/or password are missing for the site %1$s. Please update your settings.</string>
+    <!-- Param 1: the website for which the token is needed. -->
+    <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
     <!-- endregion -->
     <!-- region ========== Permission related messages. -->
     <!-- [VERIFIED] - dialog title when asking for permissions. -->
@@ -462,7 +466,9 @@
     <string name="vldt_blank_or_valid_url_required">Empty value or valid URL required</string>
     <!-- The field must either be blank, the literal string "%s", or a valid URL with a single "%s" embedded -->
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Empty value or valid “https” URL with a single “%s” id placeholder required</string>
-
+    <!-- The field must either be blank, or be a specified length.
+         Param 1: the required length -->
+    <string name="vldt_exact_length_required">Empty value or exact length of %1$d characters required.</string>
     <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>
     <!-- Specific msg for when the user edits the 'real' name for an Author who normally uses a pseudonym. -->
@@ -2170,6 +2176,12 @@
     <!-- [VERIFIED] -->
     <string name="lbl_credentials">User credentials</string>
     <!-- [VERIFIED] -->
+    <string name="username">Username</string>
+    <!-- [VERIFIED] -->
+    <string name="password">Password</string>
+    <!-- Label for an input field. An API token might be needed for accessing certain websites. -->
+    <string name="lbl_api_token">API Token</string>
+    <!-- [VERIFIED] -->
     <string name="lbl_certificate_ca">CA Certificate</string>
     <!-- [VERIFIED] -->
     <string name="lbl_certificates">Certificates</string>
@@ -2468,10 +2480,6 @@
     <string name="unknown">Unknown</string>
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>
-    <!-- [VERIFIED] -->
-    <string name="username">Username</string>
-    <!-- [VERIFIED] -->
-    <string name="password">Password</string>
     <!-- e.g. some setting is "Enabled", switched on. -->
     <string name="enabled">Enabled</string>
     <!-- e.g. some setting is "Disabled", switched off. -->
@@ -2604,10 +2612,4 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="lbl_api_token"
-            translatable="false">API Token</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="vldt_exact_length_required"
-            translatable="false">Empty value or exact length of %1$d characters required.</string>
 </resources>
