@@ -20,14 +20,25 @@
 
 package com.hardbacknutter.prefslib;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -140,13 +151,59 @@ public final class SettingsManager {
     /**
      * Scroll the display to the row for the given key.
      *
-     * @param key to show
+     * @param key   to scroll to
+     * @param flash flag
      */
-    public void scrollToKey(@NonNull final CharSequence key) {
+    public void scrollToKey(@NonNull final CharSequence key,
+                            final boolean flash) {
         adapter.findPosition(key).ifPresent(position -> {
             //noinspection DataFlowIssue
             recyclerView.getLayoutManager().scrollToPosition(position);
+            if (flash) {
+                recyclerView.post(() -> {
+                    final RecyclerView.ViewHolder holder = recyclerView
+                            .findViewHolderForAdapterPosition(position);
+                    // Sanity check
+                    if (holder != null) {
+                        flashSetting(holder.itemView);
+                    }
+                });
+            }
         });
+    }
+
+    private void flashSetting(@NonNull final View view) {
+        final Drawable originalDrawable = view.getBackground();
+
+        final int colorFrom = originalDrawable instanceof ColorDrawable
+                              ? ((ColorDrawable) originalDrawable).getColor()
+                              : Color.TRANSPARENT;
+
+        final TypedValue primaryColour = new TypedValue();
+        view.getContext().getTheme().resolveAttribute(android.R.attr.colorPrimary,
+                                                      primaryColour, true);
+        // ~25% alpha
+        final int colorTo = ColorUtils.setAlphaComponent(primaryColour.data, 64);
+
+        final ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(),
+                                                              colorFrom, colorTo);
+        animator.setDuration(350);
+        // 3 full pulses
+        animator.setRepeatCount(5);
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        animator.addUpdateListener(animation -> view.setBackgroundColor(
+                (int) animation.getAnimatedValue()));
+
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(@NonNull final Animator animation) {
+                view.setBackground(originalDrawable);
+            }
+        });
+
+        animator.start();
     }
 
     /**
@@ -1015,7 +1072,7 @@ public final class SettingsManager {
          * @param entries            optional array of entries
          * @param entryValues        optional array of entry values
          * @param notSetSummary      string resource for the {@code not set} summary text
-         * @param clearButtonText string resource for the neutral (clear) button of the dialog box
+         * @param clearButtonText    string resource for the neutral (clear) button of the dialog box
          * @param negativeButtonText string resource for the negative button of the dialog box
          * @param positiveButtonText string resource for the positive button of the dialog box
          * @param onChangeListener   (optional) callback when the setting is changed
