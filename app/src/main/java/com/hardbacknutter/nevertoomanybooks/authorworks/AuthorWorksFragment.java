@@ -51,9 +51,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
@@ -301,9 +301,8 @@ public class AuthorWorksFragment
         closeProgressDialog();
 
         message.process(e -> {
-            // The dialog title should really be "author resolving failed"
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_unexpected),
+            ErrorDialog.show(getContext(), TAG, e, getString(R.string.lbl_author),
                              (d, w) -> getActivity().finish());
         });
     }
