@@ -241,10 +241,16 @@
     <string name="error_invalid_url">Invalid address (URL)</string>
     <!-- endregion -->
     <!-- region ========== General error messages. -->
-    <string name="error_unexpected">An unexpected error occurred.</string>
-    <!-- The placeholder will be replaced with R.string.pt_maintenance;
-         i.e. the menu text "Maintenance" -->
+    <!-- This is the fallback error message when we don't have or know a better description
+         for an unexpected error.
+         The placeholder will be replaced with the string from "pt_maintenance"; i.e. "Maintenance".
+
+         Dev. note: only used in the exception->message mapper.
+         -->
     <string name="error_unexpected_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
+    <!-- The short version of "error_unexpected_long". -->
+    <string name="error_unexpected">An unexpected error occurred.</string>
+
     <!-- shown when a user tries to upgrade from a very old version to the current.
          Param 1: the oldest version still supported.
     -->
@@ -1652,6 +1658,14 @@
     <!-- First publication month.  Translations should be abbreviated and be more or less the same text length. -->
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
 
+    <!-- Author birthdate -->
+    <string name="lbl_date_born">Born</string>
+    <!-- Author death date -->
+    <string name="lbl_date_died">Died</string>
+
+    <!-- endregion -->
+    <!-- region ========== All publication-frequency related labels. -->
+
     <!-- Publication frequentie. Typically used for magazines. -->
     <string name="freq_unknown">Unknown</string>
 
@@ -1712,12 +1726,6 @@
         <item quantity="one">Yearly</item>
         <item quantity="other">%1$d yearly</item>
     </plurals>
-
-    <!-- Author birthdate -->
-    <string name="lbl_date_born">Born</string>
-    <!-- Author death date -->
-    <string name="lbl_date_died">Died</string>
-
     <!-- endregion -->
     <!-- region ========== Backup, Export and Import. -->
     <!-- Dialog /screen / Navigation panel menu option -->
@@ -2603,9 +2611,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advise to take a backup before proceeding!</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="option_tuning"
-            translatable="false">Tuning</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET
         Param 1: name of the website with a url to the registration page
         Param 2: will be set to "Learn more" with a url to the documentation;

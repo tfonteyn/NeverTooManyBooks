@@ -151,7 +151,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_tuning"
             style="@style/Button.Menu"
-            android:text="@string/option_tuning"
+            android:text="@string/tuning_menu_label"
             android:visibility="gone"
             app:icon="@drawable/tune_24px"
             app:layout_constraintEnd_toEndOf="parent"
