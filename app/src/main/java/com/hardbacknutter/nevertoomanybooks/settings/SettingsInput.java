@@ -25,44 +25,27 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+@SuppressWarnings("WeakerAccess")
 public class SettingsInput {
 
     private static final String TAG = "SettingsInput";
     private static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":st";
+    private static final String BKEY_AUTO_SCROLL_FLASH = TAG + ":stf";
     private static final String BKEY_MISSING_STORAGE_VOLUME = TAG + ":msv";
 
     @Nullable
     private String autoScrollKey;
-
     @Nullable
-    private final Boolean storageVolumeMissing;
-
-    /**
-     * Constructor.
-     *
-     * @param autoScrollKey        (optional) Allows auto-scrolling on opening
-     *                             the preference screen to the given key.
-     * @param storageVolumeMissing (optional) Passed in by the startup routines,
-     *                             indicating the storage device was not found.
-     */
-    public SettingsInput(@Nullable final String autoScrollKey,
-                         @Nullable final Boolean storageVolumeMissing) {
-        this.autoScrollKey = autoScrollKey;
-        this.storageVolumeMissing = storageVolumeMissing;
-    }
+    private Boolean autoScrollFlash;
+    @Nullable
+    private Boolean storageVolumeMissing;
 
     @NonNull
     static SettingsInput fromBundle(@NonNull final Bundle args) {
-        final String autoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
-        @Nullable
-        final Boolean storageVolumeMissing;
-        if (args.containsKey(BKEY_MISSING_STORAGE_VOLUME)) {
-            storageVolumeMissing = args.getBoolean(BKEY_MISSING_STORAGE_VOLUME);
-        } else {
-            storageVolumeMissing = null;
-        }
-
-        return new SettingsInput(autoScrollToKey, storageVolumeMissing);
+        return new SettingsInput()
+                .setAutoScrollKey(args.getString(BKEY_AUTO_SCROLL_TO_KEY),
+                                  args.getBoolean(BKEY_AUTO_SCROLL_FLASH))
+                .setStorageVolumeMissing(args.getBoolean(BKEY_MISSING_STORAGE_VOLUME));
     }
 
     @NonNull
@@ -70,6 +53,9 @@ public class SettingsInput {
         final Bundle args = new Bundle(2);
         if (autoScrollKey != null) {
             args.putString(BKEY_AUTO_SCROLL_TO_KEY, autoScrollKey);
+        }
+        if (autoScrollFlash != null) {
+            args.putBoolean(BKEY_AUTO_SCROLL_FLASH, autoScrollFlash);
         }
         if (storageVolumeMissing != null) {
             args.putBoolean(BKEY_MISSING_STORAGE_VOLUME, storageVolumeMissing);
@@ -82,12 +68,42 @@ public class SettingsInput {
         return autoScrollKey;
     }
 
-    void setAutoScrollKey(@Nullable final String autoScrollKey) {
+    /**
+     * Auto-scrolling on opening the preference screen to the given key.
+     * Optionally 'flash' the option to attract the users attention.
+     *
+     * @param autoScrollKey   key
+     * @param autoScrollFlash flag
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public SettingsInput setAutoScrollKey(@Nullable final String autoScrollKey,
+                                          @Nullable final Boolean autoScrollFlash) {
         this.autoScrollKey = autoScrollKey;
+        this.autoScrollFlash = autoScrollFlash;
+        return this;
+    }
+
+    public boolean isAutoScrollFlash() {
+        return autoScrollFlash != null && autoScrollFlash;
     }
 
     boolean isStorageVolumeMissing() {
         return storageVolumeMissing != null && storageVolumeMissing;
+    }
+
+    /**
+     * Passed in by the startup routines, indicating the storage device was not found.
+     *
+     * @param storageVolumeMissing flag
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public SettingsInput setStorageVolumeMissing(@Nullable final Boolean storageVolumeMissing) {
+        this.storageVolumeMissing = storageVolumeMissing;
+        return this;
     }
 
     @Override
@@ -95,6 +111,7 @@ public class SettingsInput {
     public String toString() {
         return "SettingsInput{"
                + "autoScrollKey='" + autoScrollKey + '\''
+               + "autoScrollFlash=" + autoScrollFlash
                + ", storageVolumeMissing=" + storageVolumeMissing
                + '}';
     }

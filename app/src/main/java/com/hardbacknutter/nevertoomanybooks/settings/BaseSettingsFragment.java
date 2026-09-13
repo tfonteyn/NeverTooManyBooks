@@ -129,8 +129,8 @@ public abstract class BaseSettingsFragment
             return;
         }
 
-        settingsManager.scrollToKey(autoScrollToKey);
+        settingsManager.scrollToKey(autoScrollToKey, args.isAutoScrollFlash());
         // we're only scrolling ONCE
-        args.setAutoScrollKey(null);
+        args.setAutoScrollKey(null, null);
     }
 }

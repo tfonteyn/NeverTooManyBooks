@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -198,38 +199,51 @@ public class SearchOrderFragment
         }
 
         if (menuItemId == R.id.MENU_SETTINGS) {
-            final EngineId engineId = vm.getList(type).get(position).getEngineId();
-            final Class<? extends Fragment> pfc = engineId.getPreferenceFragmentClass();
-            // sanity check
-            if (pfc == null) {
-                return false;
-            }
-
-            if (tabPanel != null) {
-                tabPanel.setVisibility(View.GONE);
-            }
-
-            final Fragment fragment;
-            try {
-                fragment = pfc.getConstructor().newInstance();
-            } catch (@NonNull final IllegalAccessException
-                                    | NoSuchMethodException
-                                    | InstantiationException
-                                    | InvocationTargetException
-                                    | java.lang.InstantiationException e) {
-                throw new IllegalStateException(e);
-            }
-
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .addToBackStack(engineId.name())
-                    .replace(R.id.content_frame, fragment, engineId.name())
-                    .commit();
-            return true;
+            final Site site = vm.getList(type).get(position);
+            return openSiteSettings(site, null);
         }
 
         return false;
+    }
+
+    private boolean openSiteSettings(@NonNull final Site site,
+                                     @Nullable final String autoScrollToKey) {
+
+        final EngineId engineId = site.getEngineId();
+        final Class<? extends Fragment> pfc = engineId.getPreferenceFragmentClass();
+        // sanity check
+        if (pfc == null) {
+            return false;
+        }
+
+        if (tabPanel != null) {
+            tabPanel.setVisibility(View.GONE);
+        }
+
+        final Fragment fragment;
+        try {
+            fragment = pfc.getConstructor().newInstance();
+        } catch (@NonNull final IllegalAccessException
+                                | NoSuchMethodException
+                                | InstantiationException
+                                | InvocationTargetException
+                                | java.lang.InstantiationException e) {
+            throw new IllegalStateException(e);
+        }
+
+        if (autoScrollToKey != null) {
+            final SettingsInput args = new SettingsInput()
+                    .setAutoScrollKey(autoScrollToKey, true);
+            fragment.setArguments(args.toBundle());
+        }
+
+        getParentFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .addToBackStack(engineId.name())
+                .replace(R.id.content_frame, fragment, engineId.name())
+                .commit();
+        return true;
     }
 
     /**

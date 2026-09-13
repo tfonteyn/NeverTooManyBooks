@@ -278,9 +278,12 @@ public class StartupActivity
                         }
                         case 2 /* R.string.option_storage_edit_settings */:
                         default: {
-                            // take user to the settings screen
-                            final SettingsInput args = new SettingsInput(
-                                    CoverVolume.PK_VOLUME_INDEX, true);
+                            // take the user to the settings screen
+                            // and scroll/flash the storage volume setting.
+                            final SettingsInput args = new SettingsInput()
+                                    .setStorageVolumeMissing(true)
+                                    .setAutoScrollKey(CoverVolume.PK_VOLUME_INDEX, true);
+
                             final Intent intent = FragmentHostActivityLauncher
                                     .createIntent(this, SettingsFragment.class)
                                     .putExtras(args.toBundle());
