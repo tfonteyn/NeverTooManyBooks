@@ -211,12 +211,11 @@ public final class BookSearchResult {
                 .map(exception -> ExMsg
                         .map(context, exception)
                         .orElseGet(() -> {
-                            // generic network related IOException message
+                            // Fallback if there was no mapped error message.
                             if (exception instanceof IOException) {
                                 return context.getString(
                                         R.string.error_search_failed_network);
                             }
-                            // generic unknown message
                             return context.getString(R.string.error_unexpected);
                         }))
                 .collect(Collectors.toList());
