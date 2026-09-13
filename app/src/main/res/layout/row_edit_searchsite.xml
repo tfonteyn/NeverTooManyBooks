@@ -86,11 +86,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@id/ROW_MENU_BTN"
             style="@style/Button.MenuPopup.More"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

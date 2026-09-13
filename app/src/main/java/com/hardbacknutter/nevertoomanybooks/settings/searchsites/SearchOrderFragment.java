@@ -111,6 +111,7 @@ public class SearchOrderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //noinspection deprecation
         type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
 
         //noinspection DataFlowIssue
@@ -146,8 +147,8 @@ public class SearchOrderFragment
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.siteList.setHasFixedSize(true);
 
-        adapter = new SearchSiteListAdapter(type, vm.getList(type),
-                                                vh -> itemTouchHelper.startDrag(vh));
+        adapter = new SearchSiteListAdapter(vm.getList(type),
+                                            vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(),
                 (v, position) -> {
@@ -287,21 +288,15 @@ public class SearchOrderFragment
     private static class SearchSiteListAdapter
             extends BaseDragDropRecyclerViewAdapter<Site, Holder> {
 
-        @NonNull
-        private final Site.Type type;
-
         /**
          * Constructor.
          *
-         * @param type              of the list
          * @param sites             to use
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        SearchSiteListAdapter(@NonNull final Site.Type type,
-                              @NonNull final List<Site> sites,
+        SearchSiteListAdapter(@NonNull final List<Site> sites,
                               @NonNull final StartDragListener dragStartListener) {
             super(sites, dragStartListener);
-            this.type = type;
         }
 
         @NonNull
@@ -311,20 +306,16 @@ public class SearchOrderFragment
             final RowEditSearchsiteBinding vb = RowEditSearchsiteBinding.inflate(
                     LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb);
+
             holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
+
             holder.setOnItemCheckChangedListener(position -> {
                 final Site site = getItem(position);
                 site.setActive(!site.isActive());
                 notifyItemChanged(position);
                 return site.isActive();
             });
-
-            if (type == Site.Type.Data) {
-                vb.ROWMENUBTN.setVisibility(View.VISIBLE);
-                holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
-            } else {
-                vb.ROWMENUBTN.setVisibility(View.GONE);
-            }
 
             return holder;
         }
