@@ -34,6 +34,7 @@
         tools:visibility="visible" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_edit"
         style="@style/PrefsLib.Dialog.TIL">
 
         <com.google.android.material.textfield.TextInputEditText

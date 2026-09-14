@@ -22,6 +22,7 @@ package com.hardbacknutter.prefslib.internal;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import com.hardbacknutter.prefslib.SettingsManagerViewModel;
 import com.hardbacknutter.prefslib.StringSetting;
@@ -68,7 +70,7 @@ public class StringDialogFragment
                 .inflate(requireActivity().getLayoutInflater(), null, false);
 
         bindMessageView(dvb.message);
-        bindEditText(dvb.edit);
+        bindEditText(dvb.lblEdit, dvb.edit);
 
         @SuppressWarnings("DataFlowIssue")
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
@@ -103,10 +105,20 @@ public class StringDialogFragment
         }
     }
 
-    private void bindEditText(@NonNull final TextInputEditText editText) {
+    private void bindEditText(@NonNull final TextInputLayout lblEditText,
+                              @NonNull final TextInputEditText editText) {
         final int inputType = setting.getInputType();
         if (inputType != 0) {
             editText.setInputType(inputType);
+        }
+
+        final int maxChars = setting.getMaxChars();
+        if (maxChars < Integer.MAX_VALUE) {
+            lblEditText.setCounterEnabled(true);
+            lblEditText.setCounterMaxLength(maxChars);
+
+            editText.setEms(maxChars);
+            editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxChars)});
         }
 
         editText.setText(setting.getValue());

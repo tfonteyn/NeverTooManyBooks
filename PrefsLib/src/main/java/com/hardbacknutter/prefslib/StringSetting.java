@@ -23,6 +23,7 @@ package com.hardbacknutter.prefslib;
 import android.content.Context;
 import android.text.InputType;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -51,6 +52,8 @@ public class StringSetting
 
     private int inputType = InputType.TYPE_CLASS_TEXT;
 
+    private int maxChars = Integer.MAX_VALUE;
+
     @Nullable
     private String value;
 
@@ -67,6 +70,15 @@ public class StringSetting
 
     public void setInputType(final int inputType) {
         this.inputType = inputType;
+    }
+
+    @IntRange(from = 0)
+    public int getMaxChars() {
+        return maxChars;
+    }
+
+    public void setMaxChars(@IntRange(from = 0) final int maxChars) {
+        this.maxChars = maxChars;
     }
 
     public boolean isEmptyIsNotSet() {
