@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
 
 import android.text.Editable;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
@@ -118,7 +120,7 @@ class EditStringDelegate
         }
 
         bindMessageView(vb.message);
-        bindEditText(vb.editString);
+        bindEditText(vb.lblEditString, vb.editString);
         ExtClearTextEndIconDelegate.attach(vb.lblEditString, null);
     }
 
@@ -133,8 +135,22 @@ class EditStringDelegate
         }
     }
 
-    private void bindEditText(@NonNull final TextInputEditText editText) {
-        editText.setInputType(setting.getInputType());
+    private void bindEditText(@NonNull final TextInputLayout lblEditText,
+                              @NonNull final TextInputEditText editText) {
+        final int inputType = setting.getInputType();
+        if (inputType != 0) {
+            editText.setInputType(inputType);
+        }
+
+        final int maxChars = setting.getMaxChars();
+        if (maxChars < Integer.MAX_VALUE) {
+            lblEditText.setCounterEnabled(true);
+            lblEditText.setCounterMaxLength(maxChars);
+
+            editText.setEms(maxChars);
+            editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxChars)});
+        }
+
         editText.setText(vm.getNewValue());
         // Place cursor at the end
         //noinspection DataFlowIssue
