@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
@@ -80,7 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
  *     <li>The launcher is re-registered to receive the dialog results</li>
  * </ol>
  */
-public abstract class DialogLauncher
+public class DialogLauncher
         implements FragmentResultListener {
 
     private static final String TAG = "DialogLauncher";
@@ -144,12 +145,12 @@ public abstract class DialogLauncher
      *
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
-     * @param args    to pass
+     * @param args    (optional) to pass
      *
      * @throws IllegalArgumentException for unsupported {@link DialogMode}s.
      */
     protected void showDialog(@NonNull @UiContext final Context context,
-                              @NonNull final Bundle args) {
+                              @Nullable final Bundle args) {
         Objects.requireNonNull(fragmentManager, "fragmentManager");
 
         final DialogMode mode = DialogMode.getMode(context);
@@ -170,5 +171,18 @@ public abstract class DialogLauncher
         dialogFragment.setArguments(args);
         // using the requestKey as the fragment tag.
         dialogFragment.show(fragmentManager, requestKey);
+    }
+
+    /**
+     * Override to receive results. The default implementation does nothing.
+     *
+     * @param requestKey key used to store the result
+     * @param result     result passed to the callback
+     */
+    @EmptySuper
+    @Override
+    public void onFragmentResult(@NonNull final String requestKey,
+                                 @NonNull final Bundle result) {
+        // no results
     }
 }
