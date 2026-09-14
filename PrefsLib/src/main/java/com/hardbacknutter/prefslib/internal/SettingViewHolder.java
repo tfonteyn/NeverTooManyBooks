@@ -21,7 +21,6 @@
 package com.hardbacknutter.prefslib.internal;
 
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,17 +53,6 @@ public class SettingViewHolder
         this.summaryView = summaryView;
     }
 
-    private static void setViewAndChildrenEnabled(@NonNull final View view,
-                                                  final boolean enabled) {
-        view.setEnabled(enabled);
-        if (view instanceof ViewGroup) {
-            final ViewGroup group = (ViewGroup) view;
-            for (int i = 0; i < group.getChildCount(); i++) {
-                setViewAndChildrenEnabled(group.getChildAt(i), enabled);
-            }
-        }
-    }
-
     @NonNull
     protected String getKey() {
         return (String) itemView.getTag();
@@ -77,7 +65,7 @@ public class SettingViewHolder
     @CallSuper
     public void onBind(@NonNull final Setting setting,
                        final boolean enabled) {
-        setViewAndChildrenEnabled(itemView, enabled);
+        ViewUtil.setViewAndChildrenEnabled(itemView, enabled);
 
         itemView.setTag(setting.getKey());
 
