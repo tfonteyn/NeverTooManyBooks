@@ -149,7 +149,7 @@ public enum EngineId
     Isfdb(IsfdbSearchEngine.class, true),
     KbNl(KbNlSearchEngine.class, true),
     LastDodoNl(LastDodoSearchEngine.class, true),
-    LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
+    LibraryThing(LibraryThingSearchEngine.class, true),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
     StripInfoBe(StripInfoSearchEngine.class, true),
     StripWebBe(StripWebSearchEngine.class, true),
@@ -391,15 +391,15 @@ public enum EngineId
                 }
 
                 // All sites unless added above
-                if (BuildConfig.ENABLE_LIBRARYTHING) {
-                    type.addSite(LibraryThing, true);
-                }
                 type.addSite(OpenLibrary, true);
                 type.addSite(Isfdb, true);
 
                 if (!isChinese) {
                     type.addSite(Douban, false);
                 }
+
+                // registration needed, disabled by default.
+                type.addSite(LibraryThing, false);
                 break;
             }
 
