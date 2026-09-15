@@ -48,6 +48,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ViewUtil;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
@@ -75,6 +76,7 @@ public class SearchOrderFragment
     private static final String BKEY_TYPE = TAG + ":type";
 
     private static final String RK_MENU = TAG + ":rk:menu";
+    private static final String RK_REGISTRATION = TAG + ":rk:reg";
 
     private SearchSiteListAdapter adapter;
     private ItemTouchHelper itemTouchHelper;
@@ -140,6 +142,11 @@ public class SearchOrderFragment
         super.onViewCreated(view, savedInstanceState);
         // Insets are applied to the parent fragment (ViewPager2)
 
+        // Listen for registration results
+        getParentFragmentManager().setFragmentResultListener(RK_REGISTRATION,
+                                                             getViewLifecycleOwner(),
+                                                             this::onRegistrationDone);
+
         //noinspection DataFlowIssue
         tabPanel = getActivity().findViewById(R.id.tab_panel);
 
@@ -149,6 +156,7 @@ public class SearchOrderFragment
         vb.siteList.setHasFixedSize(true);
 
         adapter = new SearchSiteListAdapter(vm.getList(type),
+                                            this::onSiteActivated,
                                             vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(),
@@ -177,6 +185,62 @@ public class SearchOrderFragment
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private boolean onSiteActivated(@NonNull final Site site,
+                                    final boolean active) {
+        final EngineId engineId = site.getEngineId();
+        if (active && engineId.supports(SearchEngine.UserRegistration.class)) {
+            final Context context = getContext();
+            //noinspection DataFlowIssue
+            final SearchEngine.UserRegistration searchEngine =
+                    engineId.createSearchEngine(context);
+
+            if (searchEngine.isRegistrationRequired()
+                && !searchEngine.hasRegistrationData(context)) {
+
+                if (tabPanel != null) {
+                    ViewUtil.setViewAndChildrenEnabled(tabPanel, false);
+                }
+                final Fragment fragment = searchEngine
+                        .createRegistrationFragment(context, RK_REGISTRATION);
+                getParentFragmentManager().beginTransaction()
+                                          .setReorderingAllowed(true)
+                                          .addToBackStack(engineId.name())
+                                          .replace(R.id.content_frame, fragment, engineId.name())
+                                          .commit();
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void onRegistrationDone(@NonNull final String requestKey,
+                                    @NonNull final Bundle args) {
+
+        if (tabPanel != null) {
+            ViewUtil.setViewAndChildrenEnabled(tabPanel, true);
+        }
+
+        final EngineId engineId = SearchEngine.UserRegistration.getEngineId(args);
+
+        //noinspection DataFlowIssue
+        final SearchEngine.UserRegistration searchEngine =
+                engineId.createSearchEngine(getContext());
+
+        if (searchEngine.onRegistrationDone(args)) {
+            // Registration was done/updated. Activate the site.
+            int index = 0;
+            for (final Site site : vm.getList(type)) {
+                if (site.getEngineId() == engineId) {
+                    site.setActive(true);
+                    adapter.notifyItemChanged(index);
+                    break;
+                }
+                index++;
+            }
+        }
     }
 
     /**
@@ -246,6 +310,12 @@ public class SearchOrderFragment
         return true;
     }
 
+    @FunctionalInterface
+    private interface SiteActivatedCallback {
+        boolean onSiteActivated(@NonNull Site site,
+                                boolean active);
+    }
+
     /**
      * Holder for each row.
      */
@@ -302,15 +372,21 @@ public class SearchOrderFragment
     private static class SearchSiteListAdapter
             extends BaseDragDropRecyclerViewAdapter<Site, Holder> {
 
+        @Nullable
+        private final SiteActivatedCallback siteActivatedCallback;
+
         /**
          * Constructor.
          *
-         * @param sites             to use
-         * @param dragStartListener Listener to handle the user moving rows up and down
+         * @param sites                 to use
+         * @param siteActivatedCallback callback when the enable/disable checkbox is tapped
+         * @param dragStartListener     Listener to handle the user moving rows up and down
          */
         SearchSiteListAdapter(@NonNull final List<Site> sites,
+                              @Nullable final SiteActivatedCallback siteActivatedCallback,
                               @NonNull final StartDragListener dragStartListener) {
             super(sites, dragStartListener);
+            this.siteActivatedCallback = siteActivatedCallback;
         }
 
         @NonNull
@@ -326,8 +402,13 @@ public class SearchOrderFragment
 
             holder.setOnItemCheckChangedListener(position -> {
                 final Site site = getItem(position);
-                site.setActive(!site.isActive());
-                notifyItemChanged(position);
+                final boolean newState = !site.isActive();
+
+                if (siteActivatedCallback != null
+                    && siteActivatedCallback.onSiteActivated(site, newState)) {
+                    site.setActive(newState);
+                    notifyItemChanged(position);
+                }
                 return site.isActive();
             });
 

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -34,6 +35,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -523,15 +525,24 @@ public interface SearchEngine
     interface UserRegistration
             extends SearchEngine {
 
+        /** Input, must simply be returned in the result. */
+        String BKEY_ENGINE_ID = "UserRegistration:engineId";
+
+        @NonNull
+        static EngineId getEngineId(@NonNull final Bundle args) {
+            //noinspection deprecation
+            return Objects.requireNonNull(args.getParcelable(BKEY_ENGINE_ID));
+        }
+
         /**
-         * Check if registration is required, or optional.
+         * Check if registration is required or optional.
          *
-         * @return {@code true} if required, {@code false} if beneficial/optional
+         * @return {@code true} for required, {@code false} for optional
          */
         boolean isRegistrationRequired();
 
         /**
-         * Is the user already registered / do they have the needed credentials/token set.
+         * Is the user already registered / do they have credentials or api-token set.
          *
          * @param context Current context
          *
@@ -540,22 +551,27 @@ public interface SearchEngine
         boolean hasRegistrationData(@NonNull Context context);
 
         /**
-         * Message to show the user informing them about registration with the site.
-         * May contain url's.
+         * Create a suitable fragment to edit the registration.
          *
-         * @param context Current context
+         * @param context    Current context
+         * @param requestKey for getting the result back
          *
-         * @return text
+         * @return fragment
+         *
+         * @see RegistrationApiToken
          */
         @NonNull
-        String getRegistrationInfo(@NonNull Context context);
+        Fragment createRegistrationFragment(@NonNull Context context,
+                                            @NonNull String requestKey);
 
         /**
-         * The preference fragment where the user can add credentials/tokens.
+         * Must be called with the result from the fragment launched
+         * from {@link #createRegistrationFragment(Context, String)}.
          *
-         * @return class
+         * @param args results
+         *
+         * @return {@code true} if registration was successful
          */
-        @NonNull
-        Class<? extends Fragment> getPreferenceFragmentClass();
+        boolean onRegistrationDone(@NonNull Bundle args);
     }
 }
