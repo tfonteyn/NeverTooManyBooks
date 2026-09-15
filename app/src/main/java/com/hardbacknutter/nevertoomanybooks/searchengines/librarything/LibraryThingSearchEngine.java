@@ -20,6 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -48,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiToken;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiTokenFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -163,37 +167,53 @@ public class LibraryThingSearchEngine
         );
     }
 
+    @Nullable
+    static String getApiToken() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getString(PK_API_TOKEN, null);
+    }
+
+    static void setApiToken(@Nullable final String token) {
+        final SharedPreferences.Editor editor =
+                ServiceLocator.getInstance().getSharedPreferences().edit();
+        if (token == null || token.isBlank()) {
+            editor.remove(LibraryThingSearchEngine.PK_API_TOKEN);
+        } else {
+            editor.putString(LibraryThingSearchEngine.PK_API_TOKEN, token);
+        }
+        editor.apply();
+    }
+
     @Override
     public boolean isRegistrationRequired() {
-        return false;
-    }
-
-    @NonNull
-    @Override
-    public String getRegistrationInfo(@NonNull final Context context) {
-        // registration is optional
-        final String reg =
-                "<a href=\"https://www.librarything.com/developer/tokens\">"
-                + context.getString(getEngineId().getLabelResId())
-                + "</a>";
-        final String help =
-                "<a href=\"" + context.getString(R.string.github_help_registration_url) + "\">"
-                + context.getString(R.string.action_learn_more)
-                + "</a>";
-
-        return context.getString(R.string.info_registration_benefits, reg, help);
-    }
-
-    @NonNull
-    @Override
-    public Class<? extends Fragment> getPreferenceFragmentClass() {
-        return LibraryThingPreferencesFragment.class;
+        return true;
     }
 
     @Override
     public boolean hasRegistrationData(@NonNull final Context context) {
-        final String apiToken = ServiceLocator.getInstance().getSharedPreferences()
-                                              .getString(PK_API_TOKEN, null);
+        final String apiToken = getApiToken();
+        return apiToken != null && apiToken.length() == TOKEN_LEN;
+    }
+
+    @NonNull
+    @Override
+    public Fragment createRegistrationFragment(@NonNull final Context context,
+                                               @NonNull final String requestKey) {
+        final Fragment fragment = new RegistrationApiTokenFragment();
+        final String message = context.getString(R.string.librarything_registration);
+        final RegistrationApiToken args = new RegistrationApiToken(requestKey, getEngineId(),
+                                                                   message,
+                                                                   TOKEN_LEN, getApiToken());
+        fragment.setArguments(args.toBundle());
+        return fragment;
+    }
+
+    @Override
+    public boolean onRegistrationDone(@NonNull final Bundle args) {
+        final RegistrationApiToken registration = RegistrationApiToken.fromBundle(args);
+        final String apiToken = registration.getApiToken();
+        // ALWAYS update
+        setApiToken(apiToken);
         return apiToken != null && apiToken.length() == TOKEN_LEN;
     }
 
@@ -228,8 +248,7 @@ public class LibraryThingSearchEngine
 
         final String codeStr = productCode.getFormatted(getEngineId());
 
-        final String apiToken = ServiceLocator.getInstance().getSharedPreferences()
-                                              .getString(PK_API_TOKEN, null);
+        final String apiToken = getApiToken();
         // not set, quit silently
         if (apiToken == null || apiToken.isEmpty()) {
             if (BuildConfig.DEBUG /*always */) {
@@ -240,7 +259,8 @@ public class LibraryThingSearchEngine
 
         // incorrect length, abort
         if (apiToken.length() != TOKEN_LEN) {
-            throw new CredentialsException(R.string.site_library_thing,
+            throw new CredentialsException(
+                    R.string.site_library_thing,
                     "apiToken incorrect length=" + apiToken.length(),
                     context.getString(R.string.warning_api_token_issue,
                                       context.getString(R.string.site_library_thing)));

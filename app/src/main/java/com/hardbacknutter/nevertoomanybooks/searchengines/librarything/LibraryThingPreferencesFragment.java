@@ -19,19 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiToken;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiTokenFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
-import com.hardbacknutter.prefslib.Setting;
 import com.hardbacknutter.prefslib.SettingsDataStore;
 import com.hardbacknutter.prefslib.SettingsManager;
 import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
@@ -40,14 +43,17 @@ import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 public class LibraryThingPreferencesFragment
         extends BaseSettingsFragment {
 
+    private static final String TAG = "LibraryThingPreferences";
+
     @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {
         final SettingsDataStore store = new SharedPreferencesDataStore(
                 ServiceLocator.getInstance().getSharedPreferences());
+        final Context context = getContext();
         //noinspection DataFlowIssue
-        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        final SettingsManager.Builder factory = new SettingsManager.Builder(context, store);
 
         final String pk = EngineId.LibraryThing.getPreferenceKey();
 
@@ -59,10 +65,20 @@ public class LibraryThingPreferencesFragment
                 });
 
         factory.header(R.string.lbl_credentials);
-        factory.text(LibraryThingSearchEngine.PK_API_TOKEN,
-                     R.string.lbl_api_token,
-                     this::onChangeApiToken, p -> {
+        factory.fragment(LibraryThingSearchEngine.PK_API_TOKEN,
+                         R.string.lbl_api_token,
+                         RegistrationApiTokenFragment.class.getName(),
+                         R.id.content_frame, p -> {
                     p.setIcon(R.drawable.security_24px);
+                    p.setSummaryProvider(this::apiTokenSummary);
+                    p.setArgumentSupplier(() -> {
+                        return new RegistrationApiToken(
+                                TAG, EngineId.LibraryThing,
+                                context.getString(R.string.librarything_registration),
+                                LibraryThingSearchEngine.TOKEN_LEN,
+                                LibraryThingSearchEngine.getApiToken())
+                                .toBundle();
+                    });
                 });
 
         CommonSettingsFactory.timeouts(factory, pk);
@@ -71,25 +87,29 @@ public class LibraryThingPreferencesFragment
         return factory;
     }
 
-    private boolean onChangeApiToken(@NonNull final Setting setting,
-                                     @Nullable final Object newValue) {
-        final int len = newValue != null ? ((CharSequence) newValue).length() : 0;
-        if (len == 0 || len == LibraryThingSearchEngine.TOKEN_LEN) {
-            return true;
+    private CharSequence apiTokenSummary(@NonNull final Context context) {
+        final String apiToken = LibraryThingSearchEngine.getApiToken();
+        if (apiToken == null || apiToken.isBlank()) {
+            return context.getString(R.string.preference_not_set);
         }
+        return apiToken;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getParentFragmentManager().setFragmentResultListener(TAG, getViewLifecycleOwner(),
+                                                             this::onRegistrationDone);
+    }
+
+    private void onRegistrationDone(@NonNull final String requestKey,
+                                    @NonNull final Bundle args) {
+        final RegistrationApiToken registration = RegistrationApiToken.fromBundle(args);
+        // ALWAYS update
+        LibraryThingSearchEngine.setApiToken(registration.getApiToken());
         //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.error_24px)
-                .setTitle(R.string.lbl_api_token)
-                .setMessage(getString(R.string.vldt_exact_length_required,
-                                      LibraryThingSearchEngine.TOKEN_LEN))
-                .setPositiveButton(R.string.action_edit, (d, w) -> {
-                    d.dismiss();
-                    getSettingsManager().performClick(
-                            LibraryThingSearchEngine.PK_API_TOKEN);
-                })
-                .create()
-                .show();
-        return false;
+        getSettingsManager().reload(getContext(), LibraryThingSearchEngine.PK_API_TOKEN);
     }
 }
