@@ -123,10 +123,11 @@ android {
         buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
 
-        // used for unit tests only! NOT used/included in an app build.
-        def apiToken = project.hasProperty('LIBRARYTHINK_API_TOKEN')
-                ? "\"${LIBRARYTHINK_API_TOKEN}\"" : '""'
-        buildConfigField("String", "LIBRARYTHINK_API_TOKEN", apiToken)
+        // API tokens defined here are used for unit tests only!
+        // They are NOT used or included in an app build.
+        def apiTokenLibraryThing = project.hasProperty('API_TOKEN_LIBRARY_THING')
+                ? "\"${API_TOKEN_LIBRARY_THING}\"" : '""'
+        buildConfigField("String", "API_TOKEN_LIBRARY_THING", apiTokenLibraryThing)
     }
 
     buildTypes {

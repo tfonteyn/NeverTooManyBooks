@@ -2611,14 +2611,15 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advise to take a backup before proceeding!</string>
+
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="librarything_registration"
             translatable="false"><![CDATA[
-            <b>To use this feature, you will need a LibraryThing API token.</b>
+            <b>To use this feature, you will <i>require</i> a LibraryThing API token.</b>
             <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a>
                   and sign up for a free user account if you don’t have one yet.</p>
             <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a>
                   and create a new token.</p>
-            <p>3. Copy the key and paste it below.</p>
+            <p>3. Copy the token and paste it below.</p>
         ]]></string>
 </resources>

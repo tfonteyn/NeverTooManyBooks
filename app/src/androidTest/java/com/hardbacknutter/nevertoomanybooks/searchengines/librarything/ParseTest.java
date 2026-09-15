@@ -26,7 +26,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -45,7 +44,7 @@ class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
-    private static final String TOKEN = BuildConfig.LIBRARYTHINK_API_TOKEN;
+    private static final String TOKEN = BuildConfig.API_TOKEN_LIBRARY_THING;
 
     private LibraryThingSearchEngine searchEngine;
 
@@ -57,15 +56,11 @@ class ParseTest
         if (TOKEN.isEmpty()) {
             throw new IllegalArgumentException("TOKEN NOT SET");
         }
+        LibraryThingSearchEngine.setApiToken(TOKEN);
 
         EngineId.LibraryThing.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-
-        ServiceLocator.getInstance().getSharedPreferences()
-                      .edit()
-                      .putString(LibraryThingSearchEngine.PK_API_TOKEN, TOKEN)
-                      .apply();
     }
 
     @Test

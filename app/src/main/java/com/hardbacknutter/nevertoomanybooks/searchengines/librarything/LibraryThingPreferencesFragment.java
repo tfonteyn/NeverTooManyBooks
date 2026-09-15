@@ -87,6 +87,7 @@ public class LibraryThingPreferencesFragment
         return factory;
     }
 
+    @NonNull
     private CharSequence apiTokenSummary(@NonNull final Context context) {
         final String apiToken = LibraryThingSearchEngine.getApiToken();
         if (apiToken == null || apiToken.isBlank()) {

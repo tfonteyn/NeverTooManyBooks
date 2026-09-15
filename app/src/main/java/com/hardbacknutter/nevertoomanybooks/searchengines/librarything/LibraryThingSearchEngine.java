@@ -177,9 +177,9 @@ public class LibraryThingSearchEngine
         final SharedPreferences.Editor editor =
                 ServiceLocator.getInstance().getSharedPreferences().edit();
         if (token == null || token.isBlank()) {
-            editor.remove(LibraryThingSearchEngine.PK_API_TOKEN);
+            editor.remove(PK_API_TOKEN);
         } else {
-            editor.putString(LibraryThingSearchEngine.PK_API_TOKEN, token);
+            editor.putString(PK_API_TOKEN, token);
         }
         editor.apply();
     }
