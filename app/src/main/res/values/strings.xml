@@ -2206,6 +2206,20 @@
     <!-- Param 1: the website for which the token is needed. -->
     <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
 
+    <!-- Instruction on how to register an API-Token with LibraryThing.
+     Translator: the whole string must be embedded in <![CDATA[ ... ]]>
+     Please use the same html tags.
+     The text "Your Tokens" MUST be left in English as it's the text from the website.
+ -->
+    <string name="librarything_registration"><![CDATA[
+            <b>A LibraryThing API token is <i>required</i> to access the site.</b>
+            <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a>
+                  and sign up for a free user account if you don’t have one yet.</p>
+            <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a>
+                  and create a new token.</p>
+            <p>3. Copy the token and paste it below.</p>
+        ]]></string>
+
     <!-- endregion -->
     <!-- region ========== Style settings. -->
     <!-- Preference Category title -->
@@ -2617,18 +2631,11 @@
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advise to take a backup before proceeding!</string>
 
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="librarything_registration"
-            translatable="false"><![CDATA[
-            <b>A LibraryThing API token is <i>required</i> to access the site.</b>
-            <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a>
-                  and sign up for a free user account if you don’t have one yet.</p>
-            <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a>
-                  and create a new token.</p>
-            <p>3. Copy the token and paste it below.</p>
-        ]]></string>
+    <!-- Instruction on how to register an API-Key with GoogleBooks.
+     Translator: the whole string must be embedded in <![CDATA[ ... ]]>
+     Please use the same html tags.
 
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="googlebooks_registration"
             translatable="false"><![CDATA[
             <b>A GoogleBooks API key is <i>optional</i> to access the site.</b>
