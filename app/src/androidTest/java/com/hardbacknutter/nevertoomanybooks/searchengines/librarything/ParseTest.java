@@ -44,7 +44,6 @@ class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
-    private static final String TOKEN = BuildConfig.API_TOKEN_LIBRARY_THING;
 
     private LibraryThingSearchEngine searchEngine;
 
@@ -53,10 +52,11 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        if (TOKEN.isEmpty()) {
-            throw new IllegalArgumentException("TOKEN NOT SET");
+        //noinspection ConstantValue
+        if (BuildConfig.API_TOKEN_LIBRARY_THING.isEmpty()) {
+            throw new IllegalArgumentException("API token not set");
         }
-        LibraryThingSearchEngine.setApiToken(TOKEN);
+        searchEngine.setRegistrationKey(BuildConfig.API_TOKEN_LIBRARY_THING);
 
         EngineId.LibraryThing.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.LibraryThing.createSearchEngine(context);
@@ -72,6 +72,6 @@ class ParseTest
 
         Log.d(TAG, isbns.toString());
 
-        assertTrue(isbns.size() > 200, "Did you add the api token?");
+        assertTrue(isbns.size() > 200);
     }
 }

@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,52 +29,27 @@ import androidx.lifecycle.ViewModel;
 public class RegistrationApiTokenViewModel
         extends ViewModel {
 
-    private RegistrationApiToken registration;
+    private RegistrationApiKeyInput registration;
+    @Nullable
+    private String apiKey;
 
-    void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (registration == null) {
-            registration = RegistrationApiToken.fromBundle(args);
+            registration = RegistrationApiKeyInput.fromBundle(args);
         }
     }
 
     @NonNull
-    String getMessage() {
-        return registration.getMessage();
-    }
-
-    int getTokenLen() {
-        return registration.getTokenLen();
+    RegistrationApiKeyInput getRegistration() {
+        return registration;
     }
 
     @Nullable
-    String getApiToken() {
-        return registration.getApiToken();
+    String getApiKey() {
+        return apiKey;
     }
 
-    void setApiToken(@Nullable final String apiToken) {
-        registration.setApiToken(apiToken);
-    }
-
-    boolean validate() {
-        final String apiToken = registration.getApiToken();
-        return apiToken == null
-               || apiToken.isEmpty()
-               || apiToken.length() == registration.getTokenLen();
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return registration.getRequestKey();
-    }
-
-    /**
-     * Get the result to return.
-     *
-     * @return registration details
-     */
-    @NonNull
-    RegistrationApiToken getRegistration() {
-        return registration;
+    void setApiKey(@Nullable final String apiKey) {
+        this.apiKey = apiKey;
     }
 }

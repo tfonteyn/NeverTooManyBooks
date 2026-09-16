@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.Fragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,12 +47,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -59,16 +60,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiKeyInput;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiTokenFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -86,18 +91,39 @@ import com.hardbacknutter.org.json.JSONObject;
  * => NO books
  * https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes&langRestrict=en
  * => es and en books
+ * <p>
+ * Create a Google Cloud Project:
+ * Go to the Google Cloud Console: https://console.cloud.google.com
+ * Click Select a project at the top, then New Project.
+ * <p>
+ * Enable the Google Books API:
+ * Go to APIs & Services > Library.
+ * Search for Books API and click Enable.
+ * <p>
+ * Generate an API Key:
+ * Go to APIs & Services > Credentials.
+ * Select in the restrictions the Book API.
+ * Click + Create Credentials at the top and select API key.
+ * Copy the generated key.
+ * <p>
+ * Add the Key to Your API Call:
+ * Append &key=YOUR_API_KEY to your request URL:
  *
  * @see <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">
  *         Getting started</a>
  * @see <a href="https://developers.google.com/books/docs/v1/reference/volumes#resource-representations">
  *         resource-representations</a>
  * @see <a href="https://developers.google.com/books/docs/static-links>static-links</a>
+ * @see <a href="https://console.cloud.google.com">Google Cloud Console</a>
+ * @see <a href="https://ttsforfree.com/en/blogs/google-books-api-key-step-by-step/">
+ *         google-books-api-key-step-by-step</a>
  */
 public class GoogleBooksSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
-                   SearchEngine.CoverByEdition {
+                   SearchEngine.CoverByEdition,
+                   SearchEngine.UserRegistration {
 
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.googleapis.com";
@@ -105,10 +131,15 @@ public class GoogleBooksSearchEngine
     private static final Locale HOST_LOCALE = Locale.US;
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "googlebooks";
+    /** Preference key, stores the token. */
+    static final String PK_API_TOKEN = HOST_PREF_KEY + ".api.token";
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
 
     private static final String SEARCH_URL = HOST_URL + "/books/v1/volumes?q=";
+
+    private static final Pattern API_KEY_VALIDATION_PATTERN =
+            Pattern.compile("^AIza[0-9A-Za-z\\-_]{35}$");
 
     private final RatingParser ratingParser;
 
@@ -184,63 +215,49 @@ public class GoogleBooksSearchEngine
         );
     }
 
-    // {
-    //  "error": {
-    //    "code": 429,
-    //    "message": "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'books.googleapis.com' for consumer 'project_number:624717413613'.",
-    //    "errors": [
-    //      {
-    //        "message": "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'books.googleapis.com' for consumer 'project_number:624717413613'.",
-    //        "domain": "global",
-    //        "reason": "rateLimitExceeded"
-    //      }
-    //    ],
-    //    "status": "RESOURCE_EXHAUSTED",
-    //    "details": [
-    //      {
-    //        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
-    //        "reason": "RATE_LIMIT_EXCEEDED",
-    //        "domain": "googleapis.com",
-    //        "metadata": {
-    //          "consumer": "projects/624717413613",
-    //          "quota_metric": "books.googleapis.com/default",
-    //          "quota_unit": "1/d/{project}",
-    //          "quota_limit_value": "0",
-    //          "quota_location": "global",
-    //          "quota_limit": "defaultPerDayPerProject",
-    //          "service": "books.googleapis.com"
-    //        }
-    //      },
-    //      {
-    //        "@type": "type.googleapis.com/google.rpc.Help",
-    //        "links": [
-    //          {
-    //            "description": "Request a higher quota limit.",
-    //            "url": "https://cloud.google.com/docs/quotas/help/request_increase"
-    //          }
-    //        ]
-    //      }
-    //    ]
-    //  }
-    //}
-    //    Create a Google Cloud Project:
-    //        Go to the Google Cloud Console.
-    //        Click Select a project at the top, then New Project.
-    //
-    //    Enable the Google Books API:
-    //        Go to APIs & Services > Library.
-    //        Search for Books API and click Enable.
-    //
-    //    Generate an API Key:
-    //        Go to APIs & Services > Credentials.
-    //        Click + Create Credentials at the top and select API key.
-    //        Copy the generated key.
-    //
-    //    Add the Key to Your API Call:
-    //        Append &key=YOUR_API_KEY to your request URL:
-    //
-    //        https://www.googleapis.com/books/v1/volumes?q=isbn:9780007499793&key=YOUR_API_KEY
-    //
+    @Override
+    public boolean isRegistrationRequired() {
+        // optional
+        return false;
+    }
+
+    @NonNull
+    public Optional<String> getRegistrationKey() {
+        final String key = ServiceLocator.getInstance().getSharedPreferences()
+                                         .getString(PK_API_TOKEN, null);
+
+        //noinspection DataFlowIssue
+        return isValidRegistrationKey(key) ? Optional.of(key) : Optional.empty();
+    }
+
+    public boolean setRegistrationKey(@Nullable final String key) {
+        final Prefs prefs = ServiceLocator.getInstance().getSharedPreferences();
+        if (isValidRegistrationKey(key)) {
+            prefs.edit().putString(PK_API_TOKEN, key).apply();
+            return true;
+        } else {
+            prefs.edit().remove(PK_API_TOKEN).apply();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isValidRegistrationKey(@Nullable final String key) {
+        return key != null && API_KEY_VALIDATION_PATTERN.matcher(key).matches();
+    }
+
+    @NonNull
+    @Override
+    public Fragment createRegistrationFragment(@NonNull final Context context,
+                                               @NonNull final String requestKey) {
+        final Fragment fragment = new RegistrationApiTokenFragment();
+        final RegistrationApiKeyInput args = new RegistrationApiKeyInput(
+                requestKey, getEngineId(),
+                context.getString(R.string.googlebooks_registration), 0);
+        fragment.setArguments(args.toBundle());
+        return fragment;
+    }
+
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
@@ -312,7 +329,7 @@ public class GoogleBooksSearchEngine
      * Fetch a book by url.
      *
      * @param context     Current context
-     * @param url         to fetch
+     * @param url         to fetch; the api-key will be appended as needed
      * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
@@ -330,8 +347,9 @@ public class GoogleBooksSearchEngine
 
         httpCall = httpFutureFactory.createGetDocumentRequest();
 
+        final String fullUrl = getRegistrationKey().map(key -> "&key=" + key).orElse(url);
         try {
-            final String response = httpCall.getAsString(url, (con, s) -> s);
+            final String response = httpCall.getAsString(fullUrl, (con, s) -> s);
 
             final JSONObject document = new JSONObject(response);
             // https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
@@ -569,7 +587,7 @@ public class GoogleBooksSearchEngine
             return;
         }
         final String currencyCode = listPrice.optString("currencyCode", null);
-       if (currencyCode == null || currencyCode.isEmpty()) {
+        if (currencyCode == null || currencyCode.isEmpty()) {
             return;
         }
         // Google documents this as a "double", hence, we rely on decimal separator "." ... flw...

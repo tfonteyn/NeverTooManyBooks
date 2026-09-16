@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -37,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import javax.xml.parsers.SAXParser;
 
@@ -50,12 +49,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiToken;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiKeyInput;
 import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiTokenFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -167,32 +167,34 @@ public class LibraryThingSearchEngine
         );
     }
 
-    @Nullable
-    static String getApiToken() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getString(PK_API_TOKEN, null);
-    }
-
-    static void setApiToken(@Nullable final String token) {
-        final SharedPreferences.Editor editor =
-                ServiceLocator.getInstance().getSharedPreferences().edit();
-        if (token == null || token.isBlank()) {
-            editor.remove(PK_API_TOKEN);
-        } else {
-            editor.putString(PK_API_TOKEN, token);
-        }
-        editor.apply();
-    }
-
     @Override
     public boolean isRegistrationRequired() {
         return true;
     }
 
+    @NonNull
+    public Optional<String> getRegistrationKey() {
+        final String key = ServiceLocator.getInstance().getSharedPreferences()
+                                         .getString(PK_API_TOKEN, null);
+
+        //noinspection DataFlowIssue
+        return isValidRegistrationKey(key) ? Optional.of(key) : Optional.empty();
+    }
+
+    public boolean setRegistrationKey(@Nullable final String key) {
+        final Prefs prefs = ServiceLocator.getInstance().getSharedPreferences();
+        if (isValidRegistrationKey(key)) {
+            prefs.edit().putString(PK_API_TOKEN, key).apply();
+            return true;
+        } else {
+            prefs.edit().remove(PK_API_TOKEN).apply();
+            return false;
+        }
+    }
+
     @Override
-    public boolean hasRegistrationData(@NonNull final Context context) {
-        final String apiToken = getApiToken();
-        return apiToken != null && apiToken.length() == TOKEN_LEN;
+    public boolean isValidRegistrationKey(@Nullable final String key) {
+        return key != null && key.length() == TOKEN_LEN;
     }
 
     @NonNull
@@ -200,21 +202,12 @@ public class LibraryThingSearchEngine
     public Fragment createRegistrationFragment(@NonNull final Context context,
                                                @NonNull final String requestKey) {
         final Fragment fragment = new RegistrationApiTokenFragment();
-        final String message = context.getString(R.string.librarything_registration);
-        final RegistrationApiToken args = new RegistrationApiToken(requestKey, getEngineId(),
-                                                                   message,
-                                                                   TOKEN_LEN, getApiToken());
+        final RegistrationApiKeyInput args = new RegistrationApiKeyInput(
+                requestKey, getEngineId(),
+                context.getString(R.string.librarything_registration),
+                TOKEN_LEN);
         fragment.setArguments(args.toBundle());
         return fragment;
-    }
-
-    @Override
-    public boolean onRegistrationDone(@NonNull final Bundle args) {
-        final RegistrationApiToken registration = RegistrationApiToken.fromBundle(args);
-        final String apiToken = registration.getApiToken();
-        // ALWAYS update
-        setApiToken(apiToken);
-        return apiToken != null && apiToken.length() == TOKEN_LEN;
     }
 
     @Override
@@ -248,25 +241,16 @@ public class LibraryThingSearchEngine
 
         final String codeStr = productCode.getFormatted(getEngineId());
 
-        final String apiToken = getApiToken();
-        // not set, quit silently
-        if (apiToken == null || apiToken.isEmpty()) {
+        final Optional<String> oKey = getRegistrationKey();
+        // We should never even get here, but if we do, quit silently
+        if (oKey.isEmpty()) {
             if (BuildConfig.DEBUG /*always */) {
                 Log.d(TAG, "LibraryThing API TOKEN NOT SET");
             }
             return List.of();
         }
 
-        // incorrect length, abort
-        if (apiToken.length() != TOKEN_LEN) {
-            throw new CredentialsException(
-                    R.string.site_library_thing,
-                    "apiToken incorrect length=" + apiToken.length(),
-                    context.getString(R.string.warning_api_token_issue,
-                                      context.getString(R.string.site_library_thing)));
-        }
-
-        final String url = String.format(ALT_EDITIONS_URL, apiToken, codeStr);
+        final String url = String.format(ALT_EDITIONS_URL, oKey.get(), codeStr);
         final SAXParser parser = ServiceLocator.getInstance().newSAXParser();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
         httpCall = httpCallFactory.createCall();

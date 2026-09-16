@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderB
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditSearchsiteBinding;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationOutput;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
@@ -76,7 +77,8 @@ public class SearchOrderFragment
     private static final String BKEY_TYPE = TAG + ":type";
 
     private static final String RK_MENU = TAG + ":rk:menu";
-    private static final String RK_REGISTRATION = TAG + ":rk:reg";
+    /** The {@link #type} MUST be appended. */
+    private String rkRegistration = TAG + ":rk:";
 
     private SearchSiteListAdapter adapter;
     private ItemTouchHelper itemTouchHelper;
@@ -117,6 +119,8 @@ public class SearchOrderFragment
         //noinspection deprecation
         type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
 
+        rkRegistration += type.name();
+
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
 
@@ -143,7 +147,7 @@ public class SearchOrderFragment
         // Insets are applied to the parent fragment (ViewPager2)
 
         // Listen for registration results
-        getParentFragmentManager().setFragmentResultListener(RK_REGISTRATION,
+        getParentFragmentManager().setFragmentResultListener(rkRegistration,
                                                              getViewLifecycleOwner(),
                                                              this::onRegistrationDone);
 
@@ -196,14 +200,13 @@ public class SearchOrderFragment
             final SearchEngine.UserRegistration searchEngine =
                     engineId.createSearchEngine(context);
 
-            if (searchEngine.isRegistrationRequired()
-                && !searchEngine.hasRegistrationData(context)) {
+            if (searchEngine.getRegistrationKey().isEmpty()) {
 
                 if (tabPanel != null) {
                     ViewUtil.setViewAndChildrenEnabled(tabPanel, false);
                 }
                 final Fragment fragment = searchEngine
-                        .createRegistrationFragment(context, RK_REGISTRATION);
+                        .createRegistrationFragment(context, rkRegistration);
                 getParentFragmentManager().beginTransaction()
                                           .setReorderingAllowed(true)
                                           .addToBackStack(engineId.name())
@@ -223,14 +226,18 @@ public class SearchOrderFragment
             ViewUtil.setViewAndChildrenEnabled(tabPanel, true);
         }
 
-        final EngineId engineId = SearchEngine.UserRegistration.getEngineId(args);
+        final RegistrationOutput registration = RegistrationOutput.fromBundle(args);
+        final EngineId engineId = registration.getEngineId();
 
         //noinspection DataFlowIssue
         final SearchEngine.UserRegistration searchEngine =
                 engineId.createSearchEngine(getContext());
 
-        if (searchEngine.onRegistrationDone(args)) {
-            // Registration was done/updated. Activate the site.
+        // Activate the site ff registration was done/updated,
+        // OR if it was optional, and the user did not care about any limitations.
+        if (searchEngine.getRegistrationKey().isPresent()
+            || !searchEngine.isRegistrationRequired()) {
+
             int index = 0;
             for (final Site site : vm.getList(type)) {
                 if (site.getEngineId() == engineId) {

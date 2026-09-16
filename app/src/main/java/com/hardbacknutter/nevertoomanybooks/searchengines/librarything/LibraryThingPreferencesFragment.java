@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiToken;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiKeyInput;
 import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiTokenFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
@@ -44,6 +44,15 @@ public class LibraryThingPreferencesFragment
         extends BaseSettingsFragment {
 
     private static final String TAG = "LibraryThingPreferences";
+    private LibraryThingSearchEngine searchEngine;
+
+    @Override
+    public void onCreate(@org.jspecify.annotations.Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection DataFlowIssue
+        searchEngine = EngineId.LibraryThing.createSearchEngine(getContext());
+    }
 
     @SuppressWarnings("CodeBlock2Expr")
     @NonNull
@@ -72,11 +81,10 @@ public class LibraryThingPreferencesFragment
                     p.setIcon(R.drawable.security_24px);
                     p.setSummaryProvider(this::apiTokenSummary);
                     p.setArgumentSupplier(() -> {
-                        return new RegistrationApiToken(
+                        return new RegistrationApiKeyInput(
                                 TAG, EngineId.LibraryThing,
                                 context.getString(R.string.librarything_registration),
-                                LibraryThingSearchEngine.TOKEN_LEN,
-                                LibraryThingSearchEngine.getApiToken())
+                                LibraryThingSearchEngine.TOKEN_LEN)
                                 .toBundle();
                     });
                 });
@@ -89,11 +97,8 @@ public class LibraryThingPreferencesFragment
 
     @NonNull
     private CharSequence apiTokenSummary(@NonNull final Context context) {
-        final String apiToken = LibraryThingSearchEngine.getApiToken();
-        if (apiToken == null || apiToken.isBlank()) {
-            return context.getString(R.string.preference_not_set);
-        }
-        return apiToken;
+        return searchEngine.getRegistrationKey()
+                           .orElseGet(() -> context.getString(R.string.preference_not_set));
     }
 
     @Override
@@ -107,9 +112,6 @@ public class LibraryThingPreferencesFragment
 
     private void onRegistrationDone(@NonNull final String requestKey,
                                     @NonNull final Bundle args) {
-        final RegistrationApiToken registration = RegistrationApiToken.fromBundle(args);
-        // ALWAYS update
-        LibraryThingSearchEngine.setApiToken(registration.getApiToken());
         //noinspection DataFlowIssue
         getSettingsManager().reload(getContext(), LibraryThingSearchEngine.PK_API_TOKEN);
     }

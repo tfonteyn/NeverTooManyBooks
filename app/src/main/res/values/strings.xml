@@ -424,8 +424,6 @@
     <string name="warning_requires_android_x">Requires Android %1$d or higher</string>
     <!-- Param 1: the website -->
     <string name="warning_credentials_missing">The username and/or password are missing for the site %1$s. Please update your settings.</string>
-    <!-- Param 1: the website for which the token is needed. -->
-    <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
     <!-- endregion -->
     <!-- region ========== Permission related messages. -->
     <!-- [VERIFIED] - dialog title when asking for permissions. -->
@@ -2187,8 +2185,7 @@
     <string name="username">Username</string>
     <!-- [VERIFIED] -->
     <string name="password">Password</string>
-    <!-- Label for an input field. An API token might be needed for accessing certain websites. -->
-    <string name="lbl_api_token">API Token</string>
+
     <!-- [VERIFIED] -->
     <string name="lbl_certificate_ca">CA Certificate</string>
     <!-- [VERIFIED] -->
@@ -2200,6 +2197,14 @@
     <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog.
          param 1: date-from; param 2: date-until -->
     <string name="lbl_certificate_validity_period">Validity: %1$s - %2$s</string>
+
+    <!-- Label for an input field. An API token might be needed for accessing certain websites. -->
+    <string name="lbl_api_token">API Token</string>
+    <!-- The API token as required to access a site is either missing or incorrect.
+         Translator: must be short, used as an error on an input field. -->
+    <string name="error_api_token_invalid">Invalid token</string>
+    <!-- Param 1: the website for which the token is needed. -->
+    <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
 
     <!-- endregion -->
     <!-- region ========== Style settings. -->
@@ -2615,11 +2620,23 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="librarything_registration"
             translatable="false"><![CDATA[
-            <b>To use this feature, you will <i>require</i> a LibraryThing API token.</b>
+            <b>A LibraryThing API token is <i>required</i> to access the site.</b>
             <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a>
                   and sign up for a free user account if you don’t have one yet.</p>
             <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a>
                   and create a new token.</p>
             <p>3. Copy the token and paste it below.</p>
         ]]></string>
+
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="googlebooks_registration"
+            translatable="false"><![CDATA[
+            <b>A GoogleBooks API key is <i>optional</i> to access the site.</b>
+            <p>The service will work without one, but may be limited in function.</p>
+            <p>1. This 3rd party website explains the process:
+                  <a href=\"https://ttsforfree.com/en/blogs/google-books-api-key-step-by-step/\">
+                  https://ttsforfree.com/en/blogs/google-books-api-key-step-by-step/</a></p>
+            <p>2. Once created, copy the key and paste it below.</p>
+            ]]></string>
+
 </resources>

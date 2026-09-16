@@ -48,6 +48,7 @@ public class RegistrationApiTokenFragment
     /** View Binding. */
     private FragmentRegistrationApiTokenBinding vb;
     private RegistrationApiTokenViewModel vm;
+    private SearchEngine.UserRegistration searchEngine;
 
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -59,7 +60,12 @@ public class RegistrationApiTokenFragment
 
     private void setResultsAndFinish() {
         final FragmentManager fm = getParentFragmentManager();
-        fm.setFragmentResult(vm.getRequestKey(), vm.getRegistration().toBundle());
+        final RegistrationApiKeyInput registrationInput = vm.getRegistration();
+        final String requestKey = registrationInput.getRequestKey();
+        final EngineId engineId = registrationInput.getEngineId();
+
+        final RegistrationOutput registrationOutput = new RegistrationOutput(engineId);
+        fm.setFragmentResult(requestKey, registrationOutput.toBundle());
         // just pop, we're always called from a fragment
         fm.popBackStack();
     }
@@ -85,21 +91,27 @@ public class RegistrationApiTokenFragment
         final Context context = getContext();
 
         vm = new ViewModelProvider(this).get(RegistrationApiTokenViewModel.class);
+        vm.init(requireArguments());
+
+        final RegistrationApiKeyInput registration = vm.getRegistration();
         //noinspection DataFlowIssue
-        vm.init(context, requireArguments());
+        searchEngine = registration.getEngineId().createSearchEngine(context);
 
         final OrderedTextListFormatter listFormatter =
                 new OrderedTextListFormatter(context, 16, 24);
 
-        vb.message.setText(listFormatter.format(vm.getMessage()));
+        vb.message.setText(listFormatter.format(registration.getInfo()));
         vb.message.setMovementMethod(LinkMovementMethod.getInstance());
 
-        final int tokenLen = vm.getTokenLen();
+        // If we want a fixed length key, add counter and restrict the input
+        final int tokenLen = registration.getFixedKeyLength();
+        if (tokenLen > 0) {
+            vb.lblApiToken.setCounterMaxLength(tokenLen);
+            vb.apiToken.setEms(tokenLen);
+            vb.apiToken.setFilters(new InputFilter[]{new InputFilter.LengthFilter(tokenLen)});
+        }
 
-        vb.lblApiToken.setCounterMaxLength(tokenLen);
-        vb.apiToken.setEms(tokenLen);
-        vb.apiToken.setText(vm.getApiToken());
-        vb.apiToken.setFilters(new InputFilter[]{new InputFilter.LengthFilter(tokenLen)});
+        vb.apiToken.setText(searchEngine.getRegistrationKey().orElse(null));
         ExtClearTextEndIconDelegate.attach(vb.lblApiToken, null);
         TilUtil.autoRemoveError(vb.apiToken, vb.lblApiToken);
 
@@ -119,18 +131,22 @@ public class RegistrationApiTokenFragment
     private boolean saveChanges() {
         viewToModel();
 
-        final boolean validated = vm.validate();
-        if (validated) {
+        final String apiKey = vm.getApiKey();
+        // Either a valid key, or no key at all.
+        final boolean valid = searchEngine.isValidRegistrationKey(apiKey)
+                || apiKey == null || apiKey.isBlank();
+        if (valid) {
+            searchEngine.setRegistrationKey(apiKey);
             vb.lblApiToken.setError(null);
-        } else {
-            vb.lblApiToken.setError(getString(R.string.vldt_exact_length_required,
-                                              vm.getTokenLen()));
+            return true;
         }
-        return validated;
+
+        vb.lblApiToken.setError(getString(R.string.error_api_token_invalid));
+        return false;
     }
 
     private void viewToModel() {
         final Editable text = vb.apiToken.getText();
-        vm.setApiToken(text != null ? text.toString().strip() : "");
+        vm.setApiKey(text != null ? text.toString().strip() : "");
     }
 }

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -35,7 +34,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -525,15 +523,6 @@ public interface SearchEngine
     interface UserRegistration
             extends SearchEngine {
 
-        /** Input, must simply be returned in the result. */
-        String BKEY_ENGINE_ID = "UserRegistration:engineId";
-
-        @NonNull
-        static EngineId getEngineId(@NonNull final Bundle args) {
-            //noinspection deprecation
-            return Objects.requireNonNull(args.getParcelable(BKEY_ENGINE_ID));
-        }
-
         /**
          * Check if registration is required or optional.
          *
@@ -542,13 +531,31 @@ public interface SearchEngine
         boolean isRegistrationRequired();
 
         /**
-         * Is the user already registered / do they have credentials or api-token set.
+         * Get the key. This method must return a guaranteed valid key, or nothing.
          *
-         * @param context Current context
-         *
-         * @return flag
+         * @return key
          */
-        boolean hasRegistrationData(@NonNull Context context);
+        @NonNull
+        Optional<String> getRegistrationKey();
+
+        /**
+         * Set the key. An invalid key must be refused.
+         *
+         * @param key to set
+         *
+         * @return {@code true} if the key was valid and accepted/stored.
+         */
+        @SuppressWarnings("UnusedReturnValue")
+        boolean setRegistrationKey(@Nullable String key);
+
+        /**
+         * Validate the key without storing it.
+         *
+         * @param key to set
+         *
+         * @return {@code true} if the key was valid.
+         */
+        boolean isValidRegistrationKey(@Nullable String key);
 
         /**
          * Create a suitable fragment to edit the registration.
@@ -558,20 +565,10 @@ public interface SearchEngine
          *
          * @return fragment
          *
-         * @see RegistrationApiToken
+         * @see RegistrationApiKeyInput
          */
         @NonNull
         Fragment createRegistrationFragment(@NonNull Context context,
                                             @NonNull String requestKey);
-
-        /**
-         * Must be called with the result from the fragment launched
-         * from {@link #createRegistrationFragment(Context, String)}.
-         *
-         * @param args results
-         *
-         * @return {@code true} if registration was successful
-         */
-        boolean onRegistrationDone(@NonNull Bundle args);
     }
 }

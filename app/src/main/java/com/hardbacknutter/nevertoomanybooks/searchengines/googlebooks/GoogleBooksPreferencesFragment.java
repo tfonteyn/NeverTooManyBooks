@@ -19,13 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiKeyInput;
+import com.hardbacknutter.nevertoomanybooks.searchengines.RegistrationApiTokenFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.prefslib.SettingsDataStore;
@@ -36,14 +43,25 @@ import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 public class GoogleBooksPreferencesFragment
         extends BaseSettingsFragment {
 
+    private static final String TAG = "GoogleBooksPrefFrag";
+    private GoogleBooksSearchEngine searchEngine;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //noinspection DataFlowIssue
+        searchEngine = EngineId.GoogleBooks.createSearchEngine(getContext());
+    }
+
     @SuppressWarnings("CodeBlock2Expr")
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {
         final SettingsDataStore store = new SharedPreferencesDataStore(
                 ServiceLocator.getInstance().getSharedPreferences());
+        final Context context = getContext();
         //noinspection DataFlowIssue
-        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        final SettingsManager.Builder factory = new SettingsManager.Builder(context, store);
         final String pk = EngineId.GoogleBooks.getPreferenceKey();
 
         factory.header(EngineId.GoogleBooks.getLabelResId());
@@ -53,8 +71,44 @@ public class GoogleBooksPreferencesFragment
                     p.setIcon(R.drawable.barcode_24px);
                 });
 
+        factory.header(R.string.lbl_credentials);
+        factory.fragment(GoogleBooksSearchEngine.PK_API_TOKEN,
+                         R.string.lbl_api_token,
+                         RegistrationApiTokenFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.security_24px);
+                    p.setSummaryProvider(this::apiTokenSummary);
+                    p.setArgumentSupplier(() -> {
+                        return new RegistrationApiKeyInput(
+                                TAG, EngineId.GoogleBooks,
+                                context.getString(R.string.googlebooks_registration), 0)
+                                .toBundle();
+                    });
+                });
+
         CommonSettingsFactory.troubleshoot(factory, pk);
 
         return factory;
+    }
+
+    @NonNull
+    private CharSequence apiTokenSummary(@NonNull final Context context) {
+        return searchEngine.getRegistrationKey()
+                           .orElseGet(() -> context.getString(R.string.preference_not_set));
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getParentFragmentManager().setFragmentResultListener(TAG, getViewLifecycleOwner(),
+                                                             this::onRegistrationDone);
+    }
+
+    private void onRegistrationDone(@NonNull final String requestKey,
+                                    @NonNull final Bundle args) {
+        //noinspection DataFlowIssue
+        getSettingsManager().reload(getContext(), GoogleBooksSearchEngine.PK_API_TOKEN);
     }
 }
