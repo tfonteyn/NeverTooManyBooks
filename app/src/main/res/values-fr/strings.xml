@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -987,4 +984,9 @@
     <string name="warning_credentials_missing">Le nom d\'utilisateur et/ou le mot de passe sont manquants pour le site %1$s. Veuillez mettre à jour vos paramètres.</string>
     <string name="warning_api_token_issue">Le jeton API pour %1$s est manquant ou incorrect. Veuillez mettre à jour vos paramètres.</string>
     <string name="error_api_token_invalid">Jeton non valide</string>
+    <string name="librarything_registration"><![CDATA[<p><b>Un jeton d’accès API LibraryThing est <i>requis</i> pour accéder au site.</b></p>
+<br>
+<p>1. Rendez-vous sur <a href="https://www.librarything.com">LibraryThing.com</a> et créez un compte utilisateur gratuit si vous n’en avez pas encore.</p>
+<p>2. Une fois connecté, accédez à <a href="https://www.librarything.com/developer/tokens">Vos jetons</a> et créez un nouveau jeton.</p>
+<p>3. Copiez le jeton et collez-le ci-dessous.</p>]]></string>
 </resources>
