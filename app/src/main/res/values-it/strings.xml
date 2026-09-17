@@ -988,7 +988,7 @@
     <string name="librarything_registration"><![CDATA[<p><b>È <i>necessario</i> un toker LibraryThing API per accedere al sito.</b></p>
             <br>
             <p>1. Vai su <a href="https://www.librarything.com">LibraryThing.com</a> e registra un account gratuito se già non ne hai uno.</p>
-            <p>2. Un volta effettuato l'accesso, vai su <a href="https://www.librarything.com/developer/tokens">I tuoi token</a> e crea un nuovo token.</p>
+            <p>2. Un volta effettuato l'accesso, vai su <a href="https://www.librarything.com/developer/tokens">Your tokens</a> e crea un nuovo token.</p>
             <p>3. Copia il token e incollalo sotto.</p>]]></string>
     <string name="googlebooks_registration"><![CDATA[ <p> <b> > Una chiave GoogleBooks API è <i>opzionale </i> per accedere al sito. Il servizio funziona anche senza, ma può avere funzioni limitate. Avrai bisogno di un account Google per farlo.
 >
