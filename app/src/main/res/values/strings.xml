@@ -2229,8 +2229,7 @@
          out yourself. Please reach out via weblate or log an issue on the project
          github page if you have any questions.
      -->
-    <string name="googlebooks_registration"
-            translatable="false"><![CDATA["
+    <string name="googlebooks_registration"><![CDATA["
             <p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
             <br>
             <p>1. Sign in to Google Cloud:</p>
