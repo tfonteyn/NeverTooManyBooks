@@ -89,6 +89,16 @@
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
+    <!-- The instruction header section on the site API-Token registration screen. -->
+    <style name="Text.Header.Registration"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
     <!-- *************************************************************************************** -->
     <!-- Dialogs -->
     <!-- *************************************************************************************** -->

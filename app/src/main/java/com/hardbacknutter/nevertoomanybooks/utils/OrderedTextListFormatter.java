@@ -41,10 +41,15 @@ import java.util.regex.Pattern;
  * Example:
  * <pre>
  *     {@code
- *     Some title.
+ *     Header with info.
+ *     <br>
  *     <p>1. step</p>
+ *     <p>text</p>
  *     <p>2. step</p>
+ *     <p>text</p>
+ *     <p>more text</p>
  *     <p>3. step</p>
+ *     <p>text</p>
  *     }
  * </pre>
  */
@@ -82,17 +87,29 @@ public class OrderedTextListFormatter {
         final String[] paragraphs = textStr.split("\n");
         int start = 0;
 
+        boolean inHeader = true;
         for (final String paragraph : paragraphs) {
             final int end = start + paragraph.length();
 
             // Check if paragraph starts with a list digit
             if (LIST_DIGIT_PATTERN.matcher(paragraph.trim()).matches()) {
+                // leaving the header section.
+                inHeader = false;
                 builder.setSpan(
                         new LeadingMarginSpan.Standard(firstLineIndentPx, restLinesMargin),
-                        start,
-                        end,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
+                        start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            } else if (inHeader) {
+                // Initially we are in the header.
+                builder.setSpan(
+                        new LeadingMarginSpan.Standard(firstLineIndentPx, firstLineIndentPx),
+                        start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                // We're no longer in the header, these are
+                // continuation lines for numbered paragraphs
+                builder.setSpan(
+                        new LeadingMarginSpan.Standard(restLinesMargin, restLinesMargin),
+                        start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             // skip \n
             start = end + 1;

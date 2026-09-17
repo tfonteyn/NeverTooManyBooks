@@ -19,50 +19,59 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/FragmentRoot.ConstraintLayout">
+    android:id="@+id/ns_content_body"
+    style="@style/FragmentRoot.NestedScroller"
+    tools:context=".FragmentHostActivity"
+    >
 
-    <TextView
-        android:id="@+id/message"
-        style="@style/Text.Info"
-        android:layout_width="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/librarything_registration"
-        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_body"
+        style="@style/FragmentRoot.ConstraintLayout">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_api_token"
-        style="@style/TIL.Text"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/field_margin_top"
-        android:hint="@string/lbl_api_token"
-        app:counterEnabled="true"
-        app:counterMaxLength="32"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/message">
+        <!-- The tools:text is a raw preview.
+             Actual text is html rendered and formatted from code. -->
+        <TextView
+            android:id="@+id/message"
+            style="@style/Text.Header.Registration"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/librarything_registration"
+            />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/api_token"
-            style="@style/TIE.Generic"
-            android:ems="32"
-            android:inputType="textNoSuggestions|textVisiblePassword"
-            android:maxLines="1" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_api_token"
+            style="@style/TIL.Text"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:hint="@string/lbl_api_token"
+            app:counterEnabled="true"
+            app:counterMaxLength="32"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/message">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/api_token"
+                style="@style/TIE.Generic"
+                android:ems="32"
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:maxLines="1" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/action_save"
-        app:layout_constraintEnd_toEndOf="@id/lbl_api_token"
-        app:layout_constraintTop_toBottomOf="@id/lbl_api_token"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_save"
+            app:layout_constraintEnd_toEndOf="@id/lbl_api_token"
+            app:layout_constraintTop_toBottomOf="@id/lbl_api_token"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
