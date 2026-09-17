@@ -1009,4 +1009,6 @@
     <string name="vldt_exact_length_required">Vyžaduje sa prázdna hodnota alebo presná dĺžka %1$d znakov.</string>
     <string name="warning_credentials_missing">Chýba používateľské meno a/alebo heslo pre stránku %1$s. Aktualizujte svoje nastavenia.</string>
     <string name="warning_api_token_issue">Token API pre %1$s chýba alebo je nesprávny. Aktualizujte prosím svoje nastavenia.</string>
+    <string name="error_api_token_invalid">Neplatný token</string>
+    <string name="librarything_registration"><![CDATA[\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<b>Na prístup k stránke je <i>požadovaný</i> API token LibraryThing.</b>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>1. Prejdite na <a href="https://www.librarything.com">LibraryThing.com</a>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020a zaregistrujte si bezplatný používateľský účet, ak ho ešte nemáte.</p>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>2. Po prihlásení prejdite na <a href="https://www.librarything.com/developer/tokens">Vaše tokeny</a>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020a vytvorte nový token.</p>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>3. Skopírujte token a vložte ho nižšie..</p>\n \u0020 \u0020 \u0020 \u0020]]></string>
 </resources>
