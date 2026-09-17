@@ -228,9 +228,13 @@
         <item quantity="other">%1$d ferðir um árið</item>
     </plurals>
     <string name="lbl_edition_info">Útgávuupplýsingar</string>
-    <string name="lbl_api_token">API-token</string>
+    <string name="lbl_api_token">API-tekin</string>
     <string name="vldt_exact_length_required">Skeið skal vera tómt ella hava neyvt %1$d tekn.</string>
     <string name="warning_credentials_missing">Brúkaranavn og/ella loyniorð vanta fyri síðuna %1$s. Vinarliga dagfør tínar innstillingar.</string>
-    <string name="warning_api_token_issue">API-tokenið fyri %1$s vantar ella er rangt. Vinarliga dagfør tínar innstillingar.</string>
-    <string name="error_api_token_invalid">Ógilt token</string>
+    <string name="warning_api_token_issue">API-teknið fyri %1$s vantar ella er rangt. Vinarliga dagfør tínar innstillingar.</string>
+    <string name="error_api_token_invalid">Ógilt tekin</string>
+    <string name="librarything_registration"><![CDATA[<p><b>Eitt LibraryThing API-tekin er <i>neyðugt</i> fyri at fáa atgongd til heimasíðuna.</b></p><br>
+<p>1. Far til <a href="https://www.librarything.com">LibraryThing.com</a> og stofna ein ókeypis brúkarakontu, um tú ikki áður hevur eina.</p>
+<p>2. Panir tú ert ritaður inn, fært tú til <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> og stofnar eitt nýtt tekin.</p>
+<p>3. Avrita teknið og lím tað inn niðanfyri.</p>]]></string>
 </resources>
