@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -974,10 +971,9 @@
     <string name="warning_credentials_missing">Gebruikersnaam en/of wachtwoord ontbreken voor de site %1$s. Werk je instellingen bij.</string>
     <string name="warning_api_token_issue">Het API-token voor %1$s ontbreekt of is onjuist. Werk je instellingen bij.</string>
     <string name="error_api_token_invalid">Ongeldig token</string>
-    <string name="librarything_registration">
-        <![CDATA[<p><b>Een API-token voor LibraryThing is <i>vereist</i> om toegang te krijgen tot de site.</b></p>
+    <string name="librarything_registration"><![CDATA[<p><b>Een API-token voor LibraryThing is <i>vereist</i> om toegang te krijgen tot de site.</b></p>
         <br>
         <p>1. Ga naar <a href="https://www.librarything.com">LibraryThing.com</a> en maak een gratis gebruikersaccount aan als je er nog geen hebt.</p>
-        <p>2. Ga nadat je bent ingelogd naar <a href="https://www.librarything.com/developer/tokens">Uw tokens</a> en maak een nieuw token aan.</p>
+        <p>2. Ga nadat je bent ingelogd naar <a href="https://www.librarything.com/developer/tokens">Uw Tokens</a> en maak een nieuw token aan.</p>
         <p>3. Kopieer het token en plak het hieronder.</p>]]></string>
 </resources>
