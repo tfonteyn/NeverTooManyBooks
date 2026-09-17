@@ -2209,7 +2209,6 @@
     <!-- Instruction on how to register an API-Token with LibraryThing.
          Translator: the whole string must be embedded in <![CDATA[ ... ]]>
          Please use the same html tags and number the steps as indicated.
-         The text "Your Tokens" MUST be left in English as it's the text from the website.
  -->
     <string name="librarything_registration"><![CDATA[
             <p><b>A LibraryThing API token is <i>required</i> to access the site.</b></p>
@@ -2223,7 +2222,8 @@
          Translator: the whole string must be embedded in <![CDATA[ ... ]]>
          Please use the same html tags and number the steps as indicated.
          In the numbered steps, text between quotes, <b> and <i> tags should
-         be left in English as it's the text from the website.
+         be left in English as it's the text from the website unless the site itself is
+         translated in your language.
 
          These instructions are fairly complicated. The best thing todo is to try them
          out yourself. Please reach out via weblate or log an issue on the project
