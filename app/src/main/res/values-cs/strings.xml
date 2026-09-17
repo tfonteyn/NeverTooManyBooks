@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -1023,4 +1020,5 @@
     <string name="vldt_exact_length_required">Vyžadována prázdná hodnota nebo přesná délka %1$d znaků.</string>
     <string name="warning_credentials_missing">Chybí uživatelské jméno a/nebo heslo pro web %1$s. Aktualizujte prosím své nastavení.</string>
     <string name="warning_api_token_issue">Token API pro %1$s chybí nebo je neplatný. Aktualizujte prosím své nastavení.</string>
+    <string name="error_api_token_invalid">Neplatný token</string>
 </resources>
