@@ -1021,4 +1021,9 @@
     <string name="warning_credentials_missing">Chybí uživatelské jméno a/nebo heslo pro web %1$s. Aktualizujte prosím své nastavení.</string>
     <string name="warning_api_token_issue">Token API pro %1$s chybí nebo je neplatný. Aktualizujte prosím své nastavení.</string>
     <string name="error_api_token_invalid">Neplatný token</string>
+    <string name="librarything_registration"><![CDATA[<p><b>Pro přístup k stránce je <i>povinný</i> API token LibraryThing.</b></p>
+            <br>
+            <p>1. Přejděte na <a href="https://www.librarything.com">LibraryThing.com</a> a zaregistrujte si bezplatný uživatelský účet, pokud jej ještě nemáte.</p>
+            <p>2. Po přihlášení přejděte na <a href="https://www.librarything.com/developer/tokens">Vaše tokeny</a> a vytvořte nový token.</p>
+            <p>3. Zkopírujte token a vložte jej níže.</p>]]></string>
 </resources>
