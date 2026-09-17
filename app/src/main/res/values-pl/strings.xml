@@ -1012,4 +1012,9 @@
     <string name="warning_credentials_missing">Brak nazwy użytkownika i/lub hasła dla witryny %1$s. Zaktualizuj swoje ustawienia.</string>
     <string name="warning_api_token_issue">Token API dla %1$s jest nieobecny lub nieprawidłowy. Zaktualizuj swoje ustawienia.</string>
     <string name="error_api_token_invalid">Nieprawidłowy token</string>
+    <string name="librarything_registration"><![CDATA[<p><b>Do dostępu do witryny <i>wymagany</i> jest token API LibraryThing.</b></p>
+            <br>
+            <p>1. Przejdź na <a href="https://www.librarything.com">LibraryThing.com</a> i zarejestruj darmowe konto użytkownika, jeśli jeszcze go nie masz..</p>
+            <p>2. Po zalogowaniu przejdź do <a href="https://www.librarything.com/developer/tokens">Twoje Tokeny</a> i utwórz nowy token.</p>
+            <p>3. Skopiuj token i wklej go poniżej.</p>]]></string>
 </resources>
