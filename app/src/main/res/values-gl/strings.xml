@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -973,6 +970,11 @@
     <string name="lbl_api_token">Token de API</string>
     <string name="vldt_exact_length_required">Requírese un valor baleiro ou unha lonxitude exacta de %1$d caracteres.</string>
     <string name="warning_credentials_missing">Falta o nome de usuario e/ou o contrasinal para o sitio %1$s. Actualice os seus axustes.</string>
-    <string name="warning_api_token_issue">O token de API para %1$s falta ou é incorrecto. Actualice os seus axustes.</string>
+    <string name="warning_api_token_issue">O token da API para %1$s falta ou é incorrecto. Actualiza os teus axustes.</string>
     <string name="error_api_token_invalid">Token non válido</string>
+    <string name="librarything_registration"><![CDATA[<p><b><i>Necesitas</i> un token da API de LibraryThing para acceder ao sitio.</b></p>
+            <br>
+            <p>1. Vai a <a href="https://www.librarything.com">LibraryThing.com</a> e rexistra unha conta de usuario gratuíta se aínda non tes unha.</p>
+            <p>2. Tras iniciar sesión, diríxete a <a href="https://www.librarything.com/developer/tokens">Teus Tokens</a> e crea un novo.</p>
+            <p>3. Copia o token e pégao abaixo.</p>]]></string>
 </resources>
