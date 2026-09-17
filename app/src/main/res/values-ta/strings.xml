@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -974,10 +971,9 @@
     <string name="warning_credentials_missing">%1$s தளத்திற்கான பயனர்பெயர் மற்றும்/அல்லது கடவுச்சொல் இல்லை. உங்கள் அமைப்புகளைப் புதுப்பிக்கவும்.</string>
     <string name="warning_api_token_issue">%1$s க்கான API டோக்கன் இல்லை அல்லது தவறாக உள்ளது. உங்கள் அமைப்புகளைப் புதுப்பிக்கவும்.</string>
     <string name="error_api_token_invalid">செல்லுபடியாகாத டோக்கன்</string>
-    <string name="librarything_registration">
-        <![CDATA[<p><b>இந்த தளத்தை அணுக LibraryThing API டோக்கன் <i>தேவை</i>.</b></p>
+    <string name="librarything_registration"><![CDATA[<p><b>இந்த தளத்தை அணுக LibraryThing API டோக்கன் <i>தேவை</i>.</b></p>
         <br>
         <p>1. <a href="https://www.librarything.com">LibraryThing.com</a> -க்குச் சென்று, உங்களிடம் கணக்கு இல்லை என்றால் இலவச பயனர் கணக்கைப் பதிவு செய்யவும்.</p>
-        <p>2. லாகின் செய்த பிறகு, <a href="https://www.librarything.com/developer/tokens">உங்கள் டோக்கன்கள்</a> பகுதிக்குச் சென்று புதிய டோக்கனை உருவாக்கவும்.</p>
+        <p>2. லாகின் செய்த பிறகு, <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> பகுதிக்குச் சென்று புதிய டோக்கனை உருவாக்கவும்.</p>
         <p>3. டோக்கனை நகலெடுத்து (copy) கீழே ஒட்டவும் (paste).</p>]]></string>
 </resources>
