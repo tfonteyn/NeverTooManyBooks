@@ -974,4 +974,5 @@
     <string name="vldt_exact_length_required">Requírese un valor baleiro ou unha lonxitude exacta de %1$d caracteres.</string>
     <string name="warning_credentials_missing">Falta o nome de usuario e/ou o contrasinal para o sitio %1$s. Actualice os seus axustes.</string>
     <string name="warning_api_token_issue">O token de API para %1$s falta ou é incorrecto. Actualice os seus axustes.</string>
+    <string name="error_api_token_invalid">Token non válido</string>
 </resources>

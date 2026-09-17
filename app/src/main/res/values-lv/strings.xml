@@ -992,4 +992,5 @@
     <string name="vldt_exact_length_required">Nepieciešama tukša vērtība vai precīzs garums %1$d rakstzīmes.</string>
     <string name="warning_credentials_missing">Vietnei %1$s trūkst lietotājvārda un/vai paroles. Lūdzu, atjauniniet iestatījumus.</string>
     <string name="warning_api_token_issue">Vietnes %1$s API žetons ir trūkstošs vai nepareizs. Lūdzu, atjauniniet iestatījumus.</string>
+    <string name="error_api_token_invalid">Nederīgs tokens</string>
 </resources>

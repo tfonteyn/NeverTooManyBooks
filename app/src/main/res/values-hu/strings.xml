@@ -974,4 +974,5 @@
     <string name="vldt_exact_length_required">Üres érték vagy pontosan %1$d karakter hosszúság szükséges.</string>
     <string name="warning_credentials_missing">A felhasználónév és/vagy a jelszó hiányzik a(z) %1$s oldalhoz. Kérjük, frissítse a beállításokat.</string>
     <string name="warning_api_token_issue">A(z) %1$s API tokenje hiányzik vagy helytelen. Kérjük, frissítse a beállításokat.</string>
+    <string name="error_api_token_invalid">Érvénytelen token</string>
 </resources>

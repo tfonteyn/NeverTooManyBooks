@@ -976,4 +976,5 @@ A question mark is written as the character semicolon: ';'
     <string name="vldt_exact_length_required">Aπαιτείται κενή τιμή ή ακριβές μήκος %1$d χαρακτήρων.</string>
     <string name="warning_credentials_missing">Lείπει το όνομα χρήστη ή/και ο κωδικός πρόσβασης για τον ιστότοπο %1$s. Παρακαλούμε ενημερώστε τις ρυθμίσεις σας.</string>
     <string name="warning_api_token_issue">Το διακριτικό API για το %1$s λείπει ή είναι εσφαλμένο. Παρακαλούμε ενημερώστε τις ρυθμίσεις σας.</string>
+    <string name="error_api_token_invalid">Μη έγκυρο token</string>
 </resources>

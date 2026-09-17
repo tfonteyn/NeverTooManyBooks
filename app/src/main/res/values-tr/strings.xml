@@ -976,4 +976,5 @@
     <string name="vldt_exact_length_required">Boş bir değer veya tam olarak %1$d karakter uzunluğu gereklidir.</string>
     <string name="warning_credentials_missing">%1$s sitesi için kullanıcı adı ve/veya parola eksik. Lütfen ayarlarınızı güncelleyin.</string>
     <string name="warning_api_token_issue">%1$s için API jetonu eksik veya hatalı. Lütfen ayarlarınızı güncelleyin.</string>
+    <string name="error_api_token_invalid">Geçersiz belirteç</string>
 </resources>

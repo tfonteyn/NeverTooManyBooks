@@ -957,4 +957,5 @@
     <string name="vldt_exact_length_required">需要留空或長度精確為 %1$d 個字元。</string>
     <string name="warning_credentials_missing">缺少網站 %1$s 的使用者名稱和/或密碼。請更新您的設定。</string>
     <string name="warning_api_token_issue">%1$s 的 API 金鑰遺失或不正確。請更新您的設定。</string>
+    <string name="error_api_token_invalid">無效令牌</string>
 </resources>

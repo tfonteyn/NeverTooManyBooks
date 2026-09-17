@@ -232,4 +232,5 @@
     <string name="vldt_exact_length_required">Skeið skal vera tómt ella hava neyvt %1$d tekn.</string>
     <string name="warning_credentials_missing">Brúkaranavn og/ella loyniorð vanta fyri síðuna %1$s. Vinarliga dagfør tínar innstillingar.</string>
     <string name="warning_api_token_issue">API-tokenið fyri %1$s vantar ella er rangt. Vinarliga dagfør tínar innstillingar.</string>
+    <string name="error_api_token_invalid">Ógilt token</string>
 </resources>

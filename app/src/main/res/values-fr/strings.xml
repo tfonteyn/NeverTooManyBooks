@@ -986,4 +986,5 @@
     <string name="vldt_exact_length_required">Champ vide ou longueur exacte de %1$d caractères requise.</string>
     <string name="warning_credentials_missing">Le nom d\'utilisateur et/ou le mot de passe sont manquants pour le site %1$s. Veuillez mettre à jour vos paramètres.</string>
     <string name="warning_api_token_issue">Le jeton API pour %1$s est manquant ou incorrect. Veuillez mettre à jour vos paramètres.</string>
+    <string name="error_api_token_invalid">Jeton non valide</string>
 </resources>

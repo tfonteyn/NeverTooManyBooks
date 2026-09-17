@@ -984,4 +984,5 @@
     <string name="vldt_exact_length_required">É necessário um valor vazio ou o comprimento exato de %1$d carateres.</string>
     <string name="warning_credentials_missing">Falta o nome de utilizador e/ou a palavra-passe para o site %1$s. Por favor, atualize as suas definições.</string>
     <string name="warning_api_token_issue">O token de API para %1$s está em falta ou incorreto. Por favor, atualize as suas definições.</string>
+    <string name="error_api_token_invalid">Token inválido</string>
 </resources>
