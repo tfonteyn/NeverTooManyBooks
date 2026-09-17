@@ -974,6 +974,6 @@
     <string name="librarything_registration"><![CDATA[<p><b>Ein LibraryThing-API-Token ist <i>erforderlich</i>, um auf die Website zuzugreifen.</b></p>
 <br>
 <p>1. Gehe zu <a href="https://www.librarything.com">LibraryThing.com</a> und erstelle ein kostenloses Benutzerkonto, falls du noch keines hast.</p>
-<p>2. Navigiere nach dem Anmelden zu <a href="https://www.librarything.com/developer/tokens">Deine Token</a> und erstelle ein neues Token.</p>
+<p>2. Navigiere nach dem Anmelden zu <a href="https://www.librarything.com/developer/tokens">Ihre Token</a> und erstelle ein neues Token.</p>
 <p>3. Kopiere das Token und füge es unten ein.</p>]]></string>
 </resources>
