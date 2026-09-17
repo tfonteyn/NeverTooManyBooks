@@ -955,5 +955,5 @@
     <string name="warning_credentials_missing">缺少网站 %1$s 的用户名和/或密码。请更新您的设置。</string>
     <string name="warning_api_token_issue">%1$s 的 API 令牌缺失或不正确。请更新您的设置。</string>
     <string name="error_api_token_invalid">无效令牌</string>
-    <string name="librarything_registration"><![CDATA[\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<b>要访问此站点，一枚 LibraryThing API 令牌是<i>必需的</i> 。</b>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>1. 转到 <a href="https://www.librarything.com">LibraryThing.com</a>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020注册免费账户（假如还没有）</p>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>2. 登录后转到 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020，新建令牌。</p>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>3. 复制令牌，把它粘贴在下面 。</p>\n \u0020 \u0020 \u0020 \u0020]]></string>
+    <string name="librarything_registration"><![CDATA["\n            <p><b>要访问此站点，一枚 LibraryThing API 令牌是<i>必需的</i> 。</b></p>\n            <br>\n            <p>1. 转到 <a href=\"https://www.librarything.com\">LibraryThing.com</a> 注册免费账户（假如还没有）</p>\n            <p>2. 登录后转到 <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a>，新建令牌。</p>\n            <p>3. 复制令牌，把它粘贴在下面 。</p>\n        "]]></string>
 </resources>
