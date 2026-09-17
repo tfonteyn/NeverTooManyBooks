@@ -2212,12 +2212,10 @@
          The text "Your Tokens" MUST be left in English as it's the text from the website.
  -->
     <string name="librarything_registration"><![CDATA[
-            <b>A LibraryThing API token is <i>required</i> to access the site.</b>
+            <p><b>A LibraryThing API token is <i>required</i> to access the site.</b></p>
             <br>
-            <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a>
-                  and sign up for a free user account if you don’t have one yet.</p>
-            <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a>
-                  and create a new token.</p>
+            <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a> and sign up for a free user account if you don’t have one yet.</p>
+            <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a> and create a new token.</p>
             <p>3. Copy the token and paste it below.</p>
         ]]></string>
 
@@ -2233,9 +2231,7 @@
      -->
     <string name="googlebooks_registration"
             translatable="false"><![CDATA[
-            <p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b>
-               The service will work without one, but may be limited in function. You will need a Google account to do this.
-            </p>
+            <p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
             <br>
             <p>1. Sign in to Google Cloud:</p>
             <p>Open <a href=\"https://console.cloud.google.com/\">https://console.cloud.google.com/</a> and sign in with your Google account.</p>

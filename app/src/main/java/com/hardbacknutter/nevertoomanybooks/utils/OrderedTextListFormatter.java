@@ -78,8 +78,12 @@ public class OrderedTextListFormatter {
     }
 
     @NonNull
-    public CharSequence format(@NonNull final String text) {
-        final Spanned htmlSpanned = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
+    public CharSequence format(@NonNull final String raw) {
+        // weblate inserts '\n'. Instead of trying to prevent that or keep editing...
+        // .. we simply strip them out here BEFORE parsing the html.
+        final String cleanHtml = raw.replace("\n", "");
+
+        final Spanned htmlSpanned = Html.fromHtml(cleanHtml, Html.FROM_HTML_MODE_COMPACT);
         final SpannableStringBuilder builder = new SpannableStringBuilder(htmlSpanned);
 
         // Find paragraph boundaries and add hanging indent to numbered lines
