@@ -2207,19 +2207,19 @@
     <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
 
     <!-- Instruction on how to register an API-Token with LibraryThing.
-         Translator: the whole string must be embedded in <![CDATA[ ... ]]>
+         Translator: the whole string must be embedded in <![CDATA[" ... "]]>
          Please use the same html tags and number the steps as indicated.
  -->
-    <string name="librarything_registration"><![CDATA[
+    <string name="librarything_registration"><![CDATA["
             <p><b>A LibraryThing API token is <i>required</i> to access the site.</b></p>
             <br>
             <p>1. Go to <a href=\"https://www.librarything.com\">LibraryThing.com</a> and sign up for a free user account if you don’t have one yet.</p>
             <p>2. Once logged in, navigate to <a href=\"https://www.librarything.com/developer/tokens\">Your Tokens</a> and create a new token.</p>
             <p>3. Copy the token and paste it below.</p>
-        ]]></string>
+        "]]></string>
 
     <!-- Instruction on how to register an API-Key with GoogleBooks.
-         Translator: the whole string must be embedded in <![CDATA[ ... ]]>
+         Translator: the whole string must be embedded in <![CDATA[" ... "]]>
          Please use the same html tags and number the steps as indicated.
          In the numbered steps, text between quotes, <b> and <i> tags should
          be left in English as it's the text from the website unless the site itself is
@@ -2230,7 +2230,7 @@
          github page if you have any questions.
      -->
     <string name="googlebooks_registration"
-            translatable="false"><![CDATA[
+            translatable="false"><![CDATA["
             <p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
             <br>
             <p>1. Sign in to Google Cloud:</p>
@@ -2243,7 +2243,7 @@
             <p>Click <b>Credentials</b> in the left menu, select <b>Create Credentials</b> at the top, and click <b>API key</b>. Under <b>Restrictions</b> choose <b>Books API</b>.</p>
             <p>5. Copy Your Key:</p>
             <p>A popup will display your key (a string starting with `AIza`). Copy the key and paste it below.</p>
-            ]]></string>
+            "]]></string>
 
     <!-- endregion -->
     <!-- region ========== Style settings. -->
