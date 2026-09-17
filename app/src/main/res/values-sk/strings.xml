@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -1011,5 +1010,9 @@
     <string name="warning_credentials_missing">Chýba používateľské meno a/alebo heslo pre stránku %1$s. Aktualizujte svoje nastavenia.</string>
     <string name="warning_api_token_issue">Token API pre %1$s chýba alebo je nesprávny. Aktualizujte prosím svoje nastavenia.</string>
     <string name="error_api_token_invalid">Neplatný token</string>
-    <string name="librarything_registration"><![CDATA["\n            <p><b>Na prístup k stránke je <i>požadovaný</i> API token LibraryThing.</b></p>\n            <br>\n            <p>1. Prejdite na <a href=\"https://www.librarything.com\">LibraryThing.com</a> a zaregistrujte si bezplatný používateľský účet, ak ho ešte nemáte.</p>\n            <p>2. Po prihlásení prejdite na <a href=\"https://www.librarything.com/developer/tokens\">Vaše tokeny</a> a vytvorte nový token.</p>\n            <p>3. Skopírujte token a vložte ho nižšie.</p>\n        "]]></string>
+    <string name="librarything_registration"><![CDATA[<p><b>Na prístup k stránke je <i>požadovaný</i> API token LibraryThing.</b></p>
+            <br>
+            <p>1. Prejdite na <a href="https://www.librarything.com">LibraryThing.com</a> a zaregistrujte si bezplatný používateľský účet, ak ho ešte nemáte.</p>
+            <p>2. Po prihlásení prejdite na <a href="https://www.librarything.com/developer/tokens">Vaše tokeny</a> a vytvorte nový token.</p>
+            <p>3. Skopírujte token a vložte ho nižšie.</p>]]></string>
 </resources>
