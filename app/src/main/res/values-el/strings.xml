@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -972,9 +969,14 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_edition_info">Πληροφορίες έκδοσης</string>
     <string name="lbl_limit_request_speed">Περιορισμός συχνότητας αιτημάτων</string>
     <string name="lbl_limit_request_speed_info">Προσθέτει μικρές καθυστερήσεις μεταξύ των αιτημάτων, ώστε να αποφεύγεται η υπερφόρτωση του διακομιστή και ο αποκλεισμός της IP.</string>
-    <string name="lbl_api_token">Διακριτικό API</string>
+    <string name="lbl_api_token">API token</string>
     <string name="vldt_exact_length_required">Aπαιτείται κενή τιμή ή ακριβές μήκος %1$d χαρακτήρων.</string>
-    <string name="warning_credentials_missing">Lείπει το όνομα χρήστη ή/και ο κωδικός πρόσβασης για τον ιστότοπο %1$s. Παρακαλούμε ενημερώστε τις ρυθμίσεις σας.</string>
-    <string name="warning_api_token_issue">Το διακριτικό API για το %1$s λείπει ή είναι εσφαλμένο. Παρακαλούμε ενημερώστε τις ρυθμίσεις σας.</string>
+    <string name="warning_credentials_missing">Λείπει το όνομα χρήστη ή/και ο κωδικός πρόσβασης για τον ιστότοπο %1$s. Παρακαλούμε ενημερώστε τις ρυθμίσεις σας.</string>
+    <string name="warning_api_token_issue">Το API token για το %1$s λείπει ή είναι εσφαλμένο. Παρακαλούμε ενημερώστε τις ρυθμίσεις σας.</string>
     <string name="error_api_token_invalid">Μη έγκυρο token</string>
+    <string name="librarything_registration"><![CDATA[<p><b>Ένα API token του LibraryThing είναι <i>απαραίτητο</i> για την πρόσβαση στον ιστότοπο.</b></p>
+            <br>
+            <p>1. Μεταβείτε στο <a href="https://www.librarything.com">LibraryThing.com</a> και δημιουργήστε έναν δωρεάν λογαριασμό χρήστη, εάν δεν έχετε ήδη.</p>
+            <p>2. Αφού συνδεθείτε, μεταβείτε στην ενότητα <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> και δημιουργήστε ένα νέο token.</p>
+            <p>3. Αντιγράψτε το token και επικολλήστε το παρακάτω.</p>]]></string>
 </resources>
