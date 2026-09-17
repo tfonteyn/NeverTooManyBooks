@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -957,4 +954,6 @@
     <string name="vldt_exact_length_required">需要留空或准确为 %1$d 个字符。</string>
     <string name="warning_credentials_missing">缺少网站 %1$s 的用户名和/或密码。请更新您的设置。</string>
     <string name="warning_api_token_issue">%1$s 的 API 令牌缺失或不正确。请更新您的设置。</string>
+    <string name="error_api_token_invalid">无效令牌</string>
+    <string name="librarything_registration"><![CDATA[\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<b>要访问此站点，一枚 LibraryThing API 令牌是<i>必需的</i> 。</b>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>1. 转到 <a href="https://www.librarything.com">LibraryThing.com</a>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020注册免费账户（假如还没有）</p>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>2. 登录后转到 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020 \u0020，新建令牌。</p>\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020<p>3. 复制令牌，把它粘贴在下面 。</p>\n \u0020 \u0020 \u0020 \u0020]]></string>
 </resources>
