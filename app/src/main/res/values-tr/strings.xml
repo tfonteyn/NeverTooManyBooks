@@ -972,9 +972,15 @@
     </plurals>
     <string name="lbl_limit_request_speed">İstek hızını sınırla</string>
     <string name="lbl_limit_request_speed_info">Sunucunun aşırı yüklenmesini ve IP engellemelerini önlemek için istekler arasına kısa gecikmeler ekler.</string>
-    <string name="lbl_api_token">API Jetonu</string>
+    <string name="lbl_api_token">API Belirteci</string>
     <string name="vldt_exact_length_required">Boş bir değer veya tam olarak %1$d karakter uzunluğu gereklidir.</string>
     <string name="warning_credentials_missing">%1$s sitesi için kullanıcı adı ve/veya parola eksik. Lütfen ayarlarınızı güncelleyin.</string>
-    <string name="warning_api_token_issue">%1$s için API jetonu eksik veya hatalı. Lütfen ayarlarınızı güncelleyin.</string>
+    <string name="warning_api_token_issue">%1$s için API belirteci eksik veya hatalı. Lütfen ayarlarınızı güncelleyin.</string>
     <string name="error_api_token_invalid">Geçersiz belirteç</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>Siteye erişmek için bir LibraryThing API belirteci <i>gereklidir</i>.</b></p>
+        <br>
+        <p>1. <a href="https://www.librarything.com">LibraryThing.com</a> adresine gidin ve henüz bir hesabınız yoksa ücretsiz bir kullanıcı hesabı oluşturun.</p>
+        <p>2. Giriş yaptıktan sonra <a href="https://www.librarything.com/developer/tokens">Jetonlariniz</a> sayfasına gidin ve yeni bir belirteç oluşturun.</p>
+        <p>3. Belirteci kopyalayın ve aşağıya yapıştırın.</p>]]></string>
 </resources>

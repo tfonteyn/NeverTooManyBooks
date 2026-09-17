@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -355,4 +357,10 @@
     <string name="vldt_exact_length_required">É necessário um valor vazio ou o tamanho exato de %1$d caracteres.</string>
     <string name="warning_credentials_missing">Nome de usuário e/ou senha ausentes para o site %1$s. Por favor, atualize suas configurações.</string>
     <string name="warning_api_token_issue">O token de API para %1$s está ausente ou incorreto. Por favor, atualize suas configurações.</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>É <i>necessário</i> um token da API do LibraryThing para acessar o site.</b></p>
+        <br>
+        <p>1. Acesse <a href="https://www.librarything.com">LibraryThing.com</a> e crie uma conta de usuário gratuita se ainda não tiver uma.</p>
+        <p>2. Assim que fizer login, navegue até <a href="https://www.librarything.com/developer/tokens">Seus Tokens</a> e crie um novo token.</p>
+        <p>3. Copie o token e cole-o abaixo.</p>]]></string>
 </resources>

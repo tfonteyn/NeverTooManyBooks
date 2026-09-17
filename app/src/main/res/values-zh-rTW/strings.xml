@@ -958,4 +958,10 @@
     <string name="warning_credentials_missing">缺少網站 %1$s 的使用者名稱和/或密碼。請更新您的設定。</string>
     <string name="warning_api_token_issue">%1$s 的 API 金鑰遺失或不正確。請更新您的設定。</string>
     <string name="error_api_token_invalid">無效令牌</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>存取此網站<i>需要</i> LibraryThing API 金鑰。</b></p>
+        <br>
+        <p>1. 前往 <a href="https://www.librarything.com">LibraryThing.com</a> 註冊免費使用者帳號（若您尚未擁有）。</p>
+        <p>2. 登入後，瀏覽至 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> 並建立新的金鑰。</p>
+        <p>3. 複製該金鑰並貼在下方。</p>]]></string>
 </resources>

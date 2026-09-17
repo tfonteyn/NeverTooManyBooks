@@ -975,4 +975,10 @@
     <string name="warning_credentials_missing">A felhasználónév és/vagy a jelszó hiányzik a(z) %1$s oldalhoz. Kérjük, frissítse a beállításokat.</string>
     <string name="warning_api_token_issue">A(z) %1$s API tokenje hiányzik vagy helytelen. Kérjük, frissítse a beállításokat.</string>
     <string name="error_api_token_invalid">Érvénytelen token</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>A webhely eléréséhez LibraryThing API-token <i>szükséges</i>.</b></p>
+        <br>
+        <p>1. Nyissa meg a <a href="https://www.librarything.com">LibraryThing.com</a> oldalt, és regisztráljon egy ingyenes felhasználói fiókot, ha még nem rendelkezik ilyennel.</p>
+        <p>2. A bejelentkezés után navigáljon az <a href="https://www.librarything.com/developer/tokens">Az Ön tokenjei</a> oldalra, és hozzon létre egy új tokent.</p>
+        <p>3. Másolja ki a tokent, és illessze be alább.</p>]]></string>
 </resources>

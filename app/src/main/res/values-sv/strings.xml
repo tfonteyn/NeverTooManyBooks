@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -974,4 +975,10 @@
     <string name="warning_credentials_missing">Användarnamn och/eller lösenord saknas för webbplatsen %1$s. Uppdatera dina inställningar.</string>
     <string name="warning_api_token_issue">API-token för %1$s saknas eller är felaktig. Uppdatera dina inställningar.</string>
     <string name="error_api_token_invalid">Ogiltig token</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>En LibraryThing API-token <i>krävs</i> för att få åtkomst till webbplatsen.</b></p>
+        <br>
+        <p>1. Gå till <a href="https://www.librarything.com">LibraryThing.com</a> och registrera ett kostnadsfritt användarkonto om du inte redan har ett.</p>
+        <p>2. När du har loggat in navigerar du till <a href="https://www.librarything.com/developer/tokens">Dina tokens</a> och skapar en ny token.</p>
+        <p>3. Kopiera token och klistra in den nedan.</p>]]></string>
 </resources>

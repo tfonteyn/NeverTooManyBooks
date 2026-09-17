@@ -988,4 +988,10 @@
     <string name="warning_credentials_missing">Nome utente e/o password mancanti per il sito %1$s. Aggiorna le tue impostazioni.</string>
     <string name="warning_api_token_issue">Il token API per %1$s è mancante o errato. Aggiorna le tue impostazioni.</string>
     <string name="error_api_token_invalid">Token non valido</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>È <i>necessario</i> un token API di LibraryThing per accedere al sito.</b></p>
+        <br>
+        <p>1. Vai su <a href="https://www.librarything.com">LibraryThing.com</a> e registrati per un account utente gratuito se non ne hai già uno.</p>
+        <p>2. Una volta effettuato l’accesso, naviga su <a href="https://www.librarything.com/developer/tokens">Your tokens</a> e crea un nuovo token.</p>
+        <p>3. Copia il token e incollalo qui sotto.</p>]]></string>
 </resources>

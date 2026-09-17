@@ -956,4 +956,10 @@
     <string name="warning_credentials_missing">Thiếu tên người dùng và/hoặc mật khẩu cho trang web %1$s. Vui lòng cập nhật cài đặt của bạn.</string>
     <string name="warning_api_token_issue">Mã token API cho %1$s bị thiếu hoặc không chính xác. Vui lòng cập nhật cài đặt của bạn.</string>
     <string name="error_api_token_invalid">Mã token không hợp lệ</string>
+    <string name="librarything_registration">
+        <![CDATA[<p><b>Cần có mã token API LibraryThing để truy cập trang web.</b></p>
+        <br>
+        <p>1. Truy cập <a href="https://www.librarything.com">LibraryThing.com</a> và đăng ký tài khoản người dùng miễn phí nếu bạn chưa có.</p>
+        <p>2. Sau khi đăng nhập, chuyển đến <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> và tạo một token mới.</p>
+        <p>3. Sao chép token và dán vào bên dưới.</p>]]></string>
 </resources>
