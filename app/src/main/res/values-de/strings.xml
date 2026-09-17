@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -974,4 +971,9 @@
     <string name="warning_credentials_missing">Benutzername und/oder Passwort für die Website %1$s fehlen. Bitte aktualisieren Sie Ihre Einstellungen.</string>
     <string name="warning_api_token_issue">Das API-Token für %1$s fehlt oder ist ungültig. Bitte aktualisieren Sie Ihre Einstellungen.</string>
     <string name="error_api_token_invalid">Ungültiges Token</string>
+    <string name="librarything_registration"><![CDATA[<p><b>Ein LibraryThing-API-Token ist <i>erforderlich</i>, um auf die Website zuzugreifen.</b></p>
+<br>
+<p>1. Gehe zu <a href="https://www.librarything.com">LibraryThing.com</a> und erstelle ein kostenloses Benutzerkonto, falls du noch keines hast.</p>
+<p>2. Navigiere nach dem Anmelden zu <a href="https://www.librarything.com/developer/tokens">Deine Token</a> und erstelle ein neues Token.</p>
+<p>3. Kopiere das Token und füge es unten ein.</p>]]></string>
 </resources>
