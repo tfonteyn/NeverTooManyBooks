@@ -500,7 +500,7 @@
     <string name="style_type_builtin">Embutido</string>
     <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem a certeza de que deseja continuar?</string>
     <string name="lbl_add_book">Adicionar livro</string>
-    <string name="confirm_registration_required">Esta função requer registo com %1$s. Gostaria de ver mais informações?</string>
+    <string name="confirm_registration_required_long">Esta função requer registo com %1$s. Gostaria de ver mais informações?</string>
     <string name="lbl_search_isbn">Pesquisa ISBN</string>
     <string name="lbl_author_is_a_pen_name_of">Este é um pseudónimo de:</string>
     <string name="lbl_series_num">Nº</string>
@@ -765,7 +765,7 @@
     <string name="option_fab_add_book_by_external_id">ID do livro do site</string>
     <string name="confirm_create_real_author">“%1$s” ainda não existe. Devem ser criados?</string>
     <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
-    <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?\n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
+    <string name="confirm_registration_optional_long">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?\n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
     <string name="action_add_with_details">Adicionar com detalhes</string>
     <string name="lbl_importing">Importando…</string>
     <string name="lbl_backup">Cópia de segurança</string>

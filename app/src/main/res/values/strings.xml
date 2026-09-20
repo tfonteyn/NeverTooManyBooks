@@ -1063,6 +1063,17 @@
     <!-- Setting option; whether barcode scans will be one at a time, or one after the other. -->
     <string name="option_barcode_scan_mode_continuous">Scan continuously</string>
 
+    <!-- Menu title, showing options for validation. -->
+    <string name="menu_code_validity_title">ISBN/Code checking</string>
+    <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
+    <string name="option_code_validity_strict_isbn">Strict ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN and others</string>
+    <string name="option_code_validity_no_checks">No validation</string>
+    <!-- Certain checks are strictly enforced. Opposite of 'Loose' -->
+    <string name="X_strict">Strict</string>
+    <!-- Certain checks are only loosely enforced. Opposite of 'Strict' -->
+    <string name="X_loose">Loose</string>
+
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
 
@@ -1204,11 +1215,7 @@
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the internal indexing in the database needs to be rebuilt. -->
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue?</string>
-    <!-- Param 1: website name -->
-    <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
-    <!-- Param 1: website name -->
-    <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
-    <!-- endregion -->
+   <!-- endregion -->
     <!-- region ========== Button (action) texts, must be short. -->
     <!-- [VERIFIED] -->
     <string name="action_add">Add</string>
@@ -2203,6 +2210,10 @@
     <string name="error_api_token_invalid">Invalid token</string>
     <!-- Param 1: the website for which the token is needed. -->
     <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
+    <!-- Param 1: website name -->
+    <string name="confirm_registration_required_long">This feature requires registration with %1$s. Would you like to see more information?</string>
+    <!-- Param 1: website name -->
+    <string name="confirm_registration_optional_long">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
 
     <!-- Instruction on how to register an API-Token with LibraryThing.
          Translator: the whole string must be embedded in <![CDATA[...]]>
@@ -2534,16 +2545,6 @@
     <!-- [VERIFIED] e.g. indicates nothing was selected; nothing was found; .... -->
     <string name="none">None</string>
 
-    <string name="menu_code_validity_title">ISBN/Code checking</string>
-    <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
-    <string name="option_code_validity_strict_isbn">Strict ISBN</string>
-    <string name="option_code_validity_valid_codes">ISBN and others</string>
-    <string name="option_code_validity_no_checks">No validation</string>
-
-    <!-- Certain checks are strictly enforced. Opposite of 'Loose' -->
-    <string name="X_strict">Strict</string>
-    <!-- Certain checks are only loosely enforced. Opposite of 'Strict' -->
-    <string name="X_loose">Loose</string>
     <!-- endregion -->
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
     <string name="lbl_add_book_by_external_id"

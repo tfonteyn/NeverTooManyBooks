@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -464,8 +466,8 @@
     <string name="confirm_rebuild_orderby_columns">பயன்பாடு மறுதொடக்கம் செய்யப்படும்போது இது வரிசையாக்க தரவை மீண்டும் உருவாக்கும். நீங்கள் தொடர விரும்புகிறீர்களா?</string>
     <string name="confirm_rebuild_fts">பயன்பாடு மறுதொடக்கம் செய்யப்படும்போது இது தேடல் குறியீட்டு தரவை மீண்டும் உருவாக்கும். நீங்கள் தொடர விரும்புகிறீர்களா?</string>
     <string name="confirm_rebuild_index">பயன்பாடு மறுதொடக்கம் செய்யப்படும்போது இது குறியீடுகளை மீண்டும் உருவாக்கும். நீங்கள் தொடர விரும்புகிறீர்களா?</string>
-    <string name="confirm_registration_required">இந்த அம்சத்திற்கு %1$s உடன் பதிவு தேவைப்படுகிறது. மேலும் தகவல்களைக் காண விரும்புகிறீர்களா?</string>
-    <string name="confirm_registration_benefits">இந்த நற்பொருத்தம் %1$s உடன் பதிவு செய்வதிலிருந்து பயனடைகிறது. மேலும் தகவல்களைக் காண விரும்புகிறீர்களா, அல்லது இந்த செய்தியை முடக்க விரும்புகிறீர்களா?\n அமைப்புகளில் “%2$s” பிரிவின் கீழ் இந்த தகவலை பிற்காலத்தில் காணலாம்.</string>
+    <string name="confirm_registration_required_long">இந்த அம்சத்திற்கு %1$s உடன் பதிவு தேவைப்படுகிறது. மேலும் தகவல்களைக் காண விரும்புகிறீர்களா?</string>
+    <string name="confirm_registration_optional_long">இந்த நற்பொருத்தம் %1$s உடன் பதிவு செய்வதிலிருந்து பயனடைகிறது. மேலும் தகவல்களைக் காண விரும்புகிறீர்களா, அல்லது இந்த செய்தியை முடக்க விரும்புகிறீர்களா?\n அமைப்புகளில் “%2$s” பிரிவின் கீழ் இந்த தகவலை பிற்காலத்தில் காணலாம்.</string>
     <string name="action_add">கூட்டு</string>
     <string name="action_add_with_details">விவரங்களுடன் சேர்க்கவும்</string>
     <string name="action_add_all">அனைத்தையும் சேர்க்கவும்</string>

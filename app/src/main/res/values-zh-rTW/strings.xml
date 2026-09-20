@@ -188,8 +188,8 @@
     <string name="confirm_rebuild_index">這將在應用重新啟動時重建索引。您確定要繼續嗎？</string>
     <string name="confirm_apply_substitutions">應用替換規則嗎？所有適用規則的書籍都將更新。</string>
     <string name="confirm_rebuild_orderby_columns">這將在應用重啟時重建排序資料。您確定要繼續嗎？</string>
-    <string name="confirm_registration_benefits">此功能得益於 %1$s 的註冊。您想要查看更多信息，還是禁用此消息？\n您稍後可在設定中的「%2$s」部分找到此資訊。</string>
-    <string name="confirm_registration_required">此功能需要用 %1$s 註冊。您想查看更多資訊嗎？</string>
+    <string name="confirm_registration_optional_long">此功能得益於 %1$s 的註冊。您想要查看更多信息，還是禁用此消息？\n您稍後可在設定中的「%2$s」部分找到此資訊。</string>
+    <string name="confirm_registration_required_long">此功能需要用 %1$s 註冊。您想查看更多資訊嗎？</string>
     <string name="confirm_remove_toc_entry">從本圖書中刪除作者 %2$s 的標題「%1$s」嗎？</string>
     <string name="confirm_scope_for_change">您已將：\n「%1$s」\n改為\n「%2$s」\n\n您想如何套用變更？\n注意：選擇「%3$s」將立即套用。如果您選擇「%4$s」，則會建立新的%5$s。</string>
     <string name="confirm_scope_for_delete">刪除作者 %2$s 的標題「%1$s」\n\n您想如何套用變更？\n注意：選項「%3$s」無法撤銷！</string>

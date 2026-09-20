@@ -205,8 +205,8 @@
     <string name="confirm_rebuild_fts">Detta kommer att bygga om sökindex när appen startas om. Är du säker på att du vill fortsätta?</string>
     <string name="confirm_rebuild_index">Detta kommer att bygga om indexen när appen startas om. Är du säker på att du vill fortsätta?</string>
     <string name="confirm_rebuild_orderby_columns">Detta kommer att bygga om sorteringsinformationen när appen startas om. Är du säker på att du vill fortsätta?</string>
-    <string name="confirm_registration_benefits">Denna funktion har fördelar vid registrering hos %1$s. Vill du se mer information eller stänga av detta meddelande?\n Du kan hitta informationen senare under ”%2$s” i inställningarna.</string>
-    <string name="confirm_registration_required">Denna funktion kräver registrering hos %1$s. Vill du se mer information?</string>
+    <string name="confirm_registration_optional_long">Denna funktion har fördelar vid registrering hos %1$s. Vill du se mer information eller stänga av detta meddelande?\n Du kan hitta informationen senare under ”%2$s” i inställningarna.</string>
+    <string name="confirm_registration_required_long">Denna funktion kräver registrering hos %1$s. Vill du se mer information?</string>
     <string name="confirm_remove_toc_entry">Ta bort titeln ”%1$s” av %2$s från denna bok?</string>
     <string name="confirm_scope_for_change">Du har ändrat:\n ”%1$s”\n till\n ”%2$s”\n\nHur vill du tillämpa ändringen?\nObservera: Valet ”%3$s” tillämpas direkt. Om du väljer ”%4$s” skapas en ny %5$s.</string>
     <string name="confirm_scope_for_delete">Radera titeln ”%1$s” av %2$s\n\nHur vill du tillämpa ändringen?\nObservera: Valet ”%3$s” kan inte ångras!</string>

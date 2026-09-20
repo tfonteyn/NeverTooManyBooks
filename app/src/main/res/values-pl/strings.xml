@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -217,8 +219,8 @@
     <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
-    <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
-    <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
+    <string name="confirm_registration_optional_long">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
+    <string name="confirm_registration_required_long">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="confirm_leave_code_search">Trwają wyszukiwania i/lub wyniki nie zostały zapisane.</string>
     <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>
     <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>

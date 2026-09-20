@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -520,8 +522,8 @@
     <string name="confirm_rebuild_orderby_columns">Ez újraépíti a rendezési adatokat az alkalmazás újraindításakor. Biztosan folytatja?</string>
     <string name="confirm_rebuild_fts">Ez újraépíti a keresési index adatokat az alkalmazás újraindításakor. Biztosan folytatja?</string>
     <string name="confirm_rebuild_index">Ez újraépíti az indexeket az alkalmazás újraindításakor. Biztosan folytatja?</string>
-    <string name="confirm_registration_required">Ehhez a funkcióhoz regisztráció szükséges a következó oldalon: %1$s. Szeretne több információt látni?</string>
-    <string name="confirm_registration_benefits">Ez a funkció elérhető, ha regisztrál a következő oldalon: %1$s. Szeretne további információkat látni vagy letiltani ezt az üzenetet?\nEzt az információt később a beállítások „%2$s” részében találja.</string>
+    <string name="confirm_registration_required_long">Ehhez a funkcióhoz regisztráció szükséges a következó oldalon: %1$s. Szeretne több információt látni?</string>
+    <string name="confirm_registration_optional_long">Ez a funkció elérhető, ha regisztrál a következő oldalon: %1$s. Szeretne további információkat látni vagy letiltani ezt az üzenetet?\nEzt az információt később a beállítások „%2$s” részében találja.</string>
     <string name="action_add_with_details">Részletes hozzáadás</string>
     <string name="action_edit_ellipsis">Szerkesztés…</string>
     <string name="action_edit_defaults">Alapértelmezett beállítások szerkesztése</string>

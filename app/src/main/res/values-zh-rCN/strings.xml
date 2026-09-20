@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -187,8 +189,8 @@
     <string name="confirm_rebuild_fts">这将在应用重启时重建搜索索引数据。您确定要继续吗？</string>
     <string name="confirm_rebuild_index">这将在应用重启时重建索引。您确定要继续吗？</string>
     <string name="confirm_rebuild_orderby_columns">这将在应用重启时重建排序数据。您确定要继续吗？</string>
-    <string name="confirm_registration_benefits">此功能得益于 %1$s 的注册。您想要查看更多信息，还是禁用此消息？\n 您稍后可在设置中的“%2$s”部分找到此信息。</string>
-    <string name="confirm_registration_required">此功能需要用 %1$s 注册。您想查看更多信息吗？</string>
+    <string name="confirm_registration_optional_long">此功能得益于 %1$s 的注册。您想要查看更多信息，还是禁用此消息？\n 您稍后可在设置中的“%2$s”部分找到此信息。</string>
+    <string name="confirm_registration_required_long">此功能需要用 %1$s 注册。您想查看更多信息吗？</string>
     <string name="confirm_remove_toc_entry">从本图书中删除作者 %2$s 的标题“%1$s”吗？</string>
     <string name="confirm_scope_for_change">您已将：\n “%1$s”\n 更改为\n “%2$s”\n\n您想如何应用更改？\n注意：选择“%3$s”将立即应用。如果您选择“%4$s”，则将创建新的%5$s。</string>
     <string name="confirm_scope_for_delete">删除作者 %2$s 的标题“%1$s”\n\n您想如何应用更改？\n注意：选项“%3$s”无法撤销！</string>

@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -201,8 +203,8 @@ A question mark is written as the character semicolon: ';'
     <string name="confirm_rebuild_fts">Αυτό θα αναδημιουργήσει τα δεδομένα ευρετηρίου αναζήτησης κατά την επανεκκίνηση της εφαρμογής. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;</string>
     <string name="confirm_rebuild_index">Αυτό θα αναδημιουργήσει τα ευρετήρια κατά την επανεκκίνηση της εφαρμογής. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;</string>
     <string name="confirm_rebuild_orderby_columns">Αυτό θα αναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;</string>
-    <string name="confirm_registration_benefits">Αυτή η λειτουργία ωφελείται από την εγγραφή στο %1$s. Θέλετε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες αργότερα στην ενότητα «%2$s» στις ρυθμίσεις.</string>
-    <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή στο %1$s. Θέλετε να δείτε περισσότερες πληροφορίες;</string>
+    <string name="confirm_registration_optional_long">Αυτή η λειτουργία ωφελείται από την εγγραφή στο %1$s. Θέλετε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες αργότερα στην ενότητα «%2$s» στις ρυθμίσεις.</string>
+    <string name="confirm_registration_required_long">Αυτή η λειτουργία απαιτεί εγγραφή στο %1$s. Θέλετε να δείτε περισσότερες πληροφορίες;</string>
     <string name="confirm_leave_code_search">Υπάρχουν ενεργές αναζητήσεις ή/και μη αποθηκευμένα αποτελέσματα.</string>
     <string name="confirm_remove_toc_entry">Να αφαιρεθεί ο τίτλος «%1$s» του/της %2$s από αυτό το βιβλίο;</string>
     <string name="confirm_scope_for_change">Έχετε αλλάξει το\n «%1$s»\n σε\n «%2$s»\n\nΠώς επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί άμεσα. Αν επιλέξετε «%4$s», τότε θα δημιουργηθεί ένα νέο %5$s.</string>

@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -853,8 +855,8 @@
     <string name="confirm_rebuild_orderby_columns">Šī darbība pārbūvēs kārtošanas datus, kad lietotne tiks restartēta. Vai esat pārliecināts, ka vēlaties turpināt?</string>
     <string name="confirm_rebuild_fts">Šī darbība pārbūvēs meklēšanas indeksa datus, kad lietotne tiks restartēta. Vai esat pārliecināts, ka vēlaties turpināt?</string>
     <string name="confirm_rebuild_index">Šī darbība pārbūvēs indeksus, kad lietotne tiks restartēta. Vai esat pārliecināts, ka vēlaties turpināt?</string>
-    <string name="confirm_registration_required">Šai funkcijai ir nepieciešama reģistrācija vietnē %1$s. Vai vēlaties redzēt vairāk informācijas?</string>
-    <string name="confirm_registration_benefits">Šai funkcijai ir noderīga reģistrācija vietnē %1$s. Vai vēlaties redzēt vairāk informācijas vai atspējot šo ziņojumu?\n Šo informāciju vēlāk varat atrast iestatījumu sadaļā “%2$s”.</string>
+    <string name="confirm_registration_required_long">Šai funkcijai ir nepieciešama reģistrācija vietnē %1$s. Vai vēlaties redzēt vairāk informācijas?</string>
+    <string name="confirm_registration_optional_long">Šai funkcijai ir noderīga reģistrācija vietnē %1$s. Vai vēlaties redzēt vairāk informācijas vai atspējot šo ziņojumu?\n Šo informāciju vēlāk varat atrast iestatījumu sadaļā “%2$s”.</string>
     <string name="confirm_leave_code_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
     <string name="warning_delete_default_bookshelf">Šis ir tavs noklusējuma grāmatplaukts. Ja tu to izdzēsīsi, jaunais noklusējuma plaukts būs: “%1$s”.\n\nIzmanto “%2$s” galvenajā izvēlnē, lai izvēlētos citu noklusējuma grāmatplauktu.</string>
     <string name="confirm_delete_identifier_from_x_books">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas grāmatas netiks dzēstas.</string>

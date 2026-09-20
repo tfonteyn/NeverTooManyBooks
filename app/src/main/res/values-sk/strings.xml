@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -775,8 +777,8 @@
     <string name="confirm_rebuild_orderby_columns">Týmto sa prebudujú údaje na zoradenie pri reštarte aplikácie. Ste si istý, že chcete pokračovať?</string>
     <string name="action_add">Pridať</string>
     <string name="lbl_family_name">Priezvisko</string>
-    <string name="confirm_registration_required">Táto funkcia vyžaduje registráciu na %1$s. Chcete vidieť viac informácií?</string>
-    <string name="confirm_registration_benefits">Táto funkcia profituje z registrácie na %1$s. Chcete vidieť viac informácií alebo túto správu vypnúť?\n Tieto informácie nájdete neskôr v sekcii „%2$s“ v nastaveniach.</string>
+    <string name="confirm_registration_required_long">Táto funkcia vyžaduje registráciu na %1$s. Chcete vidieť viac informácií?</string>
+    <string name="confirm_registration_optional_long">Táto funkcia profituje z registrácie na %1$s. Chcete vidieť viac informácií alebo túto správu vypnúť?\n Tieto informácie nájdete neskôr v sekcii „%2$s“ v nastaveniach.</string>
     <string name="lbl_author_is_a_pen_name_of">Toto je pseudonym pre:</string>
     <string name="lbl_title">Názov</string>
     <string name="X_action_reset">Resetovať</string>
