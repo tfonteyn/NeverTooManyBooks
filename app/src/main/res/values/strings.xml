@@ -2236,27 +2236,29 @@
     <!-- Instruction on how to register an API-Key with GoogleBooks.
          Translator: the whole string must be embedded in <![CDATA[...]]>
          Please use the same html tags and number the steps as indicated.
-         In the numbered steps, text between quotes, <b> and <i> tags should
-         be left in English as it's the text from the website unless the site itself is
+         In the numbered steps, text between quotes, <b> and <i> tags should probably
+         be left in English as it's the text from the website unless the site is
          translated in your language.
 
          These instructions are fairly complicated. The best thing to do, is to try them
          out yourself. Please reach out via weblate or log an issue on the project
          github page if you have any questions.
      -->
-    <string name="googlebooks_registration">
-        <![CDATA[<p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
+    <string name="googlebooks_registration"><![CDATA[<p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
             <br>
             <p>1. Sign in to Google Cloud:</p>
             <p>Open <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> and sign in with your Google account.</p>
             <p>2. Create a New Project:</p>
-            <p>Click the dropdown menu next to the "Google Cloud" logo at the top left, select <b>New Project</b>, name it <i>Books API</i>, and click <b>Create</b>.</p>
-            <p>3. Turn On the Books API:</p>
-            <p>Click the search bar at the top, type <i>Books API</i>, select it from the list, and click the <b>Enable</b> button.</p>
-            <p>4. Generate Your Key:</p>
-            <p>Click <b>Credentials</b> in the left menu, select <b>Create Credentials</b> at the top, and click <b>API key</b>. Under <b>Restrictions</b> choose <b>Books API</b>.</p>
-            <p>5. Copy Your Key:</p>
-            <p>A popup will display your key (a string starting with `AIza`). Copy the key and paste it below.</p>]]></string>
+            <p>Tap the main menu button at the top left, then <b>Select a project</b>.</p>
+            <p>Tap the option button menu, and select <b>New Project</b>, name it <i>Books API</i>, and click <b>Create</b>.</p>
+            <p>On the notification, tap the project, or use the menu again to <b>Select a project</b>.</p>
+            <p>3. Turn on the Books API:</p>
+            <p>Tap the main menu and select <b>APIs and services</b>, then select <b>Library</b>. You will now need to tilt your device horizontally. In the search box, type \'books\', scroll down, and select the <b>Books API</b> tile.</p>
+            <p>On the next screen, tap <b>Enable</b>, then turn your device upright again.</p>
+            <p>4. Create the key:</p>
+            <p>Tap the button <b>Create Credentials</b>, select the <i>Books API</i>, select <i>Public data</i>, then tap <b>Next</b></p>
+            <p>The key will be displayed (a string starting with `AIza`). Copy the key, and make sure to tap <b>Done</b></p>
+            <p>Paste the key below.</p>]]></string>
 
     <!-- endregion -->
     <!-- region ========== Style settings. -->
