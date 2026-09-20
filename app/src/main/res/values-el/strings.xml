@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -821,7 +822,6 @@ A question mark is written as the character semicolon: ';'
     <string name="info_nothing_to_do">Δεν χρειάστηκε κάποια ενέργεια.</string>
     <string name="option_image_restore">Επαναφορά προηγούμενης εικόνας</string>
     <string name="info_site_list">Οι αναζητήσεις περιορίζονται σε: %1$s</string>
-    <string name="tip_configure_sites">Οι επιμέρους ιστότοποι μπορούν να ρυθμιστούν μέσω του εικονιδίου ρυθμίσεων στο επάνω μέρος της οθόνης.</string>
     <string name="lbl_sort_unsorted">Μη ταξινομημένο</string>
     <string name="lbl_sort_ascending">Αύξουσα</string>
     <string name="lbl_sort_descending">Φθίνουσα</string>

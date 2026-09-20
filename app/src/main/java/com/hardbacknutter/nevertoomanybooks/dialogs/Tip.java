@@ -70,8 +70,6 @@ public enum Tip {
 
     BOOKSHELF_MANAGEMENT(R.string.tip_bookshelf_management,
                          "bookshelf_management"),
-    CONFIGURE_SITES(R.string.tip_configure_sites,
-                    "configure_sites"),
     CAMERA_AUTOROTATE_IMAGES(R.string.tip_autorotate_camera_images,
                              "autorotate_camera_images"),
 

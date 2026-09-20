@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -780,7 +781,6 @@
     <string name="tip_booklist_style_groups">使用此界面可修改特定样式的组的层次结构。使用复选框选择要在列表中显示的组，并通过向上或向下拖动每一行末尾的图标来重新排列层次结构。</string>
     <string name="tip_booklist_style_properties">使用此界面设置特定样式的特征。您可以更改名称、编辑分组以改变层次结构，还可以调整其他各种偏好设置，从而建立您认为有用的样式。</string>
     <string name="tip_booklist_styles_editor">使用此界面可自定义默认样式菜单中显示的样式列表。使用复选框选择将在列表中显示的样式。 如果未选择任何样式，则将显示所有样式。通过上下拖动每行最右边的图标，可以重新排列层次结构。长按一行中的其他位置，可以编辑或克隆特定样式的详细信息。如果你克隆了一个样式，但又改变了主意，那么你需要自己删除它。</string>
-    <string name="tip_configure_sites">可点击屏幕顶部的设置图标来单独配置每个网站。</string>
     <string name="lbl_tip">提示</string>
     <string name="tip_import_isbn_list">导入带 ISBN 号的文本文件。文件每行应该有一个 ISBN。结果将放在队列中。</string>
     <string name="option_reset_all_tips">重置提示</string>

@@ -651,8 +651,6 @@
     <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
     <!-- Help text shown in a dialog. Shown on the booklist (main) screen. -->
     <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
-    <!-- Help text shown in a dialog. Shown on the "Settings/Websites" screen. -->
-    <string name="tip_configure_sites">Individual websites can be configured using the settings-icon at the top of the screen.</string>
     <!-- Help text shown in a dialog. Shown on the "Bookshelves" management screen. -->
     <string name="tip_bookshelf_management">The highlighted line indicates your current bookshelf.\n\nThe default bookshelf (marked with *) will be used automatically if your current one isn’t available for any reason.</string>
     <!-- Help text shown in a dialog. The dialog title and explanations for the icons used. -->

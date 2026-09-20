@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -345,7 +346,6 @@
     <string name="tip_booklist_style_groups">Usa esta pantalla para modificar a xerarquía de grupos dun estilo concreto. Coa caixa de selección escolle os grupos que queres amosar na lista e reordena arrastrando a icona do final de cada liña cara arriba ou abaixo.</string>
     <string name="tip_booklist_style_properties">Utiliza esta pantalla para definir as características dun estilo concreto. Podes mudar o nome, editar os agrupamentos para alterar a xerarquía e axustar outras preferencias para xerar un estilo que consideres útil.</string>
     <string name="tip_series_book_may_appear_more_than_once">Se os libros se mostran en todas as series ás que pertencen, poden aparecer varias veces na lista. A eliminación dunha desas copias ten o efecto de borrar todos os exemplares da lista.</string>
-    <string name="tip_configure_sites">Os sitios web individuais poden configurarse utilizando a icona de roda dentada da parte superior da pantalla.</string>
     <string name="tip_authors_works">Iconas usadas</string>
     <string name="tip_authors_works_single_book">O título está presente nun só libro.</string>
     <string name="bob_empty_field">(Ningún)</string>

@@ -772,7 +772,6 @@
     <string name="style_builtin_author_year">作者，年</string>
     <string name="style_type_builtin">內建</string>
     <string name="style_type_user_defined">使用者定義</string>
-    <string name="tip_configure_sites">可點擊螢幕頂部的設定圖示來單獨配置每個網站。</string>
     <string name="tip_authors_works">圖示已使用</string>
     <string name="tip_authors_works_book">書本。</string>
     <string name="tip_authors_works_multiple_books">此標題出現在多本書內。</string>

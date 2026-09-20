@@ -74,6 +74,7 @@ public final class PreferenceKeyMigration {
               .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
               .remove("tips.tip.booklist_style_menu")
               .remove("tips.tip.book_search_by_text")
+              .remove("tips.tip.configure_sites")
 
               .remove("BookList.Style.Preferred.Order")
               .remove("bookList.style.preferred.order")

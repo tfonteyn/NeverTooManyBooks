@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -839,7 +840,6 @@
     <string name="info_nothing_to_do">Nic na práci.</string>
     <string name="option_image_restore">Obnovit předchozí obrázek</string>
     <string name="info_site_list">Vyhledávání je omezeno na: %1$s</string>
-    <string name="tip_configure_sites">Jednotlivé webové stránky lze konfigurovat pomocí ikony nastavení v horní části obrazovky.</string>
     <string name="lbl_sort_unsorted">Netříděné</string>
     <string name="lbl_sort_ascending">Vzestupně</string>
     <string name="lbl_sort_descending">Sestupně</string>

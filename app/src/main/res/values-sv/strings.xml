@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -829,7 +831,6 @@
     <string name="tip_booklist_style_groups">Använd denna skärm för att ändra hierarkin för grupper i en specifik stil. Använd kryssrutan för att välja vilka grupper som ska visas i listan och ändra ordningen genom att dra ikonen i slutet av varje rad upp eller ner.</string>
     <string name="tip_booklist_style_properties">Använd denna skärm för att ställa in egenskaper för en specifik stil. Du kan ändra namn, redigera grupper för att ändra hierarkin och justera olika inställningar för att skapa en stil som passar dig.</string>
     <string name="tip_booklist_styles_editor">Använd denna skärm för att anpassa listan med stilar som visas i din standardmeny för stilar. Använd kryssrutan för att välja vilka stilar som ska visas i listan. Om inga stilar är valda visas alla. Du kan ändra ordningen i hierarkin genom att dra ikonen längst till höger i varje rad upp eller ner. Långtryck var som helst i en rad för att redigera eller kopiera en stil. Om du kopierade en stil och ändrade dig måste du själv ta bort den.</string>
-    <string name="tip_configure_sites">Individuella webbplatser kan konfigureras via inställningsikonen högst upp på skärmen.</string>
     <string name="tip_import_isbn_list">Importera en textfil med ISBN-nummer. Filen ska innehålla ett ISBN per rad. Resultatet läggs i kön.</string>
     <string name="tip_series_book_may_appear_more_than_once">Om böcker visas i alla serier som boken tillhör kan samma bok visas flera gånger i listan. Att ta bort en av dessa böcker tar bort alla kopior från listan.</string>
     <string name="tip_view_only_help">Du kan svepa åt vänster eller höger för att navigera till andra böcker.</string>

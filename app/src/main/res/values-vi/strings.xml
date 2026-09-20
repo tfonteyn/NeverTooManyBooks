@@ -806,7 +806,6 @@
     <string name="tip_booklist_style_groups">Sử dụng màn hình này để sửa đổi thứ bậc của các nhóm cho một kiểu cụ thể. Sử dụng hộp kiểm để chọn nhóm nào sẽ được hiển thị trong danh sách và sắp xếp lại thứ bậc bằng cách kéo biểu tượng ở cuối mỗi hàng lên hoặc xuống.</string>
     <string name="tip_booklist_style_properties">Sử dụng màn hình này để đặt các đặc điểm của một kiểu cụ thể. Bạn có thể thay đổi tên, chỉnh sửa các nhóm để thay đổi thứ bậc và điều chỉnh nhiều tùy chọn khác để tạo kiểu mà bạn thấy hữu ích.</string>
     <string name="tip_booklist_styles_editor">Sử dụng màn hình này để tùy chỉnh danh sách các kiểu cách sẽ được hiển thị trong thực đơn kiểu cách mặc định của bạn. Sử dụng hộp kiểm để chọn kiểu cách nào sẽ được hiển thị trong danh sách. Nếu không có kiểu cách nào được chọn thì tất cả các kiểu sẽ được hiển thị. Bạn có thể sắp xếp lại thứ bậc bằng cách kéo biểu tượng ở ngoài cùng bên phải của mỗi hàng lên hoặc xuống. Nhấn và giữ bất cứ nơi nào khác trong hàng sẽ cho phép bạn chỉnh sửa hoặc sao chép các chi tiết của một kiểu cụ thể. Nếu bạn sao chép một kiểu và thay đổi ý định, bạn sẽ cần phải tự xóa nó.</string>
-    <string name="tip_configure_sites">Các trang web riêng lẻ có thể được định cấu hình bằng biểu tượng thiết đặt ở đầu màn hình.</string>
     <string name="lbl_tip">Mẹo</string>
     <string name="tip_import_isbn_list">Nhập tệp văn bản có số ISBN. Tệp phải có một ISBN duy nhất trên mỗi dòng. Kết quả sẽ được xếp hàng.</string>
     <string name="option_reset_all_tips">Đặt lại mẹo</string>

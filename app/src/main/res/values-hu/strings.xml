@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -351,7 +352,6 @@
     <string name="tip_autorotate_camera_images">Ha azt tapasztalja, hogy a kamera képeit mindig ugyanarra forgatja, próbálja meg módosítani az alkalmazás beállításait, hogy megadjon egy automatikus forgatást.</string>
     <string name="tip_view_only_help">Balra vagy jobbra húzással navigálhat a könyvek között.</string>
     <string name="tip_book_list">Egy könyv megérintésével megjelennek a könyv részletei. A lista egyik elemének hosszú megnyomásával további opciókat kaphat.</string>
-    <string name="tip_configure_sites">Az egyes weboldalak a képernyő tetején található beállítások ikon segítségével konfigurálhatóak.</string>
     <string name="tip_authors_works">Felhasznált ikonok</string>
     <string name="tip_authors_works_book">Könyv.</string>
     <string name="tip_authors_works_multiple_books">A cím több könyvnél is szerepel.</string>

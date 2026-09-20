@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -687,7 +688,6 @@
     <string name="tip_autorotate_camera_images">Ja vienmēr nākas rotēt kameras attēlus vienā un tajā pašā virzienā, mēģiniet mainīt lietojumprogrammas iestatījumus, lai norādītu automātiski lietojamu rotāciju.</string>
     <string name="tip_view_only_help">Varat vilkt pa kreisi vai pa labi, lai pārietu uz citām grāmatām.</string>
     <string name="tip_book_list">Pieskaroties grāmatai, tiks parādīta informācija par to. Ilgi nospiežot uz vienuma sarakstā, tiks piedāvātas papildu opcijas.</string>
-    <string name="tip_configure_sites">Atsevišķas vietnes var konfigurēt, izmantojot iestatījumu ikonu ekrāna augšdaļā.</string>
     <string name="tip_bookshelf_management">Izceltā rinda norāda tavu pašreizējo grāmatplauktu.\n\nNoklusējuma grāmatplaukts (atzīmēts ar *) tiks izmantots automātiski, ja pašreizējais kāda iemesla dēļ nav pieejams.</string>
     <string name="tip_authors_works">Izmantotās ikonas</string>
     <string name="tip_authors_works_book">Grāmata.</string>

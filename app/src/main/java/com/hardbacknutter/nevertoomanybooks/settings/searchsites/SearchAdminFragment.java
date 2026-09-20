@@ -160,10 +160,6 @@ public class SearchAdminFragment
             // it's not shown when long-pressing the tab?
             tab.setContentDescription(getString(tabAdapter.getTabDescription(position)));
         }).attach();
-
-        if (savedInstanceState == null) {
-            TipManager.getInstance().show(getContext(), Tip.CONFIGURE_SITES);
-        }
     }
 
     @Override

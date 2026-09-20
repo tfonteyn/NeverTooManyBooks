@@ -819,7 +819,6 @@
     <string name="info_nothing_to_do">Yapacak bir şey yok.</string>
     <string name="option_image_restore">Önceki görüntüyü geri yükle</string>
     <string name="info_site_list">Aramalar şunlarla sınırlıdır: %1$s</string>
-    <string name="tip_configure_sites">Tek tek web siteleri ekranın üst kısmındaki ayarlar simgesi kullanılarak yapılandırılabilir.</string>
     <string name="lbl_sort_unsorted">Tasnif Edilmemiş</string>
     <string name="lbl_sort_ascending">Yükselen</string>
     <string name="lbl_sort_descending">Alçalma</string>
