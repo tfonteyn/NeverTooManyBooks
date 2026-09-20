@@ -27,16 +27,19 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.tabs.TabLayout;
 
@@ -195,28 +198,58 @@ public class SearchOrderFragment
                                     final boolean active) {
         final EngineId engineId = site.getEngineId();
         if (active && engineId.supports(SearchEngine.UserRegistration.class)) {
+
             final Context context = getContext();
             //noinspection DataFlowIssue
             final SearchEngine.UserRegistration searchEngine =
                     engineId.createSearchEngine(context);
 
             if (searchEngine.getRegistrationKey().isEmpty()) {
+                @StringRes
+                final int msgId;
+                @DrawableRes
+                final int iconId;
 
-                if (tabPanel != null) {
-                    ViewUtil.setViewAndChildrenEnabled(tabPanel, false);
+                final boolean required = searchEngine.isRegistrationRequired();
+                if (required) {
+                    msgId = R.string.confirm_registration_required;
+                    iconId = R.drawable.warning_24px;
+                } else {
+                    msgId = R.string.confirm_registration_optional;
+                    iconId = R.drawable.info_24px;
                 }
-                final Fragment fragment = searchEngine
-                        .createRegistrationFragment(context, rkRegistration);
-                getParentFragmentManager().beginTransaction()
-                                          .setReorderingAllowed(true)
-                                          .addToBackStack(engineId.name())
-                                          .replace(R.id.content_frame, fragment, engineId.name())
-                                          .commit();
 
+                final String siteName = engineId.getName(context);
+                final String message = getString(msgId, siteName,
+                                                 getString(R.string.lbl_credentials));
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(iconId)
+                        .setTitle(siteName)
+                        .setMessage(message)
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.action_more_ellipsis, (d, w)
+                                -> startRegistration(searchEngine))
+                        .create()
+                        .show();
                 return false;
             }
         }
         return true;
+    }
+
+    private void startRegistration(@NonNull final SearchEngine.UserRegistration searchEngine) {
+        if (tabPanel != null) {
+            ViewUtil.setViewAndChildrenEnabled(tabPanel, false);
+        }
+        @SuppressWarnings("DataFlowIssue")
+        final Fragment fragment = searchEngine
+                .createRegistrationFragment(getContext(), rkRegistration);
+        final String fragmentTag = searchEngine.getEngineId().name();
+        getParentFragmentManager().beginTransaction()
+                                  .setReorderingAllowed(true)
+                                  .addToBackStack(fragmentTag)
+                                  .replace(R.id.content_frame, fragment, fragmentTag)
+                                  .commit();
     }
 
     private void onRegistrationDone(@NonNull final String requestKey,
@@ -233,7 +266,7 @@ public class SearchOrderFragment
         final SearchEngine.UserRegistration searchEngine =
                 engineId.createSearchEngine(getContext());
 
-        // Activate the site ff registration was done/updated,
+        // Activate the site if registration was done/updated,
         // OR if it was optional, and the user did not care about any limitations.
         if (searchEngine.getRegistrationKey().isPresent()
             || !searchEngine.isRegistrationRequired()) {
@@ -379,7 +412,7 @@ public class SearchOrderFragment
     private static class SearchSiteListAdapter
             extends BaseDragDropRecyclerViewAdapter<Site, Holder> {
 
-        @Nullable
+        @NonNull
         private final SiteActivatedCallback siteActivatedCallback;
 
         /**
@@ -390,7 +423,7 @@ public class SearchOrderFragment
          * @param dragStartListener     Listener to handle the user moving rows up and down
          */
         SearchSiteListAdapter(@NonNull final List<Site> sites,
-                              @Nullable final SiteActivatedCallback siteActivatedCallback,
+                              @NonNull final SiteActivatedCallback siteActivatedCallback,
                               @NonNull final StartDragListener dragStartListener) {
             super(sites, dragStartListener);
             this.siteActivatedCallback = siteActivatedCallback;
@@ -411,8 +444,7 @@ public class SearchOrderFragment
                 final Site site = getItem(position);
                 final boolean newState = !site.isActive();
 
-                if (siteActivatedCallback != null
-                    && siteActivatedCallback.onSiteActivated(site, newState)) {
+                if (siteActivatedCallback.onSiteActivated(site, newState)) {
                     site.setActive(newState);
                     notifyItemChanged(position);
                 }

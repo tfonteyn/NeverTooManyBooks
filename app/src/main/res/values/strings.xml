@@ -2210,9 +2210,16 @@
     <string name="error_api_token_invalid">Invalid token</string>
     <!-- Param 1: the website for which the token is needed. -->
     <string name="warning_api_token_issue">The API token for %1$s is either missing or incorrect. Please update your settings.</string>
-    <!-- Param 1: website name -->
+    <!-- Registration is REQUIRED.
+         Param 1: website name
+         Param 2: will be replaced with the string from "lbl_credentials"; i.e. "User credentials".-->
+    <string name="confirm_registration_required">Registration with %1$s is required.\n\nYou can also find this information at a later date under the “%2$s” section in the settings for this site.</string>
+    <!-- Registration is OPTIONAL.
+         Param 1: website name
+         Param 2: will be replaced with the string from "lbl_credentials"; i.e. "User credentials".-->
+    <string name="confirm_registration_optional">Registration with %1$s is optional.\n\nYou can also find this information at a later date under the “%2$s” section in the settings for this site.</string>
+
     <string name="confirm_registration_required_long">This feature requires registration with %1$s. Would you like to see more information?</string>
-    <!-- Param 1: website name -->
     <string name="confirm_registration_optional_long">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
 
     <!-- Instruction on how to register an API-Token with LibraryThing.
