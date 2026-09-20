@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -233,7 +230,8 @@
     <string name="warning_credentials_missing">Brúkaranavn og/ella loyniorð vanta fyri síðuna %1$s. Vinarliga dagfør tínar innstillingar.</string>
     <string name="warning_api_token_issue">API-teknið fyri %1$s vantar ella er rangt. Vinarliga dagfør tínar innstillingar.</string>
     <string name="error_api_token_invalid">Ógilt tekin</string>
-    <string name="librarything_registration"><![CDATA[<p><b>Eitt LibraryThing API-tekin er <i>neyðugt</i> fyri at fáa atgongd til heimasíðuna.</b></p><br>
+    <string name="librarything_registration"><![CDATA[<p><b>Eitt LibraryThing API-tekin er <i>neyðugt</i> fyri at fáa atgongd til heimasíðuna.</b></p>
+<br>
 <p>1. Far til <a href="https://www.librarything.com">LibraryThing.com</a> og stofna ein ókeypis brúkarakontu, um tú ikki áður hevur eina.</p>
 <p>2. Panir tú ert ritaður inn, fært tú til <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> og stofnar eitt nýtt tekin.</p>
 <p>3. Avrita teknið og lím tað inn niðanfyri.</p>]]></string>
