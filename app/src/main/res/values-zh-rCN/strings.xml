@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -975,4 +972,6 @@
             <p>单击左侧菜单中的 <b>Credentials</b> ，选择顶部的 <b>Create Credentials</b>，单击<b>API key</b>。在 <b>Restrictions</b> 下选择<b>Books API</b>。</p>
             <p>5. 复制密钥：</p>
             <p>密钥会显示在弹窗中。(以 `AIza` 开头的字符串)。复制它将它粘贴在下面。</p>]]></string>
+    <string name="confirm_registration_required">注册 %1$s 是必需的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
+    <string name="confirm_registration_optional">注册 %1$s 是可选的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
 </resources>
