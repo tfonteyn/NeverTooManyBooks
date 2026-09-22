@@ -74,7 +74,7 @@ public class BookRepository {
      * <p>
      * Dev. note: This class is used/created in ViewModels, do NOT store the Context!
      *
-     * @param context Current context (noy stored)
+     * @param context Current context (not stored)
      */
     public BookRepository(@NonNull final Context context) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();

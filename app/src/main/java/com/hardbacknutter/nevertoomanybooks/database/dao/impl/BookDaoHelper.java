@@ -412,8 +412,8 @@ public class BookDaoHelper {
     }
 
     /**
-     * Creates a ContentValues collection containing only those values from 'source'
-     * that match columns in 'dest'.
+     * Creates a ContentValues collection containing only those values from the Book
+     * that match columns in {@link DBDefinitions#TBL_BOOKS}.
      * <ul>
      *      <li>Exclude the primary key from the list of columns.</li>
      *      <li>data will be transformed based on the column definition.<br>
