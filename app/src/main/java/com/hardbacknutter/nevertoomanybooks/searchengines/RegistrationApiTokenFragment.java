@@ -131,6 +131,9 @@ public class RegistrationApiTokenFragment
     private boolean saveChanges() {
         viewToModel();
 
+        // Always reset after a save.
+        searchEngine.setProposeRegistration(true);
+
         final String apiKey = vm.getApiKey();
         // Either a valid key, or no key at all.
         final boolean valid = searchEngine.isValidRegistrationKey(apiKey)

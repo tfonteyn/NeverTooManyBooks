@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
@@ -531,6 +532,15 @@ public interface SearchEngine
         boolean isRegistrationRequired();
 
         /**
+         * Convenience method.
+         *
+         * @return {@code true} if the engine has a registration configured.
+         */
+        default boolean isRegistered() {
+            return getRegistrationKey().isPresent();
+        }
+
+        /**
          * Get the key. This method must return a guaranteed valid key, or nothing.
          *
          * @return key
@@ -570,5 +580,34 @@ public interface SearchEngine
         @NonNull
         Fragment createRegistrationFragment(@NonNull Context context,
                                             @NonNull String requestKey);
+
+        /**
+         * Set or reset the dismissal flag.
+         *
+         * @param enable flag
+         *
+         * @see #isProposeRegistration()
+         */
+        default void setProposeRegistration(final boolean enable) {
+            ServiceLocator.getInstance().getSharedPreferences()
+                          .edit().putBoolean(getProposeRegistrationKey(), enable).apply();
+        }
+
+        /**
+         * Should we ask the user to register, or did they dismiss us earlier.
+         *
+         * @return {@code true} to ask
+         *
+         * @see #setProposeRegistration(boolean)
+         */
+        default boolean isProposeRegistration() {
+            return ServiceLocator.getInstance().getSharedPreferences()
+                                 .getBoolean(getProposeRegistrationKey(), true);
+        }
+
+        @NonNull
+        private String getProposeRegistrationKey() {
+            return getEngineId().getPreferenceKey() + ".registration.ask";
+        }
     }
 }

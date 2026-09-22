@@ -27,12 +27,10 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -198,43 +196,44 @@ public class SearchOrderFragment
                                     final boolean active) {
         final EngineId engineId = site.getEngineId();
         if (active && engineId.supports(SearchEngine.UserRegistration.class)) {
-
             final Context context = getContext();
             //noinspection DataFlowIssue
             final SearchEngine.UserRegistration searchEngine =
                     engineId.createSearchEngine(context);
-
-            if (searchEngine.getRegistrationKey().isEmpty()) {
-                @StringRes
-                final int msgId;
-                @DrawableRes
-                final int iconId;
-
-                final boolean required = searchEngine.isRegistrationRequired();
-                if (required) {
-                    msgId = R.string.confirm_registration_required;
-                    iconId = R.drawable.warning_24px;
-                } else {
-                    msgId = R.string.confirm_registration_optional;
-                    iconId = R.drawable.info_24px;
-                }
-
-                final String siteName = engineId.getName(context);
-                final String message = getString(msgId, siteName,
-                                                 getString(R.string.lbl_credentials));
-                new MaterialAlertDialogBuilder(context)
-                        .setIcon(iconId)
-                        .setTitle(siteName)
-                        .setMessage(message)
-                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(R.string.action_more_ellipsis, (d, w)
-                                -> startRegistration(searchEngine))
-                        .create()
-                        .show();
+            if (!searchEngine.isRegistered() && searchEngine.isProposeRegistration()) {
+                proposeRegistration(searchEngine);
                 return false;
             }
         }
         return true;
+    }
+
+    private void proposeRegistration(@NonNull final SearchEngine.UserRegistration searchEngine) {
+        final Context context = getContext();
+        @SuppressWarnings("DataFlowIssue")
+        final String siteName = searchEngine.getEngineId().getName(context);
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
+                .setTitle(siteName);
+
+        if (searchEngine.isRegistrationRequired()) {
+            builder.setIcon(R.drawable.warning_24px)
+                   .setMessage(getString(R.string.confirm_registration_required, siteName,
+                                         getString(R.string.lbl_credentials)));
+        } else {
+            // otherwise it's optional
+            builder.setIcon(R.drawable.info_24px)
+                   .setMessage(getString(R.string.confirm_registration_optional, siteName,
+                                         getString(R.string.lbl_credentials)))
+                   // and the user can dismiss without later reminders
+                   .setNeutralButton(R.string.action_disable_message, (d, w)
+                           -> searchEngine.setProposeRegistration(false));
+        }
+
+        builder.setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+               .setPositiveButton(R.string.action_more_ellipsis, (d, w)
+                       -> startRegistration(searchEngine))
+               .create()
+               .show();
     }
 
     private void startRegistration(@NonNull final SearchEngine.UserRegistration searchEngine) {
@@ -268,9 +267,7 @@ public class SearchOrderFragment
 
         // Activate the site if registration was done/updated,
         // OR if it was optional, and the user did not care about any limitations.
-        if (searchEngine.getRegistrationKey().isPresent()
-            || !searchEngine.isRegistrationRequired()) {
-
+        if (searchEngine.isRegistered() || !searchEngine.isRegistrationRequired()) {
             int index = 0;
             for (final Site site : vm.getList(type)) {
                 if (site.getEngineId() == engineId) {
