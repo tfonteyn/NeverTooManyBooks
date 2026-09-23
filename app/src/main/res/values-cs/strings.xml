@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -1028,4 +1025,6 @@
             <p>1. Přejděte na <a href="https://www.librarything.com">LibraryThing.com</a> a zaregistrujte si bezplatný uživatelský účet, pokud jej ještě nemáte.</p>
             <p>2. Po přihlášení přejděte na <a href="https://www.librarything.com/developer/tokens">Vaše tokeny</a> a vytvořte nový token.</p>
             <p>3. Zkopírujte token a vložte jej níže.</p>]]></string>
+    <string name="confirm_registration_required">Je nutná registrace na %1$s.\n\nTuto informaci najdete později také v části „%2$s“ v nastavení této stránky.</string>
+    <string name="confirm_registration_optional">Registrace na %1$s je nepovinná.\n\nTuto informaci najdete později také v části „%2$s“ v nastavení této stránky.</string>
 </resources>
