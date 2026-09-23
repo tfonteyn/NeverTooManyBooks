@@ -978,4 +978,6 @@
         <p>1. Ga naar <a href="https://www.librarything.com">LibraryThing.com</a> en maak een gratis gebruikersaccount aan als je er nog geen hebt.</p>
         <p>2. Ga nadat je bent ingelogd naar <a href="https://www.librarything.com/developer/tokens">Uw Tokens</a> en maak een nieuw token aan.</p>
         <p>3. Kopieer het token en plak het hieronder.</p>]]></string>
+    <string name="confirm_registration_required">Registratie bij %1$s is verplicht.\n\nU kunt deze informatie op een later tijdstip ook terugvinden onder het gedeelte “%2$s” in de instellingen voor deze site.</string>
+    <string name="confirm_registration_optional">Registratie bij %1$s is optioneel.\n\nU kunt deze informatie op een later tijdstip ook terugvinden onder het gedeelte “%2$s” in de instellingen voor deze site.</string>
 </resources>

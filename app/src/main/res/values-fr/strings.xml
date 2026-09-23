@@ -992,4 +992,6 @@
         <p>1. Rendez-vous sur <a href="https://www.librarything.com">LibraryThing.com</a> et créez un compte utilisateur gratuit si vous n’en avez pas encore.</p>
         <p>2. Une fois connecté, accédez à <a href="https://www.librarything.com/developer/tokens">Vos jetons</a> et créez un nouveau jeton.</p>
         <p>3. Copiez le jeton et collez-le ci-dessous.</p>]]></string>
+    <string name="confirm_registration_required">L’inscription sur %1$s est obligatoire.\n\nVous pourrez également retrouver ces informations ultérieurement dans la section « %2$s » des paramètres de ce site.</string>
+    <string name="confirm_registration_optional">L’inscription sur %1$s est facultative.\n\nVous pourrez également retrouver ces informations ultérieurement dans la section « %2$s » des paramètres de ce site.</string>
 </resources>

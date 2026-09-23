@@ -982,4 +982,6 @@
         <p>1. <a href="https://www.librarything.com">LibraryThing.com</a> adresine gidin ve henüz bir hesabınız yoksa ücretsiz bir kullanıcı hesabı oluşturun.</p>
         <p>2. Giriş yaptıktan sonra <a href="https://www.librarything.com/developer/tokens">Jetonlariniz</a> sayfasına gidin ve yeni bir belirteç oluşturun.</p>
         <p>3. Belirteci kopyalayın ve aşağıya yapıştırın.</p>]]></string>
+    <string name="confirm_registration_required">%1$s ile kaydolmak zorunludur.\n\nBu bilgiye daha sonraki bir tarihte bu sitenin ayarlarındaki “%2$s” bölümünden de ulaşabilirsiniz.</string>
+    <string name="confirm_registration_optional">%1$s ile kaydolmak isteğe bağlıdır.\n\nBu bilgiye daha sonraki bir tarihte bu sitenin ayarlarındaki “%2$s” bölümünden de ulaşabilirsiniz.</string>
 </resources>

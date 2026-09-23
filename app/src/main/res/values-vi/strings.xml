@@ -961,4 +961,6 @@
         <p>1. Truy cập <a href="https://www.librarything.com">LibraryThing.com</a> và đăng ký tài khoản người dùng miễn phí nếu bạn chưa có.</p>
         <p>2. Sau khi đăng nhập, chuyển đến <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> và tạo một token mới.</p>
         <p>3. Sao chép token và dán vào bên dưới.</p>]]></string>
+    <string name="confirm_registration_required">Đăng ký với %1$s là bắt buộc.\n\nBạn cũng có thể tìm lại thông tin này sau trong mục “%2$s” tại phần cài đặt cho trang web này.</string>
+    <string name="confirm_registration_optional">Đăng ký với %1$s là tùy chọn.\n\nBạn cũng có thể tìm lại thông tin này sau trong mục “%2$s” tại phần cài đặt cho trang web này.</string>
 </resources>
