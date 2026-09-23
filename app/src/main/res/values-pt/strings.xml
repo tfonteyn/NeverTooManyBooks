@@ -990,4 +990,6 @@
         <p>1. Aceda a <a href="https://www.librarything.com">LibraryThing.com</a> e crie uma conta de utilizador gratuita, caso ainda não tenha uma.</p>
         <p>2. Após iniciar sessão, navegue até <a href="https://www.librarything.com/developer/tokens">Os Seus Tokens</a> e crie um novo token.</p>
         <p>3. Copie o token e cole-o abaixo.</p>]]></string>
+    <string name="confirm_registration_required">O registo em %1$s é obrigatório.\n\nPoderá também encontrar esta informação mais tarde na secção “%2$s” nas definições deste site.</string>
+    <string name="confirm_registration_optional">O registo em %1$s é opcional.\n\nPoderá também encontrar esta informação mais tarde na secção “%2$s” nas definições deste site.</string>
 </resources>

@@ -1003,4 +1003,6 @@
 <p>Clicca <b>Credenziali</b> nel menu a sinistra, selezionare <b>Crea credenziali</b> in alto, e fare clic su <b>API key<b>. Sotto <b>Restrizioni</b> scegli <b>Books API</b>.</p>
 <p>5. Copia la chiave:</p>
 <p>Un popup visualizzerà la chiave (una stringa che inizia con “AIza”). Copia la chiave e incollala qui sotto.</p>]]></string>
+    <string name="confirm_registration_required">La registrazione su %1$s è obbligatoria.\n\nPuoi trovare queste informazioni anche in un secondo momento nella sezione “%2$s” nelle impostazioni di questo sito.</string>
+    <string name="confirm_registration_optional">La registrazione su %1$s è facoltativa.\n\nPuoi trovare queste informazioni anche in un secondo momento nella sezione “%2$s” nelle impostazioni di questo sito.</string>
 </resources>

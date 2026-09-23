@@ -997,4 +997,6 @@
         <p>1. Dodieties uz <a href="https://www.librarything.com">LibraryThing.com</a> un reģistrējiet bezmaksas lietotāja kontu, ja jums tāda vēl nav.</p>
         <p>2. Pēc pieteikšanās dodieties uz <a href="https://www.librarything.com/developer/tokens">Tavi žetoni</a> un izveidojiet jaunu žetonu.</p>
         <p>3. Kopējiet žetonu un ielīmējiet to zemāk.</p>]]></string>
+    <string name="confirm_registration_required">Reģistrācija vietnē %1$s ir obligāta.\n\nŠo informāciju varēsiet atrast arī vēlāk šīs vietnes iestatījumu sadaļā “%2$s”.</string>
+    <string name="confirm_registration_optional">Reģistrācija vietnē %1$s nav obligāta.\n\nŠo informāciju varēsiet atrast arī vēlāk šīs vietnes iestatījumu sadaļā “%2$s”.</string>
 </resources>

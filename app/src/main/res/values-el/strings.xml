@@ -981,4 +981,6 @@ A question mark is written as the character semicolon: ';'
             <p>1. Μεταβείτε στο <a href="https://www.librarything.com">LibraryThing.com</a> και δημιουργήστε έναν δωρεάν λογαριασμό χρήστη, εάν δεν έχετε ήδη.</p>
             <p>2. Αφού συνδεθείτε, μεταβείτε στην ενότητα <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> και δημιουργήστε ένα νέο token.</p>
             <p>3. Αντιγράψτε το token και επικολλήστε το παρακάτω.</p>]]></string>
+    <string name="confirm_registration_required">Η εγγραφή στο %1$s είναι υποχρεωτική.\n\nΜπορείτε επίσης να βρείτε αυτές τις πληροφορίες αργότερα στην ενότητα «%2$s» στις ρυθμίσεις για αυτόν τον ιστότοπο.</string>
+    <string name="confirm_registration_optional">Η εγγραφή στο %1$s είναι προαιρετική.\n\nΜπορείτε επίσης να βρείτε αυτές τις πληροφορίες αργότερα στην ενότητα «%2$s» στις ρυθμίσεις για αυτόν τον ιστότοπο.</string>
 </resources>

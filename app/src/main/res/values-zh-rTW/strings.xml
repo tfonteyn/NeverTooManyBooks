@@ -963,4 +963,6 @@
         <p>1. 前往 <a href="https://www.librarything.com">LibraryThing.com</a> 註冊免費使用者帳號（若您尚未擁有）。</p>
         <p>2. 登入後，瀏覽至 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> 並建立新的金鑰。</p>
         <p>3. 複製該金鑰並貼在下方。</p>]]></string>
+    <string name="confirm_registration_required">註冊 %1$s 是必要的。\n\n您之後也可以在此網站設定中的「%2$s」區塊找到此資訊。</string>
+    <string name="confirm_registration_optional">註冊 %1$s 是可選的。\n\n您之後也可以在此網站設定中的「%2$s」區塊找到此資訊。</string>
 </resources>
