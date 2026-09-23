@@ -982,4 +982,6 @@
         <p>1. Gå till <a href="https://www.librarything.com">LibraryThing.com</a> och registrera ett kostnadsfritt användarkonto om du inte redan har ett.</p>
         <p>2. När du har loggat in navigerar du till <a href="https://www.librarything.com/developer/tokens">Dina tokens</a> och skapar en ny token.</p>
         <p>3. Kopiera token och klistra in den nedan.</p>]]></string>
+    <string name="confirm_registration_required">Registrering hos %1$s krävs.\n\nDu kan även hitta den här informationen vid ett senare tillfälle under avsnittet ”%2$s” i inställningarna för denna webbplats.</string>
+    <string name="confirm_registration_optional">Registrering hos %1$s är valfri.\n\nDu kan även hitta den här informationen vid ett senare tillfälle under avsnittet ”%2$s” i inställningarna för denna webbplats.</string>
 </resources>
