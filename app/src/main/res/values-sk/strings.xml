@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -1017,4 +1014,6 @@
             <p>1. Prejdite na <a href="https://www.librarything.com">LibraryThing.com</a> a zaregistrujte si bezplatný používateľský účet, ak ho ešte nemáte.</p>
             <p>2. Po prihlásení prejdite na <a href="https://www.librarything.com/developer/tokens">Vaše tokeny</a> a vytvorte nový token.</p>
             <p>3. Skopírujte token a vložte ho nižšie.</p>]]></string>
+    <string name="confirm_registration_required">Registrácia na %1$s je povinná.\n\nTúto informáciu nájdete neskôr aj v časti „%2$s“ v nastaveniach tejto stránky.</string>
+    <string name="confirm_registration_optional">Registrácia na %1$s je dobrovoľná.\n\nTúto informáciu nájdete neskôr aj v časti „%2$s“ v nastaveniach tejto stránky.</string>
 </resources>
