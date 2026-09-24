@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|«|»|‘|’)
@@ -992,17 +989,7 @@
             <p>1. Vai su <a href="https://www.librarything.com">LibraryThing.com</a> e registra un account gratuito se già non ne hai uno.</p>
             <p>2. Un volta effettuato l’accesso, vai su <a href="https://www.librarything.com/developer/tokens">Your tokens</a> e crea un nuovo token.</p>
             <p>3. Copia il token e incollalo sotto.</p>]]></string>
-    <string name="googlebooks_registration"><![CDATA[<p><b>Una chiave GoogleBooks API è <i>opzionale </i> per accedere al sito. Il servizio funziona anche senza, ma può avere funzioni limitate. Avrai bisogno di un account Google per farlo.</p>
-<p>1. Accedi a Google Cloud:</p>
-<p> Apri <a href="https://console.cloud.google.com/">https://console.cloud.google.com/ e accedi al tuo account Google.</p>
-<p>2. Crea un Nuovo progetto:</p>
-<p>Clicca il menu a tendina accanto al logo “Google Cloud” in alto a sinistra, seleziona <b> Nuovo progetto </b>, chiamarlo <i>Books API</i> e clicca su <b>Crea/b>.</p>
-<p>3. Accendi l’API:</p>
-<p>Clicca la barra di ricerca in alto, digita <i>Books API</i>, selezionala dall’elenco e fai clic sul pulsante <b>Enable</b>.</p>
-<p>4. Genera la tua chiave:</p>
-<p>Clicca <b>Credenziali</b> nel menu a sinistra, selezionare <b>Crea credenziali</b> in alto, e fare clic su <b>API key<b>. Sotto <b>Restrizioni</b> scegli <b>Books API</b>.</p>
-<p>5. Copia la chiave:</p>
-<p>Un popup visualizzerà la chiave (una stringa che inizia con “AIza”). Copia la chiave e incollala qui sotto.</p>]]></string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>Una chiave GoogleBooks API è <i>opzionale </i> per accedere al sito. Il servizio funziona anche senza, ma può avere funzioni limitate. Avrai bisogno di un account Google per farlo.</p>\n<p>1. Accedi a Google Cloud:</p>\n<p> Apri <a href=\"https://console.cloud.google.com/\">https://console.cloud.google.com/ e accedi al tuo account Google.</p>\n<p>2. Crea un Nuovo progetto:</p>\n<p>Clicca il menu a tendina accanto al logo “Google Cloud” in alto a sinistra, seleziona <b> Nuovo progetto </b>, chiamarlo <i>Books API</i> e clicca su <b>Crea/b>.</p>\n<p>3. Accendi l’API:</p>\n<p>Clicca la barra di ricerca in alto, digita <i>Books API</i>, selezionala dall’elenco e fai clic sul pulsante <b>Enable</b>.</p>\n<p>4. Genera la tua chiave:</p>\n<p>Clicca <b>Credenziali</b> nel menu a sinistra, selezionare <b>Crea credenziali</b> in alto, e fare clic su <b>API key<b>. Sotto <b>Restrizioni</b> scegli <b>Books API</b>.</p>\n<p>5. Copia la chiave:</p>\n<p>Un popup visualizzerà la chiave (una stringa che inizia con “AIza”). Copia la chiave e incollala qui sotto.</p>]]></string>
     <string name="confirm_registration_required">La registrazione su %1$s è obbligatoria.\n\nPuoi trovare queste informazioni anche in un secondo momento nella sezione “%2$s” nelle impostazioni di questo sito.</string>
     <string name="confirm_registration_optional">La registrazione su %1$s è facoltativa.\n\nPuoi trovare queste informazioni anche in un secondo momento nella sezione “%2$s” nelle impostazioni di questo sito.</string>
 </resources>
