@@ -1026,4 +1026,6 @@
             <p>1. Перейдите на <a href="https://www.librarything.com">LibraryThing.com</a> и зарегистрируйте бесплатную учётную запись, если у вас её ещё нет.</p>
             <p>2. После входа перейдите в раздел <a href="https://www.librarything.com/developer/tokens">Ваши токены</a> и создайте новый токен.</p>
             <p>3. Скопируйте токен и вставьте его ниже.</p>]]></string>
+    <string name="confirm_registration_required">Регистрация на %1$s обязательна.\n\nВы также сможете найти эту информацию позже в разделе «%2$s» в настройках этого сайта.</string>
+    <string name="confirm_registration_optional">Регистрация на %1$s необязательна.\n\nВы также сможете найти эту информацию позже в разделе «%2$s» в настройках этого сайта.</string>
 </resources>

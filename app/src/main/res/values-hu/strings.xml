@@ -979,4 +979,6 @@
         <p>1. Nyissa meg a <a href="https://www.librarything.com">LibraryThing.com</a> oldalt, és regisztráljon egy ingyenes felhasználói fiókot, ha még nem rendelkezik ilyennel.</p>
         <p>2. A bejelentkezés után navigáljon az <a href="https://www.librarything.com/developer/tokens">A tokenjeid</a> oldalra, és hozzon létre egy új tokent.</p>
         <p>3. Másolja ki a tokent, és illessze be alább.</p>]]></string>
+    <string name="confirm_registration_required">A regisztráció a(z) %1$s webhelyen kötelező.\n\nEzeket az információkat később is megtalálhatja az oldal beállításaiban a „%2$s” részben.</string>
+    <string name="confirm_registration_optional">A regisztráció a(z) %1$s webhelyen opcionális.\n\nEzeket az információkat később is megtalálhatja az oldal beállításaiban a „%2$s” részben.</string>
 </resources>
