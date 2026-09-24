@@ -17,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!--
+  --><!--
     Reference sites:
     https://www.abbreviations.com/
 
@@ -41,14 +39,10 @@
         cardinal
 
     https://www.omniglot.com/language/numerals.htm
--->
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools"
-           tools:locale="en">
+--><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <!-- region ========== Plurals. -->
     <plurals name="n_books">
         <item quantity="one">%1$d book</item>
@@ -732,7 +726,7 @@
     <!-- book format - any type of magazine which is
          not a traditional newspaper or academic journal.
          As defined in MARC21 cf008, char21 == g - Magazine, i - Serial zine, p - Periodical.
-    -->->
+    -->
     <string name="book_format_periodical">Periodical</string>
     <!-- -book format -->
     <string name="book_format_other">Other</string>
@@ -2244,7 +2238,8 @@
          out yourself. Please reach out via weblate or log an issue on the project
          github page if you have any questions.
      -->
-    <string name="googlebooks_registration"><![CDATA[<p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
+    <string name="googlebooks_registration">
+        <![CDATA[<p><b>A GoogleBooks API key is <i>optional</i> to access the site.</b> The service will work without one, but may be limited in function. You will need a Google account to do this.</p>
             <br>
             <p>1. Sign in to Google Cloud:</p>
             <p>Open <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> and sign in with your Google account.</p>
