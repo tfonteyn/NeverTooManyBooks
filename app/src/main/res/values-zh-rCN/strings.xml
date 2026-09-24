@@ -960,18 +960,7 @@
         <p>1. 转到 <a href="https://www.librarything.com">LibraryThing.com</a> 注册免费账户（假如还没有）</p>
         <p>2. 登录后转到 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a>，新建令牌。</p>
         <p>3. 复制令牌，把它粘贴在下面 。</p>]]></string>
-    <string name="googlebooks_registration"><![CDATA[<p><b>访问该站点 GoogleBooks API 密钥 是 <i>可选的</i> 。</b> 没有密钥该服务也工作，但功能可能受限。执行下列步骤需要 Google 账户。</p>
-            <br>
-            <p>1. 登录 Google Cloud：</p>
-            <p>打开 <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 并用 Google 账户登录。</p>
-            <p>2. 创建新项目：</p>
-            <p>单击左上方 "Google Cloud" 标志边上的下拉菜单，选择<b>New Project</b>，将其命名为<i>Books API</i>，单击 <b>Create</b>。</p>
-            <p>3. 打开 Books API：</p>
-            <p>单击顶部搜索栏，输入 <i>Books API</i>, 从列表选中它，单击 <b>Enable</b> 按钮。</p>
-            <p>4. 生成密钥：</p>
-            <p>单击左侧菜单中的 <b>Credentials</b> ，选择顶部的 <b>Create Credentials</b>，单击<b>API key</b>。在 <b>Restrictions</b> 下选择<b>Books API</b>。</p>
-            <p>5. 复制密钥：</p>
-            <p>密钥会显示在弹窗中。(以 `AIza` 开头的字符串)。复制它将它粘贴在下面。</p>]]></string>
+    <string name="googlebooks_registration"><![CDATA["<p><b>访问该站点 GoogleBooks API 密钥 是 <i>可选的</i> 。</b> 没有密钥该服务也工作，但功能可能受限。执行下列步骤需要 Google 账户。</p>\n            <br>\n            <p>1. 登录 Google Cloud：</p>\n            <p>打开 <a href=\"https://console.cloud.google.com/\">https://console.cloud.google.com/</a> 并用 Google 账户登录。</p>\n            <p>2. 创建新项目：</p>\n            <p>单击左上方 \"Google Cloud\" 标志边上的下拉菜单，选择<b>New Project</b>，将其命名为<i>Books API</i>，单击 <b>Create</b>。</p>\n            <p>3. 打开 Books API：</p>\n            <p>单击顶部搜索栏，输入 <i>Books API</i>, 从列表选中它，单击 <b>Enable</b> 按钮。</p>\n            <p>4. 生成密钥：</p>\n            <p>单击左侧菜单中的 <b>Credentials</b> ，选择顶部的 <b>Create Credentials</b>，单击<b>API key</b>。在 <b>Restrictions</b> 下选择<b>Books API</b>。</p>\n            <p>5. 复制密钥：</p>\n            <p>密钥会显示在弹窗中。(以 `AIza` 开头的字符串)。复制它将它粘贴在下面。</p>"]]></string>
     <string name="confirm_registration_required">注册 %1$s 是必需的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
     <string name="confirm_registration_optional">注册 %1$s 是可选的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
 </resources>
