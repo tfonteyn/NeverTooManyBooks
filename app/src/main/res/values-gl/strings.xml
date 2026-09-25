@@ -978,4 +978,19 @@
             <p>3. Copia o token e pégao abaixo.</p>]]></string>
     <string name="confirm_registration_required">Require rexistro con %1$s.\n\nEsta información tamén a podes atopar máis adiante na sección «%2$s» da configuración desta páxina web.</string>
     <string name="confirm_registration_optional">Rexistrarse en %1$s é opcional.\n\nEsta información tamén a podes atopar máis adiante na sección “%2$s” da configuración deste sitio web.</string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>Para acceder ao sitio é <i>opcional</i> ter unha chave API de GoogleBooks.</b> O servizo funcionará igualmente sen ela, pero moi limitado na súa función. Precísase unha conta Google para facer isto.</p>
+            <br>
+            <p>1. Conecta con Google Cloud:</p>
+            <p>Abre <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> e inicia sesión coa túa conta Google.</p>
+            <p>2. Crea un Proxecto Novo:</p>
+            <p>Preme no botón do menú principal arriba á esquerda, e logo <b>Seleccionar un proxecto</b>.</p>
+            <p>Preme no botón do menú de opción e escolle <b>Proxecto Novo</b>, dálle o nome <i>Books API</i>, e fai clic en <b>Crear</b>.</p>
+            <p>Na notificación, preme no proxecto ou usa de novo o menú <b>Seleccionar un proxecto</b>.</p>
+            <p>3. Activa a Books API:</p>
+            <p>Vai ao menú principal e escolle <b>APIs e servizos</b>, logo selecciona <b>Biblioteca</b>. Agora terás que poñer o teu dispositivo en horizontal. Na caixa de busca escribe \'books\', despraza cara abaixo e selecciona <b>Books API</b>.</p>
+            <p>Na seguinte pantalla toca <b>Activar</b> e logo xira o dispositivo a vertical de novo.</p>
+            <p>4. Crear a chave:</p>
+            <p>Preme o botón <b>Crear Credenciais</b>, escolle <i>Books API</i>, selecciona <i>Datos públicos</i>, e toca <b>Seguinte</b></p>
+            <p>Amosarase a chave (comeza con `AIza`). Copia a chave e asegúrate de premer <b>Feito</b></p>
+            <p>Pega a chave abaixo.</p>]]></string>
 </resources>
