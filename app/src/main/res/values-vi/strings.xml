@@ -961,6 +961,22 @@
         <p>1. Truy cập <a href="https://www.librarything.com">LibraryThing.com</a> và đăng ký tài khoản người dùng miễn phí nếu bạn chưa có.</p>
         <p>2. Sau khi đăng nhập, chuyển đến <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> và tạo một token mới.</p>
         <p>3. Sao chép token và dán vào bên dưới.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Khóa GoogleBooks API là <i>không bắt buộc</i> để truy cập trang web.</b> Dịch vụ vẫn sẽ hoạt động nếu không có khóa, nhưng có thể bị giới hạn chức năng. Bạn sẽ cần một tài khoản Google để thực hiện việc này.</p>
+        <br>
+        <p>1. Đăng nhập vào Google Cloud:</p>
+        <p>Mở <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> và đăng nhập bằng tài khoản Google của bạn.</p>
+        <p>2. Tạo một dự án mới:</p>
+        <p>Nhấn vào nút menu chính ở góc trên bên trái, sau đó chọn <b>Select a project</b>.</p>
+        <p>Nhấn vào menu tùy chọn và chọn <b>New Project</b>, đặt tên là <i>Books API</i>, rồi nhấn vào <b>Create</b>.</p>
+        <p>Trên thông báo, nhấn vào dự án hoặc sử dụng lại menu để chọn <b>Select a project</b>.</p>
+        <p>3. Bật Books API:</p>
+        <p>Nhấn vào menu chính và chọn <b>APIs and services</b>, sau đó chọn <b>Library</b>. Bây giờ bạn cần xoay ngang thiết bị của mình. Trong ô tìm kiếm, nhập ’books’, cuộn xuống và chọn ô <b>Books API</b>.</p>
+        <p>Màn hình tiếp theo, nhấn vào <b>Enable</b>, sau đó xoay thiết bị của bạn dọc lại.</p>
+        <p>4. Tạo khóa:</p>
+        <p>Nhấn vào nút <b>Create Credentials</b>, chọn <i>Books API</i>, chọn <i>Public data</i>, sau đó nhấn vào <b>Next</b>.</p>
+        <p>Khóa sẽ được hiển thị (một chuỗi bắt đầu bằng `AIza`). Sao chép khóa và đảm bảo nhấn vào <b>Done</b>.</p>
+        <p>Dán khóa vào bên dưới.</p>]]></string>
     <string name="confirm_registration_required">Đăng ký với %1$s là bắt buộc.\n\nBạn cũng có thể tìm lại thông tin này sau trong mục “%2$s” tại phần cài đặt cho trang web này.</string>
     <string name="confirm_registration_optional">Đăng ký với %1$s là tùy chọn.\n\nBạn cũng có thể tìm lại thông tin này sau trong mục “%2$s” tại phần cài đặt cho trang web này.</string>
 </resources>

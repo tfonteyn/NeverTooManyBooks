@@ -978,6 +978,22 @@
 <p>1. Gehe zu <a href="https://www.librarything.com">LibraryThing.com</a> und erstelle ein kostenloses Benutzerkonto, falls du noch keines hast.</p>
 <p>2. Navigiere nach dem Anmelden zu <a href="https://www.librarything.com/developer/tokens">Ihre Token</a> und erstelle ein neues Token.</p>
 <p>3. Kopiere das Token und füge es unten ein.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Ein GoogleBooks-API-Schlüssel ist <i>optional</i>, um auf die Website zuzugreifen.</b> Der Dienst funktioniert auch ohne Schlüssel, ist jedoch möglicherweise in seinem Funktionsumfang eingeschränkt. Sie benötigen hierfür ein Google-Konto.</p>
+        <br>
+        <p>1. Bei Google Cloud anmelden:</p>
+        <p>Öffnen Sie <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> und melden Sie sich mit Ihrem Google-Konto an.</p>
+        <p>2. Ein neues Projekt erstellen:</p>
+        <p>Tippen Sie oben links auf die Hauptmenü-Schaltfläche und wählen Sie <b>Projekt auswählen</b>.</p>
+        <p>Tippen Sie auf das Optionsmenü, wählen Sie <b>Neues Projekt</b>, nennen Sie es <i>Books API</i> und klicken Sie auf <b>Erstellen</b>.</p>
+        <p>Tippen Sie in der Benachrichtigung auf das Projekt oder nutzen Sie erneut das Menü, um <b>Projekt auswählen</b> anzutippen.</p>
+        <p>3. Die Books API aktivieren:</p>
+        <p>Tippen Sie auf das Hauptmenü, wählen Sie <b>APIs und Dienste</b> und anschließend <b>Bibliothek</b>. Sie müssen Ihr Gerät nun ins Querformat drehen. Geben Sie in das Suchfeld ’books’ ein, scrollen Sie nach unten und wählen Sie die Kachel <b>Books API</b> aus.</p>
+        <p>Tippen Sie auf dem nächsten Bildschirm auf <b>Aktivieren</b> und drehen Sie Ihr Gerät wieder ins Hochformat.</p>
+        <p>4. Den Schlüssel erstellen:</p>
+        <p>Tippen Sie auf die Schaltfläche <b>Anmeldedaten erstellen</b>, wählen Sie <i>Books API</i>, wählen Sie <i>Öffentliche Daten</i> und tippen Sie auf <b>Weiter</b>.</p>
+        <p>Der Schlüssel wird angezeigt (eine Zeichenfolge, die mit `AIza` beginnt). Kopieren Sie den Schlüssel und stellen Sie sicher, dass Sie auf <b>Fertig</b> tippen.</p>
+        <p>Fügen Sie den Schlüssel unten ein.</p>]]></string>
     <string name="confirm_registration_required">Eine Registrierung bei %1$s ist erforderlich.\n\nSie können diese Informationen auch zu einem späteren Zeitpunkt unter „%2$s“ in den Einstellungen für diese Website finden.</string>
     <string name="confirm_registration_optional">Eine Registrierung bei %1$s ist optional.\n\nSie können diese Informationen auch zu einem späteren Zeitpunkt unter „%2$s“ in den Einstellungen für diese Website finden.</string>
 </resources>

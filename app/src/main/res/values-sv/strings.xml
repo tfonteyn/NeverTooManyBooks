@@ -982,6 +982,22 @@
         <p>1. Gå till <a href="https://www.librarything.com">LibraryThing.com</a> och registrera ett kostnadsfritt användarkonto om du inte redan har ett.</p>
         <p>2. När du har loggat in navigerar du till <a href="https://www.librarything.com/developer/tokens">Dina tokens</a> och skapar en ny token.</p>
         <p>3. Kopiera token och klistra in den nedan.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>En GoogleBooks API-nyckel är <i>valfri</i> för att få åtkomst till webbplatsen.</b> Tjänsten fungerar utan den, men kan ha begränsad funktionalitet. Du behöver ett Google-konto för att göra detta.</p>
+        <br>
+        <p>1. Logga in på Google Cloud:</p>
+        <p>Öppna <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> och logga in med ditt Google-konto.</p>
+        <p>2. Skapa ett nytt projekt:</p>
+        <p>Tryck på huvudmenyknappen längst upp till vänster och välj <b>Select a project</b>.</p>
+        <p>Tryck på alternativmenyn och välj <b>New Project</b>, namnge det <i>Books API</i> och klicka på <b>Create</b>.</p>
+        <p>I aviseringen trycker du på projektet, eller använder menyn igen för att välja <b>Select a project</b>.</p>
+        <p>3. Aktivera Books API:</p>
+        <p>Tryck på huvudmenyn och välj <b>APIs and services</b>, välj sedan <b>Library</b>. Du behöver nu tilta din enhet horisontellt. I sökrutan skriver du ’books’, bläddrar ner och väljer rutan för <b>Books API</b>.</p>
+        <p>På nästa skärm trycker du på <b>Enable</b> och vinklar sedan tillbaka din enhet vertikalt igen.</p>
+        <p>4. Skapa nyckeln:</p>
+        <p>Tryck på knappen <b>Create Credentials</b>, välj <i>Books API</i>, välj <i>Public data</i> och tryck sedan på <b>Next</b>.</p>
+        <p>Nyckeln visas (en sträng som börjar med `AIza`). Kopiera nyckeln och se till att trycka på <b>Done</b>.</p>
+        <p>Klistra in nyckeln nedan.</p>]]></string>
     <string name="confirm_registration_required">Registrering hos %1$s krävs.\n\nDu kan även hitta den här informationen vid ett senare tillfälle under avsnittet ”%2$s” i inställningarna för denna webbplats.</string>
     <string name="confirm_registration_optional">Registrering hos %1$s är valfri.\n\nDu kan även hitta den här informationen vid ett senare tillfälle under avsnittet ”%2$s” i inställningarna för denna webbplats.</string>
 </resources>

@@ -399,7 +399,7 @@
     <string name="option_import_books_option_new_only">Nouveaux livres uniquement</string>
     <string name="lbl_import_options">Sélectionnez ce qui sera importé.</string>
     <string name="lbl_importing">Importation en cours…</string>
-    <string name="lbl_edition_info">Info. sur l\'édition</string>
+    <string name="lbl_edition_info">Info. sur l’édition</string>
     <string name="lbl_is_complete">Est complet</string>
     <string name="lbl_keywords">Mots clés</string>
     <string name="lbl_language">Langue</string>
@@ -992,6 +992,22 @@
         <p>1. Rendez-vous sur <a href="https://www.librarything.com">LibraryThing.com</a> et créez un compte utilisateur gratuit si vous n’en avez pas encore.</p>
         <p>2. Une fois connecté, accédez à <a href="https://www.librarything.com/developer/tokens">Vos jetons</a> et créez un nouveau jeton.</p>
         <p>3. Copiez le jeton et collez-le ci-dessous.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Une clé API GoogleBooks est <i>facultative</i> pour accéder au site.</b> Le service fonctionnera sans clé, mais ses fonctionnalités peuvent être limitées. Vous aurez besoin d’un compte Google pour effectuer cette opération.</p>
+        <br>
+        <p>1. Connectez-vous à Google Cloud :</p>
+        <p>Ouvrez <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> et connectez-vous avec votre compte Google.</p>
+        <p>2. Créez un nouveau projet :</p>
+        <p>Appuyez sur le bouton du menu principal en haut à gauche, puis sur <b>Sélectionner un projet</b>.</p>
+        <p>Appuyez sur le menu des options, sélectionnez <b>Nouveau projet</b>, nommez-le <i>Books API</i>, puis cliquez sur <b>Créer</b>.</p>
+        <p>Dans la notification, appuyez sur le projet, ou utilisez à nouveau le menu pour <b>Sélectionner un projet</b>.</p>
+        <p>3. Activez l’API Books :</p>
+        <p>Appuyez sur le menu principal, sélectionnez <b>APIs et services</b>, puis sélectionnez <b>Bibliothèque</b>. Vous devrez maintenant faire pivoter votre appareil à l’horizontale. Dans la zone de recherche, tapez ’books’, faites défiler vers le bas et sélectionnez la tuile <b>Books API</b>.</p>
+        <p>Sur l’écran suivant, appuyez sur <b>Activer</b>, puis remettez votre appareil à la verticale.</p>
+        <p>4. Créez la clé :</p>
+        <p>Appuyez sur le bouton <b>Créer des identifiants</b>, sélectionnez <i>Books API</i>, sélectionnez <i>Données publiques</i>, puis appuyez sur <b>Suivant</b>.</p>
+        <p>La clé s’affichera (une chaîne commençant par `AIza`). Copiez la clé et veillez à appuyer sur <b>Terminer</b>.</p>
+        <p>Collez la clé ci-dessous.</p>]]></string>
     <string name="confirm_registration_required">L’inscription sur %1$s est obligatoire.\n\nVous pourrez également retrouver ces informations ultérieurement dans la section « %2$s » des paramètres de ce site.</string>
     <string name="confirm_registration_optional">L’inscription sur %1$s est facultative.\n\nVous pourrez également retrouver ces informations ultérieurement dans la section « %2$s » des paramètres de ce site.</string>
 </resources>

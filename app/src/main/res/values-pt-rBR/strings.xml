@@ -363,6 +363,22 @@
         <p>1. Acesse <a href="https://www.librarything.com">LibraryThing.com</a> e crie uma conta de usuário gratuita se ainda não tiver uma.</p>
         <p>2. Assim que fizer login, navegue até <a href="https://www.librarything.com/developer/tokens">Seus Tokens</a> e crie um novo token.</p>
         <p>3. Copie o token e cole-o abaixo.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Uma chave de API do GoogleBooks é <i>opcional</i> para acessar o site.</b> O serviço funcionará sem ela, mas pode ter funcionalidades limitadas. Você precisará de uma conta do Google para fazer isso.</p>
+        <br>
+        <p>1. Faça login no Google Cloud:</p>
+        <p>Acesse <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> e faça login com sua conta do Google.</p>
+        <p>2. Crie um novo projeto:</p>
+        <p>Toque no botão do menu principal no canto superior esquerdo e selecione <b>Selecionar um projeto</b>.</p>
+        <p>Toque no menu de opções, selecione <b>Novo projeto</b>, nomeie como <i>Books API</i> e clique em <b>Criar</b>.</p>
+        <p>Na notificação, toque no projeto ou use o menu novamente para <b>Selecionar um projeto</b>.</p>
+        <p>3. Ative a Books API:</p>
+        <p>Toque no menu principal e selecione <b>APIs e serviços</b>, depois selecione <b>Biblioteca</b>. Agora você precisará virar seu dispositivo na horizontal. Na caixa de pesquisa, digite ’books’, role para baixo e selecione o card da <b>Books API</b>.</p>
+        <p>Na tela seguinte, toque em <b>Ativar</b> e depois vire o dispositivo na vertical novamente.</p>
+        <p>4. Crie a chave:</p>
+        <p>Toque no botão <b>Criar credenciais</b>, selecione <i>Books API</i>, selecione <i>Dados públicos</i> e toque em <b>Próximo</b>.</p>
+        <p>A chave será exibida (uma string começando com `AIza`). Copie a chave e certifique-se de tocar em <b>Concluído</b>.</p>
+        <p>Cole a chave abaixo.</p>]]></string>
     <string name="confirm_registration_required">O cadastro em %1$s é obrigatório.\n\nVocê também poderá encontrar esta informação mais tarde na seção “%2$s” nas configurações deste site.</string>
     <string name="confirm_registration_optional">O cadastro em %1$s é opcional.\n\nVocê também poderá encontrar esta informação mais tarde na seção “%2$s” nas configurações deste site.</string>
 </resources>

@@ -1019,6 +1019,22 @@
             <p>1. Przejdź na <a href="https://www.librarything.com">LibraryThing.com</a> i zarejestruj darmowe konto użytkownika, jeśli jeszcze go nie masz..</p>
             <p>2. Po zalogowaniu przejdź do <a href="https://www.librarything.com/developer/tokens">Twoje Tokeny</a> i utwórz nowy token.</p>
             <p>3. Skopiuj token i wklej go poniżej.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Klucz API GoogleBooks jest <i>opcjonalny</i>, aby uzyskać dostęp do serwisu.</b> Usługa będzie działać bez niego, ale jej funkcjonalność może być ograniczona. Do wykonania tej czynności potrzebne będzie konto Google.</p>
+        <br>
+        <p>1. Zaloguj się do Google Cloud:</p>
+        <p>Otwórz stronę <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> i zaloguj się za pomocą swojego konta Google.</p>
+        <p>2. Utwórz nowy projekt:</p>
+        <p>Dotknij przycisku menu głównego w lewym górnym rogu, a następnie wybierz <b>Wybierz projekt</b>.</p>
+        <p>Dotknij przycisku menu opcji i wybierz <b>Nowy projekt</b>, nazwij go <i>Books API</i> i kliknij <b>Utwórz</b>.</p>
+        <p>W powiadomieniu dotknij projektu lub użyj menu ponownie, aby kliknąć <b>Wybierz projekt</b>.</p>
+        <p>3. Włącz Books API:</p>
+        <p>Dotknij menu głównego i wybierz <b>Interfejsy API i usługi</b>, a następnie wybierz <b>Biblioteka</b>. Musisz teraz obrócić urządzenie poziomo. W polu wyszukiwania wpisz ’books’, przewiń w dół i wybierz kafel <b>Books API</b>.</p>
+        <p>Na następnym ekranie dotknij <b>Włącz</b>, a następnie ponownie obróć urządzenie pionowo.</p>
+        <p>4. Utwórz klucz:</p>
+        <p>Dotknij przycisku <b>Utwórz dane logowania</b>, wybierz <i>Books API</i>, wybierz <i>Dane publiczne</i>, a następnie dotknij <b>Dalej</b>.</p>
+        <p>Klucz zostanie wyświetlony (ciąg znaków rozpoczynający się od `AIza`). Skopiuj klucz i upewnij się, że dotkniesz <b>Gotowe</b>.</p>
+        <p>Wklej klucz poniżej.</p>]]></string>
     <string name="confirm_registration_required">Rejestracja w witrynie %1$s jest wymagana.\n\nTe informacje można również znaleźć w późniejszym terminie w sekcji „%2$s” w ustawieniach tej witryny.</string>
     <string name="confirm_registration_optional">Rejestracja w witrynie %1$s jest opcjonalna.\n\nTe informacje można również znaleźć w późniejszym terminie w sekcji „%2$s” w ustawieniach tej witryny.</string>
 </resources>

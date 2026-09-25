@@ -978,6 +978,22 @@
         <p>1. Ga naar <a href="https://www.librarything.com">LibraryThing.com</a> en maak een gratis gebruikersaccount aan als je er nog geen hebt.</p>
         <p>2. Ga nadat je bent ingelogd naar <a href="https://www.librarything.com/developer/tokens">Uw Tokens</a> en maak een nieuw token aan.</p>
         <p>3. Kopieer het token en plak het hieronder.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Een GoogleBooks API-sleutel is <i>optioneel</i> om toegang te krijgen tot de site.</b> De dienst werkt ook zonder sleutel, maar is mogelijk beperkt in functionaliteit. Je hebt hiervoor een Google-account nodig.</p>
+        <br>
+        <p>1. Log in bij Google Cloud:</p>
+        <p>Open <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> en log in met je Google-account.</p>
+        <p>2. Maak een nieuw project aan:</p>
+        <p>Tik op de hoofdmenuknop linksboven en kies <b>Select a project</b>.</p>
+        <p>Tik op het optiemenu, selecteer <b>New Project</b>, noem het <i>Books API</i> en klik op <b>Create</b>.</p>
+        <p>Tik in de melding op het project, of gebruik het menu opnieuw om <b>Select a project</b> te kiezen.</p>
+        <p>3. Schakel de Books API in:</p>
+        <p>Tik op het hoofdmenu en selecteer <b>APIs and services</b>, en kies vervolgens <b>Library</b>. Je kan je apparaat nu best horizontaal kantelen. Typ in het zoekveld ’books’, scrol omlaag en selecteer de <b>Books API</b>-tegel.</p>
+        <p>Tik in het volgende scherm op <b>Enable</b> en draai je apparaat weer rechtop.</p>
+        <p>4. Maak de sleutel aan:</p>
+        <p>Tik op de knop <b>Create Credentials</b>, selecteer <i>Books API</i>, kies <i>Public data</i> en tik op <b>Next</b>.</p>
+        <p>De sleutel wordt weergegeven (een reeks die begint met `AIza`). Kopieer de sleutel en zorg ervoor dat je op <b>Done</b> tikt.</p>
+        <p>Plak de sleutel hieronder.</p>]]></string>
     <string name="confirm_registration_required">Registratie bij %1$s is verplicht.\n\nU kunt deze informatie op een later tijdstip ook terugvinden onder het gedeelte “%2$s” in de instellingen voor deze site.</string>
     <string name="confirm_registration_optional">Registratie bij %1$s is optioneel.\n\nU kunt deze informatie op een later tijdstip ook terugvinden onder het gedeelte “%2$s” in de instellingen voor deze site.</string>
 </resources>

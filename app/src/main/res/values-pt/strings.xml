@@ -990,6 +990,22 @@
         <p>1. Aceda a <a href="https://www.librarything.com">LibraryThing.com</a> e crie uma conta de utilizador gratuita, caso ainda não tenha uma.</p>
         <p>2. Após iniciar sessão, navegue até <a href="https://www.librarything.com/developer/tokens">Os Seus Tokens</a> e crie um novo token.</p>
         <p>3. Copie o token e cole-o abaixo.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Uma chave de API do GoogleBooks é <i>opcional</i> para aceder ao site.</b> O serviço funcionará sem ela, mas pode ter funcionalidades limitadas. Necessitará de uma conta do Google para fazer isto.</p>
+        <br>
+        <p>1. Inicie sessão no Google Cloud:</p>
+        <p>Aceda a <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> e inicie sessão com a sua conta do Google.</p>
+        <p>2. Crie um novo projeto:</p>
+        <p>Toque no botão do menu principal no canto superior esquerdo e selecione <b>Selecionar um projeto</b>.</p>
+        <p>Toque no menu de opções, selecione <b>Novo projeto</b>, dê-lhe o nome <i>Books API</i> e clique em <b>Criar</b>.</p>
+        <p>Na notificação, toque no projeto ou utilize novamente o menu para <b>Selecionar um projeto</b>.</p>
+        <p>3. Ative a Books API:</p>
+        <p>Toque no menu principal e selecione <b>APIs e serviços</b>, depois selecione <b>Biblioteca</b>. Terá agora de rodar o seu dispositivo para a horizontal. Na caixa de pesquisa, escreva ’books’, deslize para baixo e selecione o painel da <b>Books API</b>.</p>
+        <p>No ecrã seguinte, toque em <b>Ativar</b> e, em seguida, volte a colocar o dispositivo na vertical.</p>
+        <p>4. Crie a chave:</p>
+        <p>Toque no botão <b>Criar credenciais</b>, selecione <i>Books API</i>, selecione <i>Dados públicos</i> e toque em <b>Seguinte</b>.</p>
+        <p>A chave será apresentada (uma sequência de carateres a começar por `AIza`). Copie a chave e certifique-se de que toca em <b>Concluído</b>.</p>
+        <p>Cole a chave abaixo.</p>]]></string>
     <string name="confirm_registration_required">O registo em %1$s é obrigatório.\n\nPoderá também encontrar esta informação mais tarde na secção “%2$s” nas definições deste site.</string>
     <string name="confirm_registration_optional">O registo em %1$s é opcional.\n\nPoderá também encontrar esta informação mais tarde na secção “%2$s” nas definições deste site.</string>
 </resources>

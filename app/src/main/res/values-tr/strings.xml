@@ -982,6 +982,22 @@
         <p>1. <a href="https://www.librarything.com">LibraryThing.com</a> adresine gidin ve henüz bir hesabınız yoksa ücretsiz bir kullanıcı hesabı oluşturun.</p>
         <p>2. Giriş yaptıktan sonra <a href="https://www.librarything.com/developer/tokens">Jetonlariniz</a> sayfasına gidin ve yeni bir belirteç oluşturun.</p>
         <p>3. Belirteci kopyalayın ve aşağıya yapıştırın.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>GoogleBooks API anahtarı siteye erişmek için <i>isteğe bağlıdır</i>.</b> Hizmet anahtar olmadan da çalışacaktır, ancak işlevselliği kısıtlanabilir. Bunu yapmak için bir Google hesabına ihtiyacınız olacak.</p>
+        <br>
+        <p>1. Google Cloud’da oturum açın:</p>
+        <p><a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> adresini açın ve Google hesabınızla oturum açın.</p>
+        <p>2. Yeni bir proje oluşturun:</p>
+        <p>Sol üstteki ana menü düğmesine dokunun, ardından <b>Select a project</b> seçeneğini belirleyin.</p>
+        <p>Seçenekler menüsü düğmesine dokunun, <b>New Project</b> seçeneğini belirleyin, projeyi <i>Books API</i> olarak adlandırın ve <b>Create</b> düğmesine tıklayın.</p>
+        <p>Bildirimde projeye dokunun veya <b>Select a project</b> seçeneğini belirlemek için menüyü tekrar kullanın.</p>
+        <p>3. Books API’yi açın:</p>
+        <p>Ana menüye dokunun ve <b>APIs and services</b> seçeneğini, ardından <b>Library</b> seçeneğini belirleyin. Şimdi cihazınızı yatay konumda tutmanız gerekecek. Arama kutusuna ’books’ yazın, aşağı kaydırın ve <b>Books API</b> kutucuğunu seçin.</p>
+        <p>Sonraki ekranda <b>Enable</b> düğmesine dokunun, ardından cihazınızı tekrar dikey konuma getirin.</p>
+        <p>4. Anahtarı oluşturun:</p>
+        <p><b>Create Credentials</b> düğmesine dokunun, <i>Books API</i> seçeneğini belirleyin, <i>Public data</i> seçeneğini seçin ve ardından <b>Next</b> düğmesine dokunun.</p>
+        <p>Anahtar görüntülenecektir (`AIza` ile başlayan bir dize). Anahtarı kopyalayın ve <b>Done</b> düğmesine dokunduğunuzdan emin olun.</p>
+        <p>Anahtarı aşağıya yapıştırın.</p>]]></string>
     <string name="confirm_registration_required">%1$s ile kaydolmak zorunludur.\n\nBu bilgiye daha sonraki bir tarihte bu sitenin ayarlarındaki “%2$s” bölümünden de ulaşabilirsiniz.</string>
     <string name="confirm_registration_optional">%1$s ile kaydolmak isteğe bağlıdır.\n\nBu bilgiye daha sonraki bir tarihte bu sitenin ayarlarındaki “%2$s” bölümünden de ulaşabilirsiniz.</string>
 </resources>

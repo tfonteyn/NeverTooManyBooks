@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -235,6 +236,22 @@
 <p>1. Far til <a href="https://www.librarything.com">LibraryThing.com</a> og stofna ein ókeypis brúkarakontu, um tú ikki áður hevur eina.</p>
 <p>2. Panir tú ert ritaður inn, fært tú til <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> og stofnar eitt nýtt tekin.</p>
 <p>3. Avrita teknið og lím tað inn niðanfyri.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Ein GoogleBooks API-nykil er <i>valfríur</i> fyri at fáa atgongd til síðuna.</b> Tænastan virkar uttan nykil, men kann hava avmarkaðan virkisførleika. Tú skalt brúka eina Google-konto fyri at gera detta.</p>
+        <br>
+        <p>1. Rita inn á Google Cloud:</p>
+        <p>Læt upp <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> og rita inn við tínari Google-konto.</p>
+        <p>2. Stovna eina nýggja verkætlan:</p>
+        <p>Trýst á høvuðsmatskráknøttin ovast til vinstru, og vel síðan <b>Select a project</b>.</p>
+        <p>Trýst á valmatskráknøttin, vel <b>New Project</b>, gev henni navnið <i>Books API</i>, og trýst á <b>Create</b>.</p>
+        <p>Á fráboðanini trýstur tú á verkætlanina, ella brúka matskránna aftur fyri at velja <b>Select a project</b>.</p>
+        <p>3. Tenda fyri Books API:</p>
+        <p>Trýst á høvuðsmatskránna og vel <b>APIs and services</b>, og vel síðan <b>Library</b>. Tú mást nú venda tólum tínum vatnrætt. Í leitiøkið skrivar tú ’books’, rulla niður, og vel <b>Books API</b> flísina.</p>
+        <p>Á næsta skerminum trýstur tú á <b>Enable</b>, og vend síðan tólinum lodrætt aftur.</p>
+        <p>4. Stovna nykilin:</p>
+        <p>Trýst á knøttin <b>Create Credentials</b>, vel <i>Books API</i>, vel <i>Public data</i>, og trýst síðan á <b>Next</b>.</p>
+        <p>Nykilin verður sýndur (ein teknrað sum byrjar við `AIza`). Avrita nykilin, og tryggja tær at trýsta á <b>Done</b>.</p>
+        <p>Lím nykilin inn niðanfyri.</p>]]></string>
     <string name="confirm_registration_required">Tilmelding hjá %1$s er kravd.\n\nTú kanst eisini finna hesar upplýsingar seinni undir “%2$s”-partinum í Stillingum fyri hesa síðuna.</string>
     <string name="confirm_registration_optional">Tilmelding hjá %1$s er valfrí.\n\nTú kanst eisini finna hesar upplýsingar seinni undir “%2$s”-partinum í Stillingum fyri hesa síðuna.</string>
 </resources>
