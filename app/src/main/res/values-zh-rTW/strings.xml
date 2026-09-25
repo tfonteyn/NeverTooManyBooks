@@ -963,6 +963,22 @@
         <p>1. 前往 <a href="https://www.librarything.com">LibraryThing.com</a> 註冊免費使用者帳號（若您尚未擁有）。</p>
         <p>2. 登入後，瀏覽至 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a> 並建立新的金鑰。</p>
         <p>3. 複製該金鑰並貼在下方。</p>]]></string>
+    <string name="googlebooks_registration">
+        <![CDATA[<p><b>訪問該站點 GoogleBooks API 金鑰 是 <i>選填的</i> 。</b> 沒有金鑰該服務也能運作，但功能可能受限。執行下列步驟需要 Google 帳戶。</p>
+        <br>
+        <p>1. 登入 Google Cloud：</p>
+        <p>開啟 <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 並用 Google 帳戶登入。</p>
+        <p>2. 建立新專案：</p>
+        <p>點選左上角主選單按鈕，然後 <b>選擇專案</b>。</p>
+        <p>點選選項按鈕選單，選擇 <b>新增專案</b>，將其命名為 <i>Books API</i>，點選 <b>建立</b>。</p>
+        <p>在通知上，點選該專案，或者再次使用該選單 <b>選擇專案</b>。</p>
+        <p>3. 開啟 Books API：</p>
+        <p>點選主選單選擇 <b>API 和服務</b>，然後選擇 <b>程式庫</b>。你現在需要將裝置旋轉為橫向。在搜尋方塊中，輸入 ’books’，向下捲動，選擇 <b>Books API</b> 磁磚。</p>
+        <p>在下一個畫面中，點選 <b>啟用</b>，然後再次將裝置轉回直向。</p>
+        <p>4. 建立金鑰：</p>
+        <p>點選 <b>建立憑證</b> 按鈕，選擇 <i>Books API</i>，選擇 <i>公開資料</i>，然後點選 <b>下一步</b></p>
+        <p>將顯示該金鑰 ( `AIza` 開頭的字串)。複製該金鑰並確保點選 <b>完成</b></p>
+        <p>在下方貼上金鑰。</p>]]></string>
     <string name="confirm_registration_required">註冊 %1$s 是必要的。\n\n您之後也可以在此網站設定中的「%2$s」區塊找到此資訊。</string>
     <string name="confirm_registration_optional">註冊 %1$s 是可選的。\n\n您之後也可以在此網站設定中的「%2$s」區塊找到此資訊。</string>
 </resources>

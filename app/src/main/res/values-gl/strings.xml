@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -983,14 +984,14 @@
             <p>1. Conecta con Google Cloud:</p>
             <p>Abre <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> e inicia sesión coa túa conta Google.</p>
             <p>2. Crea un Proxecto Novo:</p>
-            <p>Preme no botón do menú principal arriba á esquerda, e logo <b>Seleccionar un proxecto</b>.</p>
-            <p>Preme no botón do menú de opción e escolle <b>Proxecto Novo</b>, dálle o nome <i>Books API</i>, e fai clic en <b>Crear</b>.</p>
-            <p>Na notificación, preme no proxecto ou usa de novo o menú <b>Seleccionar un proxecto</b>.</p>
+            <p>Preme no botón do menú principal arriba á esquerda, e logo <b>Select a project</b>.</p>
+            <p>Preme no botón do menú de opción e escolle <b>New Project</b>, dálle o nome <i>Books API</i>, e fai clic en <b>Create</b>.</p>
+            <p>Na notificación, preme no proxecto ou usa de novo o menú <b>Select a project</b>.</p>
             <p>3. Activa a Books API:</p>
-            <p>Vai ao menú principal e escolle <b>APIs e servizos</b>, logo selecciona <b>Biblioteca</b>. Agora terás que poñer o teu dispositivo en horizontal. Na caixa de busca escribe \'books\', despraza cara abaixo e selecciona <b>Books API</b>.</p>
-            <p>Na seguinte pantalla toca <b>Activar</b> e logo xira o dispositivo a vertical de novo.</p>
+            <p>Vai ao menú principal e escolle <b>APIs and services</b>, logo selecciona <b>Library</b>. Agora terás que poñer o teu dispositivo en horizontal. Na caixa de busca escribe ’books’, despraza cara abaixo e selecciona <b>Books API</b>.</p>
+            <p>Na seguinte pantalla toca <b>Enable</b> e logo xira o dispositivo a vertical de novo.</p>
             <p>4. Crear a chave:</p>
-            <p>Preme o botón <b>Crear Credenciais</b>, escolle <i>Books API</i>, selecciona <i>Datos públicos</i>, e toca <b>Seguinte</b></p>
-            <p>Amosarase a chave (comeza con `AIza`). Copia a chave e asegúrate de premer <b>Feito</b></p>
+            <p>Preme o botón <b>Create Credentials</b>, escolle <i>Books API</i>, selecciona <i>Public data</i>, e toca <b>Next</b></p>
+            <p>Amosarase a chave (comeza con `AIza`). Copia a chave e asegúrate de premer <b>Done</b></p>
             <p>Pega a chave abaixo.</p>]]></string>
 </resources>

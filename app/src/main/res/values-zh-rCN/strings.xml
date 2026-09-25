@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -960,23 +961,22 @@
         <p>1. 转到 <a href="https://www.librarything.com">LibraryThing.com</a> 注册免费账户（假如还没有）</p>
         <p>2. 登录后转到 <a href="https://www.librarything.com/developer/tokens">Your Tokens</a>，新建令牌。</p>
         <p>3. 复制令牌，把它粘贴在下面 。</p>]]></string>
-    <string name="googlebooks_registration"><![CDATA[<p><b>访问该站点 GoogleBooks API 密钥 是 <i>可选的</i> 。</b> 没有密钥该服务也工作，但功能可能受限。执行下列步骤需要 Google 账户。</
-p>
-            <br>
-            <p>1. 登录 Google Cloud：</p>
-            <p>打开 <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 并用 Google 账户登录。</p>
-            <p>2. 创建新项目：</p>
-            <p>单击左上角主菜单按钮，然后 <b>Select a project</b>。</p>
-            <p>单击选项按钮菜单，选择 <b>New Project</b>，将其命名为 <i>Books API</i>，单击 <b>Create</b>。</p>
-            <p>在通知上，单击该项目，或者再次使用该菜单 <b>Select a project</b>。</p>
-            <p>3. 打开 Books API：</p>
-            <p>单击主菜单选择 <b>APIs and services</b>，然后选择 <b>Library</b>。你现在需要向水平方向倾斜你的设备。在搜索框中，输入 \'books\'，向下滚动，
-选择 <b>Books API</b> 图块。</p>
-            <p>在下个屏幕中，单击 <b>Enable</b>，然后再次直立放置你的设备。</p>
-            <p>4. 创建密钥：</p>
-            <p>单击 <b>Create Credentials</b> 按钮，选择 <i>Books API</i>，选择 <i>Public data</i>，然后单击 <b>Next</b></p>
-            <p>将显示该密钥 ( `AIza` 开头的字符串)。复制该密钥并确保单击 <b>Done</b></p>
-           <p>在下方粘贴密钥。</p>]]></string>
+    <string name="googlebooks_registration">
+        <![CDATA[<p><b>访问该站点 GoogleBooks API 密钥 是 <i>可选的</i> 。</b> 没有密钥该服务也工作，但功能可能受限。执行下列步骤需要 Google 账户。</p>
+        <br>
+        <p>1. 登录 Google Cloud：</p>
+        <p>打开 <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 并用 Google 账户登录。</p>
+        <p>2. 创建新项目：</p>
+        <p>单击左上角主菜单按钮，然后 <b>选择项目</b>。</p>
+        <p>单击选项按钮菜单，选择 <b>新建项目</b>，将其命名为 <i>Books API</i>，单击 <b>创建</b>。</p>
+        <p>在通知上，单击该项目，或者再次使用该菜单 <b>选择项目</b>。</p>
+        <p>3. 打开 Books API：</p>
+        <p>单击主菜单选择 <b>API 和服务</b>，然后选择 <b>库</b>。你现在需要向水平方向倾斜你的设备。在搜索框中，输入 ’books’，向下滚动，选择 <b>Books API</b> 图块。</p>
+        <p>在下个屏幕中，单击 <b>启用</b>，然后再次直立放置你的设备。</p>
+        <p>4. 创建密钥：</p>
+        <p>单击 <b>创建凭据</b> 按钮，选择 <i>Books API</i>，选择 <i>公开数据</i>，然后单击 <b>下一步</b></p>
+        <p>将显示该密钥 ( `AIza` 开头的字符串)。复制该密钥并确保单击 <b>完成</b></p>
+        <p>在下方粘贴密钥。</p>]]></string>
     <string name="confirm_registration_required">注册 %1$s 是必需的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
     <string name="confirm_registration_optional">注册 %1$s 是可选的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
 </resources>
