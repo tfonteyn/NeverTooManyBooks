@@ -36,10 +36,21 @@ public interface SiteAuthModule {
 
     /** Preference. Suffix added to the site PreferenceKey. */
     String PK_SUFFIX_LOGIN_TO_SEARCH = ".login.to.search";
-    /** Preference. Suffix added to the site PreferenceKey. */
-    String PK_SUFFIX_HOST_USER = ".host.user";
-    /** Preference. Suffix added to the site PreferenceKey. */
-    String PK_SUFFIX_HOST_PASSWORD = ".host.password";
+
+    /**
+     * Preference key for a username. Clear text, but removed from debug reports.
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * <p>
+     * {@code String}
+     */
+    String PK_HOST_USER = "host.user";
+    /**
+     * Preference key for a password. Clear text, but removed from debug reports.
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * <p>
+     * {@code String}
+     */
+    String PK_HOST_PASSWORD = "host.password";
 
     /**
      * Performs a login using the stored credentials.

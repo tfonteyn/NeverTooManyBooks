@@ -46,8 +46,8 @@ public class IsfdbPreferencesFragment
         extends BaseSettingsFragment {
 
     private static final String PK = EngineId.Isfdb.getPreferenceKey();
-    private static final String PK_PASSWORD = PK + SiteAuthModule.PK_SUFFIX_HOST_PASSWORD;
-    private static final String PK_USER = PK + SiteAuthModule.PK_SUFFIX_HOST_USER;
+    private static final String PK_USER = PK + '.' + SiteAuthModule.PK_HOST_USER;
+    private static final String PK_PASSWORD = PK + '.' + SiteAuthModule.PK_HOST_PASSWORD;
 
     private BooleanSetting pLoginToSearch;
 

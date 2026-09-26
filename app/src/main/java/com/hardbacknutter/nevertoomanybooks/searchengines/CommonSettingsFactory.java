@@ -41,12 +41,12 @@ public final class CommonSettingsFactory {
     public static void credentials(@NonNull final SettingsManager.Builder factory,
                                    @NonNull final String pk) {
         factory.header(R.string.lbl_credentials);
-        factory.text(pk + SiteAuthModule.PK_SUFFIX_HOST_USER,
+        factory.text(pk + '.' + SiteAuthModule.PK_HOST_USER,
                      R.string.username, null, p -> {
                     p.setIcon(R.drawable.person_24px);
                 });
 
-        factory.password(pk + SiteAuthModule.PK_SUFFIX_HOST_PASSWORD,
+        factory.password(pk + '.' + SiteAuthModule.PK_HOST_PASSWORD,
                          R.string.password, null, p -> {
                     p.setIcon(R.drawable.password_24px);
                 });

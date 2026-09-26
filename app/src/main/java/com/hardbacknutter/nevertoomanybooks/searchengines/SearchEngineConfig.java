@@ -59,6 +59,7 @@ public class SearchEngineConfig
      * @see SearchEngineConfig
      */
     public static final String PK_SEARCH_WEBSITE_MENU = "search.shopping.menu";
+
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * A full url, including the http(s) part.
@@ -66,20 +67,7 @@ public class SearchEngineConfig
      * {@code String}
      */
     public static final String PK_HOST_URL = "host.url";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * A full url, including the http(s) part.
-     * <p>
-     * {@code String}
-     */
-    public static final String PK_HOST_USER = "host.user";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Clear text, but removed from debug reports.
-     * <p>
-     * {@code String}
-     */
-    public static final String PK_HOST_PASSWORD = "host.password";
+
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * Whether to search by using the ISBN10 value or the original {@link DBKey#ISBN}.
@@ -87,6 +75,7 @@ public class SearchEngineConfig
      * {@code boolean}
      */
     public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
+
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * The set of Tags an engine will ignore when parsing a book.

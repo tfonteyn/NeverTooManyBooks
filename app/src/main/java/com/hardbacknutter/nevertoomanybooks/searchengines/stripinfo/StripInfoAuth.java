@@ -71,9 +71,9 @@ public class StripInfoAuth
     private static final String PREFERENCE_KEY = EngineId.StripInfoBe.getPreferenceKey();
 
     private static final String PK_HOST_USER =
-            PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
+            PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_USER;
     private static final String PK_HOST_PASS =
-            PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
+            PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_PASSWORD;
 
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREFERENCE_KEY + PK_SUFFIX_HOST_USER;

@@ -102,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.org.json.JSONArray;
@@ -167,10 +168,12 @@ public final class CalibreContentServer
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
-    private static final String PK_HOST_USER = PREFERENCE_KEY
-                                               + '.' + SearchEngineConfig.PK_HOST_USER;
-    private static final String PK_HOST_PASS = PREFERENCE_KEY
-                                               + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
+
+    private static final String PK_HOST_USER =
+            PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_USER;
+    private static final String PK_HOST_PASS =
+            PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_PASSWORD;
+
     /** The local download folder. */
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
