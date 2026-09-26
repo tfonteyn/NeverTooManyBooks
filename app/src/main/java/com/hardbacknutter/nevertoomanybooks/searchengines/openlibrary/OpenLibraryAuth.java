@@ -74,9 +74,6 @@ public class OpenLibraryAuth
     private static final String PK_HOST_PASS =
             PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_PASSWORD;
 
-    /** the id returned in the cookie. Stored for easy access. */
-    private static final String PK_HOST_USER_ID = PREFERENCE_KEY + PK_SUFFIX_HOST_USER;
-
     private static final String USER_LOGIN_URL = "/account/login";
 
     private static final String COOKIE_DOMAIN = "openlibrary.org";
@@ -200,7 +197,6 @@ public class OpenLibraryAuth
         // Secondly check if we're already logged in ?
         String userId = getUserId().orElse(null);
         if (userId != null) {
-            prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
             return userId;
         }
 
@@ -225,13 +221,12 @@ public class OpenLibraryAuth
             httpPost = null;
         }
 
-        // we should not be throwing here, as the post should already have done so.
+        // we should not be throwing here, as the POST should already have done so.
         userId = getUserId().orElseThrow(() -> new CredentialsException(
                 R.string.site_open_library, "login failed",
                 context.getString(R.string.error_site_authentication_failed,
                                   context.getString(R.string.site_open_library))));
 
-        prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
         return userId;
     }
 
