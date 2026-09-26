@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibreConnectionValidationHelper;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
@@ -68,8 +69,11 @@ public class CalibrePreferencesFragment
     /** Fragment/Log tag. */
     public static final String TAG = "CalibrePreferencesFrag";
 
-    private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";
-    private static final String PSK_PICK_FOLDER = "psk_pick_folder";
+    private static final String PKA_CA_FROM_FILE = "psk_ca_from_file";
+    private static final String PKA_PICK_FOLDER = "psk_pick_folder";
+
+    private static final String PK_HOST_URL = CalibreContentServer.PREFERENCE_KEY
+                                              + '.' + SearchEngineConfig.PK_HOST_URL;
 
     private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
@@ -105,14 +109,14 @@ public class CalibrePreferencesFragment
                      R.string.disabled, R.string.enabled,
                      this::onChangeEnableSync, null);
 
-        factory.action(PSK_PICK_FOLDER,
+        factory.action(PKA_PICK_FOLDER,
                        R.string.option_download_folder,
                        this::onPickFolder, p -> {
                     p.setIcon(R.drawable.folder_24px);
                     p.setSummaryProvider(this::getDownloadFolderSummary);
                 });
 
-        factory.text(CalibreContentServer.PK_HOST_URL,
+        factory.text(PK_HOST_URL,
                      R.string.lbl_website_address, null, p -> {
                     p.setIcon(R.drawable.link_24px);
                     p.setInputType(InputType.TYPE_CLASS_TEXT
@@ -120,7 +124,7 @@ public class CalibrePreferencesFragment
                     p.setSummaryProvider(c -> hostUrlValidator.getSummary(c, p.getValue()));
                 });
 
-        factory.action(PSK_CA_FROM_FILE,
+        factory.action(PKA_CA_FROM_FILE,
                        R.string.lbl_certificate_ca,
                        this::onPickCA, p -> {
                     p.setIcon(R.drawable.security_24px);
@@ -159,7 +163,7 @@ public class CalibrePreferencesFragment
 
         final SettingsManager settingsManager = getSettingsManager();
         pSyncEnabled = settingsManager.requireSetting(CalibreHandler.PK_ENABLED);
-        pHostUrl = settingsManager.requireSetting(CalibreContentServer.PK_HOST_URL);
+        pHostUrl = settingsManager.requireSetting(PK_HOST_URL);
 
         new CalibreConnectionValidationHelper(
                 this, getProgressFrame(),
@@ -173,7 +177,7 @@ public class CalibrePreferencesFragment
                     o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
                     // Refresh the summary
                     //noinspection DataFlowIssue
-                    getSettingsManager().reload(getContext(), PSK_PICK_FOLDER);
+                    getSettingsManager().reload(getContext(), PKA_PICK_FOLDER);
                 });
     }
 
@@ -212,7 +216,7 @@ public class CalibrePreferencesFragment
         }
 
         // Refresh the summary
-        getSettingsManager().reload(context, PSK_CA_FROM_FILE);
+        getSettingsManager().reload(context, PKA_CA_FROM_FILE);
     }
 
     @NonNull

@@ -163,12 +163,13 @@ public final class CalibreContentServer
     /** Preferences prefix. */
     public static final String PREFERENCE_KEY = "calibre";
 
-    static final String PK_HOST_URL = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
+    private static final String PK_HOST_URL =
+            PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
     private static final String PK_HOST_USER =
             PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_USER;
     private static final String PK_HOST_PASS =
@@ -242,6 +243,15 @@ public final class CalibreContentServer
     private static final String NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS =
             "%1$s/nevertoomanybooks/virtual-libraries-for-books/%2$s/%3$s";
 
+    /**
+     * Run a search.
+     * <p>
+     * Param 1: serverUri
+     * Param 2: libraryId
+     * Param 3: the maximum number of entries to return
+     * Param 4: the offset for the next set to return
+     * Param 5: the query to execute
+     */
     private static final String SEARCH = "%1$s/ajax/search/%2$s?num=%3$d&offset=%4$d&query=%5$s";
 
     /**
