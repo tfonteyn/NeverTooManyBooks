@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -983,4 +980,19 @@ A question mark is written as the character semicolon: ';'
             <p>3. Αντιγράψτε το token και επικολλήστε το παρακάτω.</p>]]></string>
     <string name="confirm_registration_required">Η εγγραφή στο %1$s είναι υποχρεωτική.\n\nΜπορείτε επίσης να βρείτε αυτές τις πληροφορίες αργότερα στην ενότητα «%2$s» στις ρυθμίσεις για αυτόν τον ιστότοπο.</string>
     <string name="confirm_registration_optional">Η εγγραφή στο %1$s είναι προαιρετική.\n\nΜπορείτε επίσης να βρείτε αυτές τις πληροφορίες αργότερα στην ενότητα «%2$s» στις ρυθμίσεις για αυτόν τον ιστότοπο.</string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>Το κλειδί GoogleBooks API είναι <i>προαιρετικό</i> για την πρόσβαση στον ιστότοπο.</b> Η υπηρεσία θα λειτουργήσει και χωρίς αυτό, αλλά ενδέχεται να υπάρχουν περιορισμοί. Για να αποκτήσετε ένα, θα χρειαστείτε έναν λογαριασμό Google.</p>
+            <br>
+            <p>1. Συνδεθείτε στο Google Cloud:</p>
+            <p>Ανοίξτε το <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> και συνδεθείτε με τον λογαριασμό σας Google.</p>
+            <p>2. Δημιουργήστε ένα νέο έργο:</p>
+            <p>Πατήστε το κουμπί του κύριου μενού πάνω αριστερά και, στη συνέχεια, <b>Select a project</b>.</p>
+            <p>Πατήστε το μενού επιλογών και επιλέξτε <b>New Project</b>, ονομάστε το <i>Books API</i>, και πατήστε <b>Create</b>.</p>
+            <p>Στην ειδοποίηση, πατήστε το έργο ή χρησιμοποιήστε ξανά το μενού για να επιλέξετε <b>Select a project</b>.</p>
+            <p>3. Ενεργοποιήστε το Books API:</p>
+            <p>Πατήστε το κύριο μενού και επιλέξτε <b>APIs and services</b> και, στη συνέχεια, επιλέξτε <b>Library</b>. Περιστρέψετε τη συσκευή σας οριζόντια. Στο πλαίσιο αναζήτησης, πληκτρολογήστε \'books\', κάντε κύλιση προς τα κάτω και επιλέξτε το <b>Books API</b>.</p>
+            <p>Στην επόμενη οθόνη, πατήστε <b>Enable</b> και επαναφέρετε τη συσκευή σας σε κατακόρυφη θέση.</p>
+            <p>4. Δημιουργήστε το κλειδί:</p>
+            <p>Πατήστε το κουμπί <b>Create Credentials</b>, επιλέξτε το <i>Books API</i>, στη συνέχεια το <i>Public data</i> και, τέλος, πατήστε <b>Next</b></p>
+            <p>Θα εμφανιστεί το κλειδί (μια γραμμή που ξεκινά με `AIza`). Αντιγράψτε το κλειδί και πατήστε <b>Done</b></p>
+            <p>Επικολλήστε το κλειδί παρακάτω.</p>]]></string>
 </resources>
