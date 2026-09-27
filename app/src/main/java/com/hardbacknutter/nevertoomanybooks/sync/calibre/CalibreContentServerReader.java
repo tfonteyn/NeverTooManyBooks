@@ -109,9 +109,6 @@ public class CalibreContentServerReader
     private static final String TAG = "CalibreServerReader";
     private static final String BKEY_VIRTUAL_LIBRARY_LIST = TAG + ":vlibs";
 
-    // URGENT: make number of books fetched user configurable.
-    /** The number of books we fetch per request. Tested with CCS running on a RaspberryPi 1b+. */
-    private static final int NUM = 10;
     /** Response root tag: Number of items returned in 'this' call. */
     private static final String RESPONSE_TAG_NUM = "num";
 
@@ -250,6 +247,7 @@ public class CalibreContentServerReader
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
+        final int booksPerRequest = server.booksPerRequest();
         try {
             // Always (re)read the metadata here.
             // Don't assume we still have the same instance as when readMetaData was called.
@@ -285,10 +283,10 @@ public class CalibreContentServerReader
                 final JSONObject root;
                 if (query == null) {
                     // all-books
-                    root = server.getBookIds(library.getLibraryStringId(), NUM, offset);
+                    root = server.getBookIds(library.getLibraryStringId(), booksPerRequest, offset);
                 } else {
                     // search based on the last-sync-date
-                    root = server.search(library.getLibraryStringId(), NUM, offset, query);
+                    root = server.search(library.getLibraryStringId(), booksPerRequest, offset, query);
                 }
 
                 // assume valid result if at least the "total_num" param is there.

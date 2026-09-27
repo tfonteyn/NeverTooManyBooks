@@ -175,6 +175,24 @@ public final class CalibreContentServer
     private static final String PK_HOST_PASS =
             PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_PASSWORD;
 
+    /**
+     * Default for the number of books we fetch per request.
+     * On a RaspberryPi 1b+ we used 10.
+     * Meanwhile we're assuming people have better hardware.
+     *
+     * @see #PK_BOOKS_PER_REQUEST
+     */
+    private static final int BOOKS_PER_REQUEST_DEFAULT = 20;
+
+    /**
+     * Preference key: the number of books which will be fetched in one request.
+     * <p>
+     * {@code int}
+     *
+     * @see #BOOKS_PER_REQUEST_DEFAULT
+     */
+    private static final String PK_BOOKS_PER_REQUEST = PREFERENCE_KEY + ".request.nr_of_books";
+
     /** The local download folder. */
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
@@ -921,6 +939,16 @@ public final class CalibreContentServer
     @AnyThread
     boolean isPluginInstalled() {
         return pluginInstalled;
+    }
+
+    /**
+     * Get the configured books-per-request for fetching book data in one request.
+     *
+     * @return nr of books
+     */
+    int booksPerRequest() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getInt(PK_BOOKS_PER_REQUEST, BOOKS_PER_REQUEST_DEFAULT);
     }
 
     /**
