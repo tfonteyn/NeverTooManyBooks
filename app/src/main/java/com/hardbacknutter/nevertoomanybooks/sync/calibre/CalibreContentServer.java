@@ -90,7 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
@@ -1434,15 +1433,14 @@ public final class CalibreContentServer
      *
      * @return Calibre book object
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws StorageException on image storage failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     @WorkerThread
     @NonNull
     public JSONObject getBook(@NonNull final String libraryStringId,
                               @NonNull final String calibreUuid)
-            throws StorageException, IOException, JSONException {
+            throws IOException, JSONException {
 
         final String url = String.format(GET_BOOK_BY_UUID, serverUri, calibreUuid, libraryStringId);
         return new JSONObject(fetch(url, BUFFER_BOOK));

@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -150,7 +149,6 @@ public class CalibreContentServerWriter
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
             throws DataWriterException,
-                   StorageException,
                    IOException {
 
         results = new SyncWriterResults();
@@ -191,7 +189,7 @@ public class CalibreContentServerWriter
                              @NonNull final CalibreLibrary library,
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
-            throws StorageException, IOException {
+            throws IOException {
         try (Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
             int delta = 0;
@@ -232,7 +230,7 @@ public class CalibreContentServerWriter
     private void syncBook(@NonNull final Context context,
                           @NonNull final CalibreLibrary library,
                           @NonNull final Book book)
-            throws IOException, StorageException, JSONException {
+            throws IOException, JSONException {
 
         final int calibreId = book.getInt(DBKey.CALIBRE.BOOK_ID);
         final String calibreUuid = book.getString(DBKey.CALIBRE.BOOK_UUID);
