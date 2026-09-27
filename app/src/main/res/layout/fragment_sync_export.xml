@@ -101,8 +101,8 @@
             />
 
         <com.google.android.material.divider.MaterialDivider
-            style="@style/Widget.Material3.MaterialDivider"
             android:id="@+id/format_divider"
+            style="@style/Widget.Material3.MaterialDivider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
@@ -114,6 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="false"
+            android:maxWidth="320dp"
             android:text="@string/option_delete_removed_books"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/format_divider"

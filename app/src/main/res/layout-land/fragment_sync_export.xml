@@ -112,6 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
+            android:maxWidth="320dp"
             android:text="@string/option_delete_removed_books"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/middle"
