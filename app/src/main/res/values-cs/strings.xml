@@ -1027,4 +1027,19 @@
             <p>3. Zkopírujte token a vložte jej níže.</p>]]></string>
     <string name="confirm_registration_required">Je nutná registrace na %1$s.\n\nTuto informaci najdete později také v části „%2$s“ v nastavení této stránky.</string>
     <string name="confirm_registration_optional">Registrace na %1$s je nepovinná.\n\nTuto informaci najdete později také v části „%2$s“ v nastavení této stránky.</string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>Klíč Google Books API je <i>volitelný</i> pro přístup na stránku.</b> Služba bude fungovat i bez něj, ale funkce můžou být omezené. K získání klíče budete potřebovat účet Google.</p>
+            <br>
+            <p>1. Přihlaste se do Google Cloud:</p>
+            <p>Otevřete <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> a přihlaste se pomocí svého účtu Google.</p>
+            <p>2. Vytvořte nový projekt:</p>
+            <p>Klepněte na tlačítko hlavního menu vlevo nahoře, poté <b>Select a project</b>.</p>
+            <p>Klepněte na tlačítko menu možností a vyberte <b>New Project</b>, pojmenujte ho <i>Books API</i> a klepněte na <b>Create</b>.</p>
+            <p>V oznámení klepněte na projekt nebo znovu použijte menu pro <b>Select a project</b>.</p>
+            <p>3. Zapněte Books API:</p>
+            <p>Klepněte na hlavní menu a vyberte <b>APIs and services</b>, poté <b>Library</b>. Nyní budete muset otočit zařízení do horizontální polohy. Do vyhledávacího pole napište „books“, posuňte se dolů a vyberte dlaždici <b>Books API</b>.</p>
+            <p>Na následující obrazovce klepněte na <b>Enable</b> a poté zařízení znovu otočte do svislé polohy.</p>
+            <p>4. Vytvořte klíč:</p>
+            <p>Klepněte na tlačítko <b>Create Credentials</b>, vyberte <i>Books API</i>, poté <i>Public data</i> a klepněte na <b>Next</b>.</p>
+            <p>Zobrazí se klíč (řetězec začínající na `AIza`). Zkopírujte klíč a nezapomeňte klepnout na <b>Done</b>.</p>
+            <p>Vložte klíč níže.</p>]]></string>
 </resources>
