@@ -278,9 +278,8 @@ public class CalibreContentServerReader
             }
 
             do {
-                // Reminder: the NUM for this first call might seem very low,
-                // but the full book data for each of the id's (max == NUM)
-                // will be fetched in ONE GO in the second call further below.
+                // Fetch the book-ids starting from 'offset'
+                // i.o.w. this is a paged fetch+process
                 final JSONObject response;
                 if (lastModifiedQuery == null) {
                     // all-books
@@ -307,11 +306,12 @@ public class CalibreContentServerReader
                     valid = bookIds != null && !bookIds.isEmpty();
                     if (valid) {
                         // with the above book-ids, get the full book objects
-                        final JSONObject bookList = server.getBooks(library.getLibraryStringId(),
-                                                                    bookIds);
-                        final JSONObject bookListVirtualLibs =
-                                server.getVirtualLibrariesForBooks(library.getLibraryStringId(),
-                                                                   bookIds);
+                        final JSONObject bookList = server
+                                .getBooksById(library.getLibraryStringId(), bookIds);
+                        // and, if possible, the virtual library data for those same book-ids
+                        @Nullable
+                        final JSONObject bookListVirtualLibs = server
+                                .getVirtualLibrariesForBooks(library.getLibraryStringId(), bookIds);
 
                         final Iterator<String> it = bookList.keys();
                         while (it.hasNext() && !progressListener.isCancelled()) {

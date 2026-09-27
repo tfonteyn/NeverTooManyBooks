@@ -238,7 +238,8 @@ public class CalibreContentServerWriter
         // ENHANCE: full sync in one go.
         //  The logic below is slow as we fetch each book individually
         //  but on a local/home network it's good enough
-        final JSONObject calibreBook = server.getBook(library.getLibraryStringId(), calibreUuid);
+        final JSONObject calibreBook = server.getBookByUuid(library.getLibraryStringId(),
+                                                            calibreUuid);
 
         final Optional<LocalDateTime> remoteDate = getRemoteDate(calibreBook);
         final Optional<LocalDateTime> localDate = book.getLastModified(dateParser);

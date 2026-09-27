@@ -167,6 +167,15 @@ public final class CalibreContentServer
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
+    /** Log tag. */
+    private static final String TAG = "CalibreContentServer";
+
+    /** Custom field for {@link SyncReaderMetaData}. */
+    public static final String BKEY_LIBRARY = TAG + ":defLib";
+    /** Custom field for {@link SyncReaderMetaData}. */
+    public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
+    static final String BKEY_PLUGIN_INSTALLED = TAG + ":plugin";
+
     private static final String PK_HOST_URL =
             PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
     private static final String PK_HOST_USER =
@@ -192,17 +201,12 @@ public final class CalibreContentServer
      */
     private static final String PK_BOOKS_PER_REQUEST = PREFERENCE_KEY + ".request.nr_of_books";
 
-    /** The local download folder. */
+    /**
+     * Preference key: The local download folder.
+     * <p>
+     * {@code String}
+     */
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
-
-    /** Log tag. */
-    private static final String TAG = "CalibreContentServer";
-
-    /** Custom field for {@link SyncReaderMetaData}. */
-    public static final String BKEY_LIBRARY = TAG + ":defLib";
-    /** Custom field for {@link SyncReaderMetaData}. */
-    public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
-    static final String BKEY_PLUGIN_INSTALLED = TAG + ":plugin";
 
     /**
      * The buffer used for all small reads.
@@ -278,8 +282,6 @@ public final class CalibreContentServer
      */
     private static final String FETCH_FILE = "%1$s/get/%2$s/%3$d/%4$s";
 
-    private static final String GET_BOOKS = "%1$s/ajax/books/%2$s?category_urls=false&ids=%3$s";
-
     /**
      * Fetch all book.
      * <p>
@@ -296,7 +298,16 @@ public final class CalibreContentServer
             "%1$s/ajax/category/616c6c626f6f6b73/%2$s?num=%3$d&offset=%4$d";
 
     /**
-     * Fetch a book by its Calibre uuid.
+     * Fetch a single book by its numeric id.
+     * <p>
+     * Param 1: serverUri
+     * Param 2: book id (as a string)
+     * Param 3: libraryStringId
+     */
+    private static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$s/%3$s";
+
+    /**
+     * Fetch a single book by its UUID.
      * <p>
      * Param 1: serverUri
      * Param 2: book UUID
@@ -305,13 +316,14 @@ public final class CalibreContentServer
     private static final String GET_BOOK_BY_UUID = "%1$s/ajax/book/%2$s/%3$s?id_is_uuid=true";
 
     /**
-     * Fetch a book by its Calibre numeric id.
+     * Fetch a set of books by their numeric ids.
      * <p>
      * Param 1: serverUri
-     * Param 2: book id
+     * Param 2: a csv list of numeric book ids
      * Param 3: libraryStringId
      */
-    private static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$d/%3$s";
+    private static final String GET_BOOKS_BY_ID =
+            "%1$s/ajax/books/%2$s?category_urls=false&ids=%3$s";
 
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
@@ -909,7 +921,7 @@ public final class CalibreContentServer
             throws IOException, JSONException {
 
         final Set<CalibreCustomField> fields = new HashSet<>();
-        final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
+        final JSONObject calibreBook = getBookById(library.getLibraryStringId(), bookId);
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
         if (userMetaData != null) {
             // check the supported fields
@@ -995,7 +1007,7 @@ public final class CalibreContentServer
      * </pre>
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreIds      the list of books (id only)
+     * @param calibreIds      a JSONArray of Calibre numeric book ids
      *
      * @return see above, or {@code null} if the plugin is missing
      *
@@ -1117,7 +1129,66 @@ public final class CalibreContentServer
     }
 
     /**
+     * Return the metadata of a single book as a JSON dictionary.
+     * Search for it by numeric id.
+     * <pre>
+     * {@code
+     *      endpoint('/ajax/book/{book_id}/{library_id=None}', postprocess=json)
+     * }
+     * </pre>
+     * Query parameters: ?category_urls=true&id_is_uuid=false&device_for_template=None
+     * <p>
+     * If category_urls is true the returned dictionary also contains a
+     * mapping of category (field) names to URLs that return the list of books in the
+     * given category.
+     * <p>
+     * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreId       of the book to get
+     *
+     * @return Calibre book object
+     *
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
+     */
+    @WorkerThread
+    @NonNull
+    private JSONObject getBookById(@NonNull final String libraryStringId,
+                                   final int calibreId)
+            throws IOException, JSONException {
+
+        final String url = String.format(GET_BOOK_BY_ID, serverUri, calibreId, libraryStringId);
+        return new JSONObject(fetch(url, BUFFER_BOOK));
+    }
+
+    /**
+     * Return the metadata of a single book as a JSON dictionary.
+     * Search for it by UUID.
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreUuid     of the book to get
+     *
+     * @return Calibre book object
+     *
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
+     *
+     * @see #getBookById(String, int)
+     */
+    @WorkerThread
+    @NonNull
+    JSONObject getBookByUuid(@NonNull final String libraryStringId,
+                             @NonNull final String calibreUuid)
+            throws IOException, JSONException {
+
+        final String url = String.format(GET_BOOK_BY_UUID, serverUri, calibreUuid, libraryStringId);
+        return new JSONObject(fetch(url, BUFFER_BOOK));
+    }
+
+    /**
      * Return the metadata of the books in the given library as a JSON dictionary.
+     * Search for them by numeric ids.
      * <pre>
      * {@code
      *      endpoint('/ajax/books/{library_id=None}', postprocess=json)
@@ -1384,7 +1455,7 @@ public final class CalibreContentServer
      * </pre>
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreIds      the list of books (id only)
+     * @param calibreIds      a JSONArray of Calibre numeric book ids
      *
      * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
@@ -1393,12 +1464,12 @@ public final class CalibreContentServer
      */
     @WorkerThread
     @NonNull
-    JSONObject getBooks(@NonNull final String libraryStringId,
-                        @NonNull final JSONArray calibreIds)
+    JSONObject getBooksById(@NonNull final String libraryStringId,
+                            @NonNull final JSONArray calibreIds)
             throws IOException,
                    JSONException {
 
-        final String url = String.format(GET_BOOKS, serverUri, libraryStringId,
+        final String url = String.format(GET_BOOKS_BY_ID, serverUri, libraryStringId,
                                          getCsvIds(calibreIds));
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
@@ -1411,62 +1482,6 @@ public final class CalibreContentServer
             ids.add(String.valueOf(calibreIds.getInt(i)));
         }
         return ids.toString();
-    }
-
-    /**
-     * Return the metadata of a single book as a JSON dictionary.
-     * <pre>
-     * {@code
-     *      endpoint('/ajax/book/{book_id}/{library_id=None}', postprocess=json)
-     * }
-     * </pre>
-     * Query parameters: ?category_urls=true&id_is_uuid=false&device_for_template=None
-     * <p>
-     * If category_urls is true the returned dictionary also contains a
-     * mapping of category (field) names to URLs that return the list of books in the
-     * given category.
-     * <p>
-     * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
-     *
-     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreUuid     of the book to get
-     *
-     * @return Calibre book object
-     *
-     * @throws IOException   on generic/other IO failures
-     * @throws JSONException upon any parsing error
-     */
-    @WorkerThread
-    @NonNull
-    public JSONObject getBook(@NonNull final String libraryStringId,
-                              @NonNull final String calibreUuid)
-            throws IOException, JSONException {
-
-        final String url = String.format(GET_BOOK_BY_UUID, serverUri, calibreUuid, libraryStringId);
-        return new JSONObject(fetch(url, BUFFER_BOOK));
-    }
-
-    /**
-     * Same as {@link #getBook(String, String)} but using the {@code calibreId} instead
-     * of the {@code calibreUuid}.
-     *
-     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreId       of the book to get
-     *
-     * @return Calibre book object
-     *
-     * @throws IOException   on generic/other IO failures
-     * @throws JSONException upon any parsing error
-     */
-    @WorkerThread
-    @NonNull
-    private JSONObject getBook(@NonNull final String libraryStringId,
-                               final int calibreId)
-            throws IOException, JSONException {
-
-        @SuppressLint("DefaultLocale")
-        final String url = String.format(GET_BOOK_BY_ID, serverUri, calibreId, libraryStringId);
-        return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
     @WorkerThread
