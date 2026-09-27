@@ -999,6 +999,22 @@
         <p>1. Ve a <a href="https://www.librarything.com">LibraryThing.com</a> y regístrate para obtener una cuenta de usuario gratuita si aún no tienes una.</p>
         <p>2. Una vez que hayas iniciado sesión, navega a <a href="https://www.librarything.com/developer/tokens">Tus Tokens</a> y crea un nuevo token.</p>
         <p>3. Copia el token y pégalo a continuación.</p>]]></string>
+    <string name="googlebooks_registration">
+    <![CDATA[<p><b>Una clave de API de GoogleBooks es <i>opcional</i> para acceder al sitio.</b> El servicio funcionará sin ella, pero puede tener funciones limitadas. Necesitará una cuenta de Google para hacer esto.</p>
+        <br>
+        <p>1. Iniciar sesión en Google Cloud:</p>
+        <p>Abra <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> e inicie sesión con su cuenta de Google.</p>
+        <p>2. Crear un nuevo proyecto:</p>
+        <p>Toque el botón del menú principal en la esquina superior izquierda, luego <b>Seleccionar un proyecto</b>.</p>
+        <p>Toque el botón del menú de opciones y seleccione <b>Nuevo proyecto</b>, nómbrelo <i>Books API</i> y haga clic en <b>Crear</b>.</p>
+        <p>En la notificación, toque el proyecto o use el menú nuevamente para <b>Seleccionar un proyecto</b>.</p>
+        <p>3. Activar la Books API:</p>
+        <p>Toque el menú principal y seleccione <b>APIs y servicios</b>, luego seleccione <b>Biblioteca</b>. Ahora deberá girar su dispositivo horizontalmente. En el cuadro de búsqueda, escriba ’books’, desplácese hacia abajo y seleccione la tarjeta <b>Books API</b>.</p>
+        <p>En la siguiente pantalla, toque <b>Habilitar</b>, luego vuelva a colocar su dispositivo en posición vertical.</p>
+        <p>4. Crear la clave:</p>
+        <p>Toque el botón <b>Crear credenciales</b>, seleccione <i>Books API</i>, seleccione <i>Datos públicos</i>, luego toque <b>Siguiente</b>.</p>
+        <p>Se mostrará la clave (una cadena que comienza con `AIza`). Copie la clave y asegúrese de tocar <b>Listo</b>.</p>
+        <p>Pegue la clave a continuación.</p>]]></string>
     <string name="confirm_registration_required">Es obligatorio registrarse en %1$s.\n\nTambién podrá encontrar esta información más adelante en la sección «%2$s» de la configuración de este sitio.</string>
     <string name="confirm_registration_optional">El registro en %1$s es opcional.\n\nTambién podrá encontrar esta información más adelante en la sección «%2$s» de la configuración de este sitio.</string>
 </resources>
