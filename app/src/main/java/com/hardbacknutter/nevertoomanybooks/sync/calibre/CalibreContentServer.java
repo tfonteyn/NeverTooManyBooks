@@ -207,9 +207,6 @@ public final class CalibreContentServer
      */
     private static final int BUFFER_FILE = 1_048_576;
 
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "CL";
-
     /** Error/bug msg if the default library is null. */
     private static final String ERROR_NULL_DEFAULT_LIBRARY = "defaultLibrary";
 
@@ -1451,7 +1448,7 @@ public final class CalibreContentServer
             throws IOException, ImageStorageException {
 
         final String tempFilename = ImageFileInfo.getTempFilename(
-                FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
+                PREFERENCE_KEY, String.valueOf(calibreId), 0, null);
 
         final Request imageRequest = createImageRequest(serverUri + coverUrl);
         return getImageDownloader().fetch(imageRequest, tempFilename);
