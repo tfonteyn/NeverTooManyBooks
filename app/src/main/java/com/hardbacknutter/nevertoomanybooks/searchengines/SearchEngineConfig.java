@@ -49,8 +49,8 @@ public class SearchEngineConfig
         implements NetworkConfig {
 
     /**
+     * Preference key: Whether a website-specific-search (using a url) menu should be shown.
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Whether a website-specific-search (using a url) menu should be shown.
      * <p>
      * {@code boolean}
      * <p>
@@ -61,24 +61,25 @@ public class SearchEngineConfig
     public static final String PK_SEARCH_WEBSITE_MENU = "search.shopping.menu";
 
     /**
+     * Preference key: The full host url, including the http(s) part.
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * A full url, including the http(s) part.
      * <p>
      * {@code String}
      */
     public static final String PK_HOST_URL = "host.url";
 
     /**
+     * Preference key: Whether to search by using the ISBN-10 value
+     * or the original {@link DBKey#ISBN}.
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Whether to search by using the ISBN10 value or the original {@link DBKey#ISBN}.
      * <p>
      * {@code boolean}
      */
     public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
 
     /**
+     * Preference key: The set of Tags an engine will ignore when parsing a book.
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * The set of Tags an engine will ignore when parsing a book.
      *
      * @see #getTagsToIgnore()
      */
