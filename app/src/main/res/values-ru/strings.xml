@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -1028,4 +1025,19 @@
             <p>3. Скопируйте токен и вставьте его ниже.</p>]]></string>
     <string name="confirm_registration_required">Регистрация на %1$s обязательна.\n\nВы также сможете найти эту информацию позже в разделе «%2$s» в настройках этого сайта.</string>
     <string name="confirm_registration_optional">Регистрация на %1$s необязательна.\n\nВы также сможете найти эту информацию позже в разделе «%2$s» в настройках этого сайта.</string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>Ключ Google Books API является <i>необязательным</i> для доступа к сайту.</b> Сервис будет работать и без него, но функциональность может быть ограничена. Для получения ключа вам потребуется аккаунт Google.</p>
+            <br>
+            <p>1. Войдите в Google Cloud:</p>
+            <p>Откройте <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> и войдите с помощью своего аккаунта Google.</p>
+            <p>2. Создайте новый проект:</p>
+            <p>Нажмите кнопку главного меню в левом верхнем углу, затем <b>Select a project</b>.</p>
+            <p>Нажмите кнопку параметров и выберите <b>New Project</b>, назовите его <i>Books API</i> и нажмите <b>Create</b>.</p>
+            <p>В уведомлении нажмите на проект или снова используйте меню, чтобы <b>Select a project</b>.</p>
+            <p>3. Включите Books API:</p>
+            <p>Нажмите главное меню и выберите <b>APIs and services</b>, затем <b>Library</b>. Теперь вам нужно повернуть устройство в горизонтальное положение. В поле поиска введите «books», прокрутите вниз и выберите плитку <b>Books API</b>.</p>
+            <p>На следующем экране нажмите <b>Enable</b>, затем снова поверните устройство в вертикальное положение.</p>
+            <p>4. Создайте ключ:</p>
+            <p>Нажмите кнопку <b>Create Credentials</b>, выберите <i>Books API</i>, затем <i>Public data</i> и нажмите <b>Next</b>.</p>
+            <p>Отобразится ключ (строка, начинающаяся с `AIza`). Скопируйте ключ и обязательно нажмите <b>Done</b>.</p>
+            <p>Вставьте ключ ниже.</p>]]></string>
 </resources>

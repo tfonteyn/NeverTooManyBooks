@@ -1016,4 +1016,19 @@
             <p>3. Skopírujte token a vložte ho nižšie.</p>]]></string>
     <string name="confirm_registration_required">Registrácia na %1$s je povinná.\n\nTúto informáciu nájdete neskôr aj v časti „%2$s“ v nastaveniach tejto stránky.</string>
     <string name="confirm_registration_optional">Registrácia na %1$s je dobrovoľná.\n\nTúto informáciu nájdete neskôr aj v časti „%2$s“ v nastaveniach tejto stránky.</string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>Kľúč Google Books API je <i>voliteľný</i> pre prístup na stránku.</b> Služba bude fungovať aj bez neho, ale funkcie môžu byť obmedzené. Na získanie kľúča budete potrebovať účet Google.</p>
+            <br>
+            <p>1. Prihláste sa do Google Cloud:</p>
+            <p>Otvorte <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> a prihláste sa pomocou svojho účtu Google.</p>
+            <p>2. Vytvorte nový projekt:</p>
+            <p>Klepnite na tlačidlo hlavného menu vľavo hore, potom <b>Select a project</b>.</p>
+            <p>Klepnite na tlačidlo menu možností a vyberte <b>New Project</b>, pomenujte ho <i>Books API</i> a kliknite na <b>Create</b>.</p>
+            <p>V oznámení klepnite na projekt alebo znova použite menu na <b>Select a project</b>.</p>
+            <p>3. Zapnite Books API:</p>
+            <p>Klepnite na hlavné menu a vyberte <b>APIs and services</b>, potom <b>Library</b>. Teraz budete musieť otočiť zariadenie do horizontálnej polohy. Do vyhľadávacieho poľa napíšte „books“, posuňte sa nadol a vyberte dlaždicu <b>Books API</b>.</p>
+            <p>Na nasledujúcej obrazovke klepnite na <b>Enable</b> a potom zariadenie znova otočte do zvislej polohy.</p>
+            <p>4. Vytvorte kľúč:</p>
+            <p>Klepnite na tlačidlo <b>Create Credentials</b>, vyberte <i>Books API</i>, potom <i>Public data</i> a klepnite na <b>Next</b>.</p>
+            <p>Zobrazí sa kľúč (reťazec začínajúci na `AIza`). Skopírujte kľúč a nezabudnite klepnúť na <b>Done</b>.</p>
+            <p>Vložte kľúč nižšie.</p>]]></string>
 </resources>
