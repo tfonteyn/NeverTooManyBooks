@@ -814,11 +814,13 @@ public final class CalibreContentServer
                 }
 
                 // read the first book available to get the customs fields (if any)
-                final JSONObject result = getBookIds(library.getLibraryStringId(), 1, 0);
+                final JSONObject response = getBookIds(library.getLibraryStringId(), 1, 0);
                 // grab the initial/current total number of books while we have it
-                library.setTotalBooks(result.optInt(RESPONSE_TAG_TOTAL_NUM));
+                library.setTotalBooks(response.optInt(RESPONSE_TAG_TOTAL_NUM));
 
-                final JSONArray calibreIds = result.optJSONArray(RESPONSE_TAG_BOOK_IDS);
+                // The Calibre numeric book ids returned by the server
+                // There will either be none, or a single id.
+                final JSONArray calibreIds = response.optJSONArray(RESPONSE_TAG_BOOK_IDS);
                 if (calibreIds != null && !calibreIds.isEmpty()) {
                     loadCustomFieldDefinitions(library, calibreIds.getInt(0));
                 }

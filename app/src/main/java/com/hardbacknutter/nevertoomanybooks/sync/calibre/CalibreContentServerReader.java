@@ -260,7 +260,7 @@ public class CalibreContentServerReader
             int offset = 0;
             boolean valid;
 
-            String query = null;
+            String lastModifiedQuery = null;
             // If we want new-books-only (Updates.Skip)
             // or new-books-and-updates (Updates.OnlyNewer),
             // we limit the fetch to the sync-date. This speeds up the process.
@@ -270,9 +270,10 @@ public class CalibreContentServerReader
                 // last_modified:">2021-01-15", so we do a "minusDays(1)" first
                 // Due to rounding, we might get some books we don't need, but that's OK.
                 if (syncDate != null) {
-                    query = CalibreBookJsonKey.LAST_MODIFIED + ":%22%3E"
-                            + syncDate.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
-                            + "%22";
+                    lastModifiedQuery = CalibreBookJsonKey.LAST_MODIFIED + ":%22%3E"
+                                        + syncDate.minusDays(1)
+                                                  .format(DateTimeFormatter.ISO_LOCAL_DATE)
+                                        + "%22";
                 }
             }
 
@@ -280,25 +281,27 @@ public class CalibreContentServerReader
                 // Reminder: the NUM for this first call might seem very low,
                 // but the full book data for each of the id's (max == NUM)
                 // will be fetched in ONE GO in the second call further below.
-                final JSONObject root;
-                if (query == null) {
+                final JSONObject response;
+                if (lastModifiedQuery == null) {
                     // all-books
-                    root = server.getBookIds(library.getLibraryStringId(), booksPerRequest, offset);
+                    response = server.getBookIds(library.getLibraryStringId(), booksPerRequest,
+                                                 offset);
                 } else {
                     // search based on the last-sync-date
-                    root = server.search(library.getLibraryStringId(), booksPerRequest, offset, query);
+                    response = server.search(library.getLibraryStringId(), booksPerRequest,
+                                             offset, lastModifiedQuery);
                 }
 
                 // assume valid result if at least the "total_num" param is there.
-                valid = root.has(CalibreContentServer.RESPONSE_TAG_TOTAL_NUM);
+                valid = response.has(CalibreContentServer.RESPONSE_TAG_TOTAL_NUM);
                 if (valid) {
                     // yes, we're reading/setting this on every iteration... less code.
-                    progressListener.setMaxPos(root.getInt(
+                    progressListener.setMaxPos(response.getInt(
                             CalibreContentServer.RESPONSE_TAG_TOTAL_NUM));
 
-                    num = root.getInt(RESPONSE_TAG_NUM);
+                    num = response.getInt(RESPONSE_TAG_NUM);
                     // the list of books (id only) returned by the server
-                    final JSONArray bookIds = root.optJSONArray(
+                    final JSONArray bookIds = response.optJSONArray(
                             CalibreContentServer.RESPONSE_TAG_BOOK_IDS);
 
                     valid = bookIds != null && !bookIds.isEmpty();
