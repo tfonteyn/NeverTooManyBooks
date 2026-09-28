@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,13 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 
+/**
+ * URGENT / IMPORTANT: we read the fields from Calibre on a per Library basis
+ *  and check for the ones we have defined locally.
+ *  The latter is a fixed set.
+ *  In other words: we do NOT store or use fields we have not defined.
+ *  Which means our custom fields database table is NOT linked to a library.
+ */
 public interface CalibreCustomFieldDao {
 
     /**
