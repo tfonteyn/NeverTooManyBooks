@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.util.Pair;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -185,12 +186,15 @@ public final class CalibreContentServer
 
     /**
      * Default for the number of books we fetch per request.
-     * On a RaspberryPi 1b+ we used 10.
-     * Meanwhile we're assuming people have better hardware.
+     * On a RaspberryPi 1b+ (2012) we used 10, although 25..50 should be ok.
+     * It seems a Pi 3b (2016) should be able to handle 100.
+     * Anything higher should really handle 250.
+     * <p>
+     * Given its 2026 right now, we'll assume a 10 year old Pi as the minimum as default.
      *
      * @see #PK_BOOKS_PER_REQUEST
      */
-    private static final int BOOKS_PER_REQUEST_DEFAULT = 20;
+    private static final int BOOKS_PER_REQUEST_DEFAULT = 100;
 
     /**
      * Preference key: the number of books which will be fetched in one request.
@@ -959,6 +963,7 @@ public final class CalibreContentServer
      *
      * @return nr of books
      */
+    @IntRange(from = 1)
     int booksPerRequest() {
         return ServiceLocator.getInstance().getSharedPreferences()
                              .getInt(PK_BOOKS_PER_REQUEST, BOOKS_PER_REQUEST_DEFAULT);
