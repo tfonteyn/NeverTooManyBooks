@@ -206,6 +206,8 @@ public final class ErrorDialog {
             message2 = mappedMsg.orElseGet(() -> ExMsg.getUnexpectedErrorMessage(context));
         }
 
+        builder.setMessage(message2);
+
         // the exception MAY be absent
         if (e != null) {
             // If we have no mapped message, check the raw localised exception msg.
