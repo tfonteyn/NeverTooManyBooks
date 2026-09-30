@@ -57,6 +57,8 @@
             translatable="false">DNB.DE</string>
     <string name="site_douban"
             translatable="false">Douban</string>
+    <string name="site_dr"
+            translatable="false">D&amp;R</string>
     <string name="site_goodreads"
             translatable="false">Goodreads</string>
     <string name="site_google_books"
@@ -65,6 +67,8 @@
             translatable="false">ISFDB</string>
     <string name="site_kb_nl"
             translatable="false">KB.NL</string>
+    <string name="site_kitapsec"
+            translatable="false">Kitapseç</string>
     <string name="site_lastdodo_nl"
             translatable="false">LastDodo</string>
     <string name="site_library_thing"

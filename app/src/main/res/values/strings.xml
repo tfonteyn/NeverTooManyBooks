@@ -604,6 +604,7 @@
     <string name="site_description_polish">Polish</string>
 
     <!-- website info: short description of the type of search-site. -->
+    <string name="site_description_turkish">Turkish</string>
     <string name="site_description_shop">Shop</string>
     <!-- website info: short description of the type of search-site. -->
     <string name="site_description_catalog">Catalog</string>
