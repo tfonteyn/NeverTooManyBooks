@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,8 +23,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-
-import java.io.File;
 
 /**
  * Value class to report back what was written.
@@ -66,7 +64,7 @@ public class SyncWriterResults
         coverCount = in.readInt();
     }
 
-    public void addBook(final long bookId) {
+    public void addBook() {
         bookCount++;
     }
 
@@ -74,7 +72,7 @@ public class SyncWriterResults
         return bookCount;
     }
 
-    public void addCover(@NonNull final File file) {
+    public void addCover() {
         coverCount++;
     }
 
