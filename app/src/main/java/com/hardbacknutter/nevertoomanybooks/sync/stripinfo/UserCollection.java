@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.AnyThread;
@@ -31,6 +30,7 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -178,7 +178,6 @@ class UserCollection {
      * @throws IOException     on generic/other IO failures
      * @throws SearchException on generic exceptions (wrapped) during search
      */
-    @SuppressLint("DefaultLocale")
     @WorkerThread
     @NonNull
     List<Book> fetchPage(@NonNull final Context context,
@@ -193,7 +192,8 @@ class UserCollection {
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, pageNr));
 
-        final String url = hostUrl + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
+        final String url = hostUrl + String.format(Locale.ROOT, URL_MY_BOOKS,
+                                                   userId, pageNr, FLAGS);
         final Document document = httpCallFactory.loadHtml(context, url, null);
 
         return parseDocument(document, pageNr, progressListener);

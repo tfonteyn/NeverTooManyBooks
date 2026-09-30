@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
-import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -152,14 +151,13 @@ public class PartialDate
      *
      * @return formatted string
      */
-    @SuppressLint("DefaultLocale")
     @NonNull
     private static String formatYear(final int year) {
         if (year >= 0) {
-            return String.format("%04d", year);
+            return String.format(Locale.ROOT, "%04d", year);
         } else {
             // allow for leading '-'
-            return String.format("%05d", year);
+            return String.format(Locale.ROOT, "%05d", year);
         }
     }
 
@@ -223,7 +221,6 @@ public class PartialDate
      *
      * @return (partial) string representation of the date.
      */
-    @SuppressLint("DefaultLocale")
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public String getIsoStringWithDelim(@NonNull final String delimiter) {
@@ -231,9 +228,9 @@ public class PartialDate
         if (yearSet) {
             sj.add(formatYear(localDate.getYear()));
             if (monthSet) {
-                sj.add(String.format("%02d", localDate.getMonthValue()));
+                sj.add(String.format(Locale.ROOT, "%02d", localDate.getMonthValue()));
                 if (daySet) {
-                    sj.add(String.format("%02d", localDate.getDayOfMonth()));
+                    sj.add(String.format(Locale.ROOT, "%02d", localDate.getDayOfMonth()));
                 }
             }
         }
