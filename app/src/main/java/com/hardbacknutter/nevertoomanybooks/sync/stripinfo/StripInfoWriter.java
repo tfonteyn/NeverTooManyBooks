@@ -139,24 +139,8 @@ public class StripInfoWriter
                         new StripInfoCollectionData(new CursorRow(cursor));
                 book.setStripInfoCollectionData(collectionData);
 
-                try {
-                    collectionForm.send(book);
-                    results.addBook(book.getId());
-
-                } catch (@NonNull final HttpNotFoundException e404) {
-                    // The book no longer exists on the server.
-                    if (deleteLocalBook) {
-                        bookDao.delete(book);
-                    } else {
-                        // keep the local book, but remove the stripInfo data for it.
-                        stripInfoDao.delete(book);
-                        book.remove(Identifier.SID_STRIP_INFO);
-                        book.remove(StripInfoCollectionData.BKEY);
-                    }
-                } catch (@NonNull final JSONException e) {
-                    // ignore, just move on to the next book
-                    LoggerFactory.getLogger()
-                                 .e(TAG, e, "bookId=" + book.getId());
+                if (pushChanges(book)) {
+                    results.addBook();
                 }
 
                 delta++;
@@ -175,6 +159,39 @@ public class StripInfoWriter
                      DateTimeFormatter.ISO_LOCAL_DATE_TIME))
              .apply();
         return results;
+    }
+
+    /**
+     * Send the changes.
+     *
+     * @param book to send
+     *
+     * @return {@code true} if successful
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    private boolean pushChanges(final Book book)
+            throws IOException {
+        try {
+            collectionForm.send(book);
+            return true;
+
+        } catch (@NonNull final HttpNotFoundException e404) {
+            // The book no longer exists on the server.
+            if (deleteLocalBook) {
+                bookDao.delete(book);
+            } else {
+                // keep the local book, but remove the stripInfo data for it.
+                stripInfoDao.delete(book);
+                book.remove(Identifier.SID_STRIP_INFO);
+                book.remove(StripInfoCollectionData.BKEY);
+            }
+            return true;
+
+        } catch (@NonNull final JSONException e) {
+            LoggerFactory.getLogger().e(TAG, e, "bookId=" + book.getId());
+            return false;
+        }
     }
 
     @Override
