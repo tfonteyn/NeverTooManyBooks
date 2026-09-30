@@ -8,6 +8,10 @@
       <option name="fileTypeOverride" value="1" />
       <option name="prefixLines" value="false" />
     </LanguageOptions>
+    <LanguageOptions name="Python">
+      <option name="fileTypeOverride" value="1" />
+      <option name="block" value="false" />
+    </LanguageOptions>
     <LanguageOptions name="XHTML">
       <option name="fileTypeOverride" value="1" />
       <option name="prefixLines" value="false" />

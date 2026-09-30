@@ -19,8 +19,6 @@
  */
 //file:noinspection LongLine
 
-
-import com.android.build.api.variant.ScopedArtifacts
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -366,26 +364,42 @@ dependencies {
     }
 }
 
+def calibrePluginFiles = ['__init__.py', 'routes.py']
+
+def getCalibrePluginVersion() {
+    def pluginFile = file("${project.rootDir}/calibre-plugin/__init__.py")
+    // paranoia
+    if (pluginFile.exists()) {
+        // Match/find: version = (1, 0, 0) or version=(1,0,0)
+        def matcher = pluginFile.text =~ /version\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/
+        if (matcher.find()) {
+            return "${matcher.group(1)}.${matcher.group(2)}.${matcher.group(3)}"
+        }
+    }
+    // fallback
+    return "1.0.0"
+}
+
+// Standalone plugin build
+def zipCalibrePlugin = tasks.register("zipCalibrePlugin", Zip) {
+    group = "calibre"
+    description = "Packs the Calibre plugin into a ZIP file."
+
+    from("${project.rootDir}/calibre-plugin") {
+        include calibrePluginFiles
+    }
+
+    archiveFileName = "ntmb-calibre-plugin-${getCalibrePluginVersion()}.zip"
+    destinationDirectory = layout.buildDirectory.dir("outputs/calibre-plugin")
+}
+
+// Hook up the plugin build for full builds
 androidComponents {
     onVariants(selector().all()) { variant ->
         def variantName = variant.name.capitalize()
-        def buildType = variant.buildType
-        def versionName = android.defaultConfig.versionName
-
-        def zipTask = tasks.register("zipCalibrePlugin${variantName}", Zip) {
-            from("${project.rootDir}/calibre-plugin") {
-                include '__init__.py'
-            }
-
-            archiveFileName = "ntmb-calibre-plugin-${versionName}-${buildType}.zip"
-            destinationDirectory = layout.buildDirectory.dir("outputs/apk/${buildType}")
-        }
-
-        variant.artifacts.forScope(ScopedArtifacts.Scope.PROJECT)
-
         tasks.configureEach { task ->
             if (task.name == "assemble${variantName}") {
-                task.finalizedBy(zipTask)
+                task.finalizedBy(zipCalibrePlugin)
             }
         }
     }
