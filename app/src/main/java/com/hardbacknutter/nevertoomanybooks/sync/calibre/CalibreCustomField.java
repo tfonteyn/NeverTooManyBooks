@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.CalibreBookJsonKey;
 
 /**
  * Mapping of the Calibre user fields.
@@ -59,39 +60,25 @@ public class CalibreCustomField
         }
     };
 
-    // Special handling fields which we know about.
+    /** Calibre defined field which requires special handling. */
     public static final String FIELD_READ_PROGRESS = "#read_progress";
 
-
-    // NEWTHINGS: adding a Calibre custom field type
-    // Don't transform to enum; we may want to support custom/unknown types.
-    public static final String TYPE_BOOL = "bool";
-    public static final String TYPE_COMMENTS = "comments";
-    /** A calculated field in Calibre. Processed as a String. */
-    public static final String TYPE_COMPOSITE = "composite";
-    public static final String TYPE_DATETIME = "datetime";
-    /** Processed as a String. */
-    public static final String TYPE_ENUMERATION = "enumeration";
     /**
-     * Defined here but not used by us as we don't have any float typed columns,
-     * except 'rating' which is covered by TYPE_RATING.
+     * The key which contains the type of the field.
+     *
+     * @see Type
      */
-    public static final String TYPE_FLOAT = "float";
-    public static final String TYPE_INT = "int";
-    /** It's an empty string, or an int from 0..5. */
-    public static final String TYPE_RATING = "rating";
-    // ??
-    public static final String TYPE_SERIES = "series";
-    public static final String TYPE_TEXT = "text";
-
-    static final String METADATA_DATATYPE = "datatype";
-    static final String VALUE = "#value#";
+    public static final String METADATA_DATATYPE = "datatype";
+    /**
+     * The actual value of the custom field. Can be {@code None} and {@code null}.
+     */
+    public static final String VALUE = "#value#";
 
     @NonNull
     private final String calibreKey;
     @NonNull
     private final String dbKey;
-    @Type
+    @Type.FieldType
     @NonNull
     private final String type;
     /** Row ID. */
@@ -105,7 +92,7 @@ public class CalibreCustomField
      * @param dbKey      The local {@link DBKey} to which the field is to be mapped
      */
     public CalibreCustomField(@NonNull final String calibreKey,
-                              @NonNull @Type final String type,
+                              @NonNull @Type.FieldType final String type,
                               @NonNull final String dbKey) {
         this.calibreKey = calibreKey;
         this.dbKey = dbKey;
@@ -159,6 +146,7 @@ public class CalibreCustomField
         return dbKey;
     }
 
+    @Type.FieldType
     @NonNull
     public String getType() {
         return type;
@@ -189,20 +177,68 @@ public class CalibreCustomField
                + '}';
     }
 
-    @StringDef({
-            TYPE_BOOL,
-            TYPE_COMMENTS,
-            TYPE_COMPOSITE,
-            TYPE_DATETIME,
-            TYPE_ENUMERATION,
-            TYPE_FLOAT,
-            TYPE_INT,
-            TYPE_RATING,
-            TYPE_SERIES,
-            TYPE_TEXT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Type {
+    // NEWTHINGS: adding a Calibre custom field type
+    // Don't transform the types to enum;
+    // we may want to support custom/unknown types at a future time
+    public static final class Type {
 
+        /** Example: "#read". */
+        public static final String BOOL = "bool";
+
+        /** Example: "#date_read". */
+        public static final String DATETIME = "datetime";
+
+        /** Example: "#notes". */
+        public static final String COMMENTS = "comments";
+        /** Example: "#notes". */
+        public static final String TEXT = "text";
+
+        /** Example: "#rating". The same rules apply as {@link CalibreBookJsonKey#RATING} */
+        public static final String RATING = "rating";
+
+        /**
+         * A calculated field in Calibre.
+         * Processed as a String.
+         * Pulled only, never pushed.
+         */
+        public static final String COMPOSITE = "composite";
+
+        /**
+         * Processed as a String.
+         * Not used by a predefined field.
+         */
+        public static final String ENUMERATION = "enumeration";
+
+        /**
+         * Found in the Calibre source code, not sure what it represents.
+         * Maybe a series of values, i.e. an ordered set ?
+         */
+        public static final String SERIES = "series";
+
+        /** Not used by a predefined field. */
+        public static final String FLOAT = "float";
+
+        /** Not used by a predefined field. */
+        public static final String INT = "int";
+
+        private Type() {
+        }
+
+        @StringDef({
+                BOOL,
+                COMMENTS,
+                COMPOSITE,
+                DATETIME,
+                ENUMERATION,
+                FLOAT,
+                INT,
+                RATING,
+                SERIES,
+                TEXT
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface FieldType {
+
+        }
     }
 }

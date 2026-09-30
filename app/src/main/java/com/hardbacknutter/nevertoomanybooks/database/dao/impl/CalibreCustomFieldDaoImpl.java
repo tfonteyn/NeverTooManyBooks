@@ -67,31 +67,37 @@ public class CalibreCustomFieldDaoImpl
      * @throws SQLException on any failures
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db)
-        throws SQLException {
+            throws SQLException {
         //noinspection CheckStyle
         final String[][] all = {
                 // From the built in templates:
 
                 // SPECIAL HANDLING REQUIRED,
                 {CalibreCustomField.FIELD_READ_PROGRESS,
-                        CalibreCustomField.TYPE_COMPOSITE,
+                        CalibreCustomField.Type.COMPOSITE,
                         DBKey.READ_PROGRESS},
 
-                // No special handling, it's a value "","1","2"..."5"
-                // but with a distinct type.
-                {"#rating", CalibreCustomField.TYPE_RATING, DBKey.RATING},
+                // see CalibreBookJsonKey#RATING for the rules
+                {"#rating", CalibreCustomField.Type.RATING,
+                        DBKey.RATING},
 
 
                 // The below are custom fields as defined by NTMB.
                 // These need to be manually defined in Calibre.
                 // No special handling, these map 1:1
-                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.READ__BOOL},
-                {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.READ_START__DATE},
-                {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},
-                {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},
+                {"#read", CalibreCustomField.Type.BOOL,
+                        DBKey.READ__BOOL},
+                {"#read_start", CalibreCustomField.Type.DATETIME,
+                        DBKey.READ_START__DATE},
+                {"#read_end", CalibreCustomField.Type.DATETIME,
+                        DBKey.READ_END__DATE},
+                {"#date_read", CalibreCustomField.Type.DATETIME,
+                        DBKey.READ_END__DATE},
                 // Supporting two different datatypes for the notes field
-                {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.PERSONAL_NOTES},
-                {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.PERSONAL_NOTES}
+                {"#notes", CalibreCustomField.Type.TEXT,
+                        DBKey.PERSONAL_NOTES},
+                {"#notes", CalibreCustomField.Type.COMMENTS,
+                        DBKey.PERSONAL_NOTES}
         };
 
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
@@ -115,7 +121,7 @@ public class CalibreCustomFieldDaoImpl
      */
     public static long doInsert(@NonNull final CalibreCustomField field,
                                 @NonNull final ExtSQLiteStatement stmt)
-        throws SQLException {
+            throws SQLException {
 
         stmt.bindString(1, field.getCalibreKey());
         stmt.bindString(2, field.getType());

@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -52,55 +52,60 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomFieldDecoder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreIdentifiers;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.CalibreCustomFieldCoder;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * From a test export from Calibre 9.7.0 we got these known columns
- * if (in Calibre) we choose the full set in the original order.
+ * when, in Calibre, we choose the full set in the original order.
  * Note that this set has less columns than when we do a sync
  * with the Calibre Content Server.
+ * <p>
+ * <strong>IMPORTANT</strong>: The column "comments" will break CSV in Calibre up to 9.11.0
+ * as it does not encode CR/LF properly. Calibre 9.12.0 fixes this.
+ * We document this on the wiki, and <strong>WILL</strong> throw an error
+ * when milti-line "comments" are imported from a Calibre 9.11 or earlier.
+ * <p>
+ * Note the "rating" column: this is the rating which Calibre gets from its metadata
+ * sources. The user can of course update it.
+ * In addition, the user can create a custom column "#rating".
+ * When the latter is present, the "rating" is skipped.
+ *
  * <pre>
  *      authors,               We use "authors" to make sure our extended re-ordering
  *                             rules are applied
  *      author_sort,           Ignored, see ^
- *      comments,              This column will break CSV in Calibre up to 9.9.0 as
- *                             it does not encode CR/LF.
- *                             Calibre 9.10 ? 10.0 ? coming soon... should fix this.
+ *      comments,              set as our description field
  *      cover,                 a path on disk
  *      timestamp,             the last-update datetime
  *      formats,               epub,mobi,...
  *      isbn,
- *      id,
+ *      id,                    Calibre book numerical id
  *      identifiers,
  *      languages,
  *      library_name,
  *      pubdate,
  *      publisher,
  *      rating,
- *      series,
- *      series_index,
+ *      series,                 top-level/single series
+ *      series_index,           top-level/single series-number
  *      size,                   of the ebook
  *      tags,
  *      title,                  We use "title" to make sure our extended re-ordering
  *                              rules are applied
  *      title_sort,             Ignored, see ^
- *      uuid
+ *      uuid                   Calibre book UUID
  * </pre>
- * <p>
- * Note the "rating" column: this is the rating which Calibre gets from its metadata
- * sources. The user can of course update it.
- * <p>
- * In addition, the user can create a custom column "#rating".
- * When the latter is present, the "rating" is skipped.
+
  */
 public class CalibreBookCoder
         implements BookCoder {
@@ -122,7 +127,7 @@ public class CalibreBookCoder
 
     private final StringList<Author> authorCoder;
     private final StringList<Tag> tagCoder;
-    private final CalibreCustomFieldDecoder customFieldDecoder;
+    private final CalibreCustomFieldCoder customFieldDecoder;
 
     private final BookshelfDao bookshelfDao;
     private final Style defaultStyle;
@@ -164,7 +169,9 @@ public class CalibreBookCoder
         dateVerifier = new DateVerifier(dateParser);
         mappers = MapperFactory.create(context);
 
-        customFieldDecoder = new CalibreCustomFieldDecoder(dateParser);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        customFieldDecoder = new CalibreCustomFieldCoder(dateParser, ratingParser,
+                                                         realNumberParser);
 
         bookshelfDao = serviceLocator.getBookshelfDao();
 

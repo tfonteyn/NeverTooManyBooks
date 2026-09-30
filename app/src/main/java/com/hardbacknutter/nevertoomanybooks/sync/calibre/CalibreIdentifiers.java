@@ -34,13 +34,13 @@ public final class CalibreIdentifiers {
      * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre
      * We're ignoring them as the "isbn" should take precedence really
      */
-    static final String IDENTIFIER_ISBN = "isbn";
+    public static final String IDENTIFIER_ISBN = "isbn";
     private static final String AMAZON = "amazon";
     /**
      * Key's that map 1:1 are not listed.
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static final Map<String, String> IDENTIFIER_MAPPING_WRITER = Map.ofEntries(
+    public static final Map<String, String> IDENTIFIER_MAPPING_WRITER = Map.ofEntries(
             // I'm not clear on why calibre prefers 'amazon' above 'asin'
             // but heck, just convert it.
             Map.entry(Identifier.SID_ASIN, AMAZON)

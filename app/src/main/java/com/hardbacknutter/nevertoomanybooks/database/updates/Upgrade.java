@@ -170,10 +170,10 @@ public class Upgrade {
 
         // NEWTHINGS: adding a Calibre custom field
         calibreMigration.add("#rating",
-                             CalibreCustomField.TYPE_RATING,
+                             CalibreCustomField.Type.RATING,
                              DBKey.RATING);
         calibreMigration.add(CalibreCustomField.FIELD_READ_PROGRESS,
-                             CalibreCustomField.TYPE_COMPOSITE,
+                             CalibreCustomField.Type.COMPOSITE,
                              DBKey.READ_PROGRESS);
     }
 

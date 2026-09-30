@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
-import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -57,13 +56,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -104,6 +104,8 @@ import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.CalibreBookJsonKey;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -111,6 +113,7 @@ import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import okhttp3.Authenticator;
+import okhttp3.CookieJar;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -185,25 +188,44 @@ public final class CalibreContentServer
             PREFERENCE_KEY + '.' + SiteAuthModule.PK_HOST_PASSWORD;
 
     /**
-     * Default for the number of books we fetch per request.
+     * Default for the number of books we pull from the server per request.
      * On a RaspberryPi 1b+ (2012) we used 10, although 25..50 should be ok.
      * It seems a Pi 3b (2016) should be able to handle 100.
      * Anything higher should really handle 250.
      * <p>
      * Given its 2026 right now, we'll assume a 10 year old Pi as the minimum as default.
      *
-     * @see #PK_BOOKS_PER_REQUEST
+     * @see #PK_BOOKS_PER_PULL_REQUEST
      */
-    private static final int BOOKS_PER_REQUEST_DEFAULT = 100;
+    private static final int BOOKS_PER_PULL_REQUEST_DEFAULT = 100;
 
     /**
-     * Preference key: the number of books which will be fetched in one request.
+     * Preference key: the number of books which will be pulled from the server in one request.
      * <p>
      * {@code int}
      *
-     * @see #BOOKS_PER_REQUEST_DEFAULT
+     * @see #BOOKS_PER_PULL_REQUEST_DEFAULT
      */
-    private static final String PK_BOOKS_PER_REQUEST = PREFERENCE_KEY + ".request.nr_of_books";
+    private static final String PK_BOOKS_PER_PULL_REQUEST =
+            PREFERENCE_KEY + ".request.pull.nr_of_books";
+
+    /**
+     * Default for the number of books we push to the server per request.
+     * <p>
+     * ENHANCE: Currently this is kept fairly low, as the actual push is 1 book == 1 POST
+     *  This needs changing when/if we create a custom endpoint for batch posts
+     */
+    private static final int BOOKS_PER_PUSH_REQUEST_DEFAULT = 20;
+
+    /**
+     * Preference key: the number of books which will be pushed to the server in one request.
+     * <p>
+     * {@code int}
+     *
+     * @see #BOOKS_PER_PUSH_REQUEST_DEFAULT
+     */
+    private static final String PK_BOOKS_PER_PUSH_REQUEST =
+            PREFERENCE_KEY + ".request.push.nr_of_books";
 
     /**
      * Preference key: The local download folder.
@@ -236,125 +258,69 @@ public final class CalibreContentServer
     private static final String ERROR_NULL_DEFAULT_LIBRARY = "defaultLibrary";
 
     /**
-     * The standard request to get information about the libraries available
-     * on the server.
+     * Present in the response from {@link Endpoints#GET_LIBRARY_INFO}
+     * and {@link Endpoints#NTMB_GET_LIBRARY_INFO}.
      * <p>
-     * We're also calling this for connection validation.
-     * <p>
-     * Param 1: serverUri
+     * Contains a list of {@code libraryStringId=name} pairs for all libraries.
      */
-    private static final String GET_LIBRARY_INFO = "%1$s/ajax/library-info";
+    private static final String RESPONSE_AJAX_LIBRARY_MAP = "library_map";
 
     /**
-     * The custom plugin request to get information about the libraries available
-     * on the server.
+     * Present in the response from {@link Endpoints#GET_LIBRARY_INFO}
+     * and {@link Endpoints#NTMB_GET_LIBRARY_INFO}.
      * <p>
-     * Param 1: serverUri
+     * Contains the name of the default library.
+     */
+    private static final String RESPONSE_AJAX_DEFAULT_LIBRARY = "default_library";
+
+    /**
+     * Present in the response from {@link Endpoints#NTMB_GET_LIBRARY_INFO}
+     * when our calibre plugin is installed on the server.
+     * <p>
+     * Contain extra information:
+     * <ul>
+     *     <li>library uuid</li>
+     *     <li>library name</li>
+     *     <li>virtual libraries</li>
+     *     <li>custom field definitions</li>
+     * </ul>
+     */
+    private static final String RESPONSE_NTMB_LIBRARY_DATA = "library_data";
+
+    /**
+     * Present in the response from {@link Endpoints#NTMB_GET_LIBRARY_INFO}
+     * when our calibre plugin is installed on the server.
+     * <p>
+     * Contains the Library UUID
+     */
+    private static final String RESPONSE_NTMB_UUID = "uuid";
+
+    /**
+     * Present in the response from {@link Endpoints#NTMB_GET_LIBRARY_INFO}
+     * when our calibre plugin is installed on the server.
+     * <p>
+     * Contains the virtual libraries (if any)
      *
-     * @see #isPluginInstalled()
+     * @see #RESPONSE_NTMB_LIBRARY_DATA
      */
-    private static final String NTMB_GET_LIBRARY_INFO = "%1$s/nevertoomanybooks/library-info";
+    private static final String RESPONSE_NTMB_VIRTUAL_LIBRARIES = "virtual_libraries";
 
     /**
-     * Request the list of virtual libraries.
-     * <p>
-     * Param 1: serverUri
-     * Param 2: csv list of book ids
-     * Param 3: libraryStringId
-     */
-    private static final String NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS =
-            "%1$s/nevertoomanybooks/virtual-libraries-for-books/%2$s/%3$s";
-
-    /**
-     * Run a search.
-     * <p>
-     * Param 1: serverUri
-     * Param 2: libraryId
-     * Param 3: the maximum number of entries to return
-     * Param 4: the offset for the next set to return
-     * Param 5: the query to execute
-     */
-    private static final String SEARCH = "%1$s/ajax/search/%2$s?num=%3$d&offset=%4$d&query=%5$s";
-
-    /**
-     * Request a file download.
-     * <p>
-     * Param 1: serverUri
-     * Param 2: file format
-     * Param 3: calibre book id
-     * Param 4: libraryStringId
-     */
-    private static final String FETCH_FILE = "%1$s/get/%2$s/%3$d/%4$s";
-
-    /**
-     * Fetch all book.
-     * <p>
-     * {@code "616c6c626f6f6b73" == "allbooks"}
-     * <p>
-     * Param 1: serverUri
-     * Param 2: libraryStringId
-     * Param 3: number of books
-     * Param 4: offset to start fetching from
-     *
-     * @see #getBookIds(String, int, int)
-     */
-    private static final String GET_BOOK_IDS =
-            "%1$s/ajax/category/616c6c626f6f6b73/%2$s?num=%3$d&offset=%4$d";
-
-    /**
-     * Fetch a single book by its numeric id.
-     * <p>
-     * Param 1: serverUri
-     * Param 2: book id (as a string)
-     * Param 3: libraryStringId
-     */
-    private static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$s/%3$s";
-
-    /**
-     * Fetch a single book by its UUID.
-     * <p>
-     * Param 1: serverUri
-     * Param 2: book UUID
-     * Param 3: libraryStringId
-     */
-    private static final String GET_BOOK_BY_UUID = "%1$s/ajax/book/%2$s/%3$s?id_is_uuid=true";
-
-    /**
-     * Fetch a set of books by their numeric ids.
-     * <p>
-     * Param 1: serverUri
-     * Param 2: a csv list of numeric book ids
-     * Param 3: libraryStringId
-     */
-    private static final String GET_BOOKS_BY_ID =
-            "%1$s/ajax/books/%2$s?category_urls=false&ids=%3$s";
-
-    /** Response root tag. */
-    private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
-    /**
-     * Present in the response from {@link #GET_LIBRARY_INFO} and {@link #NTMB_GET_LIBRARY_INFO}.
-     * Contains the {@link #RESPONSE_TAG_DEFAULT_LIBRARY} and a list of key=value
-     * pairs with the libraries.
-     */
-    private static final String RESPONSE_TAG_LIBRARY_MAP = "library_map";
-    /**
-     * Present in {@link #RESPONSE_TAG_LIBRARY_MAP} containing the name of
-     * the default library.
-     */
-    private static final String RESPONSE_TAG_DEFAULT_LIBRARY = "default_library";
-    /**
-     * Present in the response from {@link #NTMB_GET_LIBRARY_INFO}
+     * Present in the response from {@link Endpoints#NTMB_GET_LIBRARY_INFO}
      * when our calibre ajax plugin is installed on the server.
-     * This JSONObject will contain extra information:
-     * - library uuid.
-     * - virtual libraries.
+     * <p>
+     * Contains the custom field definitions (if any)
+     *
+     * @see #RESPONSE_NTMB_LIBRARY_DATA
      */
-    private static final String RESPONSE_TAG_LIBRARY_DETAILS = "library_details";
+    private static final String RESPONSE_NTMB_CUSTOM_FIELDS = "custom_fields";
 
-    /**
-     * Ignored by the server.
-     */
+    /** Ignored by the server, but we still need to set one.  */
     private static final String ACCEPT_LANGUAGE_HEADER = "en";
+
+    /** The RequestBody media type. */
+    private static final MediaType MEDIA_TYPE_JSON = MediaType
+            .parse("application/json; charset=utf-8");
 
     @NonNull
     private final Uri serverUri;
@@ -371,7 +337,7 @@ public final class CalibreContentServer
     private final CookieStore cookieStore;
 
     private final BookshelfDao bookshelfDao;
-    private final CalibreLibraryDao calibreLibraryDao;
+    private final CalibreLibraryDao libraryDao;
 
     /** Lazy created in {@link #getImageDownloader()}. */
     @Nullable
@@ -379,14 +345,12 @@ public final class CalibreContentServer
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary defaultLibrary;
+
     /**
-     * The default or plugin url to get Library info.
-     * <p>
-     * Initially set to our plugin endpoint; will be replaced by the default
-     * if our plugin is not installed.
+     * {@code null} initially. Set to a value after {@link #readMetaData()} is run.
      */
-    private String urlGetLibraryInfo = NTMB_GET_LIBRARY_INFO;
-    private boolean pluginInstalled;
+    @Nullable
+    private Boolean pluginInstalled;
 
     @Nullable
     private HttpCall jsonFetchCall;
@@ -418,7 +382,7 @@ public final class CalibreContentServer
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         bookshelfDao = serviceLocator.getBookshelfDao();
-        calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
+        libraryDao = serviceLocator.getCalibreLibraryDao();
 
         final List<CalibreCustomField> customFields =
                 serviceLocator.getCalibreCustomFieldDao().getCustomFields();
@@ -495,7 +459,6 @@ public final class CalibreContentServer
      * @return url; will be empty if not configured.
      */
     @NonNull
-    @AnyThread
     public static String getHostUrl() {
         return ServiceLocator.getInstance()
                              .getSharedPreferences()
@@ -509,7 +472,6 @@ public final class CalibreContentServer
      * @param context Current context
      * @param uri     for the local folder
      */
-    @AnyThread
     static void setFolderUri(@NonNull final Context context,
                              @NonNull final Uri uri) {
         final ContentResolver contentResolver = context.getContentResolver();
@@ -551,7 +513,6 @@ public final class CalibreContentServer
      * @return uri for the local folder
      */
     @NonNull
-    @AnyThread
     static Optional<Uri> getFolderUri(@NonNull final Context context) {
 
         final String folder = ServiceLocator.getInstance().getSharedPreferences()
@@ -658,50 +619,12 @@ public final class CalibreContentServer
         }
     }
 
-    @NonNull
-    private Request createImageRequest(@NonNull final String urlStr) {
-
-        // TODO: check adding http headers with Calibre built-in-http-server
-        //  versus Calibre hosted behind an Apache server
-
-        // Host, Connection, Accept-Encoding are added by OkHttp
-        return new Request.Builder()
-                .url(urlStr)
-                .header(HttpConstants.USER_AGENT,
-                        HttpConstants.USER_AGENT_FIREFOX)
-                .header(HttpConstants.ACCEPT,
-                        HttpConstants.ACCEPT_IMAGE).build();
-    }
-
-    @NonNull
-    private Request createGetRequest(@NonNull final String url) {
-
-        // TODO: check adding http headers with Calibre built-in-http-server
-        //  versus Calibre hosted behind an Apache server
-
-        // Host, Connection, Accept-Encoding are added by OkHttp
-        return new Request.Builder().url(url).build();
-    }
-
-    @NonNull
-    private Request createPostRequest(@NonNull final String url,
-                                      @NonNull final RequestBody body) {
-        // Host, Connection, Accept-Encoding are added by OkHttp
-        final Request.Builder builder = new Request.Builder()
-                .url(url)
-                .post(body)
-                .header(HttpConstants.CONTENT_TYPE,
-                        HttpConstants.CONTENT_TYPE_JSON);
-
-        return builder.build();
-    }
-
     @WorkerThread
     @Override
     public boolean validateConnection(@NonNull final Context context)
             throws IOException {
-        // Just use the default GET_LIBRARY_INFO for validation. It's short and fast.
-        final String url = String.format(GET_LIBRARY_INFO, serverUri);
+        // Use the default GET_LIBRARY_INFO for validation. It's short and fast.
+        final String url = String.format(Endpoints.GET_LIBRARY_INFO, serverUri);
         return !fetch(url, BUFFER_SMALL).isEmpty();
     }
 
@@ -750,15 +673,14 @@ public final class CalibreContentServer
                                                     .orElseGet(bookshelfDao::getDefault)
                                                     .getId();
 
-        final String fetch = fetchLibraryInfo();
+        final JSONObject response = fetchLibraryInfo();
 
-        final JSONObject source = new JSONObject(fetch);
+        final JSONObject libraryMap = response.getJSONObject(RESPONSE_AJAX_LIBRARY_MAP);
+        final String defaultLibraryId = response.getString(RESPONSE_AJAX_DEFAULT_LIBRARY);
 
-        final JSONObject libraryMap = source.getJSONObject(RESPONSE_TAG_LIBRARY_MAP);
-        final String defaultLibraryId = source.getString(RESPONSE_TAG_DEFAULT_LIBRARY);
-        // only present if our plugin is installed
+        // This data is only present if our plugin is installed
         @Nullable
-        final JSONObject libraryDetails = source.optJSONObject(RESPONSE_TAG_LIBRARY_DETAILS);
+        final JSONObject libraryData = response.optJSONObject(RESPONSE_NTMB_LIBRARY_DATA);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
@@ -773,71 +695,98 @@ public final class CalibreContentServer
                 // read the standard info
                 final String name = libraryMap.getString(libraryId);
 
-                // read the plugin info if present
-                final String uuid;
+                // read the plugin added info if present
+                @NonNull
+                String uuid = "";
+                int totalBooks = 0;
                 @Nullable
-                final JSONObject vlibs;
-                if (libraryDetails != null && !libraryDetails.isNull(libraryId)) {
-                    final JSONObject details = libraryDetails.getJSONObject(libraryId);
-                    uuid = details.getString("uuid");
-                    if (details.isNull(RESPONSE_TAG_VIRTUAL_LIBRARIES)) {
-                        vlibs = null;
-                    } else {
-                        vlibs = details.getJSONObject(RESPONSE_TAG_VIRTUAL_LIBRARIES);
+                JSONObject vlibs = null;
+                @Nullable
+                JSONObject customFields = null;
+                if (isPluginInstalled()) {
+                    // Paranoia... with the 8.0 plugin, we should ALWAYS have these details.
+                    if (libraryData != null
+                        && !libraryData.isNull(libraryId)) {
+
+                        final JSONObject details = libraryData.getJSONObject(libraryId);
+
+                        uuid = details.getString(RESPONSE_NTMB_UUID);
+                        totalBooks = details.optInt(RESPONSE_TAG_TOTAL_NUM);
+
+                        if (!details.isNull(RESPONSE_NTMB_VIRTUAL_LIBRARIES)) {
+                            vlibs = details.getJSONObject(RESPONSE_NTMB_VIRTUAL_LIBRARIES);
+                        }
+                        if (!details.isNull(RESPONSE_NTMB_CUSTOM_FIELDS)) {
+                            customFields = details.getJSONObject(RESPONSE_NTMB_CUSTOM_FIELDS);
+                        }
                     }
-                } else {
-                    uuid = "";
-                    vlibs = null;
                 }
 
+                // Using the UUID, or fallback on the id, and check if we already
+                // have the library in our local database
                 @Nullable
                 CalibreLibrary library = null;
                 if (!uuid.isEmpty()) {
-                    library = calibreLibraryDao.findLibraryByUuid(uuid).orElse(null);
+                    library = libraryDao.findLibraryByUuid(uuid).orElse(null);
                 }
                 if (library == null) {
-                    library = calibreLibraryDao.findLibraryByStringId(libraryId).orElse(null);
+                    library = libraryDao.findLibraryByStringId(libraryId).orElse(null);
                 }
-                if (library == null) {
-                    // must be a new one.
-                    library = new CalibreLibrary(uuid, libraryId, name, currentBookshelfId);
-
-                } else {
-                    // we found it by uuid or id, update it with the server info
+                if (library != null) {
+                    // we found it above, either by uuid or id, update it with the server info
                     // (even if unchanged... )
                     library.setUuid(uuid);
                     library.setName(name);
-                }
 
-                // If we have vl info, process it
-                // If we don't; the library will keep any vl defined previously
-                if (vlibs != null) {
-                    processVirtualLibraries(calibreLibraryDao, library, vlibs);
-                }
-
-                if (library.getId() > 0) {
-                    calibreLibraryDao.update(library);
                 } else {
-                    calibreLibraryDao.insert(library);
+                    // Not found, must be a new one.
+                    library = new CalibreLibrary(uuid, libraryId, name, currentBookshelfId);
                 }
 
-                // add to cached list
+                // If we have vl info from our plugin, process it
+                // If we don't, the library will keep any vl defined previously
+                if (vlibs != null) {
+                    processVirtualLibraries(library, vlibs);
+                }
+
+                // The Library data is now complete, store it to the local database
+                if (library.getId() > 0) {
+                    libraryDao.update(library);
+                } else {
+                    libraryDao.insert(library);
+                }
+
+                // Lastly read and handle the in-memory library data.
+                if (isPluginInstalled()) {
+                    library.setTotalBooks(totalBooks);
+                    parseCustomFieldDefinitions(library, customFields);
+
+                } else {
+                    // Use standard endpoints as workaround - it's slower :(
+                    // Read the first book available to get the customs fields (if any)
+                    final JSONObject bookIds = getBookIds(library.getLibraryStringId(), 1, 0);
+                    // grab the initial/current total number of books
+                    library.setTotalBooks(bookIds.optInt(RESPONSE_TAG_TOTAL_NUM));
+
+                    // The Calibre numeric book ids returned by the server
+                    final JSONArray calibreIds = bookIds.optJSONArray(RESPONSE_TAG_BOOK_IDS);
+                    // There will either be none in which case we CANNOT get the custom fields,
+                    // or a single id and after getting the full book,
+                    // we can extract the  custom fields
+                    if (calibreIds != null && !calibreIds.isEmpty()) {
+                        final JSONObject calibreBook = getBookById(library.getLibraryStringId(),
+                                                                   calibreIds.getInt(0));
+                        final JSONObject userMetaData =
+                                calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
+                        parseCustomFieldDefinitions(library, userMetaData);
+                    }
+                }
+
+                // Processing is complete, add to the cached list
                 libraries.add(library);
-                // and set as default if it is.
+                // and set as the default library if applicable
                 if (libraryId.equals(defaultLibraryId)) {
                     defaultLibrary = library;
-                }
-
-                // read the first book available to get the customs fields (if any)
-                final JSONObject response = getBookIds(library.getLibraryStringId(), 1, 0);
-                // grab the initial/current total number of books while we have it
-                library.setTotalBooks(response.optInt(RESPONSE_TAG_TOTAL_NUM));
-
-                // The Calibre numeric book ids returned by the server
-                // There will either be none, or a single id.
-                final JSONArray calibreIds = response.optJSONArray(RESPONSE_TAG_BOOK_IDS);
-                if (calibreIds != null && !calibreIds.isEmpty()) {
-                    loadCustomFieldDefinitions(library, calibreIds.getInt(0));
                 }
             }
 
@@ -855,118 +804,41 @@ public final class CalibreContentServer
     }
 
     /**
-     * Fetch the library information.
-     * First tries the endpoint for our plugin,
-     * and if not found falls back to the default endpoint.
-     * <p>
-     * Sets {@link #pluginInstalled} and {@link #urlGetLibraryInfo}
-     * accordingly.
-     *
-     * @return the library information as a json string
-     *
-     * @throws IOException on any issue
-     */
-    @NonNull
-    private String fetchLibraryInfo()
-            throws IOException {
-        String fetch;
-        try {
-            // Try our plugin endpoint first
-            fetch = fetch(String.format(urlGetLibraryInfo, serverUri), BUFFER_SMALL);
-            // if we don't get an exception, our plugin is installed
-            pluginInstalled = true;
-
-        } catch (@NonNull final HttpNotFoundException e) {
-            // our plugin is not installed
-            pluginInstalled = false;
-            // from now on, use the default endpoint
-            urlGetLibraryInfo = GET_LIBRARY_INFO;
-            // and retry
-            fetch = fetch(String.format(urlGetLibraryInfo, serverUri), BUFFER_SMALL);
-        }
-
-        if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG, "pluginInstalled=" + pluginInstalled);
-        }
-
-        return fetch;
-    }
-
-    private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
-                                         @NonNull final CalibreLibrary library,
-                                         @NonNull final JSONObject virtualLibraries)
-            throws JSONException {
-
-        final List<CalibreVirtualLibrary> vLibs = new ArrayList<>();
-
-        final Iterator<String> it = virtualLibraries.keys();
-        while (it.hasNext()) {
-            final String name = it.next();
-            final String expr = virtualLibraries.getString(name);
-
-            dao.findVirtualLibrary(library.getId(), name).ifPresentOrElse(vLib -> {
-                // Update existing
-                vLib.setName(name);
-                vLib.setExpr(expr);
-                vLibs.add(vLib);
-            }, () -> {
-                // create new
-                vLibs.add(new CalibreVirtualLibrary(library.getId(), name, expr,
-                                                    library.getMappedBookshelfId()));
-            });
-        }
-
-        // hook them up to the library itself; always overwriting the current(previous) list.
-        library.setVirtualLibraries(vLibs);
-    }
-
-    private void loadCustomFieldDefinitions(@NonNull final CalibreLibrary library,
-                                            final int bookId)
-            throws IOException, JSONException {
-
-        final Set<CalibreCustomField> fields = new HashSet<>();
-        final JSONObject calibreBook = getBookById(library.getLibraryStringId(), bookId);
-        final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
-        if (userMetaData != null) {
-            // check the supported fields
-            for (final CalibreCustomField cf : this.calibreCustomFields) {
-                final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
-                // do we have a match? (this check is needed, it's NOT a sanity check)
-                if (data != null && cf.getType().equals(data.getString(
-                        CalibreCustomField.METADATA_DATATYPE))) {
-                    fields.add(cf);
-                }
-            }
-        }
-        // finally, hook them up to the library itself.
-        library.setCustomFields(fields);
-    }
-
-    /**
      * Check if the virtual-library support plugin has been installed
      * on the Calibre Content Server.
      * <p>
      * Only valid after an attempt to read the meta-data.
+     * Otherwise returns {@code false} by default.
      *
      * @return flag
      *
      * @see #readMetaData()
      * @see #isMetaDataRead()
      */
-    @AnyThread
     boolean isPluginInstalled() {
-        return pluginInstalled;
+        return pluginInstalled != null && pluginInstalled;
     }
 
     /**
-     * Get the configured books-per-request for fetching book data in one request.
+     * Get the configured books-per-request for <strong>pulling</strong> book data.
      *
      * @return nr of books
      */
     @IntRange(from = 1)
-    int booksPerRequest() {
+    int getBooksPerPullRequest() {
         return ServiceLocator.getInstance().getSharedPreferences()
-                             .getInt(PK_BOOKS_PER_REQUEST, BOOKS_PER_REQUEST_DEFAULT);
+                             .getInt(PK_BOOKS_PER_PULL_REQUEST, BOOKS_PER_PULL_REQUEST_DEFAULT);
+    }
+
+    /**
+     * Get the configured books-per-request for <strong>pushing</strong> book data.
+     *
+     * @return nr of books
+     */
+    @IntRange(from = 1)
+    int getBooksPerPushRequest() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getInt(PK_BOOKS_PER_PUSH_REQUEST, BOOKS_PER_PUSH_REQUEST_DEFAULT);
     }
 
     /**
@@ -975,7 +847,6 @@ public final class CalibreContentServer
      * @return list
      */
     @NonNull
-    @AnyThread
     public List<CalibreLibrary> getLibraries() {
         return libraries;
     }
@@ -991,51 +862,9 @@ public final class CalibreContentServer
     }
 
     /**
-     * Return the book ids with their virtual libraries.
-     * <pre>
-     * {@code
-     *      endpoint('/NeverTooManyBooks/virtual-libraries-for-books/{book_ids}/{library_id=None}',
-     *               postprocess=json)
-     * }
-     * </pre>
-     * {book_ids} a simple csv list; example: 271,7,200
+     * Get all book ids present in the given library.
+     * The ids are fetched in 'pages' of {number of books} starting at {offset}.
      * <p>
-     * This method uses a plugin which needs to be installed on the Calibre Content Server.
-     * <p>
-     * Example response:
-     * <pre>
-     *      {
-     *          "271": ["Fiction"],
-     *          "7": ["Fiction"],
-     *          "200": ["Fiction", "Non-Fiction"]
-     *      }
-     * </pre>
-     *
-     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreIds      a JSONArray of Calibre numeric book ids
-     *
-     * @return see above, or {@code null} if the plugin is missing
-     *
-     * @throws IOException   on generic/other IO failures
-     * @throws JSONException upon any parsing error
-     * @see #isPluginInstalled()
-     */
-    @WorkerThread
-    @Nullable
-    JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryStringId,
-                                           @NonNull final JSONArray calibreIds)
-            throws IOException,
-                   JSONException {
-        if (!pluginInstalled) {
-            return null;
-        }
-
-        final String url = String.format(NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS, serverUri,
-                                         getCsvIds(calibreIds), libraryStringId);
-        return new JSONObject(fetch(url, BUFFER_SMALL));
-    }
-
-    /**
      * Return a dictionary describing the category specified by name.
      * <pre>
      * {@code
@@ -1075,8 +904,8 @@ public final class CalibreContentServer
                                  final int offset)
             throws IOException, JSONException {
 
-        @SuppressLint("DefaultLocale")
-        final String url = String.format(GET_BOOK_IDS, serverUri, libraryStringId, num, offset);
+        final String url = String.format(Locale.ROOT, Endpoints.GET_BOOK_IDS, serverUri,
+                                         libraryStringId, num, offset);
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
 
@@ -1089,9 +918,10 @@ public final class CalibreContentServer
      * </pre>
      * Optional: ?num=100&offset=0&sort=title&sort_order=asc&query=&vl=
      * <p>
-     * http://192.168.0.202:8080/ajax/search?num=10&query=last_modified:%22%3E2021-1-10%22
-     * <p>
      * Example query:  query=last_modified:">2021-1-10"
+     * {@code
+     * http://192.168.0.202:8080/ajax/search?num=10&query=last_modified:%22%3E2021-1-10%22
+     * }
      * <p>
      * Example response:
      * <pre>
@@ -1128,14 +958,16 @@ public final class CalibreContentServer
             throws IOException,
                    JSONException {
 
-        @SuppressLint("DefaultLocale")
-        final String url = String.format(SEARCH, serverUri, libraryId, num, offset, query);
+        final String url = String.format(Locale.ROOT, Endpoints.SEARCH, serverUri,
+                                         libraryId, num, offset, query);
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
 
     /**
      * Return the metadata of a single book as a JSON dictionary.
      * Search for it by numeric id.
+     * <p>
+     * By preference, use {@link #getBookByUuid(String, String)} if possible.
      * <pre>
      * {@code
      *      endpoint('/ajax/book/{book_id}/{library_id=None}', postprocess=json)
@@ -1150,7 +982,7 @@ public final class CalibreContentServer
      * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreId       of the book to get
+     * @param calibreBookId   numeric book id
      *
      * @return Calibre book object
      *
@@ -1160,10 +992,11 @@ public final class CalibreContentServer
     @WorkerThread
     @NonNull
     private JSONObject getBookById(@NonNull final String libraryStringId,
-                                   final int calibreId)
+                                   final int calibreBookId)
             throws IOException, JSONException {
 
-        final String url = String.format(GET_BOOK_BY_ID, serverUri, calibreId, libraryStringId);
+        final String url = String.format(Endpoints.GET_BOOK_BY_ID, serverUri,
+                                         calibreBookId, libraryStringId);
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1172,28 +1005,29 @@ public final class CalibreContentServer
      * Search for it by UUID.
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreUuid     of the book to get
+     * @param calibreBookUuid of the book to get
      *
      * @return Calibre book object
      *
      * @throws IOException   on generic/other IO failures
      * @throws JSONException upon any parsing error
-     *
      * @see #getBookById(String, int)
      */
     @WorkerThread
     @NonNull
     JSONObject getBookByUuid(@NonNull final String libraryStringId,
-                             @NonNull final String calibreUuid)
+                             @NonNull final String calibreBookUuid)
             throws IOException, JSONException {
 
-        final String url = String.format(GET_BOOK_BY_UUID, serverUri, calibreUuid, libraryStringId);
+        final String url = String.format(Endpoints.GET_BOOK_BY_UUID, serverUri,
+                                         calibreBookUuid, libraryStringId);
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
     /**
      * Return the metadata of the books in the given library as a JSON dictionary.
      * Search for them by numeric ids.
+     * If our plugin is installed, the virtual-libraries for each will be fetched and added.
      * <pre>
      * {@code
      *      endpoint('/ajax/books/{library_id=None}', postprocess=json)
@@ -1207,260 +1041,10 @@ public final class CalibreContentServer
      * <p>
      * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
      * <p>
-     * Example response:
-     * <pre>
-     *     {
-     *     "6": {
-     *         "series": null,
-     *         "tags": [
-     *             "Fiction",
-     *             "Science Fiction"
-     *         ],
-     *         "thumbnail": "/get/thumb/6/Calibre_Library",
-     *         "author_sort": "Stross, Charles",
-     *         "rating": 5,
-     *         "pubdate": "2005-06-25T23:00:00+00:00",
-     *         "application_id": 6,
-     *         "cover": "/get/cover/6/Calibre_Library",
-     *         "series_index": null,
-     *         "author_link_map": {
-     *             "Charles Stross": ""
-     *         },
-     *         "author_sort_map": {
-     *             "Charles Stross": "Stross, Charles"
-     *         },
-     *         "publisher": "Ace",
-     *         "user_categories": {},
-     *         "comments": "<p>The Singularity. blah blah...</p>",
-     *         "title_sort": "Accelerando",
-     *         "identifiers": {
-     *             "amazon": "0441014151",
-     *             "isbn": "9780441014156",
-     *             "google": "F3i9DAEACAAJ"
-     *         },
-     *         "uuid": "4ec36562-d8e8-4499-9c6c-d1e7ae2af42f",
-     *         "title": "Accelerando",
-     *         "authors": [
-     *             "Charles Stross"
-     *         ],
-     *         "last_modified": "2020-11-20T11:17:51+00:00",
-     *         "languages": [
-     *             "eng"
-     *         ],
-     *         "timestamp": "2019-04-11T12:02:03+00:00",
-     *         "user_metadata": {
-     *             "#notes": {
-     *                 "table": "custom_column_4",
-     *                 "column": "value",
-     *                 "datatype": "comments",
-     *                 "is_multiple": null,
-     *                 "kind": "field",
-     *                 "name": "Notes",
-     *                 "search_terms": [
-     *                     "#notes"
-     *                 ],
-     *                 "label": "notes",
-     *                 "colnum": 4,
-     *                 "display": {
-     *                     "description": "Personal notes",
-     *                     "heading_position": "above",
-     *                     "interpret_as": "html"
-     *                 },
-     *                 "is_custom": true,
-     *                 "is_category": false,
-     *                 "link_column": "value",
-     *                 "category_sort": "value",
-     *                 "is_csp": false,
-     *                 "is_editable": true,
-     *                 "rec_index": 22,
-     *                 "#value#": null,
-     *                 "#extra#": null,
-     *                 "is_multiple2": {}
-     *             },
-     *             "#read": {
-     *                 "table": "custom_column_2",
-     *                 "column": "value",
-     *                 "datatype": "bool",
-     *                 "is_multiple": null,
-     *                 "kind": "field",
-     *                 "name": "Read",
-     *                 "search_terms": [
-     *                     "#read"
-     *                 ],
-     *                 "label": "read",
-     *                 "colnum": 2,
-     *                 "display": {
-     *                     "description": ""
-     *                 },
-     *                 "is_custom": true,
-     *                 "is_category": false,
-     *                 "link_column": "value",
-     *                 "category_sort": "value",
-     *                 "is_csp": false,
-     *                 "is_editable": true,
-     *                 "rec_index": 23,
-     *                 "#value#": null,
-     *                 "#extra#": null,
-     *                 "is_multiple2": {}
-     *             },
-     *             "#read_end": {
-     *                 "table": "custom_column_3",
-     *                 "column": "value",
-     *                 "datatype": "datetime",
-     *                 "is_multiple": null,
-     *                 "kind": "field",
-     *                 "name": "Finished reading",
-     *                 "search_terms": [
-     *                     "#read_end"
-     *                 ],
-     *                 "label": "read_end",
-     *                 "colnum": 3,
-     *                 "display": {
-     *                     "date_format": null,
-     *                     "description": ""
-     *                 },
-     *                 "is_custom": true,
-     *                 "is_category": false,
-     *                 "link_column": "value",
-     *                 "category_sort": "value",
-     *                 "is_csp": false,
-     *                 "is_editable": true,
-     *                 "rec_index": 24,
-     *                 "#value#": "None",
-     *                 "#extra#": null,
-     *                 "is_multiple2": {}
-     *             },
-     *             "#read_start": {
-     *                 "table": "custom_column_7",
-     *                 "column": "value",
-     *                 "datatype": "datetime",
-     *                 "is_multiple": null,
-     *                 "kind": "field",
-     *                 "name": "Started reading",
-     *                 "search_terms": [
-     *                     "#read_start"
-     *                 ],
-     *                 "label": "read_start",
-     *                 "colnum": 7,
-     *                 "display": {
-     *                     "date_format": null,
-     *                     "description": ""
-     *                 },
-     *                 "is_custom": true,
-     *                 "is_category": false,
-     *                 "link_column": "value",
-     *                 "category_sort": "value",
-     *                 "is_csp": false,
-     *                 "is_editable": true,
-     *                 "rec_index": 25,
-     *                 "#value#": "None",
-     *                 "#extra#": null,
-     *                 "is_multiple2": {}
-     *             },
-     *             "#status": {
-     *                 "table": "custom_column_5",
-     *                 "column": "value",
-     *                 "datatype": "enumeration",
-     *                 "is_multiple": null,
-     *                 "kind": "field",
-     *                 "name": "Status",
-     *                 "search_terms": [
-     *                     "#status"
-     *                 ],
-     *                 "label": "status",
-     *                 "colnum": 5,
-     *                 "display": {
-     *                     "enum_values": [
-     *                         "OK",
-     *                         "spelling",
-     *                         "OCR issues",
-     *                         "bad"
-     *                     ],
-     *                     "use_decorations": 0,
-     *                     "description": "",
-     *                     "enum_colors": [
-     *                         "green",
-     *                         "blue",
-     *                         "orange",
-     *                         "red"
-     *                     ]
-     *                 },
-     *                 "is_custom": true,
-     *                 "is_category": true,
-     *                 "link_column": "value",
-     *                 "category_sort": "value",
-     *                 "is_csp": false,
-     *                 "is_editable": true,
-     *                 "rec_index": 26,
-     *                 "#value#": null,
-     *                 "#extra#": null,
-     *                 "is_multiple2": {}
-     *             }
-     *         },
-     *         "format_metadata": {
-     *             "epub": {
-     *                 "path": "/home/calibre/library
-     *                      /Charles Stross
-     *                      /Accelerando (6)
-     *                      /Accelerando - Charles Stross.epub",
-     *                 "size": 408763,
-     *                 "mtime": "2020-09-18T15:26:14.871190+00:00"
-     *             }
-     *         },
-     *         "formats": [
-     *             "epub"
-     *         ],
-     *         "main_format": {
-     *             "epub": "/get/epub/6/Calibre_Library"
-     *         },
-     *         "other_formats": {},
-     *         "category_urls": {
-     *             "series": {},
-     *             "tags": {
-     *                 "Fiction": "/ajax/books_in/74616773/3139/Calibre_Library",
-     *                 "Science Fiction": "/ajax/books_in/74616773/34/Calibre_Library"
-     *             },
-     *             "publisher": {
-     *                 "Ace": "/ajax/books_in/7075626c6973686572/3735/Calibre_Library"
-     *             },
-     *             "authors": {
-     *                 "Charles Stross": "/ajax/books_in/617574686f7273/32/Calibre_Library"
-     *             },
-     *             "languages": {},
-     *             "#status": {}
-     *         }
-     *     },
-     * </pre>
-     * <p>
-     * Books with multiple formats:
-     * <pre>
-     *     "main_format": {
-     *         "epub": "/get/epub/87/library"
-     *     },
-     *     "other_formats": {
-     *         "pdf": "/get/pdf/87/library"
-     *     },
-     *
-     *     "formats": [
-     *         "epub",
-     *         "pdf"
-     *      ],
-     *     "format_metadata": {
-     *         "pdf": {
-     *             "path": "/home/calibre/library/some-author/some-title/some-book.pdf",
-     *             "size": 21951985,
-     *             "mtime": "2021-01-09T13:55:00.100514+00:00"
-     *         },
-     *         "epub": {
-     *             "path": "/home/calibre/library/some-author/some-title/some-book.epub",
-     *             "size": 25307259,
-     *             "mtime": "2021-01-09T13:54:52.140562+00:00"
-     *         }
-     *     },
-     * </pre>
+     * Example response see {@link BookCoder}.
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreIds      a JSONArray of Calibre numeric book ids
+     * @param calibreIds      a list of Calibre numeric book ids
      *
      * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
@@ -1470,60 +1054,222 @@ public final class CalibreContentServer
     @WorkerThread
     @NonNull
     JSONObject getBooksById(@NonNull final String libraryStringId,
-                            @NonNull final JSONArray calibreIds)
-            throws IOException,
-                   JSONException {
+                            @NonNull final List<Integer> calibreIds)
+            throws IOException, JSONException {
 
-        final String url = String.format(GET_BOOKS_BY_ID, serverUri, libraryStringId,
-                                         getCsvIds(calibreIds));
-        return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
-    }
+        final String csv = calibreIds.stream()
+                                     .map(String::valueOf)
+                                     .collect(Collectors.joining(","));
 
-    @NonNull
-    private String getCsvIds(@NonNull final JSONArray calibreIds)
-            throws JSONException {
-        final StringJoiner ids = new StringJoiner(",");
-        for (int i = 0; i < calibreIds.length(); i++) {
-            ids.add(String.valueOf(calibreIds.getInt(i)));
+        final String url = String.format(Endpoints.GET_BOOKS_BY_ID, serverUri,
+                                         libraryStringId, csv);
+        final JSONObject bookList = new JSONObject(fetch(url, BUFFER_BOOK_LIST));
+
+        // if possible, fetch the virtual library data for those same book-ids
+        if (isPluginInstalled()) {
+            fetchVirtualLibraries(libraryStringId, csv, bookList);
         }
-        return ids.toString();
-    }
 
-    @WorkerThread
-    @NonNull
-    Optional<File> getCover(final int calibreId,
-                            @NonNull final String coverUrl)
-            throws IOException, ImageStorageException {
-
-        final String tempFilename = ImageFileInfo.getTempFilename(
-                PREFERENCE_KEY, String.valueOf(calibreId), 0, null);
-
-        final Request imageRequest = createImageRequest(serverUri + coverUrl);
-        return getImageDownloader().fetch(imageRequest, tempFilename);
+        return bookList;
     }
 
     /**
-     * Fetch the given url content as a single string.
+     * Return the metadata of the books in the given library as a JSON dictionary.
+     * Search for them by numeric ids.
+     * If our plugin is installed, the virtual-libraries for each will be fetched and added.
+     * <p>
+     * See {@link #getBooksById(String, List)} for endpoint docs.
      *
-     * @param url    to read
-     * @param buffer size for the read
+     * @param libraryStringId  the Calibre native {@code stringId} for the library to read from
+     * @param calibreBookUuids a list of Calibre book UUIDs
      *
-     * @return content
+     * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
+     */
+    @WorkerThread
+    @NonNull
+    JSONObject getBooksByUuid(@NonNull final String libraryStringId,
+                              @NonNull final List<String> calibreBookUuids)
+            throws IOException, JSONException {
+
+        final String csv = String.join(",", calibreBookUuids);
+
+        final String url = String.format(Endpoints.GET_BOOKS_BY_UUID, serverUri,
+                                         libraryStringId, csv);
+        final JSONObject bookList = new JSONObject(fetch(url, BUFFER_BOOK_LIST));
+        // if possible, fetch the matching virtual library data
+        if (isPluginInstalled()) {
+            // Calibre can only use numeric ids for fetching virtual libs.
+            // First extract the numeric ids into a csv list.
+            final List<String> ids = new ArrayList<>();
+            final Iterator<String> it = bookList.keys();
+            while (it.hasNext()) {
+                ids.add(it.next());
+            }
+            final String idCsvList = String.join(",", ids);
+
+            fetchVirtualLibraries(libraryStringId, idCsvList, bookList);
+        }
+        return bookList;
+    }
+
+    /**
+     * Fetch the virtual library information for the given library and books.
+     * Updates the books in the list with their virtual libraries.
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param idCsvList       a CSV list of Calibre numeric book ids
+     * @param bookList        to update
+     *
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
+     */
+    private void fetchVirtualLibraries(@NonNull final String libraryStringId,
+                                       @NonNull final String idCsvList,
+                                       @NonNull final JSONObject bookList)
+            throws IOException, JSONException {
+
+        final JSONObject virtualLibs = getVirtualLibrariesForBookIds(libraryStringId,
+                                                                     idCsvList);
+        // inject the virtual library list into the book objects
+        final Iterator<String> it = bookList.keys();
+        while (it.hasNext()) {
+            final String key = it.next();
+            final JSONArray libs = virtualLibs.optJSONArray(key);
+            if (libs != null) {
+                final JSONObject calibreBook = bookList.getJSONObject(key);
+                calibreBook.put(CalibreBookJsonKey.NTMB_VIRTUAL_LIBRARY_LIST, libs);
+            }
+        }
+    }
+
+    /**
+     * Return the book ids with their virtual libraries.
+     * <pre>
+     * {@code
+     *      endpoint('/nevertoomanybooks/virtual-libraries-for-books/{book_ids}/{library_id=None}',
+     *               postprocess=json)
+     * }
+     * </pre>
+     * {book_ids} a simple csv list; example: 271,7,200
+     * <p>
+     * This method uses a plugin which needs to be installed on the Calibre Content Server.
+     * <p>
+     * Example response:
+     * <pre>
+     *      {
+     *          "271": ["Fiction"],
+     *          "7": ["Fiction"],
+     *          "200": ["Fiction", "Non-Fiction"]
+     *      }
+     * </pre>
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param idCsvList       a CSV list of Calibre numeric book ids
+     *
+     * @return see above
+     *
+     * @throws HttpNotFoundException if the plugin is not installed
+     * @throws IOException           on generic/other IO failures
+     * @throws JSONException         upon any parsing error
+     * @throws IllegalStateException (debug) if the plugin is not installed
+     * @see #isPluginInstalled()
      */
     @NonNull
-    private String fetch(@NonNull final String url,
-                         final int buffer)
-            throws IOException {
+    private JSONObject getVirtualLibrariesForBookIds(@NonNull final String libraryStringId,
+                                                     @NonNull final String idCsvList)
+            throws IOException, JSONException {
 
-        jsonFetchCall = new HttpCall(httpClient,
-                                     ACCEPT_LANGUAGE_HEADER,
-                                     R.string.site_calibre,
-                                     networkConfig.isHttpLoggingEnabled(),
-                                     cookieStore);
-        jsonFetchCall.setBufferSize(buffer);
-        return jsonFetchCall.getAsString(createGetRequest(url));
+        if (BuildConfig.DEBUG /* always */) {
+            if (pluginInstalled == null) {
+                throw new IllegalStateException("pluginInstalled == null");
+            }
+            if (!pluginInstalled) {
+                throw new IllegalStateException("Plugin not installed");
+            }
+        }
+
+        final String url = String.format(Endpoints.NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS, serverUri,
+                                         idCsvList, libraryStringId);
+        return new JSONObject(fetch(url, BUFFER_SMALL));
+    }
+
+    /**
+     * Send updates to the server.
+     * <pre>
+     * {@code
+     *     endpoint('/cdb/set-fields/{book_id}/{library_id=None}',
+     *              types={'book_id': int},
+     *              needs_db_write=True,
+     *              postprocess=msgpack_or_json,
+     *              methods=receive_data_methods,
+     *              cache_control='no-cache')
+     * }
+     * </pre>
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to write to
+     * @param calibreBookId   numeric book id
+     * @param changes         (delta) fields to update
+     *
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
+     */
+    @WorkerThread
+    void pushChanges(@NonNull final String libraryStringId,
+                     final int calibreBookId,
+                     @NonNull final JSONObject changes)
+            throws IOException, JSONException {
+
+        final JSONArray loadedBookIds = new JSONArray()
+                .put(calibreBookId);
+
+        final String url = String.format(Locale.ROOT, Endpoints.PUSH_CHANGES, serverUri,
+                                         calibreBookId, libraryStringId);
+
+        final String jsonBody = new JSONObject()
+                .put("changes", changes)
+                .put("loaded_book_ids", loadedBookIds)
+                .toString();
+        if (jsonBody == null || jsonBody.isEmpty()) {
+            throw new JSONException("jsonBody invalid?");
+        }
+
+        final RequestBody body = RequestBody.create(jsonBody, MEDIA_TYPE_JSON);
+
+        postCall = new HttpCall(httpClient,
+                                ACCEPT_LANGUAGE_HEADER,
+                                R.string.site_calibre,
+                                networkConfig.isHttpLoggingEnabled(),
+                                cookieStore);
+
+        postCall.post(createPostRequest(url, body), null);
+    }
+
+    /**
+     * Download a cover using the direct cover-url.
+     * <p>
+     * Uploading a cover is done using {@link #pushChanges(String, int, JSONObject)} .
+     *
+     * @param calibreBookId used for the temp filename only
+     * @param coverUrl      to download; will be prefixed with the server url
+     * @return cover file
+     *
+     * @throws IOException           on generic IO failures
+     * @throws ImageStorageException on image storage failures
+     */
+    @WorkerThread
+    @NonNull
+    public Optional<File> getCover(final int calibreBookId,
+                                   @NonNull final String coverUrl)
+            throws IOException, ImageStorageException {
+
+        final String tempFilename = ImageFileInfo.getTempFilename(
+                PREFERENCE_KEY, String.valueOf(calibreBookId), 0, null);
+
+        final Request imageRequest = createImageRequest(serverUri + coverUrl);
+        return getImageDownloader().fetch(imageRequest, tempFilename);
     }
 
     /**
@@ -1560,8 +1306,7 @@ public final class CalibreContentServer
                         context.getString(R.string.error_file_not_found,
                                           String.valueOf(libraryId))));
 
-        @SuppressLint("DefaultLocale")
-        final String url = String.format(FETCH_FILE, serverUri, format, id,
+        final String url = String.format(Locale.ROOT, Endpoints.FETCH_FILE, serverUri, format, id,
                                          calibreLibrary.getLibraryStringId());
 
         final Uri destUri = destFile.getUri();
@@ -1601,12 +1346,13 @@ public final class CalibreContentServer
     }
 
     /**
-     * Get the DocumentFile for the given book.
+     * Get the DocumentFile for the given book from the local download folder.
      *
-     * @param context  Current context
-     * @param book     to get
-     * @param folder   where the files are
-     * @param creating set {@code true} when creating, set {@code false} for checking existence
+     * @param context         Current context
+     * @param book            to get
+     * @param folder          where the files are
+     * @param createIfMissing set {@code true} when creating,
+     *                        set {@code false} for checking existence
      *
      * @return the eBook file
      *
@@ -1616,46 +1362,53 @@ public final class CalibreContentServer
     DocumentFile getDocumentFile(@NonNull final Context context,
                                  @NonNull final Book book,
                                  @NonNull final Uri folder,
-                                 final boolean creating)
+                                 final boolean createIfMissing)
             throws FileNotFoundException {
 
-        // we're not assuming ANYTHING....
+        // Sanity check that the download folder exists
         final DocumentFile root = DocumentFile.fromTreeUri(context, folder);
         if (root == null) {
             throw new FileNotFoundException(folder.toString());
         }
 
-        final String authorDirectory = createAuthorDirectoryName(context, book);
-
-        // FIRST check if it exists
-        DocumentFile authorFolder = root.findFile(authorDirectory);
-        if (authorFolder == null) {
-            if (creating) {
-                authorFolder = root.createDirectory(authorDirectory);
-            }
-            if (authorFolder == null) {
-                throw new FileNotFoundException(authorDirectory);
-            }
-        }
+        final DocumentFile authorFolder = getAuthorFolder(context, root, book, createIfMissing);
 
         final String fileName = createFilename(context, book);
         final String fileExt = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
 
-        // FIRST check if it exists using the format (file) extension
         DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileExt);
-        if (bookFile == null) {
-            if (creating) {
-                // when creating, we must NOT directly use the extension,
-                // but deduce the mime type from the extension.
-                final String mimeType = FileUtils.getMimeTypeFromExtension(fileExt);
-                bookFile = authorFolder.createFile(mimeType, fileName);
-            }
-            if (bookFile == null) {
-                throw new FileNotFoundException(fileName);
-            }
+
+        if (bookFile == null && createIfMissing) {
+            // when creating, we must NOT directly use the extension,
+            // but deduce the mime type from the extension.
+            final String mimeType = FileUtils.getMimeTypeFromExtension(fileExt);
+            bookFile = authorFolder.createFile(mimeType, fileName);
         }
 
+        if (bookFile == null) {
+            throw new FileNotFoundException(fileName);
+        }
         return bookFile;
+    }
+
+    @NonNull
+    private DocumentFile getAuthorFolder(@NonNull final Context context,
+                                         @NonNull final DocumentFile root,
+                                         @NonNull final Book book,
+                                         final boolean createIfMissing)
+            throws FileNotFoundException {
+
+        final String authorDirectory = createAuthorDirectoryName(context, book);
+
+        DocumentFile authorFolder = root.findFile(authorDirectory);
+        if (authorFolder == null && createIfMissing) {
+            authorFolder = root.createDirectory(authorDirectory);
+        }
+
+        if (authorFolder == null) {
+            throw new FileNotFoundException(authorDirectory);
+        }
+        return authorFolder;
     }
 
     @VisibleForTesting
@@ -1699,53 +1452,252 @@ public final class CalibreContentServer
     }
 
     /**
-     * Send updates to the server.
+     * Fetch the library information.
+     * First tries the endpoint for our plugin,
+     * and if not found falls back to the default endpoint.
+     * <p>
+     * Sets {@link #pluginInstalled} accordingly.
+     *
      * <pre>
-     * {@code
-     *     endpoint('/cdb/set-fields/{book_id}/{library_id=None}',
-     *              types={'book_id': int},
-     *              needs_db_write=True,
-     *              postprocess=msgpack_or_json,
-     *              methods=receive_data_methods,
-     *              cache_control='no-cache')
+     *   "library_map": {
+     *     "Main_Library": "Main Library",
+     *     "SciFi": "Sci-Fi Books"
+     *   },
+     *   "default_library": "Main_Library",
+     *
+     *   Plugin info:
+     *
+     *   "library_details": {
+     *     "Main_Library": {
+     *       "uuid": "a1b2c3d4-...",
+     *       "name": "Main Library",
+     *       "total_num": 1420,
+     *       "custom_fields": {
+     *         "#read": {
+     *           "datatype": "bool",
+     *           "name": "Read",
+     *           "colnum": 1,
+     *           "is_custom": true
+     *         }
+     *       },
+     *       "virtual_libraries": {
+     *         "Favorites": "rating:>=4"
+     *       }
+     *     },
+     *     "SciFi": {
+     *       "uuid": "e5f67890-...",
+     *       "name": "Sci-Fi Books",
+     *       "total_num": 350,
+     *       "custom_fields": {},
+     *       "virtual_libraries": {}
+     *     }
+     *   }
      * }
      * </pre>
      *
-     * @param libraryStringId the Calibre native {@code stringId} for the library to write to
-     * @param calibreId       book to update
-     * @param changes         to send
+     * @return the library information as a json object
      *
      * @throws IOException   on generic/other IO failures
      * @throws JSONException upon any parsing error
      */
-    void pushChanges(@NonNull final String libraryStringId,
-                     final int calibreId,
-                     @NonNull final JSONObject changes)
+    @WorkerThread
+    @NonNull
+    private JSONObject fetchLibraryInfo()
             throws IOException, JSONException {
 
-        final JSONArray loadedBookIds = new JSONArray()
-                .put(calibreId);
+        String response;
 
-        final String url = serverUri + "/cdb/set-fields/" + calibreId + '/' + libraryStringId;
-        final String jsonBody = new JSONObject()
-                .put("changes", changes)
-                .put("loaded_book_ids", loadedBookIds)
-                .toString();
-        if (jsonBody == null || jsonBody.isEmpty()) {
-            throw new JSONException("jsonBody invalid?");
+        if (pluginInstalled == null) {
+            try {
+                // Try our plugin endpoint first
+                response = fetch(String.format(Endpoints.NTMB_GET_LIBRARY_INFO, serverUri),
+                                 BUFFER_SMALL);
+                // if we don't get a 404, our plugin is installed
+                pluginInstalled = true;
+
+            } catch (@NonNull final HttpNotFoundException e) {
+                // our plugin is not installed
+                pluginInstalled = false;
+                // use the standard Calibre endpoint
+                response = fetch(String.format(Endpoints.GET_LIBRARY_INFO, serverUri),
+                                 BUFFER_SMALL);
+            }
+        } else if (pluginInstalled) {
+            response = fetch(String.format(Endpoints.NTMB_GET_LIBRARY_INFO, serverUri),
+                             BUFFER_SMALL);
+        } else {
+            response = fetch(String.format(Endpoints.GET_LIBRARY_INFO, serverUri),
+                             BUFFER_SMALL);
         }
 
-        final RequestBody body = RequestBody.create(
-                jsonBody,
-                MediaType.parse("application/json; charset=utf-8"));
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, "pluginInstalled=" + pluginInstalled);
+        }
 
-        postCall = new HttpCall(httpClient,
-                                ACCEPT_LANGUAGE_HEADER,
-                                R.string.site_calibre,
-                                networkConfig.isHttpLoggingEnabled(),
-                                cookieStore);
+        return new JSONObject(response);
+    }
 
-        postCall.post(createPostRequest(url, body), null);
+    /**
+     * Helper for {@link #fetchLibraryInfo()}.
+     * <p>
+     * Parse the virtual libray information and attach them to the library object.
+     *
+     * @param library          to update
+     * @param virtualLibraries to decode
+     *
+     * @throws JSONException upon any parsing error
+     */
+    private void processVirtualLibraries(@NonNull final CalibreLibrary library,
+                                         @NonNull final JSONObject virtualLibraries)
+            throws JSONException {
+
+        final List<CalibreVirtualLibrary> vLibs = new ArrayList<>();
+
+        final Iterator<String> it = virtualLibraries.keys();
+        while (it.hasNext()) {
+            final String name = it.next();
+            final String expr = virtualLibraries.getString(name);
+
+            libraryDao.findVirtualLibrary(library.getId(), name).ifPresentOrElse(vLib -> {
+                // Update existing
+                vLib.setName(name);
+                vLib.setExpr(expr);
+                vLibs.add(vLib);
+            }, () -> {
+                // create new
+                vLibs.add(new CalibreVirtualLibrary(library.getId(), name, expr,
+                                                    library.getMappedBookshelfId()));
+            });
+        }
+
+        // hook them up to the library itself; always overwriting the current(previous) list.
+        library.setVirtualLibraries(vLibs);
+    }
+
+    /**
+     * Helper for {@link #readMetaData()}.
+     * <p>
+     * Fetch the given book (which can be a random book) to read the/any
+     * custom field definitions and attach them to the library.
+     *
+     * @param library      to update
+     * @param userMetaData containing the custom-columns definitions
+     *
+     * @throws JSONException upon any parsing error
+     */
+    private void parseCustomFieldDefinitions(@NonNull final CalibreLibrary library,
+                                             @Nullable final JSONObject userMetaData) {
+        if (userMetaData == null) {
+            return;
+        }
+
+        final Set<CalibreCustomField> fields = new HashSet<>();
+        // check the supported fields
+        for (final CalibreCustomField cf : this.calibreCustomFields) {
+            final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
+            // do we have a match? (this check is needed, it's NOT a sanity check)
+            if (data != null) {
+                final String type = data.getString(CalibreCustomField.METADATA_DATATYPE);
+                if (cf.getType().equals(type)) {
+                    fields.add(cf);
+                }
+            }
+        }
+        // finally, hook them up to the library itself.
+        library.setCustomFields(fields);
+    }
+
+    @NonNull
+    private Request createImageRequest(@NonNull final String urlStr) {
+
+        // TODO: check adding http headers with Calibre built-in-http-server
+        //  versus Calibre hosted behind an Apache server
+
+        // Host, Connection, Accept-Encoding are added by OkHttp
+        return new Request.Builder()
+                .url(urlStr)
+                .header(HttpConstants.USER_AGENT,
+                        HttpConstants.USER_AGENT_FIREFOX)
+                .header(HttpConstants.ACCEPT,
+                        HttpConstants.ACCEPT_IMAGE).build();
+    }
+
+    @NonNull
+    private Request createGetRequest(@NonNull final String url) {
+
+        // TODO: check adding http headers with Calibre built-in-http-server
+        //  versus Calibre hosted behind an Apache server
+
+        // Host, Connection, Accept-Encoding are added by OkHttp
+        return new Request.Builder().url(url).build();
+    }
+
+    /**
+     * Fetch the given url content as a single string.
+     *
+     * @param url    to read
+     * @param buffer size for the read
+     *
+     * @return content
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @WorkerThread
+    @NonNull
+    private String fetch(@NonNull final String url,
+                         final int buffer)
+            throws IOException {
+
+        jsonFetchCall = new HttpCall(httpClient,
+                                     ACCEPT_LANGUAGE_HEADER,
+                                     R.string.site_calibre,
+                                     networkConfig.isHttpLoggingEnabled(),
+                                     cookieStore);
+        jsonFetchCall.setBufferSize(buffer);
+        return jsonFetchCall.getAsString(createGetRequest(url));
+    }
+
+    @NonNull
+    private ImageDownloader getImageDownloader() {
+        ImageDownloader instance = imageDownloader;
+        if (instance == null) {
+            synchronized (this) {
+                instance = imageDownloader;
+                if (instance == null) {
+                    // Calibre sends a cookie with each image.
+                    // During an 'pull' of 100's of books,
+                    // the 100's of requests for images will create
+                    // a mess (for lack of a better word) in the cookie handling,
+                    // resulting in a steady increase of time spend in the
+                    // okhttp call.execute(). From initially 10 millis...
+                    // .. it increases to 100's, then 1000's of millis.
+                    // Solution: DROP cookies for these requests.
+                    final OkHttpClient imageHttpClient =
+                            httpClient.newBuilder()
+                                      .cookieJar(CookieJar.NO_COOKIES)
+                                      .build();
+                    instance = new ImageDownloader(imageHttpClient,
+                                                   networkConfig.getThrottler(),
+                                                   R.string.site_calibre,
+                                                   false);
+                    imageDownloader = instance;
+                }
+            }
+        }
+        return instance;
+    }
+
+    @NonNull
+    private Request createPostRequest(@NonNull final String url,
+                                      @NonNull final RequestBody body) {
+        // Host, Connection, Accept-Encoding are added by OkHttp
+        final Request.Builder builder = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header(HttpConstants.CONTENT_TYPE,
+                        HttpConstants.CONTENT_TYPE_JSON);
+
+        return builder.build();
     }
 
     @AnyThread
@@ -1765,24 +1717,6 @@ public final class CalibreContentServer
                 postCall.cancel();
             }
         }
-    }
-
-    @NonNull
-    private ImageDownloader getImageDownloader() {
-        ImageDownloader instance = imageDownloader;
-        if (instance == null) {
-            synchronized (this) {
-                instance = imageDownloader;
-                if (instance == null) {
-                    instance = new ImageDownloader(httpClient,
-                                                   networkConfig.getThrottler(),
-                                                   R.string.site_calibre,
-                                                   false);
-                    imageDownloader = instance;
-                }
-            }
-        }
-        return instance;
     }
 
     public static class Builder {

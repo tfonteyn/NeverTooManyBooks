@@ -29,11 +29,11 @@ import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public class CalibreNetworkConfig
+class CalibreNetworkConfig
         implements NetworkConfig {
 
     /**
-     * Whether to use a Throttler. Default is {@code true}.
+     * Whether to use a Throttler. Default is {@code false}.
      *
      * @see #THROTTLER_DELAY_IN_MILLIS
      */
@@ -57,7 +57,7 @@ public class CalibreNetworkConfig
 
     CalibreNetworkConfig() {
         final Prefs prefs = ServiceLocator.getInstance().getSharedPreferences();
-        final boolean useThrottler = prefs.getBoolean(PK_USE_THROTTLER, true);
+        final boolean useThrottler = prefs.getBoolean(PK_USE_THROTTLER, false);
 
         throttler = useThrottler ? new Throttler(THROTTLER_DELAY_IN_MILLIS) : null;
 

@@ -72,7 +72,7 @@ class CalibreMigration {
      * @param dbKey      The local {@link DBKey} to which the field is to be mapped
      */
     void add(@NonNull final String calibreKey,
-             @NonNull @CalibreCustomField.Type final String type,
+             @NonNull @CalibreCustomField.Type.FieldType final String type,
              @NonNull final String dbKey) {
         // key must be unique
         if (isPresent(calibreKey)) {
