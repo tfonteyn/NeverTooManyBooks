@@ -2179,6 +2179,8 @@ public final class DBDefinitions {
         return new TableDefinition(name, name)
                 .setType(TableDefinition.TableType.FTS)
                 .addDomains(DOM_TITLE,
+                            DOM_TRANSLATION_ORIGINAL_TITLE,
+
                             DOM_FTS_AUTHOR_NAME,
                             DOM_FTS_SERIES_NAMES,
                             DOM_FTS_PUBLISHER_NAMES,
