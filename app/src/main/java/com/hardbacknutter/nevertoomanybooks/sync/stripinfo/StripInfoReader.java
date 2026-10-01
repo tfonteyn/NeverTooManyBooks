@@ -356,9 +356,8 @@ public class StripInfoReader
         final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
         final long preImportId = book.getId();
 
-        final long id = bookRepository.insert(context, book,
-                                              EnumSet.of(BookDao.ImportFlag.RunInBatch));
-        results.bookCreated(id);
+        bookRepository.insert(context, book, EnumSet.of(BookDao.ImportFlag.RunInBatch));
+        results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "insertBook",
@@ -377,7 +376,7 @@ public class StripInfoReader
         bookRepository.update(context, delta,
                               EnumSet.of(BookDao.ImportFlag.RunInBatch,
                                          BookDao.ImportFlag.UseUpdateDateIfPresent));
-        results.bookUpdated(book.getId());
+        results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,
