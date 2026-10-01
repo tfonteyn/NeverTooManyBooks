@@ -168,10 +168,9 @@ public abstract class BaseRecordReader
         final long preImportId = book.getId();
 
         // explicitly allow the id to be reused if present
-        final long id = bookRepository.insert(context, book,
-                                              EnumSet.of(BookDao.ImportFlag.RunInBatch,
-                                                         BookDao.ImportFlag.UseIdIfPresent));
-        results.bookCreated(id);
+        bookRepository.insert(context, book, EnumSet.of(BookDao.ImportFlag.RunInBatch,
+                                                        BookDao.ImportFlag.UseIdIfPresent));
+        results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "insertBook",
@@ -241,7 +240,7 @@ public abstract class BaseRecordReader
         bookRepository.update(context, book,
                               EnumSet.of(BookDao.ImportFlag.RunInBatch,
                                          BookDao.ImportFlag.UseUpdateDateIfPresent));
-        results.bookUpdated(book.getId());
+        results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger()
