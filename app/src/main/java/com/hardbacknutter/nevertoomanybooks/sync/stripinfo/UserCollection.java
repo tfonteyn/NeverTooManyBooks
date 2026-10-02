@@ -209,7 +209,7 @@ class UserCollection {
                 // If the last page has fewer books, this is too high... oh well...
                 progressListener.setMaxPos(count * COLLECTION_CONTENT_ROWS);
                 progressListener.setIndeterminate(false);
-                progressListener.publishProgress(0, null);
+                progressListener.publishProgress(0, (String) null);
                 return count;
 
             } catch (@NonNull final NumberFormatException e) {

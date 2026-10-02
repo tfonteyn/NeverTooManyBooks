@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.util.function.Supplier;
+
 /**
  * Listener interface for progress messages.
  */
@@ -53,6 +55,21 @@ public interface ProgressListener
     @WorkerThread
     void publishProgress(int delta,
                          @Nullable String text);
+
+    /**
+     * Advance progress by 'delta'.
+     * Wrapper for {@link #publishProgress(int, String)} using a {@link Supplier}.
+     * <p>
+     * This default implementation sends the the update unconditionally.
+     *
+     * @param delta the relative step in the overall progress count.
+     * @param text  (optional) text message
+     */
+    @WorkerThread
+    default void publishProgress(final int delta,
+                                 @Nullable final Supplier<String> text) {
+        publishProgress(delta, text != null ? text.get() : null);
+    }
 
     /**
      * Change the indeterminate mode for the progress bar.
