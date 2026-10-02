@@ -532,6 +532,7 @@ public class StripInfoSearchEngine
                             switch (label) {
                                 case "Scenario":
                                 case "Naar":
+                                case "Bewerking":
                                     i += parseAuthor(td, AuthorRole.WRITER, book);
                                     break;
 
