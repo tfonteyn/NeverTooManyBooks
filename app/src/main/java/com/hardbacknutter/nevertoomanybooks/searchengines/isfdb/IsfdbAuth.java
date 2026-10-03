@@ -167,7 +167,7 @@ public class IsfdbAuth
                                                       .getCookieManager()
                                                       .getCookieStore();
         if (cookieStore instanceof BiscuitStore) {
-            cookies = ((BiscuitStore) cookieStore).getRawCookieList();
+            cookies = ((BiscuitStore) cookieStore).getCookiesIncludingExpired();
         } else {
             cookies = cookieStore.getCookies();
         }

@@ -447,7 +447,7 @@ public final class ServiceLocator {
         synchronized (this) {
             if (cookieManager == null) {
                 // 2024-12-21: our private store.... see IsfdbAuth class why...
-                cookieManager = new CookieManager(new BiscuitStore(appContext),
+                cookieManager = new CookieManager(new BiscuitStore(),
                                                   CookiePolicy.ACCEPT_ALL);
                 CookieHandler.setDefault(cookieManager);
             }

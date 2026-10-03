@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,8 +45,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.net.CookieStore;
@@ -67,11 +65,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * https://github.com/AndroidSDKSources/android-sdk-sources-for-api-level-35/blob/master/java/net/InMemoryCookieStore.java
  * <p>
  * <br>1. Modified the default constructor to take a context from which we get the targetSdkVersion.
- * <br>2. Added {@link #getRawCookieList()}.
+ * <br>2. Added {@link #getCookiesIncludingExpired()}.
  * <br>3. in #add, fix isfdb cookies
  * Otherwise no modifications.
- * <p>
- * RELEASE: check for android updates of java.net.InMemoryCookieStore
  */
 @SuppressWarnings("ALL")
 public class BiscuitStore
@@ -79,8 +75,6 @@ public class BiscuitStore
 
     private static final long ONE_DAY_IN_SECONDS = 86400;
 
-    // BEGIN Android-changed: Add targetSdkVersion and remove cookieJar and domainIndex.
-    private final boolean applyMCompatibility;
     // the in-memory representation of cookies
     // BEGIN Android-removed: Remove cookieJar and domainIndex.
     /*
@@ -97,17 +91,9 @@ public class BiscuitStore
     // use ReentrantLock instead of syncronized for scalability
     private ReentrantLock lock = null;
 
-    /**
-     * The default ctor
-     */
-    public BiscuitStore(@NonNull final Context context) {
-        this(context.getApplicationContext().getApplicationInfo().targetSdkVersion);
-    }
-
-    public BiscuitStore(int targetSdkVersion) {
+    public BiscuitStore() {
         uriIndex = new HashMap<>();
         lock = new ReentrantLock(false);
-        applyMCompatibility = (targetSdkVersion <= 23);
     }
     // END Android-changed: Add targetSdkVersion and remove cookieJar and domainIndex.
 
@@ -201,7 +187,7 @@ public class BiscuitStore
      * @return list
      */
     @NonNull
-    public List<HttpCookie> getRawCookieList() {
+    public List<HttpCookie> getCookiesIncludingExpired() {
         List<HttpCookie> rt = new ArrayList<>();
 
         lock.lock();
@@ -355,17 +341,7 @@ public class BiscuitStore
             return host.equalsIgnoreCase(domain);
         } else if (lengthDiff > 0) {
             // need to check H & D component
-            String D = host.substring(lengthDiff);
-
-            // Android-changed: b/26456024 targetSdkVersion based compatibility for domain matching.
-            // Android M and earlier: Cookies with domain "foo.com" would not match "bar.foo.com".
-            // The RFC dictates that the user agent must treat those domains as if they had a
-            // leading period and must therefore match "bar.foo.com".
-            if (applyMCompatibility && !domain.startsWith(".")) {
-                return false;
-            }
-
-            return (D.equalsIgnoreCase(domain));
+            return (host.substring(lengthDiff).equalsIgnoreCase(domain));
         } else if (lengthDiff == -1) {
             // if domain is actually .host
             return (domain.charAt(0) == '.' &&
