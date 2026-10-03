@@ -31,14 +31,13 @@ import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore;
+import com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore2;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
@@ -446,9 +445,8 @@ public final class ServiceLocator {
     public CookieManager getCookieManager() {
         synchronized (this) {
             if (cookieManager == null) {
-                // 2024-12-21: our private store.... see IsfdbAuth class why...
-                cookieManager = new CookieManager(new BiscuitStore(),
-                                                  CookiePolicy.ACCEPT_ALL);
+                // Our private store.... see IsfdbAuth class why we need it
+                cookieManager = new CookieManager(new BiscuitStore2(), CookiePolicy.ACCEPT_ALL);
                 CookieHandler.setDefault(cookieManager);
             }
         }
