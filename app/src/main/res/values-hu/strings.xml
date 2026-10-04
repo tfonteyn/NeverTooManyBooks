@@ -979,6 +979,21 @@
         <p>1. Nyissa meg a <a href="https://www.librarything.com">LibraryThing.com</a> oldalt, és regisztráljon egy ingyenes felhasználói fiókot, ha még nem rendelkezik ilyennel.</p>
         <p>2. A bejelentkezés után navigáljon az <a href="https://www.librarything.com/developer/tokens">A tokenjeid</a> oldalra, és hozzon létre egy új tokent.</p>
         <p>3. Másolja ki a tokent, és illessze be alább.</p>]]></string>
+    <string name="googlebooks_registration"><![CDATA[<p><b>A GoogleBooks API-kulcs <i>opcionális</i> az oldal eléréséhez.</b> A szolgáltatás kulcs nélkül is működik, de a funkciói korlátozottak lehetnek. Ennek elvégzéséhez Google-fiókra lesz szükséged.</p>
+        <br>
+        <p>1. Jelentkezz be a Google Cloudba:</p>
+        <p>Nyisd meg a <a href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> oldalt, és jelentkezz be a Google-fiókoddal.</p>
+        <p>2. Hozz létre egy új projektet:</p>
+        <p>Koppints a bal felső sarokban található főmenü gombra, majd válaszd a <b>Select a project</b> lehetőséget.</p>
+        <p>Koppints az opciók menüre, válaszd a <b>New Project</b> lehetőséget, nevezd el <i>Books API</i>-nak, és kattints a <b>Create</b> gombra.</p>
+        <p>A értesítésen koppints a projektre, vagy használd újra a menüt a <b>Select a project</b> kiválasztásához.</p>
+        <p>3. Kapcsold be a Books API-t:</p>
+        <p>Koppints a főmenüre, válaszd az <b>APIs and services</b> lehetőséget, majd a <b>Library</b> menüpontot. Most vízszintes helyzetbe kell fordítanod a készülékedet. A keresőmezőbe írd be, hogy ’books’, görgess le, és válaszd ki a <b>Books API</b> csempét.</p>
+        <p>A következő képernyőn koppints az <b>Enable</b> gombra, majd fordítsd vissza a készülékedet függőleges helyzetbe.</p>
+        <p>4. Hozd létre a kulcsot:</p>
+        <p>Koppints a <b>Create Credentials</b> gombra, válaszd a <i>Books API</i>-t, válaszd a <i>Public data</i> lehetőséget, majd koppints a <b>Next</b> gombra.</p>
+        <p>A kulcs megjelentése megtörténik (egy `AIza` kezdetű karakterlánc). Másold ki a kulcsot, és győződj meg róla, hogy rákoppintasz a <b>Done</b> gombra.</p>
+        <p>Illeszd be a kulcsot alább.</p>]]></string>
     <string name="confirm_registration_required">A regisztráció a(z) %1$s webhelyen kötelező.\n\nEzeket az információkat később is megtalálhatja az oldal beállításaiban a „%2$s” részben.</string>
     <string name="confirm_registration_optional">A regisztráció a(z) %1$s webhelyen opcionális.\n\nEzeket az információkat később is megtalálhatja az oldal beállításaiban a „%2$s” részben.</string>
 </resources>
