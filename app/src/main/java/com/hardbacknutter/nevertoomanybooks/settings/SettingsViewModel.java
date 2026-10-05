@@ -80,11 +80,14 @@ public class SettingsViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args    {@link Fragment#getArguments()}
+     * @param context       Current context
+     * @param args          {@link Fragment#getArguments()}
+     * @param initLanguages flag; must be {@code true} when the caller displays
+     *                      the app language selections.
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+                     @Nullable final Bundle args,
+                     final boolean initLanguages) {
         if (!initDone) {
             initDone = true;
 
@@ -97,8 +100,9 @@ public class SettingsViewModel
             }
         }
 
-        // ALWAYS refresh!
-        initLanguages(context);
+        if (initLanguages) {
+            initLanguages(context);
+        }
     }
 
     private void initLanguages(@NonNull final Context context) {
@@ -171,7 +175,7 @@ public class SettingsViewModel
      * @throws IOException on generic/other IO failures
      */
     void moveData(@NonNull final Context context,
-                     final int sourceIndex,
+                  final int sourceIndex,
                   final int destIndex)
             throws IOException {
         storageMoverTask.start(context, sourceIndex, destIndex);

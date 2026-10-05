@@ -398,7 +398,7 @@ public class SettingsFragment
 
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
+        vm.init(getContext(), getArguments(), false);
 
         final SettingsManager settingsManager = getSettingsManager();
         final SingleChoiceSetting pStorageVolume = settingsManager
