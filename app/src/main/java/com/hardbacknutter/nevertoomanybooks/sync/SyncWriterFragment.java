@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -130,42 +129,22 @@ public class SyncWriterFragment
         fab.setImageResource(R.drawable.upload_24px);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
-        fab.setOnClickListener(v -> startWriting());
+        fab.setOnClickListener(v -> {
+            // prevent impatient users too start us twice
+            getFab().setEnabled(false);
+            startExport();
+        });
 
+        // If the user rotated the screen while the task was already started,
+        // we won't show the options... this simplifies things a little.
         if (!vm.isRunning()) {
             // The task is NOT yet running.
-            // Show either the full-options screen or the quick-options dialog
-            if (vm.isQuickOptionsAlreadyShown()) {
-                showOptions();
-            } else {
-                showQuickOptions();
-            }
+            showOptions();
         }
     }
 
-    private void showQuickOptions() {
-        vm.setQuickOptionsAlreadyShown();
-
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(context)
-                .setTitle(vm.getDestinationDisplayName(context))
-                .setMessage(R.string.action_synchronize)
-                .setNegativeButton(R.string.cancel, (d, w) -> getActivity().finish())
-                .setNeutralButton(R.string.action_show_options, (d, w) -> {
-                    d.dismiss();
-                    showOptions();
-                })
-                .setPositiveButton(R.string.ok, (d, w) -> {
-                    d.dismiss();
-                    vm.startExport();
-                })
-                .create()
-                .show();
-    }
-
     /**
-     * Show the full options screen to the user.
+     * Show the options screen to the user.
      */
     private void showOptions() {
         final Set<RecordType> recordTypes = vm.getRecordTypes();
@@ -175,11 +154,13 @@ public class SyncWriterFragment
         vb.rbExportAll.setChecked(!incremental);
         vb.rbExportNewAndUpdated.setChecked(incremental);
 
-        getFab().setVisibility(View.VISIBLE);
+        final FloatingActionButton fab = getFab();
+        fab.setVisibility(View.VISIBLE);
+        fab.setEnabled(true);
         vb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void startWriting() {
+    private void startExport() {
         if (vm.isReadyToGo()) {
             vm.startExport();
         } else {
@@ -220,7 +201,7 @@ public class SyncWriterFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.info_24px)
                         .setTitle(R.string.title_backup_and_export)
-                        .setMessage(R.string.warning_no_matching_book_found)
+                        .setMessage(R.string.info_nothing_to_do)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
                             // no result, just quit
                             //noinspection DataFlowIssue
