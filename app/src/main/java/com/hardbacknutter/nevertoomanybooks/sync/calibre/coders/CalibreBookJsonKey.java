@@ -69,14 +69,12 @@ public final class CalibreBookJsonKey {
      * <p>
      * When WRITING the field using {@code /cdb/set-fields (Endpoints#PUSH_CHANGES)}
      * we must send an int 0..10.
-     *
-     * The custom field "#rating" on the other hand is
      */
     public static final String RATING = "rating";
     /** SOCIAL_METADATA_FIELDS: single series name. */
     public static final String SERIES = "series";
     /** SOCIAL_METADATA_FIELDS: {@code float}; The number of a book in the series. . */
-    public static final String SERIES_INDEX = "series_index";
+    public static final String SERIES_INDEX = SERIES + "_index";
     /** SOCIAL_METADATA_FIELDS: Ordered list. */
     public static final String TAGS_ARRAY = "tags";
     /** PUBLICATION_METADATA_FIELDS: title, always present. */

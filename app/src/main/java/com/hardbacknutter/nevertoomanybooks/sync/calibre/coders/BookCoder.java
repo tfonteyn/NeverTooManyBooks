@@ -307,8 +307,6 @@ public final class BookCoder {
 
     /** A text "null" as value. Should be considered an error. */
     private static final String VALUE_IS_NULL = "null";
-    /** error text for {@link #VALUE_IS_NULL}. */
-    private static final String ERROR_NULL_STRING = "'null' string";
 
     @NonNull
     private final BookshelfDao bookshelfDao;
@@ -478,15 +476,17 @@ public final class BookCoder {
      */
     private void decodeTags(@NonNull final JSONObject calibreBook,
                             @NonNull final Book book) {
-        final JSONArray calTags = calibreBook.optJSONArray(CalibreBookJsonKey.TAGS_ARRAY);
-        if (calTags != null && !calTags.isEmpty()) {
-            final List<Tag> tags = new ArrayList<>();
-            for (int i = 0; i < calTags.length(); i++) {
-                tags.add(new Tag(calTags.getString(i)));
-            }
-            if (!tags.isEmpty()) {
-                book.setTags(tags);
-            }
+        final JSONArray calibreTags = calibreBook.optJSONArray(CalibreBookJsonKey.TAGS_ARRAY);
+        if (calibreTags == null || calibreTags.isEmpty()) {
+            return;
+        }
+
+        final List<Tag> tags = new ArrayList<>();
+        for (int i = 0; i < calibreTags.length(); i++) {
+            tags.add(new Tag(calibreTags.getString(i)));
+        }
+        if (!tags.isEmpty()) {
+            book.setTags(tags);
         }
     }
 
@@ -531,39 +531,36 @@ public final class BookCoder {
     private void decodeSeries(@NonNull final JSONObject calibreBook,
                               @NonNull final Book book) {
         final String seriesName = calibreBook.optString(CalibreBookJsonKey.SERIES);
-        if (!seriesName.isEmpty()) {
-            if (VALUE_IS_NULL.equals(seriesName)) {
-                throw new IllegalArgumentException(ERROR_NULL_STRING);
-            }
-            final Series series = Series.from(seriesName);
-            // "series_index": null,
-            // "series_index": 2,  --> it's a float, but we grab it as a string
-            String seriesNr = calibreBook.optString(CalibreBookJsonKey.SERIES_INDEX);
-            if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
-                // transform "3.0" to just "3" (and similar) but leave "3.1" alone
-                if (seriesNr.endsWith(".0")) {
-                    seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
-                }
-                series.setNumber(seriesNr);
-            }
-            final List<Series> bookSeries = new ArrayList<>();
-            bookSeries.add(series);
-            book.setSeries(bookSeries);
+        if (seriesName.isEmpty() || VALUE_IS_NULL.equals(seriesName)) {
+            return;
         }
+
+        final Series series = Series.from(seriesName);
+        // "series_index": null,
+        // "series_index": 2,  --> it's a float, but we grab it as a string
+        String seriesNr = calibreBook.optString(CalibreBookJsonKey.SERIES_INDEX);
+        if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
+            // transform "3.0" to just "3" (and similar) but leave "3.1" alone
+            if (seriesNr.endsWith(".0")) {
+                seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
+            }
+            series.setNumber(seriesNr);
+        }
+        final List<Series> bookSeries = new ArrayList<>();
+        bookSeries.add(series);
+        book.setSeries(bookSeries);
     }
 
     private void decodePublisher(@NonNull final JSONObject calibreBook,
                                  @NonNull final Book book) {
         final String publisherName = calibreBook.optString(CalibreBookJsonKey.PUBLISHER);
-        if (!publisherName.isEmpty()) {
-            if (VALUE_IS_NULL.equals(publisherName)) {
-                throw new IllegalArgumentException(ERROR_NULL_STRING);
-            }
-
-            final List<Publisher> bookPublishers = new ArrayList<>();
-            bookPublishers.add(Publisher.from(publisherName));
-            book.setPublishers(bookPublishers);
+        if (publisherName.isEmpty() || VALUE_IS_NULL.equals(publisherName)) {
+            return;
         }
+
+        final List<Publisher> bookPublishers = new ArrayList<>();
+        bookPublishers.add(Publisher.from(publisherName));
+        book.setPublishers(bookPublishers);
     }
 
     /**
@@ -575,25 +572,26 @@ public final class BookCoder {
     private void decodeIdentifiers(@NonNull final JSONObject calibreBook,
                                    @NonNull final Book book) {
         final JSONObject remotes = calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
-        if (remotes != null) {
-            final List<Identifier.Value> ivs = new ArrayList<>();
+        if (remotes == null) {
+            return;
+        }
 
-            final Iterator<String> it = remotes.keys();
-            while (it.hasNext()) {
-                final String calKey = it.next();
-                if (!remotes.isNull(calKey)) {
-                    final String sid = remotes.optString(calKey);
-                    if (!sid.isEmpty()) {
-                        // MUST be converted to lc before we try and map
-                        CalibreIdentifiers.convertIdentifier(
-                                book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
-                    }
+        final List<Identifier.Value> ivs = new ArrayList<>();
+        final Iterator<String> it = remotes.keys();
+        while (it.hasNext()) {
+            final String calKey = it.next();
+            if (!remotes.isNull(calKey)) {
+                final String sid = remotes.optString(calKey);
+                if (!sid.isEmpty()) {
+                    // MUST be converted to lc before we try and map
+                    CalibreIdentifiers.convertIdentifier(
+                            book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
                 }
             }
-            ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
-            if (!ivs.isEmpty()) {
-                book.setIdentifiers(ivs);
-            }
+        }
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        if (!ivs.isEmpty()) {
+            book.setIdentifiers(ivs);
         }
     }
 
@@ -739,16 +737,18 @@ public final class BookCoder {
             throws JSONException {
 
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
-        if (userMetaData != null) {
-            for (final CalibreCustomField cf : library.getCustomFields()) {
-                final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
-                if (data != null) {
-                    final String type = data.getString(CalibreCustomField.METADATA_DATATYPE);
-                    if (cf.getType().equals(type)) {
-                        // Sanity check, should always be present
-                        if (!data.isNull(CalibreCustomField.VALUE)) {
-                            customFieldCoder.decode(cf, data, book);
-                        }
+        if (userMetaData == null) {
+            return;
+        }
+
+        for (final CalibreCustomField cf : library.getCustomFields()) {
+            final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
+            if (data != null) {
+                final String type = data.getString(CalibreCustomField.METADATA_DATATYPE);
+                if (cf.getType().equals(type)) {
+                    // Sanity check, should always be present
+                    if (!data.isNull(CalibreCustomField.VALUE)) {
+                        customFieldCoder.decode(cf, data, book);
                     }
                 }
             }
@@ -758,13 +758,15 @@ public final class BookCoder {
     private void decodeFormat(@NonNull final JSONObject calibreBook,
                               @NonNull final Book book) {
         final JSONObject mainFormat = calibreBook.optJSONObject(CalibreBookJsonKey.EBOOK_FORMAT);
-        if (mainFormat != null) {
-            final Iterator<String> it = mainFormat.keys();
-            if (it.hasNext()) {
-                final String format = it.next();
-                if (format != null && !format.isEmpty()) {
-                    book.putString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, format);
-                }
+        if (mainFormat == null) {
+            return;
+        }
+
+        final Iterator<String> it = mainFormat.keys();
+        if (it.hasNext()) {
+            final String format = it.next();
+            if (format != null && !format.isEmpty()) {
+                book.putString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, format);
             }
         }
     }
@@ -782,6 +784,9 @@ public final class BookCoder {
                 .or(bookshelfDao::getCurrent)
                 .orElseGet(bookshelfDao::getDefault);
 
+        // 2026-10-05: I don't think we need to check this.
+        // It will always be a new book anyhow.
+        // Still, leaving as-is for now.
         if (bookShelves.isEmpty()) {
             // new book
             bookShelves.add(mappedBookshelf);
@@ -823,9 +828,9 @@ public final class BookCoder {
                            }
                        });
             }
-
-            book.setBookshelves(bookShelves);
         }
+
+        book.setBookshelves(bookShelves);
     }
 
     /**
@@ -1061,6 +1066,7 @@ public final class BookCoder {
             return true;
         }
 
+        // Set to delete on the server
         changes.put(CalibreBookJsonKey.COVER, "");
         return false;
     }

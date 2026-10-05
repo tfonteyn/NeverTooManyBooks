@@ -232,6 +232,9 @@ public class CalibreCustomFieldCoder {
             }
             case CalibreCustomField.Type.SERIES:
                 // URGENT: Type.SERIES not supported
+                // src/calibre/library/field_metadata.py#720
+                // When there is a field "blah" of type "series"
+                // then there will also be a field "blah_index" of type "float"
             default: {
                 // Don't throw in case we meet types not defined yet.
                 LoggerFactory.getLogger().w(TAG, ERROR_UNSUPPORTED_TYPE + cf);
@@ -292,6 +295,9 @@ public class CalibreCustomFieldCoder {
             }
             case CalibreCustomField.Type.SERIES:
                 // URGENT: Type.SERIES not supported
+                // src/calibre/library/field_metadata.py#720
+                // When there is a field "blah" of type "series"
+                // then there will also be a field "blah_index" of type "float"
             default: {
                 // Don't throw in case we meet types not defined yet.
                 LoggerFactory.getLogger().w(TAG, ERROR_UNSUPPORTED_TYPE + cf);
@@ -348,6 +354,9 @@ public class CalibreCustomFieldCoder {
                 }
                 case CalibreCustomField.Type.SERIES:
                     // URGENT: Type.SERIES not supported
+                    // src/calibre/library/field_metadata.py#720
+                    // When there is a field "blah" of type "series"
+                    // then there will also be a field "blah_index" of type "float"
                 default: {
                     // Don't throw in case we meet types not defined yet.
                     LoggerFactory.getLogger().w(TAG, ERROR_UNSUPPORTED_TYPE + cf);
