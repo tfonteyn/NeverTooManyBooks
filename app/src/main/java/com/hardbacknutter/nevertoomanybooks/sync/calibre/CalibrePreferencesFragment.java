@@ -31,6 +31,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibreConnectionValidationHelper;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 import com.hardbacknutter.prefslib.BooleanSetting;
 import com.hardbacknutter.prefslib.Setting;
@@ -78,6 +80,8 @@ public class CalibrePreferencesFragment
     private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenCaUri));
+
+    private SettingsViewModel vm;
 
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> pickFolderLauncher;
@@ -161,6 +165,11 @@ public class CalibrePreferencesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), getArguments());
+
         final SettingsManager settingsManager = getSettingsManager();
         pSyncEnabled = settingsManager.requireSetting(CalibreHandler.PK_ENABLED);
         pHostUrl = settingsManager.requireSetting(PK_HOST_URL);
@@ -194,6 +203,11 @@ public class CalibrePreferencesFragment
                 .filter(key -> !key.equals(CalibreHandler.PK_ENABLED))
                 .collect(Collectors.toList());
         settingsManager.setEnabled(enable, keys);
+
+        // brute force, if the user changed the 'enabled' state,
+        // recreate the BoB to make sure the sync menus show/hide
+        vm.setForceActivityRecreation();
+
         return true;
     }
 
