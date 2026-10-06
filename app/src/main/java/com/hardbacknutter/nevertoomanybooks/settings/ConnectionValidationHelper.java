@@ -152,6 +152,10 @@ public class ConnectionValidationHelper {
      * Use a customized {@link OnBackPressedCallback} and/or override {@link #validate()} instead.
      */
     final void proposeValidation() {
+        if (vm.isValidationRunning()) {
+            return;
+        }
+
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(owner.getContext())
                 .setIcon(R.drawable.info_24px)

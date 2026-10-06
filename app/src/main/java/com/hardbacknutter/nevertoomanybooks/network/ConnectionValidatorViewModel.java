@@ -26,6 +26,8 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
@@ -33,6 +35,7 @@ import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 public class ConnectionValidatorViewModel
         extends ViewModel {
 
+    private final AtomicBoolean validationRunning = new AtomicBoolean();
     @Nullable
     private ConnectionValidatorTask validatorTask;
 
@@ -57,14 +60,28 @@ public class ConnectionValidatorViewModel
         return validatorTask != null;
     }
 
+    /**
+     * Connection was a success. The status of the authentication is returned.
+     *
+     * @return {@code true} if authentication was a success,
+     *         {@code false} if it failed
+     */
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onConnectionSuccessful() {
+        // DO NOT ALLOW RETRIES, as we'll be closing the screen after this
         //noinspection DataFlowIssue
         return validatorTask.onFinished();
     }
 
+    /**
+     * The user cancelled the task.
+     *
+     * @return ignore
+     */
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onConnectionCancelled() {
+        // allow retries
+        validationRunning.set(false);
         //noinspection DataFlowIssue
         return validatorTask.onCancelled();
     }
@@ -76,6 +93,8 @@ public class ConnectionValidatorViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<Throwable>> onConnectionFailed() {
+        // allow retries
+        validationRunning.set(false);
         //noinspection DataFlowIssue
         return validatorTask.onFailure();
     }
@@ -91,6 +110,13 @@ public class ConnectionValidatorViewModel
         return validatorTask.onProgress();
     }
 
+    /**
+     * Trigger cancellation.
+     *
+     * @param taskId to cancel
+     *
+     * @throws IllegalArgumentException (debug) for an unknown taskId
+     */
     public void cancelTask(@IdRes final int taskId) {
         // sanity/paranoia check
         if (validatorTask != null) {
@@ -106,9 +132,14 @@ public class ConnectionValidatorViewModel
      * Run the validation connection.
      */
     public void validateConnection() {
-        // sanity/paranoia check
-        if (validatorTask != null) {
+        // sanity/paranoia check; also make sure never to start twice.
+        if (validatorTask != null && !validationRunning.get()) {
+            validationRunning.set(true);
             validatorTask.connect();
         }
+    }
+
+    public boolean isValidationRunning() {
+        return validationRunning.get();
     }
 }
