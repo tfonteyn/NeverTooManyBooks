@@ -730,6 +730,9 @@ public class Series
 
     /**
      * Enhanced {@link #equals(Object)}.
+     * <p>
+     * The series user fields ('complete' and 'identifiers') are included.
+     * But the 'number' is NOT INCLUDED as it is a book-field (not series, not user).
      *
      * @param that to compare to
      *
@@ -738,7 +741,6 @@ public class Series
     public boolean isIdentical(@Nullable final Series that) {
         return equals(that)
                && complete == that.complete
-               && number.equals(that.number)
                && identifiers.equals(that.identifiers);
     }
 
