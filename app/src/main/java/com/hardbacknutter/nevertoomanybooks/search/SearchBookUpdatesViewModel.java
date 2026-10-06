@@ -218,32 +218,34 @@ public class SearchBookUpdatesViewModel
         // it is then assumed the user may update it with their personal rating.
         // Hence, we NEVER fetch it from the sites again.
 
+        // NEWTHINGS: adding fields
+
         map.put(context.getString(R.string.lbl_color),
-                new SyncFieldDef(DBKey.COLOR));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.COLOR));
         map.put(context.getString(R.string.lbl_description),
-                new SyncFieldDef(SyncField.Type.STRING, DBKey.DESCRIPTION));
+                new SyncFieldDef(SyncField.Type.APPENDABLE_STRING, DBKey.DESCRIPTION));
         map.put(context.getString(R.string.lbl_date_first_publication),
-                new SyncFieldDef(DBKey.FIRST_PUBLICATION_DATE));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.FIRST_PUBLICATION_DATE));
         map.put(context.getString(R.string.lbl_format),
-                new SyncFieldDef(DBKey.FORMAT));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.FORMAT));
         map.put(context.getString(R.string.lbl_isbn),
-                new SyncFieldDef(DBKey.ISBN));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.ISBN));
         map.put(context.getString(R.string.lbl_language),
-                new SyncFieldDef(DBKey.LANGUAGE));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.LANGUAGE));
         map.put(context.getString(R.string.lbl_pages),
-                new SyncFieldDef(DBKey.PAGES));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.PAGES));
         map.put(context.getString(R.string.lbl_price_listed),
-                new SyncFieldDef(DBKey.PRICE_LISTED));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.PRICE_LISTED));
         map.put(context.getString(R.string.lbl_print_run),
-                new SyncFieldDef(DBKey.PRINT_RUN));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.PRINT_RUN));
         map.put(context.getString(R.string.lbl_date_published),
-                new SyncFieldDef(DBKey.PUBLICATION_DATE));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.PUBLICATION_DATE));
         map.put(context.getString(R.string.lbl_title),
-                new SyncFieldDef(DBKey.TITLE));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.TITLE));
         map.put(context.getString(R.string.lbl_original_language),
-                new SyncFieldDef(DBKey.TRANSLATION_ORIGINAL_LANGUAGE));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.TRANSLATION_ORIGINAL_LANGUAGE));
         map.put(context.getString(R.string.lbl_original_title),
-                new SyncFieldDef(DBKey.TRANSLATION_ORIGINAL_TITLE));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.TRANSLATION_ORIGINAL_TITLE));
 
         map.put(context.getString(R.string.lbl_authors),
                 new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,

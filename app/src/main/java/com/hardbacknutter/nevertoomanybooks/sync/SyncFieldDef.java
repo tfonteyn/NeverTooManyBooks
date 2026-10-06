@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,19 +35,6 @@ public class SyncFieldDef {
 
     /**
      * Constructor.
-     * Type.OTHER.
-     *
-     * @param fieldKey to add
-     *                 also used as preference key to check user-enabled state
-     */
-    public SyncFieldDef(@NonNull final String fieldKey) {
-        this.type = SyncField.Type.OTHER;
-        this.fieldKey = fieldKey;
-        this.enabledKey = fieldKey;
-    }
-
-    /**
-     * Constructor.
      *
      * @param type     of field
      * @param fieldKey to add
@@ -55,9 +42,7 @@ public class SyncFieldDef {
      */
     public SyncFieldDef(@NonNull final SyncField.Type type,
                         @NonNull final String fieldKey) {
-        this.type = type;
-        this.fieldKey = fieldKey;
-        this.enabledKey = fieldKey;
+        this(type, fieldKey, fieldKey);
     }
 
     /**

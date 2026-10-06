@@ -177,7 +177,7 @@ public class CalibreCustomField
                + '}';
     }
 
-    // NEWTHINGS: adding a Calibre custom field type
+    // NEWTHINGS: Calibre adding a custom field type
     // Don't transform the types to enum;
     // we may want to support custom/unknown types at a future time
     public static final class Type {

@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -84,9 +85,23 @@ public class SyncReaderProcessor {
         mappers = MapperFactory.create(context);
     }
 
-    @SuppressWarnings("TypeMayBeWeakened")
-    private static boolean isEmptyOrZero(@NonNull final String value) {
-        return value.isEmpty() || "0".equals(value) || "0.0".equals(value);
+    private static boolean isEmptyOrZero(@Nullable final Object value) {
+        if (value == null) {
+            return true;
+        }
+        if (value instanceof Money) {
+            return ((Money) value).isZero();
+        }
+        if (value instanceof Boolean) {
+            // false is considered 'empty'
+            return !((boolean) value);
+        }
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue() == 0.0d;
+        }
+        // catch-all
+        final String s = value.toString();
+        return s.isEmpty() || "0".equals(s) || "0.0".equals(s);
     }
 
     /**
@@ -145,14 +160,9 @@ public class SyncReaderProcessor {
     private boolean doDefaultFiltering(@NonNull final Book localBook,
                                        @NonNull final SyncField field) {
         switch (field.getAction()) {
-            case Append:
-            case Overwrite: {
-                // Append + Overwrite: we always need to get the data
-                return true;
-            }
             case CopyIfBlank: {
+                // If our local book does not have this data, add the field as 'wanted'
                 if (field.getType() == SyncField.Type.LIST) {
-                    // If the local data is absent or empty, add the field
                     return !localBook.contains(field.getKey())
                            || localBook.getParcelableArrayList(field.getKey()).isEmpty();
                 }
@@ -166,10 +176,13 @@ public class SyncReaderProcessor {
                     }
                 }
 
-                // If the local data is blank or numerical zero, add the field
-                final String value = localBook.getString(field.getKey(), null);
-                return value == null || isEmptyOrZero(value);
+                return isEmptyOrZero(localBook.get(field.getKey(), realNumberParser));
 
+            }
+            case Append:
+            case Overwrite: {
+                // Append + Overwrite: we always need to get the field
+                return true;
             }
             case Skip:
             default:
@@ -248,6 +261,10 @@ public class SyncReaderProcessor {
             String bookLang = remoteBook.getLanguage();
             if (bookLang.isEmpty()) {
                 // Otherwise add the original one.
+                // We do this because the BookDaoHelper#process needs it to
+                // resort the OB's.
+                // FIXME: re-adding the language does mean that the book will ALWAYS
+                //  contain (at least) one field and will be written to the database
                 bookLang = localBook.getLanguage();
                 if (!bookLang.isEmpty()) {
                     remoteBook.setLanguage(bookLang);
@@ -289,10 +306,10 @@ public class SyncReaderProcessor {
     /**
      * Process the given book image.
      *
-     * @param context     Current context
-     * @param localBook   the Book we're syncing
-     * @param remoteBook  the data to merge with the book;
-     * @param field       to process
+     * @param context    Current context
+     * @param localBook  the Book we're syncing
+     * @param remoteBook the data to merge with the book;
+     * @param field      to process
      *
      * @throws IOException on disk-full; other exceptions are logged but ignored
      */
@@ -314,7 +331,15 @@ public class SyncReaderProcessor {
             case CopyIfBlank:
                 // If our local book already has this data,
                 // remove the unneeded field from the delta (remote book)
-                if (hasField(localBook, field, realNumberParser)) {
+                final boolean hasData;
+                if (field.getType() == SyncField.Type.LIST) {
+                    hasData = !localBook.contains(field.getKey())
+                              || !localBook.getParcelableArrayList(field.getKey()).isEmpty();
+                } else {
+                    hasData = !isEmptyOrZero(localBook.get(field.getKey(), realNumberParser));
+                }
+
+                if (hasData) {
                     remoteBook.remove(field.getKey());
                 }
                 break;
@@ -325,7 +350,9 @@ public class SyncReaderProcessor {
 
             case Overwrite:
                 // no action needed, the data in 'remoteBook' will overwrite
-                // our local data
+                // our local data.
+                // At this moment, empty/zero data in the remote book is kept.
+                // It will be removed once we process it in the BookDaoHelper
                 break;
 
             case Skip:
@@ -336,44 +363,11 @@ public class SyncReaderProcessor {
     }
 
     /**
-     * Check if we already have this field (with content) in the original data.
-     *
-     * @param localBook        to check
-     * @param field            to test
-     * @param realNumberParser to use for number parsing
-     *
-     * @return {@code true} if already present
-     */
-    @WorkerThread
-    private boolean hasField(@NonNull final Book localBook,
-                             @NonNull final SyncField field,
-                             @NonNull final RealNumberParser realNumberParser) {
-        if (field.getType() == SyncField.Type.LIST) {
-            if (localBook.contains(field.getKey())) {
-                return !localBook.getParcelableArrayList(field.getKey()).isEmpty();
-            }
-        } else {
-            // Non-list fields: we want a delta.
-            // If our local book already has this data,
-            // remove the unneeded field from the delta (remote book)
-            // paranoia: check for keys present but considered 'empty'
-            // we could probably just do
-            //    return localBook.contains(key);
-            final Object o = localBook.get(field.getKey(), realNumberParser);
-            if (o != null) {
-                return !isEmptyOrZero(o.toString().strip());
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Process the given book image.
      *
-     * @param localBook   the Book we're syncing
-     * @param remoteBook  the data to merge with the book;
-     * @param cIdx        0..n image index
+     * @param localBook  the Book we're syncing
+     * @param remoteBook the data to merge with the book;
+     * @param cIdx       0..n image index
      *
      * @throws IOException on disk-full; other exceptions are logged but ignored
      */
@@ -414,7 +408,7 @@ public class SyncReaderProcessor {
      * The result in 'remoteBook' MAY contain duplicates.
      * These will be pruned during the save to the database.
      * <p>
-     * {@link SyncField.Type#STRING}: concatenates two {@code String}s.
+     * {@link SyncField.Type#APPENDABLE_STRING}: concatenates two {@code String}s.
      *
      * @param context    Current context
      * @param localBook  to check; will NOT be modified.
@@ -430,6 +424,9 @@ public class SyncReaderProcessor {
                                @NonNull final Book localBook,
                                @NonNull final Book remoteBook,
                                @NonNull final String key) {
+        // NEWTHINGS: adding SyncField.Type#APPENDABLE_STRING or SyncField.Type#LIST}
+        //  to a SyncProcessor.
+
         // Add the localBook data to the remoteBook list!
         // and not the other way around! We want to collect a delta in remoteBook.
         // Note the local data/list must be inserted BEFORE the remote data/list,
@@ -498,7 +495,7 @@ public class SyncReaderProcessor {
                     if (!localDesc.isEmpty() && !localDesc.contains(remoteDesc)) {
                         remoteBook.setDescription(localDesc + "<br/><br/>" + remoteDesc);
                     }
-                    // else nothing to do, just use the remote description
+                    // else nothing to do, the remote description will be copied as normal
                 }
                 break;
             }

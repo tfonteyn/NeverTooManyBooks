@@ -211,11 +211,10 @@ public final class CalibreContentServer
 
     /**
      * Default for the number of books we push to the server per request.
-     * <p>
-     * ENHANCE: Currently this is kept fairly low, as the actual push is 1 book == 1 POST
-     *  This needs changing when/if we create a custom endpoint for batch posts
+     *
+     * @see #PK_BOOKS_PER_PUSH_REQUEST
      */
-    private static final int BOOKS_PER_PUSH_REQUEST_DEFAULT = 20;
+    private static final int BOOKS_PER_PUSH_REQUEST_DEFAULT = 100;
 
     /**
      * Preference key: the number of books which will be pushed to the server in one request.
@@ -315,7 +314,7 @@ public final class CalibreContentServer
      */
     private static final String RESPONSE_NTMB_CUSTOM_FIELDS = "custom_fields";
 
-    /** Ignored by the server, but we still need to set one.  */
+    /** Ignored by the server, but we still need to set one. */
     private static final String ACCEPT_LANGUAGE_HEADER = "en";
 
     /** The RequestBody media type. */
@@ -939,10 +938,10 @@ public final class CalibreContentServer
      *      "vl": ""}
      * </pre>
      *
-     * @param libraryId to search in
-     * @param num       the maximum number of entries to return
-     * @param offset    the offset for the next set to return
-     * @param query     the search query, see above
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param num             the maximum number of entries to return
+     * @param offset          the offset for the next set to return
+     * @param query           the search query, see above
      *
      * @return books matching the specified search query.
      *
@@ -951,7 +950,7 @@ public final class CalibreContentServer
      */
     @WorkerThread
     @NonNull
-    public JSONObject search(@NonNull final String libraryId,
+    public JSONObject search(@NonNull final String libraryStringId,
                              @SuppressWarnings("SameParameterValue") final int num,
                              final int offset,
                              @NonNull final String query)
@@ -959,7 +958,7 @@ public final class CalibreContentServer
                    JSONException {
 
         final String url = String.format(Locale.ROOT, Endpoints.SEARCH, serverUri,
-                                         libraryId, num, offset, query);
+                                         libraryStringId, num, offset, query);
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
 
@@ -1044,7 +1043,7 @@ public final class CalibreContentServer
      * Example response see {@link BookCoder}.
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param calibreIds      a list of Calibre numeric book ids
+     * @param calibreBookIds  a list of Calibre numeric book ids
      *
      * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
@@ -1054,12 +1053,12 @@ public final class CalibreContentServer
     @WorkerThread
     @NonNull
     JSONObject getBooksById(@NonNull final String libraryStringId,
-                            @NonNull final List<Integer> calibreIds)
+                            @NonNull final List<Integer> calibreBookIds)
             throws IOException, JSONException {
 
-        final String csv = calibreIds.stream()
-                                     .map(String::valueOf)
-                                     .collect(Collectors.joining(","));
+        final String csv = calibreBookIds.stream()
+                                         .map(String::valueOf)
+                                         .collect(Collectors.joining(","));
 
         final String url = String.format(Endpoints.GET_BOOKS_BY_ID, serverUri,
                                          libraryStringId, csv);
@@ -1099,6 +1098,7 @@ public final class CalibreContentServer
         final String url = String.format(Endpoints.GET_BOOKS_BY_UUID, serverUri,
                                          libraryStringId, csv);
         final JSONObject bookList = new JSONObject(fetch(url, BUFFER_BOOK_LIST));
+
         // if possible, fetch the matching virtual library data
         if (isPluginInstalled()) {
             // Calibre can only use numeric ids for fetching virtual libs.
@@ -1120,19 +1120,18 @@ public final class CalibreContentServer
      * Updates the books in the list with their virtual libraries.
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param idCsvList       a CSV list of Calibre numeric book ids
+     * @param csv             a CSV list of Calibre numeric book ids
      * @param bookList        to update
      *
      * @throws IOException   on generic/other IO failures
      * @throws JSONException upon any parsing error
      */
     private void fetchVirtualLibraries(@NonNull final String libraryStringId,
-                                       @NonNull final String idCsvList,
+                                       @NonNull final String csv,
                                        @NonNull final JSONObject bookList)
             throws IOException, JSONException {
 
-        final JSONObject virtualLibs = getVirtualLibrariesForBookIds(libraryStringId,
-                                                                     idCsvList);
+        final JSONObject virtualLibs = getVirtualLibrariesForBookIds(libraryStringId, csv);
         // inject the virtual library list into the book objects
         final Iterator<String> it = bookList.keys();
         while (it.hasNext()) {
@@ -1149,11 +1148,11 @@ public final class CalibreContentServer
      * Return the book ids with their virtual libraries.
      * <pre>
      * {@code
-     *      endpoint('/nevertoomanybooks/virtual-libraries-for-books/{book_ids}/{library_id=None}',
+     *      endpoint('/nevertoomanybooks/virtual-libraries-for-books/{library_id=None}',
      *               postprocess=json)
      * }
      * </pre>
-     * {book_ids} a simple csv list; example: 271,7,200
+     * Query parameters: 'ids' with a simple csv list; example: 271,7,200
      * <p>
      * This method uses a plugin which needs to be installed on the Calibre Content Server.
      * <p>
@@ -1167,7 +1166,7 @@ public final class CalibreContentServer
      * </pre>
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
-     * @param idCsvList       a CSV list of Calibre numeric book ids
+     * @param csv             a CSV list of Calibre numeric book ids
      *
      * @return see above
      *
@@ -1179,7 +1178,7 @@ public final class CalibreContentServer
      */
     @NonNull
     private JSONObject getVirtualLibrariesForBookIds(@NonNull final String libraryStringId,
-                                                     @NonNull final String idCsvList)
+                                                     @NonNull final String csv)
             throws IOException, JSONException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -1192,8 +1191,53 @@ public final class CalibreContentServer
         }
 
         final String url = String.format(Endpoints.NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS, serverUri,
-                                         idCsvList, libraryStringId);
+                                         libraryStringId, csv);
         return new JSONObject(fetch(url, BUFFER_SMALL));
+    }
+
+    /**
+     * Similar to {@link #getBooksById(String, List)} but
+     * instead of full book objects the result contains only the fields
+     * {@link CalibreBookJsonKey#LAST_MODIFIED},
+     * {@link CalibreBookJsonKey#IDENTIFIERS}.
+     * <pre>
+     * {@code
+     *      endpoint('/nevertoomanybooks/prep-for-pushing/{library_id=None}',
+     *               postprocess=json)
+     * }
+     * </pre>
+     * Query parameters: 'ids' with a simple csv list; example: 271,7,200
+     * <p>
+     * This method uses a plugin which needs to be installed on the Calibre Content Server.
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreBookIds  a list of Calibre numeric book ids
+     *
+     * @return JSONObject with a list of Calibre book ids with their last_modified/identifiers
+     *
+     * @throws IOException           on generic/other IO failures
+     * @throws JSONException         upon any parsing error
+     * @throws IllegalStateException (debug) if the plugin is not installed
+     */
+    @NonNull
+    JSONObject prepForPushing(@NonNull final String libraryStringId,
+                              @NonNull final List<Integer> calibreBookIds)
+            throws IOException, JSONException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!isPluginInstalled()) {
+                throw new IllegalStateException("Plugin not installed");
+            }
+        }
+
+        final String csv = calibreBookIds.stream()
+                                         .map(String::valueOf)
+                                         .collect(Collectors.joining(","));
+
+        // minimal set of "last_modified" and "identifiers"
+        final String url = String.format(Endpoints.NTMB_PREP_FOR_PUSHING, serverUri,
+                                         libraryStringId, csv);
+        return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
 
     /**
@@ -1254,6 +1298,7 @@ public final class CalibreContentServer
      *
      * @param calibreBookId used for the temp filename only
      * @param coverUrl      to download; will be prefixed with the server url
+     *
      * @return cover file
      *
      * @throws IOException           on generic IO failures

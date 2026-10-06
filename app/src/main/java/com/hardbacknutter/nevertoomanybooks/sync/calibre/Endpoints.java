@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.CalibreBookJsonKey;
+
 /**
  * Calibre endpoint definitions for the Calibre native "ajax" module
  * and the "nevertoomanybooks" plugin.
@@ -54,24 +56,38 @@ final class Endpoints {
      * Request the list of virtual libraries.
      * <p>
      * Param 1: serverUri
-     * Param 2: csv list of book ids
-     * Param 3: libraryStringId
+     * Param 2: libraryStringId
+     * Param 3: (ids) csv list of book ids
      *
      * @see CalibreContentServer#isPluginInstalled()
      */
     static final String NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS =
-            "%1$s/nevertoomanybooks/virtual-libraries-for-books/%2$s/%3$s";
+            "%1$s/nevertoomanybooks/virtual-libraries-for-books/%2$s?ids=%3$s";
 
+    /**
+     * Similar to {@link #GET_BOOKS_BY_ID} but
+     * instead of full book objects the result contains only the fields
+     * {@link CalibreBookJsonKey#LAST_MODIFIED},
+     * {@link CalibreBookJsonKey#IDENTIFIERS}.
+     * <p>
+     * Param 1: serverUri
+     * Param 2: libraryStringId
+     * Param 3: (ids) a csv list of numeric book ids
+     */
+    static final String NTMB_PREP_FOR_PUSHING =
+            "%1$s/nevertoomanybooks/prep-for-pushing/%2$s?ids=%3$s";
     /**
      * Run a search.
      * <p>
      * Param 1: serverUri
-     * Param 2: libraryId
-     * Param 3: the maximum number of entries to return
-     * Param 4: the offset for the next set to return
-     * Param 5: the query to execute
+     * Param 2: libraryStringId
+     * Param 3: (num) the maximum number of entries to return
+     * Param 4: (offset) the offset for the next set to return
+     * Param 5: (query) the query to execute
      */
-    static final String SEARCH = "%1$s/ajax/search/%2$s?num=%3$d&offset=%4$d&query=%5$s";
+    static final String SEARCH = "%1$s/ajax/search/%2$s"
+                                 + "?num=%3$d&offset=%4$d"
+                                 + "&query=%5$s";
 
     /**
      * Fetch all book ids for the given library.
@@ -97,7 +113,7 @@ final class Endpoints {
      * Param 2: book id (as a string)
      * Param 3: libraryStringId
      */
-    static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$s/%3$s";
+    static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$s/%3$s?category_urls=false";
 
     /**
      * Fetch a single book by its UUID.
@@ -106,27 +122,25 @@ final class Endpoints {
      * Param 2: book UUID
      * Param 3: libraryStringId
      */
-    static final String GET_BOOK_BY_UUID = "%1$s/ajax/book/%2$s/%3$s?id_is_uuid=true";
+    static final String GET_BOOK_BY_UUID = GET_BOOK_BY_ID + "&id_is_uuid=true";
 
     /**
      * Fetch a set of books by their numeric ids.
      * <p>
      * Param 1: serverUri
-     * Param 2: a csv list of numeric book ids
-     * Param 3: libraryStringId
+     * Param 2: libraryStringId
+     * Param 3: (ids) a csv list of numeric book ids
      */
-    static final String GET_BOOKS_BY_ID =
-            "%1$s/ajax/books/%2$s?category_urls=false&ids=%3$s";
+    static final String GET_BOOKS_BY_ID = "%1$s/ajax/books/%2$s?ids=%3$s&category_urls=false";
 
     /**
      * Fetch a set of books by their UUIDs.
      * <p>
      * Param 1: serverUri
-     * Param 2: a csv list of book UUIDs
-     * Param 3: libraryStringId
+     * Param 2: libraryStringId
+     * Param 3: (ids) a csv list of book UUIDs
      */
-    static final String GET_BOOKS_BY_UUID =
-            "%1$s/ajax/books/%2$s?category_urls=false&id_is_uuid=true&ids=%3$s";
+    static final String GET_BOOKS_BY_UUID = GET_BOOKS_BY_ID + "&id_is_uuid=true";
 
     /**
      * Request a file download.

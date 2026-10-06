@@ -137,6 +137,8 @@ public enum SyncServer
             final SyncReaderProcessor.Builder builder =
                     new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
 
+            // NEWTHINGS: Calibre adding a field, or a custom field
+
             // Cover fields will be at the top of the list.
             // There is only 1 image supported by Calibre
             builder.add(context.getString(R.string.lbl_cover_front),
@@ -146,15 +148,15 @@ public enum SyncServer
             final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
 
             map.put(context.getString(R.string.lbl_description),
-                    new SyncFieldDef(SyncField.Type.STRING, DBKey.DESCRIPTION));
+                    new SyncFieldDef(SyncField.Type.APPENDABLE_STRING, DBKey.DESCRIPTION));
             map.put(context.getString(R.string.lbl_format),
-                    new SyncFieldDef(DBKey.FORMAT));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.FORMAT));
             map.put(context.getString(R.string.lbl_language),
-                    new SyncFieldDef(DBKey.LANGUAGE));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.LANGUAGE));
             map.put(context.getString(R.string.lbl_date_published),
-                    new SyncFieldDef(DBKey.PUBLICATION_DATE));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.PUBLICATION_DATE));
             map.put(context.getString(R.string.lbl_title),
-                    new SyncFieldDef(DBKey.TITLE));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.TITLE));
 
             map.put(context.getString(R.string.lbl_authors),
                     new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
@@ -175,19 +177,20 @@ public enum SyncServer
 
             // The site specific fields
             map.put(context.getString(R.string.site_calibre),
-                    new SyncFieldDef(DBKey.CALIBRE.BOOK_ID));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_ID));
             map.put(context.getString(R.string.lbl_ebook_file_type),
-                    new SyncFieldDef(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_MAIN_FORMAT));
 
             // The site specific CustomFields
             ServiceLocator.getInstance()
                           .getCalibreCustomFieldDao()
-                          .getCustomFields().stream()
+                          .getCustomFields()
+                          .stream()
                           .map(CalibreCustomField::getDbKey)
                           .forEach(dbKey -> {
                               try {
                                   map.put(MapDBKey.getLabel(context, dbKey),
-                                          new SyncFieldDef(dbKey));
+                                          new SyncFieldDef(SyncField.Type.OTHER, dbKey));
                               } catch (@NonNull final IllegalArgumentException ignore) {
                                   // will currently never fail, as all custom fields are hardcoded.
                                   LoggerFactory.getLogger().w(
@@ -279,19 +282,19 @@ public enum SyncServer
                     new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_BOOKSHELF_LIST,
                                      DBKey.FK_BOOKSHELF));
             map.put(context.getString(R.string.lbl_date_acquired),
-                    new SyncFieldDef(DBKey.DATE_ACQUIRED));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.DATE_ACQUIRED));
             map.put(context.getString(R.string.lbl_location),
-                    new SyncFieldDef(DBKey.LOCATION));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.LOCATION));
             map.put(context.getString(R.string.lbl_personal_notes),
-                    new SyncFieldDef(DBKey.PERSONAL_NOTES));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.PERSONAL_NOTES));
             map.put(context.getString(R.string.lbl_read),
-                    new SyncFieldDef(DBKey.READ__BOOL));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.READ__BOOL));
             map.put(context.getString(R.string.lbl_price_paid),
-                    new SyncFieldDef(DBKey.PRICE_PAID));
+                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.PRICE_PAID));
 
             // The collection-data: see StripInfoSyncReaderProcessor
             map.put(context.getString(R.string.site_stripinfo_be),
-                    new SyncFieldDef(StripInfoCollectionData.BKEY));
+                    new SyncFieldDef(SyncField.Type.OTHER, StripInfoCollectionData.BKEY));
 
             // add the sorted fields
             map.forEach((label, def) -> builder.add(
@@ -303,7 +306,7 @@ public enum SyncServer
 
             // The single external-id field is added at the end of the list.
             map.put(context.getString(R.string.lbl_identifiers),
-                    new SyncFieldDef(Identifier.SID_STRIP_INFO));
+                    new SyncFieldDef(SyncField.Type.OTHER, Identifier.SID_STRIP_INFO));
 
             return builder;
 

@@ -482,20 +482,22 @@ public class CalibreContentServerReader
         final Book delta = syncProcessor.process(context, book.getId(), book, calibreBook,
                                                  fieldsWanted);
 
-        if (delta != null) {
-            bookRepository.update(context, delta, EnumSet.of(
-                    BookDao.ImportFlag.RunInBatch,
-                    BookDao.ImportFlag.UseUpdateDateIfPresent));
-            results.booksUpdated++;
+        if (delta == null) {
+            return;
+        }
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                LoggerFactory.getLogger().d(
-                        TAG, "updateBook", updateOption,
-                        "calibreBookUuid="
-                        + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
-                        "book=" + book.getId(),
-                        book.getString(DBKey.TITLE, null));
-            }
+        bookRepository.update(context, delta, EnumSet.of(
+                BookDao.ImportFlag.RunInBatch,
+                BookDao.ImportFlag.UseUpdateDateIfPresent));
+        results.booksUpdated++;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+            LoggerFactory.getLogger().d(
+                    TAG, "updateBook", updateOption,
+                    "calibreBookUuid="
+                    + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                    "book=" + book.getId(),
+                    book.getString(DBKey.TITLE, null));
         }
     }
 

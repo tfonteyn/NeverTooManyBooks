@@ -16,10 +16,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
 
-from calibre.srv.errors import HTTPBadRequest
+from calibre.ebooks.metadata.book.json_codec import datetime_to_string
+from calibre.srv.errors import HTTPNotFound
 from calibre.srv.routes import endpoint, json
 from calibre.srv.utils import get_db
-
 
 @endpoint('/nevertoomanybooks/library-info', postprocess=json)
 def library_info(ctx, rd):
@@ -60,18 +60,64 @@ def library_info(ctx, rd):
         'library_data': library_data
     }
 
-
-@endpoint('/nevertoomanybooks/virtual-libraries-for-books/{book_ids}/{library_id=None}',
+@endpoint('/nevertoomanybooks/virtual-libraries-for-books/{library_id=None}',
           postprocess=json)
-def virtual_libraries_for_books(ctx, rd, book_ids, library_id):
+def virtual_libraries_for_books(ctx, rd, library_id):
     """
-     Return the virtual libraries for each of the book ids
+     Return the virtual libraries for each of the book ids as a JSON dictionary.
+
+     Query parameters: ?ids=all    or a csv list of book ids
     """
     db = get_db(ctx, rd, library_id)
     with db.safe_read_lock:
-        try:
-            ids = {int(x) for x in book_ids.split(',')}
-        except Exception:
-            raise HTTPBadRequest('invalid book_ids: {}'.format(book_ids))
+        ids = rd.query.get('ids')
+        if ids is None or ids == 'all':
+            ids = db.all_book_ids()
+        else:
+            ids = ids.split(',')
+            try:
+                ids = {int(x) for x in ids}
+            except Exception:
+                raise HTTPNotFound('ids must a comma separated list of integers')
+
         return db.virtual_libraries_for_books(ids)
+    return None
+
+@endpoint('/nevertoomanybooks/prep-for-pushing/{library_id=None}',
+          postprocess=json)
+def prep_for_pushing(ctx, rd, library_id):
+    """
+    Returns a lightweight JSON map containing only last_modified and identifiers.
+
+    Query parameters: ?ids=all    or a csv list of book ids
+    """
+    db = get_db(ctx, rd, library_id)
+    with db.safe_read_lock:
+        ids = rd.query.get('ids')
+        if ids is None or ids == 'all':
+            ids = db.all_book_ids()
+        else:
+            ids = ids.split(',')
+            try:
+                ids = {int(x) for x in ids}
+            except Exception:
+                raise HTTPNotFound('ids must a comma separated list of integers')
+
+        res = {}
+
+        for book_id in ids:
+            # Paranoia
+            if not db.has_id(book_id):
+                continue
+
+            last_modified = db.field_for('last_modified', book_id)
+            identifiers = db.field_for('identifiers', book_id)
+
+            res[book_id] = {
+                'last_modified': datetime_to_string(last_modified),
+                'identifiers': identifiers or {}
+            }
+
+        return res
+
     return None

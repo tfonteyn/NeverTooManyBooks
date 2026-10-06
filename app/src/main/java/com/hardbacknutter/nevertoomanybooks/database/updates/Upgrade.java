@@ -168,7 +168,7 @@ public class Upgrade {
     private void addNewCalibreCustomFields() {
         final CalibreMigration calibreMigration = new CalibreMigration(db);
 
-        // NEWTHINGS: adding a Calibre custom field
+        // NEWTHINGS: Calibre adding a custom field
         calibreMigration.add("#rating",
                              CalibreCustomField.Type.RATING,
                              DBKey.RATING);

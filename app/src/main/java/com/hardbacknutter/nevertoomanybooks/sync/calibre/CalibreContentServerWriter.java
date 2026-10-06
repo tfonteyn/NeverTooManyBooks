@@ -214,60 +214,71 @@ public class CalibreContentServerWriter
             while (offset < totalNum && !progressListener.isCancelled()) {
                 // Read 'num' number of books from the database
                 final int batchSize = Math.min(num, totalNum - offset);
-                final Map<String, Book> books = new HashMap<>(batchSize);
+                final Map<Integer, Book> books = new HashMap<>(batchSize);
                 for (int i = 0; i < batchSize && cursor.moveToNext(); i++) {
                     final Book localBook = Book.from(cursor);
-                    final String calibreBookUuid = localBook.getString(DBKey.CALIBRE.BOOK_UUID);
-                    books.put(calibreBookUuid, localBook);
+                    final int calibreBookId = localBook.getInt(DBKey.CALIBRE.BOOK_ID);
+                    books.put(calibreBookId, localBook);
                 }
 
                 // Fetch the matching books from the Calibre server
-                final List<String> uuids = new ArrayList<>(books.keySet());
-                final JSONObject calibreBooks = server.getBooksByUuid(libraryStringId, uuids);
+                final List<Integer> ids = new ArrayList<>(books.keySet());
+                final JSONObject calibreBookData;
+                if (server.isPluginInstalled()) {
+                    // minimal set of "last_modified" and "identifiers"
+                    calibreBookData = server.prepForPushing(libraryStringId, ids);
+                } else {
+                    // full book objects
+                    calibreBookData = server.getBooksById(libraryStringId, ids);
+                }
 
                 // For each pair of local and remote books,
                 // check if the local one is newer, and push those to the server.
                 // The endpoint can only handle one book at a time.
-                for (final String uuid : uuids) {
-                    final Book localBook = books.get(uuid);
-                    // Paranoia, it should never be null, flw...
+                for (final int calBookId : ids) {
+                    final Book localBook = books.get(calBookId);
+                    // Sanity check, the book might have been deleted from the server
                     if (localBook != null) {
                         // it's an int, but getJSONObject wants a string
                         final String calibreBookId = localBook.getString(DBKey.CALIBRE.BOOK_ID);
-                        // Don't decode the calibreBook, we only need the last-modified
-                        // and the identifier fields.
-                        final JSONObject calibreBook = calibreBooks.getJSONObject(calibreBookId);
-                        final JSONObject changes = filter(context, library, localBook, calibreBook);
-                        if (changes != null) {
+                        // Don't decode the full calibreBook!
+                        // We only have/need the last-modified and the identifier fields.
+                        final JSONObject calibreBook = calibreBookData.getJSONObject(calibreBookId);
+                        // If the local data is newer,
+                        if (isLocalBookNewer(localBook, calibreBook)) {
+                            // create and send the delta to the server
+                            final JSONObject changes = encodeBook(context, library,
+                                                                  localBook, calibreBook);
+                            // random measurement with the emulator and Calibre on the host
+                            // shows a single update can take 122ms, 160ms, ...
                             if (pushChanges(library, localBook, changes)) {
-                                results.addBook();
+                                results.booksUpdated++;
                             }
                         }
+                    }
+                    results.booksProcessed++;
+
+                    // Show progress
+                    delta++;
+                    final long now = System.currentTimeMillis();
+                    if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
+                        progressListener.publishProgress(
+                                delta, results.createBooksSummaryLine(context));
+                        lastUpdate = now;
+                        delta = 0;
                     }
                 }
 
                 // Advance the offset for the next batch
                 offset += books.size();
 
-                // Show progress, using the title of the first book in the batch
-                delta++;
-                final long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    // Paranoia check
-                    if (!books.isEmpty()) {
-                        final String title = books.values().iterator().next().getTitle();
-                        progressListener.publishProgress(delta, title);
-                    }
-                    lastUpdate = now;
-                    delta = 0;
-                }
+
             }
         }
     }
 
     /**
-     * Check if the local book is 'newer' than the remote.
-     * If it is, encode the changes and return them; otherwise skip and return {@code null}.
+     * Encode the changes and return them.
      *
      * @param context     Current context
      * @param library     the library to which the given book belongs
@@ -279,24 +290,20 @@ public class CalibreContentServerWriter
      * @throws JSONException upon any parsing error
      * @throws IOException   on generic/other IO failures
      */
-    @Nullable
-    private JSONObject filter(@NonNull final Context context,
-                              @NonNull final CalibreLibrary library,
-                              @NonNull final Book book,
-                              @NonNull final JSONObject calibreBook)
-            throws JSONException, IOException {
+    @NonNull
+    private JSONObject encodeBook(@NonNull final Context context,
+                                  @NonNull final CalibreLibrary library,
+                                  @NonNull final Book book,
+                                  @NonNull final JSONObject calibreBook)
+            throws IOException {
+        final JSONObject calibreBookIdentifiers =
+                calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
 
-        if (isLocalBookNewer(book, calibreBook)) {
-            final JSONObject calibreBookIdentifiers =
-                    calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
-
-            final JSONObject changes = bookCoder.encode(library, calibreBookIdentifiers, book);
-            if (doCovers && bookCoder.encodeCovers(context, book, changes)) {
-                results.addCover();
-            }
-            return changes;
+        final JSONObject changes = bookCoder.encode(library, calibreBookIdentifiers, book);
+        if (doCovers && bookCoder.encodeCovers(context, book, changes)) {
+            results.imagesUpdated++;
         }
-        return null;
+        return changes;
     }
 
     /**

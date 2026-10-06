@@ -201,7 +201,7 @@ public final class SyncField
     }
 
     // - uppercase names, as 'List' gets confused with 'java.util.List'
-    // - the lists MUST end with Skip, i.e. same as the first step,
+    // - the action lists MUST end with Skip, i.e. same as the first step,
     //   to ensure a circular movement
     public enum Type
             implements Parcelable {
@@ -220,7 +220,7 @@ public final class SyncField
          * Add the key to {@link SyncReaderProcessor}#processAppend
          * if you use this type!
          */
-        STRING(SyncAction.CopyIfBlank, List.of(
+        APPENDABLE_STRING(SyncAction.CopyIfBlank, List.of(
                 SyncAction.Skip,
                 SyncAction.CopyIfBlank,
                 SyncAction.Append,

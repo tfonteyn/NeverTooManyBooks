@@ -33,6 +33,7 @@ class NeverTooManyBooksPlugin(ContentServerPlugin):
         """
 
         # lazy import to prevent circular initialisation issues.
-        from .routes import library_info, virtual_libraries_for_books
+        from .routes import library_info, virtual_libraries_for_books, prep_for_pushing
 
-        return [library_info, virtual_libraries_for_books]
+        return [library_info, virtual_libraries_for_books,
+                prep_for_pushing]

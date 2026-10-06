@@ -300,6 +300,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *         }
  *     },
  * </pre>
+ *
+ * Note that the 'libray' is not set in the constructor, but must be passed in to encode/decode.
+ * For 'decode' we could do that, but for 'encode' we can't as we always push ALL libraries.
  */
 public final class BookCoder {
 
@@ -358,6 +361,8 @@ public final class BookCoder {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.Dirty);
+
+        // NEWTHINGS: Calibre adding a field, or a custom field
 
         book.putInt(DBKey.CALIBRE.BOOK_ID, calibreBookId);
         book.putString(DBKey.CALIBRE.BOOK_UUID, calibreBook.getString(CalibreBookJsonKey.UUID));
@@ -772,7 +777,7 @@ public final class BookCoder {
     }
 
     private void decodeVirtualLibraries(@NonNull final Context context,
-                                        final CalibreLibrary library,
+                                        @NonNull final CalibreLibrary library,
                                         @NonNull final JSONObject calibreBook,
                                         @NonNull final Book book) {
         // Current list, will be empty for new books

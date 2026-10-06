@@ -41,7 +41,7 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-// NEWTHINGS: adding a Calibre custom field
+// NEWTHINGS: Calibre adding a custom field
 public class CalibreCustomFieldCoder {
 
     private static final String TAG = "CalibreCustomFieldCoder";
@@ -177,7 +177,7 @@ public class CalibreCustomFieldCoder {
             return;
         }
 
-        // NEWTHINGS: adding a Calibre custom field or field type
+        // NEWTHINGS: Calibre adding a custom field or field type
         //  Make sure to keep in sync with decodeCustomFieldByType(... String...).
         switch (cf.getType()) {
             case CalibreCustomField.Type.RATING: {
@@ -248,7 +248,7 @@ public class CalibreCustomFieldCoder {
     private void decodeCustomFieldByType(@NonNull final CalibreCustomField cf,
                                          @NonNull final String value,
                                          @NonNull final Book book) {
-        // NEWTHINGS: adding a Calibre custom field or field type
+        // NEWTHINGS: Calibre adding a custom field or field type
         //  Make sure to keep in sync with decodeCustomFieldByType(... JSONObject...)
         switch (cf.getType()) {
             case CalibreCustomField.Type.RATING: {
@@ -317,9 +317,8 @@ public class CalibreCustomFieldCoder {
                 @NonNull final Book localBook,
                 @NonNull final JSONObject calibreBook) {
         for (final CalibreCustomField cf : library.getCustomFields()) {
-            // NEWTHINGS: adding a Calibre custom field or field type
+            // NEWTHINGS: Calibre adding a custom field or field type
             switch (cf.getType()) {
-
                 case CalibreCustomField.Type.RATING: {
                     // Encoding: we must send an int in the range 0..10
                     final float rating = localBook.getRating(realNumberParser);
