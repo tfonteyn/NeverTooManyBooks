@@ -235,15 +235,15 @@ public class SyncWriterFragment
     private List<String> extractExportedItems(@NonNull final SyncWriterResults result) {
         final List<String> items = new ArrayList<>();
 
-        if (result.getBookCount() > 0) {
+        if (result.getBooksUpdated() > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_books),
-                                String.valueOf(result.getBookCount())));
+                                String.valueOf(result.getBooksUpdated())));
         }
-        if (result.getCoverCount() > 0) {
+        if (result.getImagesUpdated() > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_covers),
-                                String.valueOf(result.getCoverCount())));
+                                String.valueOf(result.getImagesUpdated())));
         }
         return items;
     }

@@ -19,10 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+
+import java.util.StringJoiner;
+
+import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Value class to report back what was written.
@@ -45,8 +50,9 @@ public class SyncWriterResults
         }
     };
 
-    private int bookCount;
-    private int coverCount;
+    public int booksProcessed;
+    public int booksUpdated;
+    public int imagesUpdated;
 
     /**
      * Constructor.
@@ -60,31 +66,60 @@ public class SyncWriterResults
      * @param in Parcel to construct the object from
      */
     private SyncWriterResults(@NonNull final Parcel in) {
-        bookCount = in.readInt();
-        coverCount = in.readInt();
+        booksProcessed = in.readInt();
+        booksUpdated = in.readInt();
+        imagesUpdated = in.readInt();
     }
 
-    public void addBook() {
-        bookCount++;
+    public int getBooksProcessed() {
+        return booksProcessed;
     }
 
-    public int getBookCount() {
-        return bookCount;
+    public int getBooksUpdated() {
+        return booksUpdated;
     }
 
-    public void addCover() {
-        coverCount++;
+    public int getImagesUpdated() {
+        return imagesUpdated;
     }
 
-    public int getCoverCount() {
-        return coverCount;
+    /**
+     * Create a single String line with a report how many books were create/updated/...
+     *
+     * @param context Current context
+     *
+     * @return info or {@code ""} if none found
+     */
+    @NonNull
+    public String createBooksSummaryLine(@NonNull final Context context) {
+        final StringJoiner parts = new StringJoiner(", ");
+        if (booksProcessed > 0) {
+            parts.add(context.getString(R.string.name_colon_value,
+                                        context.getString(R.string.lbl_books),
+                                        String.valueOf(booksProcessed)));
+        }
+        if (booksUpdated > 0) {
+            parts.add(context.getString(R.string.progress_msg_x_updated, booksUpdated));
+        }
+        if (imagesUpdated > 0) {
+            parts.add(context.getString(R.string.name_colon_value,
+                                        context.getString(R.string.lbl_images),
+                                        String.valueOf(imagesUpdated)));
+        }
+
+        if (parts.length() > 0) {
+            return parts.toString();
+        } else {
+            return "";
+        }
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(bookCount);
-        dest.writeInt(coverCount);
+        dest.writeInt(booksProcessed);
+        dest.writeInt(booksUpdated);
+        dest.writeInt(imagesUpdated);
     }
 
     @Override
@@ -96,8 +131,9 @@ public class SyncWriterResults
     @NonNull
     public String toString() {
         return "SyncWriterResults{"
-               + "bookCount=" + bookCount
-               + ", coverCount=" + coverCount
+               + "booksProcessed=" + booksProcessed
+               + ", booksUpdated=" + booksUpdated
+               + ", imagesUpdated=" + imagesUpdated
                + '}';
     }
 }

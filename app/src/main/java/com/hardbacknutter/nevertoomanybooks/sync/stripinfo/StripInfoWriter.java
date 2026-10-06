@@ -140,7 +140,7 @@ public class StripInfoWriter
                 book.setStripInfoCollectionData(collectionData);
 
                 if (pushChanges(book)) {
-                    results.addBook();
+                    results.booksUpdated++;
                 }
 
                 delta++;
