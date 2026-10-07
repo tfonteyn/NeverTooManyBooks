@@ -39,6 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 
+// URGENT: review how we handle CustomFields ...
+//  In Calibre they are library specific, but we use them as a global.
+//  Right now this matters little as we only support a fixed/predefined list of them.
 public class CalibreCustomFieldDaoImpl
         extends BaseDaoImpl
         implements CalibreCustomFieldDao {
