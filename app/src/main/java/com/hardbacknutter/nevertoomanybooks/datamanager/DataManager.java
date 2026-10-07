@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
@@ -340,12 +341,15 @@ public class DataManager
      * Get the data object specified by the passed key.
      * <p>
      * <strong>Supports returning a {@link Money} object</strong>
+     * <p>
+     * <strong>IMPORTANT:</strong> does <strong>NOT</strong> support {@code Parcelable}.
      *
      * @param key    Key of data object
      * @param parser to use for {@link Money} parsing
      *
      * @return Data object, or {@code null} when not present or the value is {@code null}
      */
+    @Discouraged(message = "Avoid using if possible")
     @Nullable
     public Object get(@NonNull final String key,
                       @NonNull final RealNumberParser parser) {
@@ -359,6 +363,7 @@ public class DataManager
             }
             // fall through and return the raw value
         }
+        //noinspection deprecation
         return rawData.get(key);
     }
 
