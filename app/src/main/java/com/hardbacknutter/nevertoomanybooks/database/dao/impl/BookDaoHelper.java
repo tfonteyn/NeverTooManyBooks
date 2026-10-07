@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class BookDaoHelper {
     private final List<String> dateDomainNames;
     @NonNull
     private final List<String> dateTimeDomainNames;
-    private final List<Domain> tableDomains;
+    private final Map<String, Domain> tableDomains;
 
     /**
      * Constructor.
@@ -87,13 +88,16 @@ public class BookDaoHelper {
 
         this.textNormaliser = new TextNormaliser();
 
-        tableDomains = DBDefinitions.TBL_BOOKS.getDomains();
-        dateDomainNames = tableDomains
+        final List<Domain> domains = DBDefinitions.TBL_BOOKS.getDomains();
+        tableDomains = new LinkedHashMap<>(domains.size());
+        domains.forEach(domain -> tableDomains.put(domain.getName(), domain));
+
+        dateDomainNames = domains
                 .stream()
                 .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Date)
                 .map(Domain::getName)
                 .collect(Collectors.toList());
-        dateTimeDomainNames = tableDomains
+        dateTimeDomainNames = domains
                 .stream()
                 .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.DateTime)
                 .map(Domain::getName)
@@ -187,7 +191,7 @@ public class BookDaoHelper {
     void processReadProgress(@NonNull final Book book) {
         final ReadingProgress readingProgress = book.getReadingProgress();
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadingProgress()} !
-        if (!readingProgress.asPercentage() && book.getPages().isEmpty()) {
+        if (!readingProgress.asPercentage() && book.getPages().isBlank()) {
             book.setPages(readingProgress.getTotalPages());
         }
     }
@@ -388,17 +392,17 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processNullsAndBlanks(@NonNull final Book book,
                                       final boolean isNew) {
-        for (final Domain domain : tableDomains) {
+        for (final Domain domain : tableDomains.values()) {
             if (book.contains(domain.getName()) && domain.hasDefault()) {
                 // We don't care about Money here. Value/Currency are treated as Number/String
                 final Object o = book.get(domain.getName());
                 if (
-                    // Fields which are null but not allowed to be null
+                    // Fields which are null but not allowed to be
                         o == null && domain.isNotNull()
                         ||
-                        // Fields which are null/empty (i.e. blank) but not allowed to be blank
-                        (o == null || o.toString().isEmpty()) && domain.isNotBlank()
-                ) {
+                        // Fields which are null/blank but not allowed to be
+                        (o == null || o.toString().isBlank()) && domain.isNotBlank()) {
+
                     if (isNew) {
                         book.remove(domain.getName());
                     } else {
@@ -436,16 +440,33 @@ public class BookDaoHelper {
         for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column
             // not being properly escaped, i.e. the data itself containing a comma.
-            // Not much we can do about that, so skip if encountered.
+            // Not much we can do about that; skip if encountered.
             if (key.isEmpty()) {
                 continue;
             }
 
             final ColumnInfo columnInfo = tableInfo.getColumn(key);
-            // Check if we actually have a matching column, and never update a PK.
+
+            // Check if there is a matching column, and never update a PK.
             if (columnInfo != null && !columnInfo.isPrimaryKey()) {
                 // We don't care about Money here. Value/Currency are treated as Number/String
                 final Object entry = book.get(key);
+
+                // Fields which are equal to their default are skipped
+                final Domain domain = tableDomains.get(key);
+                if (domain != null) {
+                    // FIXME: there may be others we need to add here;
+                    //  Refactor for universal solution, maybe domain.isDefault(entry) ?
+                    //  We may also avoid even checking datetime fields which are current_timestamp
+                    if (entry instanceof Boolean
+                        && ((boolean) entry ? "1" : "0").equals(domain.getDefault())) {
+                        continue;
+                    }
+                    if (entry != null && entry.toString().equals(domain.getDefault())) {
+                        continue;
+                    }
+                }
+
                 if (entry == null) {
                     if (columnInfo.isNullable()) {
                         cv.putNull(key);
