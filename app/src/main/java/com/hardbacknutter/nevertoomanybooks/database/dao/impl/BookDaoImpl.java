@@ -231,12 +231,16 @@ public class BookDaoImpl
         // Reminder: We're updating ONLY the fields present in the ContentValues.
         // Other fields in the database row are not affected.
 
-        // go !
-        // throws SQLException
-        db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
-                  new String[]{String.valueOf(book.getId())});
+        // isEmpty require API-30
+        //noinspection SizeReplaceableByIsEmpty
+        if (cv.size() > 0) {
+            // go !
+            // throws SQLException
+            db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
+                      new String[]{String.valueOf(book.getId())});
+        }
 
-        // always lookup the UUID
+        // always lookup and restore the UUID
         final String uuid = getBookUuid(book.getId());
         SanityCheck.requireValue(uuid, ERROR_UUID);
         book.setUuid(uuid);
