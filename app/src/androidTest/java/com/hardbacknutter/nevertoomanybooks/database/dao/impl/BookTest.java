@@ -252,6 +252,8 @@ class BookTest
         assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_START.getDefault(), INVALID_DEFAULT);
         assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_END.getDefault(), INVALID_DEFAULT);
 
+        assertEquals("0", DBDefinitions.DOM_BOOK_READ.getDefault(), INVALID_DEFAULT);
+
         assertEquals("0.0",
                      DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
     }
