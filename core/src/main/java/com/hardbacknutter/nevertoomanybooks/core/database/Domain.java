@@ -203,6 +203,8 @@ public class Domain {
 
     /**
      * Get the default value for this domain.
+     * Note this is the stringified and potentially sqlite normalised version!
+     * For example, the default for a boolean is "0".
      *
      * @return default
      */
