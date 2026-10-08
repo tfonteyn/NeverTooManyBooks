@@ -153,6 +153,8 @@ public class CalibreSyncServer
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.FORMAT));
         map.put(context.getString(R.string.lbl_language),
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.LANGUAGE));
+        map.put(context.getString(R.string.lbl_pages),
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.PAGES));
         map.put(context.getString(R.string.lbl_date_published),
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.PUBLICATION_DATE));
         map.put(context.getString(R.string.lbl_title),
@@ -174,14 +176,9 @@ public class CalibreSyncServer
                 new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TAG_LIST,
                                  DBKey.FK_TAG));
 
-
-        map.put(context.getString(R.string.lbl_pages),
-                new SyncFieldDef(SyncField.Type.OTHER, DBKey.PAGES));
-        // URGENT: verify how "rating" versus "#rating" works
-        map.put(context.getString(R.string.lbl_rating),
-                new SyncFieldDef(SyncField.Type.OTHER, DBKey.RATING));
-
         // The site specific fields
+
+        // FIXME: this should really be "Calibre book id"
         map.put(context.getString(R.string.site_calibre),
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_ID));
         map.put(context.getString(R.string.lbl_ebook_file_type),
