@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
@@ -476,7 +477,19 @@ public class CalibreContentServerReader
                             @NonNull final Book book)
             throws IOException, StorageException {
 
+        // updates are limiting the actual fields we get
         final Map<String, SyncField> fieldsWanted = syncProcessor.filter(book);
+
+        // If we're forcing the server to overwrite the local data,
+        // we MUST add and force the last-modification field,
+        // to have it used during updating the database (BookDao.ImportFlag.UseUpdateDateIfPresent)
+        if (updateOption == Updates.Overwrite) {
+            fieldsWanted.put(DBKey.DATE_LAST_UPDATED__UTC,
+                             new SyncField(DBKey.DATE_LAST_UPDATED__UTC,
+                                           context.getString(R.string.lbl_date_last_updated),
+                                           SyncField.Type.OTHER,
+                                           SyncAction.Overwrite));
+        }
 
         // Extract the delta from the calibreBook collection
         final Book delta = syncProcessor.process(context, book.getId(), book, calibreBook,
