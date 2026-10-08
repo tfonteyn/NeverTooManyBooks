@@ -123,8 +123,7 @@ public enum SyncServer
             return reader;
         }
 
-        @Override
-        public String getSyncPreferencePrefix() {
+        private String getSyncPreferencePrefix() {
             return CalibreContentServer.PREFERENCE_KEY + FIELDS_UPDATE;
         }
 
@@ -252,8 +251,7 @@ public enum SyncServer
             return reader;
         }
 
-        @Override
-        public String getSyncPreferencePrefix() {
+        private String getSyncPreferencePrefix() {
             return EngineId.StripInfoBe.getPreferenceKey() + FIELDS_UPDATE;
         }
 
@@ -443,13 +441,6 @@ public enum SyncServer
                    CertificateException,
                    CredentialsException,
                    IOException;
-
-    /**
-     * Get the preference key prefix for all sync keys for this SyncServer.
-     *
-     * @return pref prefix
-     */
-    public abstract String getSyncPreferencePrefix();
 
     /**
      * Create the default {@link SyncReaderProcessor.Builder}.
