@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -115,7 +114,7 @@ public class SyncReaderProcessor {
      *
      * @param localBook to filter
      *
-     * @return the filtered SyncField unmodifiableMap
+     * @return the filtered SyncField's as a map
      */
     @NonNull
     public final Map<String, SyncField> filter(@NonNull final Book localBook) {
@@ -134,7 +133,7 @@ public class SyncReaderProcessor {
             }
         }
 
-        return Collections.unmodifiableMap(filteredMap);
+        return filteredMap;
     }
 
     /**
