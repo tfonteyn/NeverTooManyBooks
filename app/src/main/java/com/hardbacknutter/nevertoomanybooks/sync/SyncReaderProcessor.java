@@ -30,7 +30,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -226,33 +225,22 @@ public class SyncReaderProcessor {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
-        remoteBook.keySet().forEach(key -> {
+        for (final String key : remoteBook.keySet()) {
             final SyncField field = fieldsWanted.get(key);
             if (field == null || field.getAction() == SyncAction.Skip) {
                 toRemove.add(key);
             }
-        });
+        }
 
         toRemove.forEach(remoteBook::remove);
 
-        try {
-            // For each field, process it according the SyncAction set.
-            fieldsWanted
-                    .values()
-                    .stream()
-                    .filter(field -> remoteBook.contains(field.getKey()))
-                    .forEach(field -> {
-                        try {
-                            if (!process(context, localBook, remoteBook, field)) {
-                                doDefaultProcessing(context, localBook, remoteBook, field);
-                            }
-                        } catch (@NonNull final IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    });
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection DataFlowIssue
-            throw e.getCause();
+        // For each field, process it according the SyncAction set.
+        for (final SyncField field : fieldsWanted.values()) {
+            if (remoteBook.contains(field.getKey())) {
+                if (!process(context, localBook, remoteBook, field)) {
+                    doDefaultProcessing(context, localBook, remoteBook, field);
+                }
+            }
         }
 
         // run the mappers
