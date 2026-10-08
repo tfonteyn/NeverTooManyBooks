@@ -145,7 +145,6 @@ public class StripInfoReader
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,
                    CredentialsException,
-                   StorageException,
                    IOException {
 
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {

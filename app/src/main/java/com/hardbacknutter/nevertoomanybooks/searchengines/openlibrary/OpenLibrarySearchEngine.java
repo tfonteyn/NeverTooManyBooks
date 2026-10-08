@@ -296,7 +296,7 @@ public class OpenLibrarySearchEngine
             siteAuthModule = new OpenLibraryAuth(httpFutureFactory);
             try {
                 siteAuthModule.login(context);
-            } catch (@NonNull final IOException | StorageException e) {
+            } catch (@NonNull final IOException e) {
                 siteAuthModule = null;
                 throw new SearchException(getEngineId(), e);
             }

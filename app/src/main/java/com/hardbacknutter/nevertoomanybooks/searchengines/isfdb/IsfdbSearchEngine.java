@@ -413,7 +413,7 @@ public class IsfdbSearchEngine
             siteAuthModule = new IsfdbAuth(httpFutureFactory);
             try {
                 siteAuthModule.login(context);
-            } catch (@NonNull final IOException | StorageException e) {
+            } catch (@NonNull final IOException e) {
                 siteAuthModule = null;
                 throw new SearchException(getEngineId(), e);
             }

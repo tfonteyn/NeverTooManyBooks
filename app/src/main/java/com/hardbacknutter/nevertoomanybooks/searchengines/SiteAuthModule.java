@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public interface SiteAuthModule {
 
@@ -64,12 +63,11 @@ public interface SiteAuthModule {
      *
      * @throws CredentialsException on authentication/login failures
      * @throws IOException          on generic/other IO failures
-     * @throws StorageException     on image storage failures
      */
     @WorkerThread
     @NonNull
     String login(@NonNull Context context)
-            throws IOException, CredentialsException, StorageException;
+            throws IOException, CredentialsException;
 
     /**
      * Get the user id for the <strong>current</strong> session.
