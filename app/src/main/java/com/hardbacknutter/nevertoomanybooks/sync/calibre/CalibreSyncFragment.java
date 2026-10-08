@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServerId;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -113,7 +113,7 @@ public class CalibreSyncFragment
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                onClick(() -> replaceFragment(SyncReaderFragment.create(SyncServer.CalibreCS),
+                onClick(() -> replaceFragment(SyncReaderFragment.create(SyncServerId.Calibre),
                                               SyncReaderFragment.TAG));
             }
         });
@@ -121,7 +121,7 @@ public class CalibreSyncFragment
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                onClick(() -> replaceFragment(SyncWriterFragment.create(SyncServer.CalibreCS),
+                onClick(() -> replaceFragment(SyncWriterFragment.create(SyncServerId.Calibre),
                                               SyncWriterFragment.TAG));
             }
         });

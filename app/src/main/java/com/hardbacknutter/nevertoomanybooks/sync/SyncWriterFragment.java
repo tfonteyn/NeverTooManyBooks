@@ -66,14 +66,14 @@ public class SyncWriterFragment
     /**
      * Constructor.
      *
-     * @param syncServer to use
+     * @param syncServerId to use
      *
      * @return instance
      */
     @NonNull
-    public static Fragment create(@NonNull final SyncServer syncServer) {
+    public static Fragment create(@NonNull final SyncServerId syncServerId) {
         final Fragment fragment = new SyncWriterFragment();
-        final SyncServerInput args = new SyncServerInput(syncServer);
+        final SyncServerInput args = new SyncServerInput(syncServerId);
         fragment.setArguments(args.toBundle());
         return fragment;
     }

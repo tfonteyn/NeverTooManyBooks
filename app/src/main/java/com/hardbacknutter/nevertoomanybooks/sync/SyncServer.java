@@ -17,344 +17,41 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.LocaleList;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncReaderProcessor;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Note: {@link #hasLastUpdateDateField} / {@link #syncDateIsUserEditable}:
+ * Note: {@link #hasLastUpdateDateField} / {@link #isSyncDateUserEditable}:
  * It's debatable that we could just use {@link #hasLastUpdateDateField} for both meanings.
  */
-public enum SyncServer
-        implements Parcelable {
-
-    /** A Calibre Content Server. */
-    CalibreCS(R.string.lbl_calibre_content_server, true, true) {
-        public boolean isEnabled() {
-            return CalibreHandler.isSyncEnabled();
-        }
-
-        @Override
-        @WorkerThread
-        @NonNull
-        DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
-                                                   @NonNull final Set<RecordType> recordTypes,
-                                                   final boolean incremental,
-                                                   final boolean deleteLocalBook)
-                throws CertificateException {
-            return new CalibreContentServerWriter(context, recordTypes,
-                                                  incremental,
-                                                  deleteLocalBook);
-        }
-
-        @Override
-        @WorkerThread
-        @NonNull
-        DataReader<SyncReaderMetaData, ReaderResults> createReader(
-                @NonNull final Context context,
-                @NonNull final Set<RecordType> recordTypes,
-                @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder,
-                @Nullable final LocalDateTime syncDate,
-                @NonNull final DataReader.Updates updateOption,
-                @NonNull final Bundle extraArgs)
-                throws DataReaderException,
-                       CertificateException,
-                       CredentialsException,
-                       IOException {
-
-            // Use either the custom passed-in, or the built-in default.
-            final SyncReaderProcessor syncProcessor =
-                    Objects.requireNonNullElseGet(
-                                   syncProcessorBuilder,
-                                   () -> createSyncProcessorBuilder(context))
-                           .build(context);
-
-            final DataReader<SyncReaderMetaData, ReaderResults> reader =
-                    new CalibreContentServerReader(context, recordTypes,
-                                                   syncProcessor, syncDate,
-                                                   updateOption,
-                                                   extraArgs);
-            reader.validate(context);
-            return reader;
-        }
-
-        private String getSyncPreferencePrefix() {
-            return CalibreContentServer.PREFERENCE_KEY + FIELDS_UPDATE;
-        }
-
-        @Override
-        @NonNull
-        public SyncReaderProcessor.Builder createSyncProcessorBuilder(
-                @NonNull final Context context) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-            final SyncReaderProcessor.Builder builder =
-                    new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
-
-            // NEWTHINGS: Calibre adding a field, or a custom field
-
-            // Cover fields will be at the top of the list.
-            // There is only 1 image supported by Calibre
-            builder.add(context.getString(R.string.lbl_cover_front),
-                        SyncField.Type.OTHER, DBKey.COVER[0]);
-
-            // These fields will be locally sorted and come next on the list
-            final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
-
-            map.put(context.getString(R.string.lbl_description),
-                    new SyncFieldDef(SyncField.Type.APPENDABLE_STRING, DBKey.DESCRIPTION));
-            map.put(context.getString(R.string.lbl_format),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.FORMAT));
-            map.put(context.getString(R.string.lbl_language),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.LANGUAGE));
-            map.put(context.getString(R.string.lbl_date_published),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.PUBLICATION_DATE));
-            map.put(context.getString(R.string.lbl_title),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.TITLE));
-
-            map.put(context.getString(R.string.lbl_authors),
-                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
-                                     DBKey.FK_AUTHOR));
-            map.put(context.getString(R.string.lbl_identifiers),
-                    new SyncFieldDef(SyncField.Type.LIST, Identifier.Value.BKEY_LIST,
-                                     DBKey.FK_IDENTIFIER));
-            map.put(context.getString(R.string.lbl_publishers),
-                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,
-                                     DBKey.FK_PUBLISHER));
-            map.put(context.getString(R.string.lbl_series_multiple),
-                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_SERIES_LIST,
-                                     DBKey.FK_SERIES));
-            map.put(context.getString(R.string.lbl_tags),
-                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TAG_LIST,
-                                     DBKey.FK_TAG));
-
-
-            // The site specific fields
-            map.put(context.getString(R.string.site_calibre),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_ID));
-            map.put(context.getString(R.string.lbl_ebook_file_type),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_MAIN_FORMAT));
-
-            // The site specific CustomFields
-            ServiceLocator.getInstance()
-                          .getCalibreCustomFieldDao()
-                          .getCustomFields()
-                          .stream()
-                          .map(CalibreCustomField::getDbKey)
-                          .forEach(dbKey -> {
-                              try {
-                                  map.put(MapDBKey.getLabel(context, dbKey),
-                                          new SyncFieldDef(SyncField.Type.OTHER, dbKey));
-                              } catch (@NonNull final IllegalArgumentException ignore) {
-                                  // will currently never fail, as all custom fields are hardcoded.
-                                  LoggerFactory.getLogger().w(
-                                          TAG, "No MapDBKey for: " + dbKey);
-                              }
-                          });
-
-
-            map.forEach((label, def) -> builder.add(
-                    label, def.type, def.fieldKey, def.enabledKey));
-
-            builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-                   .addRelatedField(DBKey.CALIBRE.BOOK_ID, DBKey.CALIBRE.BOOK_UUID);
-
-            return builder;
-        }
-    },
-
-    /** StripInfo website. */
-    StripInfo(R.string.site_stripinfo_be, false, false) {
-        public boolean isEnabled() {
-            return StripInfoHandler.isSyncEnabled();
-        }
-
-        @Override
-        @WorkerThread
-        @NonNull
-        DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
-                                                   @NonNull final Set<RecordType> recordTypes,
-                                                   final boolean incremental,
-                                                   final boolean deleteLocalBook) {
-            return new StripInfoWriter(context, incremental, deleteLocalBook);
-        }
-
-        @Override
-        @NonNull
-        @WorkerThread
-        DataReader<SyncReaderMetaData, ReaderResults> createReader(
-                @NonNull final Context context,
-                @NonNull final Set<RecordType> recordTypes,
-                @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder,
-                @Nullable final LocalDateTime syncDate,
-                @NonNull final DataReader.Updates updateOption,
-                @NonNull final Bundle extraArgs)
-                throws DataReaderException,
-                       CredentialsException,
-                       IOException {
-
-            // Use either the custom passed-in, or the built-in default.
-            final SyncReaderProcessor syncProcessor =
-                    Objects.requireNonNullElseGet(
-                                   syncProcessorBuilder,
-                                   () -> createSyncProcessorBuilder(context))
-                           .build(builder -> new StripInfoSyncReaderProcessor(context, builder));
-
-            final DataReader<SyncReaderMetaData, ReaderResults> reader =
-                    new StripInfoReader(context, recordTypes, syncProcessor, updateOption);
-            reader.validate(context);
-            return reader;
-        }
-
-        private String getSyncPreferencePrefix() {
-            return EngineId.StripInfoBe.getPreferenceKey() + FIELDS_UPDATE;
-        }
-
-        @Override
-        @NonNull
-        public SyncReaderProcessor.Builder createSyncProcessorBuilder(
-                @NonNull final Context context) {
-            final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-            final SyncReaderProcessor.Builder builder =
-                    new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
-
-            // Cover fields will be at the top of the list.
-            // There are only 2 images supported by this site.
-            builder.add(context.getString(R.string.lbl_cover_front),
-                        SyncField.Type.OTHER, DBKey.COVER[0]);
-            builder.add(context.getString(R.string.lbl_cover_back),
-                        SyncField.Type.OTHER, DBKey.COVER[1]);
-
-            // These fields will be locally sorted and come next on the list
-            final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
-
-            // the wishlist
-            map.put(context.getString(R.string.lbl_bookshelves),
-                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_BOOKSHELF_LIST,
-                                     DBKey.FK_BOOKSHELF));
-            map.put(context.getString(R.string.lbl_date_acquired),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.DATE_ACQUIRED));
-            map.put(context.getString(R.string.lbl_location),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.LOCATION));
-            map.put(context.getString(R.string.lbl_personal_notes),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.PERSONAL_NOTES));
-            map.put(context.getString(R.string.lbl_read),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.READ__BOOL));
-            map.put(context.getString(R.string.lbl_price_paid),
-                    new SyncFieldDef(SyncField.Type.OTHER, DBKey.PRICE_PAID));
-
-            // The collection-data: see StripInfoSyncReaderProcessor
-            map.put(context.getString(R.string.site_stripinfo_be),
-                    new SyncFieldDef(SyncField.Type.OTHER, StripInfoCollectionData.BKEY));
-
-            // add the sorted fields
-            map.forEach((label, def) -> builder.add(
-                    label, def.type, def.fieldKey, def.enabledKey));
-
-            builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-                   .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
-                   .addRelatedField(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
-
-            // The single external-id field is added at the end of the list.
-            map.put(context.getString(R.string.lbl_identifiers),
-                    new SyncFieldDef(SyncField.Type.OTHER, Identifier.SID_STRIP_INFO));
-
-            return builder;
-
-        }
-    };
-
-    /** {@link Parcelable}. */
-    public static final Creator<SyncServer> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public SyncServer createFromParcel(@NonNull final Parcel in) {
-            return values()[in.readInt()];
-        }
-
-        @Override
-        @NonNull
-        public SyncServer[] newArray(final int size) {
-            return new SyncServer[size];
-        }
-    };
-
-    /* Log tag. */
-    private static final String TAG = "SyncServer";
-
-    /** See {@link #getSyncPreferencePrefix()}. */
-    private static final String FIELDS_UPDATE = ".fields.update.";
-
-    @StringRes
-    private final int labelResId;
-
-
-    private final boolean hasLastUpdateDateField;
-    private final boolean syncDateIsUserEditable;
-
+public interface SyncServer {
 
     /**
-     * Constructor.
+     * Get the {@link SyncServerId} for this instance.
      *
-     * @param labelResId             will be displayed to the user
-     * @param hasLastUpdateDateField whether the server provides a 'last update' field we can use
-     * @param syncDateUserEditable   whether the user can manually influence the sync date
+     * @return id
      */
-    SyncServer(@StringRes final int labelResId,
-               final boolean hasLastUpdateDateField,
-               final boolean syncDateUserEditable) {
-        this.labelResId = labelResId;
-        this.hasLastUpdateDateField = hasLastUpdateDateField;
-        syncDateIsUserEditable = syncDateUserEditable;
-    }
-
+    @NonNull
+    SyncServerId getId();
 
     /**
      * A short label. Used in drop down menus and similar.
@@ -364,20 +61,7 @@ public enum SyncServer
      * @return label
      */
     @NonNull
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(labelResId);
-    }
-
-    /**
-     * Check if this server is globally enabled.
-     *
-     * @return flag
-     */
-    public abstract boolean isEnabled();
-
-    boolean isSyncDateUserEditable() {
-        return syncDateIsUserEditable;
-    }
+    String getLabel(@NonNull Context context);
 
     /**
      * Check whether each book has a specific last-update date to
@@ -385,9 +69,14 @@ public enum SyncServer
      *
      * @return {@code true} if a last-update date is available
      */
-    boolean hasLastUpdateDateField() {
-        return hasLastUpdateDateField;
-    }
+    boolean hasLastUpdateDateField();
+
+    /**
+     * Can we query the server using the last-sync-date.
+     *
+     * @return flag
+     */
+    boolean isSyncDateUserEditable();
 
     /**
      * Create an {@link DataWriter}.
@@ -404,10 +93,10 @@ public enum SyncServer
      */
     @WorkerThread
     @NonNull
-    abstract DataWriter<SyncWriterResults> createWriter(@NonNull Context context,
-                                                        @NonNull Set<RecordType> recordTypes,
-                                                        boolean incremental,
-                                                        boolean deleteLocalBook)
+    DataWriter<SyncWriterResults> createWriter(@NonNull Context context,
+                                               @NonNull Set<RecordType> recordTypes,
+                                               boolean incremental,
+                                               boolean deleteLocalBook)
             throws CertificateException;
 
     /**
@@ -430,7 +119,7 @@ public enum SyncServer
      */
     @NonNull
     @WorkerThread
-    abstract DataReader<SyncReaderMetaData, ReaderResults> createReader(
+    DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull Context context,
             @NonNull Set<RecordType> recordTypes,
             @Nullable SyncReaderProcessor.Builder syncProcessorBuilder,
@@ -453,28 +142,5 @@ public enum SyncServer
      * @return a {@link SyncReaderProcessor.Builder}
      */
     @NonNull
-    public abstract SyncReaderProcessor.Builder createSyncProcessorBuilder(
-            @NonNull Context context);
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(ordinal());
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "SyncServer{"
-               + "label=" + ServiceLocator.getInstance().getAppContext().getString(labelResId)
-               + ", hasLastUpdateDateField=" + hasLastUpdateDateField
-               + ", syncDateIsUserEditable=" + syncDateIsUserEditable
-               + '}';
-    }
-
+    SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull Context context);
 }

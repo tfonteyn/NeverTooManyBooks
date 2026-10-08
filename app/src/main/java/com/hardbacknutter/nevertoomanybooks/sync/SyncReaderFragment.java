@@ -101,14 +101,14 @@ public class SyncReaderFragment
     /**
      * Constructor.
      *
-     * @param syncServer to use
+     * @param syncServerId to use
      *
      * @return instance
      */
     @NonNull
-    public static Fragment create(@NonNull final SyncServer syncServer) {
+    public static Fragment create(@NonNull final SyncServerId syncServerId) {
         final Fragment fragment = new SyncReaderFragment();
-        final SyncServerInput args = new SyncServerInput(syncServer);
+        final SyncServerInput args = new SyncServerInput(syncServerId);
         fragment.setArguments(args.toBundle());
         return fragment;
     }
@@ -290,8 +290,8 @@ public class SyncReaderFragment
             vb.archiveContent.setVisibility(View.INVISIBLE);
             vb.lblCalibreLibrary.setVisibility(View.GONE);
         } else {
-            switch (vm.getSyncServer()) {
-                case CalibreCS: {
+            switch (vm.getSyncServer().getId()) {
+                case Calibre: {
                     vb.archiveContent.setVisibility(View.VISIBLE);
                     vb.lblCalibreLibrary.setVisibility(View.VISIBLE);
                     showCalibreMetaData(metaData.getData());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,10 +54,10 @@ public class SyncWriterHelper
     /**
      * Constructor.
      *
-     * @param syncServer to write to
+     * @param syncServerId to write to
      */
-    SyncWriterHelper(@NonNull final SyncServer syncServer) {
-        this.syncServer = syncServer;
+    SyncWriterHelper(@NonNull final SyncServerId syncServerId) {
+        this.syncServer = syncServerId.create();
 
         // set the default
         getRecordTypes().addAll(EnumSet.of(RecordType.Books,

@@ -67,27 +67,17 @@ import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.fastscroller.OnFastScrollStateChangeListener;
-import com.hardbacknutter.nevertoomanybooks.search.AddBookBySearchContract;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesListContract;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
-import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncContract;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookContract;
-import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerContract;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncContract;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncContractOutput;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportContract;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
@@ -127,22 +117,32 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsInput;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.search.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookInput;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesListContract;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleInput;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncContractOutput;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServerId;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncContract;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
@@ -627,7 +627,7 @@ public class BooksOnBookshelf
      */
     private void createSyncDelegates() {
 
-        if (SyncServer.CalibreCS.isEnabled()) {
+        if (SyncServerId.Calibre.isEnabled()) {
             if (calibreSyncLauncher == null) {
                 calibreSyncLauncher = registerForActivityResult(
                         new CalibreSyncContract(), result -> {
@@ -639,7 +639,7 @@ public class BooksOnBookshelf
             }
         }
 
-        if (SyncServer.StripInfo.isEnabled()) {
+        if (SyncServerId.StripInfo.isEnabled()) {
             if (stripInfoSyncLauncher == null) {
                 stripInfoSyncLauncher = registerForActivityResult(
                         new StripInfoSyncContract(), result -> {
@@ -657,7 +657,7 @@ public class BooksOnBookshelf
      * i.e. books which exist in the optional Calibre Content Server.
      */
     private void createCalibreServerHandler() {
-        if (SyncServer.CalibreCS.isEnabled()) {
+        if (SyncServerId.Calibre.isEnabled()) {
             try {
                 calibreHandler = new CalibreHandler(vb.getRoot(), this)
                         .setProgressFrame(findViewById(R.id.progress_frame))
@@ -993,9 +993,9 @@ public class BooksOnBookshelf
         // The launchers MUST have been created at Activity startup,
         // due to how "registerForActivityResult" works.
         final boolean enable =
-                SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
+                SyncServerId.Calibre.isEnabled() && calibreSyncLauncher != null
                 ||
-                SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
+                SyncServerId.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
         //noinspection DataFlowIssue
         navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
         navDrawer.open();
@@ -1469,10 +1469,10 @@ public class BooksOnBookshelf
 
         if (menuItemId == R.id.SUBMENU_SYNC) {
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
+                .setVisible(SyncServerId.Calibre.isEnabled() && calibreSyncLauncher != null);
 
             menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
+                .setVisible(SyncServerId.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
         }
 
         menuLauncher.launch(anchor, getString(subMenuTitleId), null, 0, menu);

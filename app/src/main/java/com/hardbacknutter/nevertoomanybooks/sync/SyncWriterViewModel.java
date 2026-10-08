@@ -39,7 +39,7 @@ public class SyncWriterViewModel
      */
     public void init(@NonNull final SyncServerInput args) {
         if (syncWriterHelper == null) {
-            syncWriterHelper = new SyncWriterHelper(args.getSyncServer());
+            syncWriterHelper = new SyncWriterHelper(args.getSyncServerId());
         }
     }
 

@@ -29,20 +29,20 @@ import java.util.Objects;
 public class SyncServerInput {
 
     private static final String TAG = "SyncServerInput";
-    private static final String BKEY_SERVER = TAG + ":server";
+    private static final String BKEY_SERVER_ID = TAG + ":id";
 
     @NonNull
-    private final SyncServer syncServer;
+    private final SyncServerId syncServerId;
 
-    public SyncServerInput(@NonNull final SyncServer syncServer) {
-        this.syncServer = syncServer;
+    public SyncServerInput(@NonNull final SyncServerId syncServerId) {
+        this.syncServerId = syncServerId;
     }
 
     @NonNull
     public static SyncServerInput fromBundle(@NonNull final Bundle args) {
         @SuppressWarnings("deprecation")
-        final SyncServer syncServer = Objects.requireNonNull(
-                args.getParcelable(BKEY_SERVER), BKEY_SERVER);
+        final SyncServerId syncServer = Objects.requireNonNull(
+                args.getParcelable(BKEY_SERVER_ID), BKEY_SERVER_ID);
 
         return new SyncServerInput(syncServer);
     }
@@ -50,21 +50,21 @@ public class SyncServerInput {
     @NonNull
     public Bundle toBundle() {
         final Bundle args = new Bundle(1);
-        args.putParcelable(BKEY_SERVER, syncServer);
+        args.putParcelable(BKEY_SERVER_ID, syncServerId);
 
         return args;
     }
 
     @NonNull
-    SyncServer getSyncServer() {
-        return syncServer;
+    SyncServerId getSyncServerId() {
+        return syncServerId;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "SyncServerInput{"
-               + "syncServer=" + syncServer
+               + "syncServerId=" + syncServerId
                + '}';
     }
 }

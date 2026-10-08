@@ -65,15 +65,12 @@ import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.citations.CitationFactory;
-import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFactory;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
@@ -86,8 +83,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServerId;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -326,7 +326,7 @@ public class ShowBookDetailsFragment
      * Create the optional sync delegates.
      */
     private void createSyncDelegates() {
-        if (SyncServer.CalibreCS.isEnabled()) {
+        if (SyncServerId.Calibre.isEnabled()) {
             try {
                 //noinspection DataFlowIssue
                 calibreHandler = new CalibreHandler(getView(), this)
@@ -337,7 +337,7 @@ public class ShowBookDetailsFragment
             }
         }
 
-        //  if (SyncServer.StripInfo.isEnabled()) {
+        //  if (SyncServerId.StripInfo.isEnabled()) {
         //
         //  }
     }

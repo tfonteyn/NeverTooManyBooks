@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,12 +56,12 @@ public final class SyncReaderHelper
     /**
      * Constructor.
      *
-     * @param context    Current Context
-     * @param syncServer to use
+     * @param context      Current Context
+     * @param syncServerId to use
      */
     SyncReaderHelper(@NonNull final Context context,
-                     @NonNull final SyncServer syncServer) {
-        this.syncServer = syncServer;
+                     @NonNull final SyncServerId syncServerId) {
+        this.syncServer = syncServerId.create();
         this.syncProcessorBuilder = syncServer.createSyncProcessorBuilder(context);
 
         // set the defaults
@@ -131,8 +131,9 @@ public final class SyncReaderHelper
     }
 
     boolean isReadyToGo() {
-        switch (syncServer) {
-            case CalibreCS: {
+        switch (syncServer.getId()) {
+            case Calibre: {
+                @SuppressWarnings("deprecation")
                 @Nullable
                 final CalibreLibrary selected = extraArgs
                         .getParcelable(CalibreContentServer.BKEY_LIBRARY);

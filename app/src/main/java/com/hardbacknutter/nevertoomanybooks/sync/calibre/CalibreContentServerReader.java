@@ -149,12 +149,12 @@ public class CalibreContentServerReader
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
-    public CalibreContentServerReader(@NonNull final Context context,
-                                      @NonNull final Set<RecordType> recordTypes,
-                                      @NonNull final SyncReaderProcessor syncProcessor,
-                                      @Nullable final LocalDateTime syncDate,
-                                      @NonNull final Updates updateOption,
-                                      @NonNull final Bundle extraArgs)
+    CalibreContentServerReader(@NonNull final Context context,
+                               @NonNull final Set<RecordType> recordTypes,
+                               @NonNull final SyncReaderProcessor syncProcessor,
+                               @Nullable final LocalDateTime syncDate,
+                               @NonNull final Updates updateOption,
+                               @NonNull final Bundle extraArgs)
             throws CertificateException {
 
         this.updateOption = updateOption;

@@ -117,10 +117,10 @@ public class StripInfoReader
      * @param syncProcessor synchronization configuration
      * @param updateOption  options
      */
-    public StripInfoReader(@NonNull final Context context,
-                           @NonNull final Set<RecordType> recordTypes,
-                           @NonNull final SyncReaderProcessor syncProcessor,
-                           @NonNull final Updates updateOption) {
+    StripInfoReader(@NonNull final Context context,
+                    @NonNull final Set<RecordType> recordTypes,
+                    @NonNull final SyncReaderProcessor syncProcessor,
+                    @NonNull final Updates updateOption) {
 
         this.updateOption = updateOption;
         this.syncProcessor = syncProcessor;
@@ -236,15 +236,13 @@ public class StripInfoReader
      *
      * @throws SearchException          on generic exceptions (wrapped) during search
      * @throws CredentialsException     on authentication/login failures
-     * @throws StorageException         on image storage failures
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
      */
     @WorkerThread
     private void importBook(@NonNull final Context context,
                             @NonNull final Book siBook)
-            throws StorageException,
-                   SearchException,
+            throws SearchException,
                    CredentialsException,
                    IOException {
 

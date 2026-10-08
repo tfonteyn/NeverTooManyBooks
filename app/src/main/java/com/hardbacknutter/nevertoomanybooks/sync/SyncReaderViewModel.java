@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public class SyncReaderViewModel
     public void init(@NonNull final Context context,
                      @NonNull final SyncServerInput args) {
         if (syncReaderHelper == null) {
-            syncReaderHelper = new SyncReaderHelper(context, args.getSyncServer());
+            syncReaderHelper = new SyncReaderHelper(context, args.getSyncServerId());
         }
     }
 

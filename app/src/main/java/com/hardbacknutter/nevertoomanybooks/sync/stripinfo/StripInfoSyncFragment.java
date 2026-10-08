@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncStripinfoBin
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoBePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServerId;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -87,7 +87,7 @@ public class StripInfoSyncFragment
         });
         vb.btnImport.setOnClickListener(v -> {
             if (StripInfoAuth.getUsername().isPresent()) {
-                replaceFragment(SyncReaderFragment.create(SyncServer.StripInfo),
+                replaceFragment(SyncReaderFragment.create(SyncServerId.StripInfo),
                                 SyncReaderFragment.TAG);
             } else {
                 openSettings();
@@ -95,7 +95,7 @@ public class StripInfoSyncFragment
         });
         vb.btnExport.setOnClickListener(v -> {
             if (StripInfoAuth.getUsername().isPresent()) {
-                replaceFragment(SyncWriterFragment.create(SyncServer.StripInfo),
+                replaceFragment(SyncWriterFragment.create(SyncServerId.StripInfo),
                                 SyncWriterFragment.TAG);
             } else {
                 openSettings();
