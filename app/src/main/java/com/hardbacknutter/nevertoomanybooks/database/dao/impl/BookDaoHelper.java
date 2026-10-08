@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -122,9 +123,19 @@ public class BookDaoHelper {
         final Locale userLocale = userLocales.get(0);
 
         // Handle Language field FIRST, we need it for _OB fields.
-        // If the book has no valid language set, we use the user-locale.
-        final Locale bookLocale = book.getLocaleAndUpdateLanguage(userLocale, true)
-                                      .orElse(userLocale);
+        // If the book has no valid language set, check for the special field
+        // as potentially set by a SyncReaderProcessor.
+        // Fallback to the user-locale if there is none at all.
+        final Locale bookLocale = book
+                .getLocaleAndUpdateLanguage(userLocale, true)
+                .orElseGet(() -> {
+                    final String syncLang = book.getString(SyncReaderProcessor.LANGUAGE, null);
+                    if (syncLang != null) {
+                        return Locale.forLanguageTag(syncLang);
+                    }
+                    return userLocale;
+                });
+
 
         // NEW copy, with the book-locale as the first
         final List<Locale> locales = new ArrayList<>(userLocales);

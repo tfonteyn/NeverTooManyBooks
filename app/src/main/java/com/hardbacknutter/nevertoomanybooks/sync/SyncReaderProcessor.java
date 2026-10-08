@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -65,6 +66,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SyncReaderProcessor {
 
     private static final String TAG = "SyncProcessor";
+    /** See {@link #ensureLanguage(Book, Book)} and {@link BookDaoHelper}#process. */
+    public static final String LANGUAGE = TAG + ":language";
 
     @NonNull
     private final Map<String, SyncField> fields;
@@ -257,19 +260,7 @@ public class SyncReaderProcessor {
 
         // Commit the new data
         if (!remoteBook.isEmpty()) {
-            // Get the language, if there was one requested for updating.
-            String bookLang = remoteBook.getLanguage();
-            if (bookLang.isEmpty()) {
-                // Otherwise add the original one.
-                // We do this because the BookDaoHelper#process needs it to
-                // resort the OB's.
-                // FIXME: re-adding the language does mean that the book will ALWAYS
-                //  contain (at least) one field and will be written to the database
-                bookLang = localBook.getLanguage();
-                if (!bookLang.isEmpty()) {
-                    remoteBook.setLanguage(bookLang);
-                }
-            }
+            ensureLanguage(localBook, remoteBook);
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
@@ -279,6 +270,20 @@ public class SyncReaderProcessor {
         }
 
         return null;
+    }
+
+    private void ensureLanguage(@NonNull final Book localBook,
+                                @NonNull final Book remoteBook) {
+        // Get the language, if there was one requested for updating.
+        String bookLang = remoteBook.getLanguage();
+        if (bookLang.isEmpty()) {
+            // Otherwise add the original one but use a special key.
+            // We do this because the BookDaoHelper#process needs it to handle the OB's.
+            bookLang = localBook.getLanguage();
+            if (!bookLang.isEmpty()) {
+                remoteBook.putString(LANGUAGE, bookLang);
+            }
+        }
     }
 
     /**
