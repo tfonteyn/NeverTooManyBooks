@@ -68,10 +68,10 @@ public final class SyncField
      * @param type       of field
      * @param syncAction initial action
      */
-    SyncField(@NonNull final String key,
-              @NonNull final String label,
-              @NonNull final Type type,
-              @NonNull final SyncAction syncAction) {
+    public SyncField(@NonNull final String key,
+                     @NonNull final String label,
+                     @NonNull final Type type,
+                     @NonNull final SyncAction syncAction) {
         this.key = key;
         this.label = label;
         this.type = type;
@@ -83,7 +83,7 @@ public final class SyncField
      *
      * @param in Parcel to construct the object from
      */
-    @SuppressWarnings("DataFlowIssue")
+    @SuppressWarnings({"DataFlowIssue", "deprecation"})
     private SyncField(@NonNull final Parcel in) {
         key = in.readString();
         label = in.readString();

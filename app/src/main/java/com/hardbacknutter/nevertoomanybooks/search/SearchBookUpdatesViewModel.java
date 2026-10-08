@@ -210,7 +210,7 @@ public class SearchBookUpdatesViewModel
             builder.add(coverDesc[cIdx], SyncField.Type.OTHER, DBKey.COVER[cIdx]);
         }
 
-        // These fields will be locally sorted and come next on the list
+        // These fields will be Locale-aware sorted and come next on the list
         final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
 
         // Note how we do NOT add DBKey.RATING

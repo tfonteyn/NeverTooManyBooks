@@ -627,7 +627,7 @@ public class SyncReaderProcessor {
         }
 
         /**
-         * Add a {@link SyncField}.
+         * Add a {@link SyncField} using the default {@link SyncAction} for the type.
          *
          * @param label    Field label
          * @param type     of field
@@ -641,7 +641,7 @@ public class SyncReaderProcessor {
         }
 
         /**
-         * Add a {@link SyncField}.
+         * Add a {@link SyncField} using the default {@link SyncAction} for the type.
          *
          * @param label      Field label
          * @param type       of field
@@ -652,13 +652,24 @@ public class SyncReaderProcessor {
                         @NonNull final SyncField.Type type,
                         @NonNull final String fieldKey,
                         @NonNull final String enabledKey) {
-            if (!ServiceLocator.getInstance().isFieldEnabled(enabledKey)) {
-                return;
-            }
             final SyncAction action = SyncAction.byId(
                     prefs.getInt(preferencePrefix + fieldKey,
                                  type.getDefaultAction().getId()));
-            fields.put(fieldKey, new SyncField(fieldKey, label, type, action));
+            final SyncField syncField = new SyncField(fieldKey, label, type, action);
+            add(syncField, enabledKey);
+        }
+
+        /**
+         * Add a {@link SyncField}.
+         *
+         * @param syncField  to add
+         * @param enabledKey preference key to check user-enabled state
+         */
+        public void add(@NonNull final SyncField syncField,
+                        @NonNull final String enabledKey) {
+            if (ServiceLocator.getInstance().isFieldEnabled(enabledKey)) {
+                fields.put(syncField.getKey(), syncField);
+            }
         }
 
         /**
