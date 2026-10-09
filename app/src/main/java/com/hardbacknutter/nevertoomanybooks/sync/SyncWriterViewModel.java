@@ -60,9 +60,7 @@ public class SyncWriterViewModel
 
     @Override
     public boolean isReadyToGo() {
-        // slightly bogus test... right now Prefs/Styles are always included,
-        // but we're keeping all variations of DataReader/DataWriter classes the same
-        return syncWriterHelper.getRecordTypes().size() > 1;
+        return !syncWriterHelper.getRecordTypes().isEmpty();
     }
 
     void startExport() {

@@ -111,9 +111,11 @@ public class SyncWriterFragment
         vm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         vm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
+        // This is for visualising only, books are always sync'd... there would be no point
         vb.cbxBooks.setChecked(true);
-        vb.cbxBooks.setEnabled(true);
+        vb.cbxBooks.setEnabled(false);
 
+        // Covers are optional.
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .setRecordType(isChecked, RecordType.Cover));
 
@@ -129,11 +131,7 @@ public class SyncWriterFragment
         fab.setImageResource(R.drawable.upload_24px);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
-        fab.setOnClickListener(v -> {
-            // prevent impatient users too start us twice
-            getFab().setEnabled(false);
-            startExport();
-        });
+        fab.setOnClickListener(v -> startExport());
 
         // If the user rotated the screen while the task was already started,
         // we won't show the options... this simplifies things a little.
@@ -162,11 +160,14 @@ public class SyncWriterFragment
 
     private void startExport() {
         if (vm.isReadyToGo()) {
+            // prevent impatient users too start us twice
+            getFab().setEnabled(false);
             vm.startExport();
         } else {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
+            getFab().setEnabled(true);
         }
     }
 
