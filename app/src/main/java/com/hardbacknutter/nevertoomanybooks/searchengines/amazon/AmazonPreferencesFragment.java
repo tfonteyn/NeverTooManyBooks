@@ -84,7 +84,7 @@ public class AmazonPreferencesFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        hostUrlValidator = new HostUrlValidator();
+        hostUrlValidator = HostUrlValidator.https();
     }
 
     @SuppressWarnings("CodeBlock2Expr")

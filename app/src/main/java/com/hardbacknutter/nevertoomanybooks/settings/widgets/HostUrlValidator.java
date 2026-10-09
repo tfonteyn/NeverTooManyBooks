@@ -34,15 +34,32 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 
-public class HostUrlValidator {
+public final class HostUrlValidator {
 
-    private static final Pattern SIMPLE_URL_PATTERN = Pattern.compile("(http|https)://.+");
+
+    private static final Pattern HTTPS = Pattern.compile("(https)://.+");
+    @NonNull
+    private final Pattern pattern;
+
+    private HostUrlValidator(@NonNull final Pattern pattern) {
+        this.pattern = pattern;
+    }
+
+    /**
+     * Create a validator which only accepts {@code https} urls.
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static HostUrlValidator https() {
+        return new HostUrlValidator(HTTPS);
+    }
 
     public boolean isValidUrl(@Nullable final CharSequence text) {
         if (text == null || text.length() == 0) {
             return false;
         }
-        return SIMPLE_URL_PATTERN.matcher(text).matches();
+        return pattern.matcher(text).matches();
     }
 
     @NonNull
