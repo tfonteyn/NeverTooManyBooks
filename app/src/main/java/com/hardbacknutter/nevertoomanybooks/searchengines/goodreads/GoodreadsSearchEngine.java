@@ -79,9 +79,9 @@ import org.jsoup.nodes.Element;
  * Goodreads is owned by Amazon and has shut their API down.
  * <p>
  * But in 2022 the HTML pages started to contain a JSON blob making them easy to parse.
- *
+ * <p>
  * And in August 2026... it's closed/dead/finished...
- *
+ * <p>
  * https://www.mobileread.com/forums/showpost.php?p=4591998&postcount=821
  */
 public class GoodreadsSearchEngine
