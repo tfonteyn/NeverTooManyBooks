@@ -83,6 +83,8 @@ class V8 {
      * Perform all updates.
      * <p>
      * v8.0.0: 52
+     * v8.0.1: 53
+     * v8.1.0: 54
      */
     void update() {
         if (oldVersion < 52) {
@@ -91,6 +93,9 @@ class V8 {
         if (oldVersion < 53) {
             // Added original-title to the FTS columns
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+        }
+        if (oldVersion < 54) {
+            // nothing here, but triggers needed to be updated
         }
     }
 

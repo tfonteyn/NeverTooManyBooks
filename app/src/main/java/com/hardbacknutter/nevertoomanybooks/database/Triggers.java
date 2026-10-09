@@ -20,9 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
@@ -38,6 +42,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
@@ -48,220 +53,78 @@ final class Triggers {
     private static final String AFTER_DELETE_ON_ = "AFTER DELETE ON ";
     private static final String AFTER_UPDATE_ON_ = "AFTER UPDATE ON ";
     private static final String AFTER_INSERT_ON_ = "AFTER INSERT ON ";
+
     private static final String AFTER_UPDATE_OF_ = "AFTER UPDATE OF ";
 
-    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS";
+    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
     private static final String CREATE_TRIGGER_ = "CREATE TRIGGER ";
 
     private static final String _FOR_EACH_ROW = " FOR EACH ROW";
     private static final String _BEGIN_ = " BEGIN ";
     private static final String _END = " END";
-    private static final String _WHERE_ = " WHERE ";
+    private static final String DELETE_FROM_ = "DELETE FROM ";
+
+    private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
     private static final String _IN_ = " IN ";
 
     private static final String UPDATE_BOOKS_SET =
             "UPDATE " + TBL_BOOKS.getName()
             + " SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
-    private static final String SELECT_ = "SELECT ";
 
     private Triggers() {
     }
 
     /**
      * Create all database triggers.
-     *
      * <p>
      * Set Book dirty when:
-     * - Author: delete, update.
-     * - Series: delete, update.
-     * - Bookshelf: delete.
-     * - Loan: delete, update, insert.
-     *
-     * <p>
-     * Update FTS when:
-     * - Book: delete (update,insert is too complicated to use a trigger)
-     *
-     * <p>
-     * Others:
-     * - When a books ISBN is updated, reset external data.
-     *
-     * <p>
-     * not needed + why not:
-     * - insert a new Series,Author,TocEntry is only done when a Book is inserted/updated.
-     * - insert a new Bookshelf has no effect until a Book is added to the shelf (update bookshelf)
-     * <p>
-     * - insert/delete/update TocEntry is only done when a book is inserted/updated.
-     * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
-     * this will need to be added.
+     * <ul>
+     *     <li>Bookshelf: delete (backups use the bookshelf id on books, hence,
+     *                    updated bookshelf names are not an issue)</li>
+     *     <li>Author: update (linked authors cannot be deleted).</li>
+     *     <li>Series: delete, update.</li>
+     *     <li>Publisher: delete, update.</li>
+     *     <li>Tag: delete, update.</li>
+     *     <li>TocEntry: delete, update.</li>
+     *     <li>Loan: delete, update, insert.</li>
+     * </ul>
      *
      * @param db Underlying database
      */
     static void create(@NonNull final SQLiteDatabase db) {
 
-        String name;
+        books(db);
+        bookshelf(db);
+        authors(db);
+        series(db);
+        publisher(db);
+        tocEntry(db);
+        tags(db);
+        identifiers(db);
+        loanee(db);
+    }
+
+    private static void books(@NonNull final SQLiteDatabase db) {
         String body;
+        String name;
 
         /*
-         * When an entry in a book-x link table is deleted.
-         *
-         * Update the books last-update-date.
-         */
-        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_BOOKSHELF);
-        // It's currently not possible to delete an Author directly.
-        //  createTriggerAfterDeleteOn(db, TBL_BOOK_AUTHOR);
-        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_SERIES);
-        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_PUBLISHER);
-        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_IDENTIFIER);
-        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_LOANEE);
-
-        /*
-         * Updating an {@link Author}.
-         *
-         * This is for both actual Books, and for any TocEntry's they have done in anthologies.
-         * The latter because a Book might not have the full list of Authors set.
-         * (i.e. each toc has the right author, but the book says "many authors")
-         *
-         * Update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        name = "after_update_on" + TBL_AUTHORS.getName();
-        body = AFTER_UPDATE_ON_ + TBL_AUTHORS.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + _IN_
-               // actual books by this Author
-               + '(' + SELECT_ + DBKey.FK_BOOK
-               + _FROM_ + TBL_BOOK_AUTHOR.getName()
-               + _WHERE_ + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
-
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + _IN_
-               // books with entries in anthologies by this Author
-               + '(' + SELECT_ + DBKey.FK_BOOK
-               + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
-               + _WHERE_ + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
-
-               + _END;
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
-
-
-        /*
-         * Update a {@link Series}
-         *
-         * Update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        name = "after_update_on" + TBL_SERIES.getName();
-        body = AFTER_UPDATE_ON_ + TBL_SERIES.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + _IN_
-               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_SERIES.getName()
-               + _WHERE_ + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");"
-               + _END;
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
-
-
-        /*
-         * Update a {@link Publisher}
-         *
-         * Update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        name = "after_update_on" + TBL_PUBLISHERS.getName();
-        body = AFTER_UPDATE_ON_ + TBL_PUBLISHERS.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + _IN_
-               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_PUBLISHER.getName()
-               + _WHERE_ + DBKey.FK_PUBLISHER + "=OLD." + DBKey.PK_ID + ");"
-               + _END;
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
-
-
-        /*
-         * Update a {@link Tag}
-         *
-         * Update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        name = "after_update_on" + TBL_TAGS.getName();
-        body = AFTER_UPDATE_ON_ + TBL_TAGS.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + _IN_
-               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_TAG.getName()
-               + _WHERE_ + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
-               + _END;
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
-
-
-        /*
-         * After a Book is lend-out.
-         *
-         * Update the books last-update-date.
-         */
-        name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
-        body = AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
-               + _END;
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
-
-        /*
-         * After a lend-out Book is returned.
-         *
-         * Update the books last-update-date.
-         *
-         * dev note: "after_update_on" HAS a "_" at the end!
-         */
-        name = "after_update_on_" + TBL_BOOK_LOANEE.getName();
-        body = AFTER_UPDATE_ON_ + TBL_BOOK_LOANEE.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET
-               + _WHERE_ + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
-               + _END;
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
-
-
-        /*
-         * Deleting a {@link Book}.
-         *
+         * When a Book is deleted.
          * <ul>
-         * <li>Delete the book from FTS.</li>
-         * <li>Add the uuid to {@link DBDefinitions#TBL_DELETED_BOOKS} unless already present.</li>
+         *     <li>FTS: delete (update,insert is too complicated to use a trigger)</li>
+         *     <li>Add the uuid to {@link DBDefinitions#TBL_DELETED_BOOKS}
+         *         unless already present.</li>
          * </ul>
          */
         name = "after_delete_on_" + TBL_BOOKS.getName();
         body = AFTER_DELETE_ON_ + TBL_BOOKS.getName()
                + _FOR_EACH_ROW
                + _BEGIN_
-               + " DELETE FROM " + TBL_FTS_BOOKS.getName()
+               + DELETE_FROM_ + TBL_FTS_BOOKS.getName()
                + _WHERE_ + DBKey.FTS.PK_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
+
                // we must use IGNORE for when we do a sync. i.e.
                // the TBL_DELETED_BOOKS contains a UUID which we imported from another device,
                // and we're syncing the delete operation on the local device.
@@ -269,30 +132,221 @@ final class Triggers {
                + " (" + DBKey.BOOK_UUID + ") VALUES(OLD." + DBKey.BOOK_UUID + ");"
                + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
         /*
-         * If the ISBN of a {@link Book} is changed, reset external ID's.
+         * When the ISBN of a {@link Book} is changed, remove all other Identifiers for that book.
          */
         name = "after_update_of_" + DBKey.ISBN + "_on_" + TBL_BOOKS.getName();
         body = AFTER_UPDATE_OF_ + DBKey.ISBN + " ON " + TBL_BOOKS.getName()
                + _FOR_EACH_ROW
-               + " WHEN NEW." + DBKey.ISBN + " <> OLD." + DBKey.ISBN
+               // only if the field itself was changed
+               + " WHEN OLD." + DBKey.ISBN + " IS NOT NEW." + DBKey.ISBN
+
                + _BEGIN_
-               + "  DELETE FROM " + TBL_BOOK_IDENTIFIER.getName()
+               + DELETE_FROM_ + TBL_BOOK_IDENTIFIER.getName()
                + _WHERE_ + DBKey.FK_BOOK + "=NEW." + DBKey.PK_ID + ";"
                + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
     }
 
+    private static void bookshelf(@NonNull final SQLiteDatabase db) {
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_BOOKSHELF);
+    }
+
+    private static void authors(@NonNull final SQLiteDatabase db) {
+
+        // linked authors cannot be deleted
+
+        /*
+         * After updating an {@link Author},
+         * update the books last-update-date.
+         *
+         * This is for both actual Books, and for any TocEntry's they have done in anthologies.
+         * The latter because a Book might not have the full list of Authors set.
+         * (i.e. each toc has the right author, but the book itself says "many authors".
+         *
+         * dev note: the name "after_update_on" is missing a "_" at the end!
+         */
+        final String name = "after_update_on" + TBL_AUTHORS.getName();
+        final String body =
+                AFTER_UPDATE_ON_ + TBL_AUTHORS.getName()
+                + _FOR_EACH_ROW
+                + _BEGIN_
+
+                + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
+                // actual books by this Author
+                + '(' + SELECT_ + DBKey.FK_BOOK
+                + _FROM_ + TBL_BOOK_AUTHOR.getName()
+                + _WHERE_ + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
+
+                + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
+                // other books (anthologies) with TocEntries by this Author
+                + '(' + SELECT_ + DBKey.FK_BOOK
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
+                + _WHERE_ + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
+
+                + _END;
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    private static void series(@NonNull final SQLiteDatabase db) {
+
+        /* After deleting a {@link Series}. */
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_SERIES);
+
+        /*
+         * After updating a {@link Series},
+         * update the books last-update-date.
+         *
+         * dev note: the name "after_update_on" is missing a "_" at the end!
+         */
+        final String name = "after_update_on" + TBL_SERIES.getName();
+        final String body = bodyAfterUpdateOn(TBL_SERIES, TBL_BOOK_SERIES, DBKey.FK_SERIES);
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    private static void publisher(@NonNull final SQLiteDatabase db) {
+
+        /* After deleting a {@link Publisher}. */
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_PUBLISHER);
+
+        /*
+         * After updating a {@link Publisher},
+         * update the books last-update-date.
+         *
+         * dev note: the name "after_update_on" is missing a "_" at the end!
+         */
+        final String name = "after_update_on" + TBL_PUBLISHERS.getName();
+        final String body = bodyAfterUpdateOn(TBL_PUBLISHERS, TBL_BOOK_PUBLISHER,
+                                              DBKey.FK_PUBLISHER);
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    private static void tags(@NonNull final SQLiteDatabase db) {
+
+        /* After deleting a {@link Tag}. */
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_TAG);
+
+        /*
+         * After updating a {@link Tag},
+         * update the books last-update-date.
+         *
+         * dev note: the name "after_update_on" is missing a "_" at the end!
+         */
+        final String name = "after_update_on" + TBL_TAGS.getName();
+        final String body = bodyAfterUpdateOn(TBL_TAGS, TBL_BOOK_TAG, DBKey.FK_TAG);
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    private static void tocEntry(@NonNull final SQLiteDatabase db) {
+
+        /* After deleting a {@link TocEntry}. */
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_TOC_ENTRIES);
+
+        /*
+         * After updating a {@link TocEntry},
+         * update the books last-update-date.
+         */
+        final String name = "after_update_on_" + TBL_TOC_ENTRIES.getName();
+        final String body = bodyAfterUpdateOn(TBL_TOC_ENTRIES, TBL_BOOK_TOC_ENTRIES,
+                                              DBKey.FK_TOC_ENTRY);
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    private static void identifiers(@NonNull final SQLiteDatabase db) {
+
+        /* After deleting an {@link Identifier}. */
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_IDENTIFIER);
+
+        /*
+         * After updating the name of an {@link Identifier},
+         * update the books last-update-date.
+         */
+        final String name = "after_update_of_" + TBL_IDENTIFIERS.getName() + "_name";
+        final String body =
+                AFTER_UPDATE_OF_ + DBKey.IDENTIFIERS.NAME + " ON " + TBL_IDENTIFIERS.getName()
+                + _FOR_EACH_ROW
+                // only if the field itself was changed
+                + " WHEN " + "OLD." + DBKey.IDENTIFIERS.NAME
+                + " IS NOT NEW." + DBKey.IDENTIFIERS.NAME
+
+                + _BEGIN_
+                + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
+                + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_IDENTIFIER.getName()
+                + _WHERE_ + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
+                + _END;
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    @NonNull
+    private static String bodyAfterUpdateOn(@NonNull final TableDefinition table,
+                                            @NonNull final TableDefinition linkTable,
+                                            @NonNull final String linkColumn) {
+        return AFTER_UPDATE_ON_ + table.getName()
+               + _FOR_EACH_ROW
+               + _BEGIN_
+               + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
+               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + linkTable.getName()
+               + _WHERE_ + linkColumn + "=OLD." + DBKey.PK_ID + ");"
+               + _END;
+    }
+
+    private static void loanee(@NonNull final SQLiteDatabase db) {
+
+        /* After a lend-out Book is returned. */
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_LOANEE);
+
+        String name;
+        String body;
+
+        /*
+         * After a Book is lend-out,
+         * update the books last-update-date.
+         */
+        name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
+        body = AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
+               + _FOR_EACH_ROW
+               + _BEGIN_
+               + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
+               + _END;
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+
+        /*
+         * After a lend-out Book is returned and lent out to a new person in the same 'go',
+         * update the books last-update-date.
+         */
+        name = "after_update_on_" + TBL_BOOK_LOANEE.getName();
+        body = AFTER_UPDATE_ON_ + TBL_BOOK_LOANEE.getName()
+               + _FOR_EACH_ROW
+               + _BEGIN_
+               + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
+               + _END;
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
 
     /**
-     * Create an "AFTER DELETE ON" on a TBL_BOOK_* table.
-     * <p>
-     * Update the books last-update-date.
+     * Create an "AFTER DELETE ON" on a {@code TBL_BOOK_*} table
+     * to Update the books last-update-date.
      *
      * @param db        Underlying database
      * @param linkTable the TBL_BOOK_* link table on which to set the trigger
@@ -302,14 +356,38 @@ final class Triggers {
             @NonNull final TableDefinition linkTable) {
 
         final String name = "after_delete_on_" + linkTable.getName();
-        final String body = AFTER_DELETE_ON_ + linkTable.getName()
-                            + _FOR_EACH_ROW
-                            + _BEGIN_
-                            + UPDATE_BOOKS_SET
-                            + _WHERE_ + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
-                            + _END;
+        final String body =
+                AFTER_DELETE_ON_ + linkTable.getName()
+                + _FOR_EACH_ROW
+                + _BEGIN_
+                + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
+                + _END;
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    public static void dropAllTriggers(@NonNull final SQLiteDatabase db) {
+        db.beginTransaction();
+        try {
+            final List<String> triggerNames = new ArrayList<>();
+
+            // User-defined triggers
+            try (Cursor cursor = db.rawQuery(
+                    "SELECT name FROM sqlite_master WHERE type='trigger'"
+                    + " AND name NOT LIKE 'sqlite_%'", null)) {
+                while (cursor.moveToNext()) {
+                    triggerNames.add(cursor.getString(0));
+                }
+            }
+
+            for (final String triggerName : triggerNames) {
+                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerName);
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 }
