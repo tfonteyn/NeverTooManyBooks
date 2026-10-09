@@ -136,15 +136,15 @@ public class CalibrePreferencesFragment
                     p.setSummaryProvider(this::getCaSummary);
                 });
 
+        final String pk = CalibreContentServer.PREFERENCE_KEY;
+        CommonSettingsFactory.credentials(factory, pk);
+        CommonSettingsFactory.timeouts(factory, pk);
+
         factory.bool(CalibreNetworkConfig.PK_USE_THROTTLER,
                      R.string.lbl_limit_request_speed,
                      null, p -> {
                     p.setSummary(R.string.lbl_limit_request_speed_info);
                 });
-
-        final String pk = CalibreContentServer.PREFERENCE_KEY;
-        CommonSettingsFactory.credentials(factory, pk);
-        CommonSettingsFactory.timeouts(factory, pk);
 
         return factory;
     }
