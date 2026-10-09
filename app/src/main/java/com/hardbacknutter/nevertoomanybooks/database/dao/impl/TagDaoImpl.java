@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -216,9 +217,9 @@ public class TagDaoImpl
 
     @Override
     public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               @NonNull final Collection<Tag> list,
-                               @NonNull final Function<Tag, Locale> localeSupplier)
+                                @IntRange(from = 1) final long bookId,
+                                @NonNull final Collection<Tag> list,
+                                @NonNull final Function<Tag, Locale> localeSupplier)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -229,45 +230,79 @@ public class TagDaoImpl
 
         pruneList(context, list, localeSupplier);
 
-        // Just delete all current links
-        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete(null);
+        // Ensure all Tags exist in DB so they all have a valid ID
+        for (final Tag tag : list) {
+            fixId(tag);
+
+            // Create if needed
+            if (tag.getId() == 0) {
+                insert(tag);
+            } else {
+                // ONLY update if there are actual changes.
+                // Otherwise, the trigger "after_update_on" would update
+                // DATE_LAST_UPDATED__UTC for all related books.
+                final Optional<Tag> oFound = findById(tag.getId());
+                if (oFound.isPresent()) {
+                    final Tag found = oFound.get();
+                    if (!found.getName().equals(tag.getName())) {
+                        update(tag);
+                    }
+                }
+            }
         }
 
-        // is there anything to insert ?
+        // Fetch current link states (Tag ID)
+        final Set<Long> currentLinkStates = new HashSet<>();
+        try (Cursor cursor = db.rawQuery(SELECT_ + DBKey.FK_TAG
+                                         + _FROM_ + TBL_BOOK_TAG.getName()
+                                         + _WHERE_ + DBKey.FK_BOOK + "=?",
+                                         new String[]{String.valueOf(bookId)})) {
+            while (cursor.moveToNext()) {
+                currentLinkStates.add(cursor.getLong(0));
+            }
+        }
+
+        // Check if any links have changed
+        boolean needsResync = currentLinkStates.size() != list.size();
+        if (!needsResync) {
+            for (final Tag tag : list) {
+                if (!currentLinkStates.contains(tag.getId())) {
+                    needsResync = true;
+                    break;
+                }
+            }
+        }
+
+        // If no links or positions changed, we're done
+        if (!needsResync) {
+            return;
+        }
+
+        // Wipe old links ONLY if previous links actually existed
+        if (!currentLinkStates.isEmpty()) {
+            deleteAllLinks(bookId);
+        }
+
+        // If there is nothing to insert, we're done
         if (list.isEmpty()) {
             return;
         }
 
+        // Insert the new ones.
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Tag tag : list) {
-                fixId(tag);
-
-                // create if needed
-                if (tag.getId() == 0) {
-                    insert(tag);
-                } else {
-                    // https://stackoverflow.com/questions/6677517/update-if-different-changed
-                    // ONLY update if there are actual changes.
-                    // Otherwise, the trigger "after_update_on" + TBL_TAG
-                    // would set DATE_LAST_UPDATED__UTC for ALL books with that tag
-                    // while not needed.
-                    final Optional<Tag> oFound = findById(tag.getId());
-                    if (oFound.isPresent()) {
-                        final Tag found = oFound.get();
-                        // there is nothing to merge, a tag is just a name
-                        // Check for the name being different.
-                        if (!found.getName().equals(tag.getName())) {
-                            update(tag);
-                        }
-                    }
-                }
-
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, tag.getId());
+
                 stmt.executeInsert(() -> "insert Book-Tag");
             }
+        }
+    }
+
+    private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete(null);
         }
     }
 

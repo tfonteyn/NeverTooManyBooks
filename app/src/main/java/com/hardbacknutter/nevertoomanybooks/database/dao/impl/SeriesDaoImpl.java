@@ -30,8 +30,11 @@ import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -281,45 +284,77 @@ public class SeriesDaoImpl
 
         pruneList(context, list, localeSupplier);
 
-        // Just delete all current links; we'll re-insert them for easier positioning
-        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete(null);
+        // Ensure all Series exist in DB so they all have a valid ID
+        for (final Series series : list) {
+            final Locale locale = localeSupplier.apply(series);
+            fixId(context, series, locale);
+
+            // Create if needed - do NOT do updates unless explicitly allowed
+            if (series.getId() == 0) {
+                insert(context, series, locale);
+            } else if (doUpdates) {
+                // ONLY update if there are actual changes.
+                // Otherwise, the trigger "after_update_on" would update
+                // DATE_LAST_UPDATED__UTC for all related books.
+                final Optional<Series> oFound = findById(series.getId());
+                if (oFound.isPresent()) {
+                    final Series found = oFound.get();
+                    // Always merge, but no need to check if modified or not
+                    series.merge(found, true);
+                    // Check for the name AND user fields being equal.
+                    if (!found.isIdentical(series)) {
+                        update(context, series, locale);
+                    }
+                }
+            }
         }
 
-        // is there anything to insert ?
+        // Fetch current link states (Series ID -> position, number)
+        final Map<Long, LinkState> currentLinkStates = new HashMap<>();
+        try (Cursor cursor = db.rawQuery(Sql.FETCH_CURRENT_BOOK_LINKS,
+                                         new String[]{String.valueOf(bookId)})) {
+            while (cursor.moveToNext()) {
+                currentLinkStates.put(
+                        cursor.getLong(0),
+                        new LinkState(cursor.getInt(1), cursor.getString(2)));
+            }
+        }
+
+        // Check if any links, positions, or volume numbers have changed
+        boolean needsResync = currentLinkStates.size() != list.size();
+        if (!needsResync) {
+            int idx = 1;
+            for (final Series series : list) {
+                final LinkState existingState = currentLinkStates.get(series.getId());
+                if (existingState == null
+                    || existingState.position != idx
+                    || !Objects.equals(existingState.number, series.getNumber())) {
+                    needsResync = true;
+                    break;
+                }
+                idx++;
+            }
+        }
+
+        // If no links or positions changed, we're done
+        if (!needsResync) {
+            return;
+        }
+
+        // Wipe old links ONLY if previous links actually existed
+        if (!currentLinkStates.isEmpty()) {
+            deleteAllLinks(bookId);
+        }
+
+        // If there is nothing to insert, we're done
         if (list.isEmpty()) {
             return;
         }
 
+        // Insert the new ones.
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Series series : list) {
-                final Locale locale = localeSupplier.apply(series);
-                fixId(context, series, locale);
-
-                // create if needed - do NOT do updates unless explicitly allowed
-                if (series.getId() == 0) {
-                    insert(context, series, locale);
-                } else if (doUpdates) {
-                    // https://stackoverflow.com/questions/6677517/update-if-different-changed
-                    // ONLY update if there are actual changes.
-                    // Otherwise, the trigger "after_update_on" + TBL_SERIES
-                    // would set DATE_LAST_UPDATED__UTC for ALL books by that series
-                    // while not needed.
-                    final Optional<Series> oFound = findById(series.getId());
-
-                    if (oFound.isPresent()) {
-                        final Series found = oFound.get();
-                        // always merge, but no need to check if modified or not
-                        series.merge(found, true);
-                        // Check for the name AND user/book fields being equals.
-                        if (!found.isIdentical(series)) {
-                            update(context, series, locale);
-                        }
-                    }
-                }
-
                 position++;
 
                 stmt.bindLong(1, bookId);
@@ -329,6 +364,13 @@ public class SeriesDaoImpl
 
                 stmt.executeInsert(() -> "insert Book-Series");
             }
+        }
+    }
+
+    private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete(null);
         }
     }
 
@@ -427,7 +469,7 @@ public class SeriesDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Series series)
-        throws SQLException {
+            throws SQLException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -591,6 +633,22 @@ public class SeriesDaoImpl
         return bookIds.size();
     }
 
+    /**
+     * Simple record/value class used by
+     * {@link #insertOrUpdate(Context, long, boolean, Collection, Function)}.
+     */
+    private static final class LinkState {
+        final int position;
+        @NonNull
+        final String number;
+
+        LinkState(final int position,
+                  @NonNull final String number) {
+            this.position = position;
+            this.number = number;
+        }
+    }
+
     private static final class Sql {
 
         /** Insert a {@link Series}. */
@@ -625,6 +683,13 @@ public class SeriesDaoImpl
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_SERIES
                 + _FROM_ + TBL_BOOK_SERIES.getName() + ')';
+
+        private static final String FETCH_CURRENT_BOOK_LINKS =
+                SELECT_ + DBKey.FK_SERIES
+                + ',' + DBKey.SERIES.BOOK_SERIES_POSITION
+                + ',' + DBKey.SERIES.BOOK_SERIES_NUMBER
+                + _FROM_ + TBL_BOOK_SERIES.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         /** Insert the link between a {@link Book} and a {@link Series}. */
         static final String INSERT_BOOK_LINK =
@@ -742,5 +807,6 @@ public class SeriesDaoImpl
         private static final String OB_REBUILD =
                 UPDATE_ + TBL_SERIES.getName() + _SET_ + DBKey.SERIES.TITLE_OB + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
+
     }
 }

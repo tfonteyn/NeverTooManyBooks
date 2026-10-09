@@ -32,8 +32,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -446,7 +448,7 @@ public class AuthorDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Author> list,
                                @NonNull final Function<Author, Locale> localeSupplier)
-            throws StorageException, ImageIOException, SQLException {
+            throws StorageException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -456,44 +458,78 @@ public class AuthorDaoImpl
 
         pruneList(context, list, localeSupplier);
 
-        // Just delete all current links; we'll re-insert them for easier positioning
-        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete(null);
+        // Ensure all Authors exist in DB so they all have a valid ID
+        for (final Author author : list) {
+            final Locale locale = localeSupplier.apply(author);
+            fixId(context, author, locale);
+
+            // Create if needed - do NOT do updates unless explicitly allowed
+            if (author.getId() == 0) {
+                insert(context, author, locale);
+            } else if (doUpdates) {
+                // ONLY update if there are actual changes.
+                // Otherwise, the trigger "after_update_on" would update
+                // DATE_LAST_UPDATED__UTC for all related books.
+                final Optional<Author> oFound = findById(author.getId());
+                if (oFound.isPresent()) {
+                    final Author found = oFound.get();
+                    // Always merge, but no need to check if modified or not
+                    author.merge(found, true);
+                    // Check for the name AND user fields being different.
+                    if (!found.isIdentical(author)) {
+                        update(context, author, locale);
+                    }
+                }
+            }
         }
 
-        // is there anything to insert ?
+        // Fetch current link states (Author ID -> position, role)
+        final Map<Long, LinkState> currentLinkStates = new HashMap<>();
+        try (Cursor cursor = db.rawQuery(Sql.FETCH_CURRENT_BOOK_LINKS,
+                                         new String[]{String.valueOf(bookId)})) {
+            while (cursor.moveToNext()) {
+                currentLinkStates.put(
+                        cursor.getLong(0),
+                        new LinkState(cursor.getInt(1), cursor.getInt(2))
+                );
+            }
+        }
+
+        // Check if any links, positions, or roles have changed
+        boolean needsResync = currentLinkStates.size() != list.size();
+        if (!needsResync) {
+            int idx = 1;
+            for (final Author author : list) {
+                final LinkState existingState = currentLinkStates.get(author.getId());
+                if (existingState == null
+                    || existingState.position != idx
+                    || existingState.role != author.getRole()) {
+                    needsResync = true;
+                    break;
+                }
+                idx++;
+            }
+        }
+
+        // If no links, positions, or roles changed, we're done
+        if (!needsResync) {
+            return;
+        }
+
+        // Wipe old links ONLY if previous links actually existed
+        if (!currentLinkStates.isEmpty()) {
+            deleteAllLinks(bookId);
+        }
+
+        // If there is nothing to insert, we're done
         if (list.isEmpty()) {
             return;
         }
 
+        // Insert the new ones.
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Author author : list) {
-                final Locale locale = localeSupplier.apply(author);
-                fixId(context, author, locale);
-
-                // create if needed - do NOT do updates unless explicitly allowed
-                if (author.getId() == 0) {
-                    insert(context, author, locale);
-                } else if (doUpdates) {
-                    // https://stackoverflow.com/questions/6677517/update-if-different-changed
-                    // ONLY update if there are actual changes.
-                    // Otherwise, the trigger "after_update_on" + TBL_AUTHORS
-                    // would set DATE_LAST_UPDATED__UTC for ALL books by that author
-                    // while not needed.
-                    final Optional<Author> oFound = findById(author.getId());
-                    if (oFound.isPresent()) {
-                        final Author found = oFound.get();
-                        // always merge, but no need to check if modified or not
-                        author.merge(found, true);
-                        // Check for the name AND user fields being different.
-                        if (!found.isIdentical(author)) {
-                            update(context, author, locale);
-                        }
-                    }
-                }
-
                 position++;
 
                 stmt.bindLong(1, bookId);
@@ -503,6 +539,13 @@ public class AuthorDaoImpl
 
                 stmt.executeInsert(() -> "insert Book-Author");
             }
+        }
+    }
+
+    private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete(null);
         }
     }
 
@@ -936,6 +979,21 @@ public class AuthorDaoImpl
         return bookIds.size();
     }
 
+    /**
+     * Simple record/value class used by
+     * {@link #insertOrUpdate(Context, long, boolean, Collection, Function)}.
+     */
+    private static final class LinkState {
+        final int position;
+        final int role;
+
+        LinkState(final int position,
+                  final int role) {
+            this.position = position;
+            this.role = role;
+        }
+    }
+
     private static final class Sql {
 
         /** Insert an {@link Author}. */
@@ -994,6 +1052,13 @@ public class AuthorDaoImpl
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR_REAL_AUTHOR
                 + _FROM_ + TBL_PSEUDONYM_AUTHOR.getName() + ')';
+
+        static final String FETCH_CURRENT_BOOK_LINKS =
+                SELECT_ + DBKey.FK_AUTHOR
+                + ',' + DBKey.AUTHOR.BOOK_AUTHOR_POSITION
+                + ',' + DBKey.AUTHOR.BOOK_AUTHOR_ROLE
+                + _FROM_ + TBL_BOOK_AUTHOR.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         /** Insert the link between a {@link Book} and an {@link Author}. */
         static final String INSERT_BOOK_LINK =
@@ -1084,18 +1149,6 @@ public class AuthorDaoImpl
                 SELECT_ + TBL_BOOK_AUTHOR.dotAs(DBKey.FK_BOOK)
                 + _FROM_ + TBL_BOOK_AUTHOR.as()
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
-
-
-        /**
-         * 2025-12: we're using LEFT JOIN now... so eliminate nulls.
-         * This is paranoia... we're already/supposed to filter for null->""
-         * when we get the fields from the {@link DataHolder}
-         */
-        @SuppressWarnings("CheckStyle")
-        private static String COALESCE(@NonNull final String column) {
-            return "COALESCE(" + column + ",'')";
-        }
-
         /** Column definition for sorting by given-names first. */
         static final String SORT_AUTHOR_GIVEN_FIRST =
                 CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)) + "=''"
@@ -1103,7 +1156,6 @@ public class AuthorDaoImpl
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)
                 + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
                 + _END;
-
         /** Column definition for sorting by family-name first. */
         static final String SORT_AUTHOR_FAMILY_FIRST =
                 CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)) + "=''"
@@ -1111,7 +1163,6 @@ public class AuthorDaoImpl
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
                 + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)
                 + _END;
-
         /** Column definition for displaying by given-names first. */
         static final String DISPLAY_AUTHOR_GIVEN_FIRST =
                 CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)) + "=''"
@@ -1119,7 +1170,6 @@ public class AuthorDaoImpl
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
                 + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
                 + _END;
-
         /** Column definition for displaying by family-name first. */
         static final String DISPLAY_AUTHOR_FAMILY_FIRST =
                 CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)) + "=''"
@@ -1127,34 +1177,29 @@ public class AuthorDaoImpl
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
                 + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
                 + _END;
-
         /** Get a list of {@link Author} "given family" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
                 SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
                 + _FROM_ + TBL_AUTHORS.as()
                 + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
-
         /** Get a list of {@link Author} "family, given" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
                 SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
                 + _FROM_ + TBL_AUTHORS.as()
                 + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
-
         /** Get a list of {@link Author} family names for use in a dropdown selection. */
         static final String SELECT_ALL_FAMILY_NAMES =
                 SELECT_DISTINCT_ + DBKey.AUTHOR.FAMILY_NAME
                 + _FROM_ + TBL_AUTHORS.getName()
                 + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION;
-
         /** Get a list of {@link Author} given names for use in a dropdown selection. */
         static final String SELECT_ALL_GIVEN_NAMES =
                 SELECT_DISTINCT_ + DBKey.AUTHOR.GIVEN_NAMES
                 + _FROM_ + TBL_AUTHORS.getName()
                 + _WHERE_ + DBKey.AUTHOR.GIVEN_NAMES_OB + "<> ''"
                 + _ORDER_BY_ + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
-
         /**
          * All Book titles and their first pub. date, for an Author,
          * returned as an {@link AuthorWork}.
@@ -1173,7 +1218,6 @@ public class AuthorDaoImpl
                 + ',' + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
                 + ",1" + _AS_ + DBKey.BOOK_COUNT
                 + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
-
         /**
          * All {@link TocEntry}'s for an Author,
          * returned as an {@link AuthorWork}.
@@ -1196,7 +1240,6 @@ public class AuthorDaoImpl
                 + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ")" + _AS_ + DBKey.BOOK_COUNT
                 // join with the books, so we can group by toc id, and get the number of books.
                 + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES);
-
         static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
@@ -1206,7 +1249,6 @@ public class AuthorDaoImpl
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
                 + _WHERE_ + "mp>1";
-
         /**
          * Bulk update/replace one Author id with another;
          * effectively moving toc-entries from one Author to the other.
@@ -1215,11 +1257,9 @@ public class AuthorDaoImpl
                 UPDATE_ + TBL_TOC_ENTRIES.getName()
                 + _SET_ + DBKey.FK_AUTHOR + "=?"
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
-
         static final String SELECT_ALL_IMAGE_UUID =
                 SELECT_ + DBKey.AUTHOR.PICTURE_UUID + _FROM_ + TBL_AUTHORS.getName()
                 + _WHERE_ + DBKey.AUTHOR.PICTURE_UUID + " IS NOT NULL";
-
         /** All Authors for a rebuild of the {@link DBKey.AUTHOR} name columns. */
         private static final String OB_REBUILD_NAMES =
                 SELECT_ + DBKey.PK_ID
@@ -1233,5 +1273,15 @@ public class AuthorDaoImpl
                 + DBKey.AUTHOR.FAMILY_NAME_OB + "=?"
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * 2025-12: we're using LEFT JOIN now... so eliminate nulls.
+         * This is paranoia... we're already/supposed to filter for null->""
+         * when we get the fields from the {@link DataHolder}
+         */
+        @SuppressWarnings("CheckStyle")
+        private static String COALESCE(@NonNull final String column) {
+            return "COALESCE(" + column + ",'')";
+        }
     }
 }

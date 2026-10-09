@@ -219,21 +219,21 @@ public class BookDaoImpl
             cv.remove(DBKey.BOOK_UUID);
         }
 
-        // This flag is only set during imports to make sure we preserve last-update-date.
-        // Set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
-        // or if it's not already present.
-        if (!flags.contains(ImportFlag.UseUpdateDateIfPresent)
-            || !cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
-            cv.put(DBKey.DATE_LAST_UPDATED__UTC,
-                   SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC)));
-        }
-
         // Reminder: We're updating ONLY the fields present in the ContentValues.
         // Other fields in the database row are not affected.
 
-        // isEmpty require API-30
-        //noinspection SizeReplaceableByIsEmpty
-        if (cv.size() > 0) {
+        final boolean hasLastUpdateDate = cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC);
+        // If cv has 2+ keys, or if it has 1 key that isn't the timestamp, we have data changes
+        if (cv.size() > (hasLastUpdateDate ? 1 : 0)) {
+            // UseUpdateDateIfPresent is only set during imports to make sure
+            // we preserve last-update-date.
+            // Set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
+            // or if it's not already present.
+            if (!flags.contains(ImportFlag.UseUpdateDateIfPresent) || !hasLastUpdateDate) {
+                cv.put(DBKey.DATE_LAST_UPDATED__UTC,
+                       SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC)));
+            }
+
             // go !
             // throws SQLException
             db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",

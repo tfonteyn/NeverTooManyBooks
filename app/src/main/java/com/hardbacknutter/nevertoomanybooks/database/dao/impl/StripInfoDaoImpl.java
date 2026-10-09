@@ -78,6 +78,10 @@ public class StripInfoDaoImpl
             }
         }
 
+        // FIXME/TEST: there are currently no triggers on the table
+        //  to reset the book last-update date. Hence, delete+insert is FINE.
+        //  If we do add a trigger, this code needs to properly check for changes
+        //  before doing any delete/inserts
         // Just delete all current data and insert from scratch.
         delete(book);
         insert(book);

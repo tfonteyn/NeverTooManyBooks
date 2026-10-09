@@ -50,41 +50,41 @@ public class LoaneeDaoImpl
 
     @Override
     public boolean setLoanee(@NonNull final Book book) {
-        final String loanee = book.getString(DBKey.LOANEE_NAME);
-        if (loanee.isEmpty()) {
-            delete(book);
-            return true;
-        } else {
-            return insertOrUpdate(book.getId(), loanee);
-        }
+        return insertOrUpdate(book.getId(), book.getString(DBKey.LOANEE_NAME));
     }
 
     @Override
     public boolean setLoanee(@IntRange(from = 1) final long bookId,
                              @Nullable final String loanee) {
-        if (loanee == null || loanee.isEmpty()) {
-            delete(bookId);
-            return true;
-        } else {
-            return insertOrUpdate(bookId, loanee);
-        }
+        return insertOrUpdate(bookId, loanee);
     }
 
-
     private boolean insertOrUpdate(@IntRange(from = 1) final long bookId,
-                                   @NonNull final String loanee) {
+                                   @Nullable final String loanee) {
+        final String target = loanee == null ? "" : loanee.strip();
         final String current = findLoaneeByBookId(bookId);
-        if (current == null || current.isEmpty()) {
-            insert(bookId, loanee);
-            return true;
+        final String existing = current == null ? "" : current.strip();
 
-        } else if (!loanee.equals(current)) {
-            // This is currently not reachable from the user-menu's
-            // but leaving this in place for the future.
-            update(bookId, loanee);
+        // Case 1: State hasn't changed (i.e. both empty, or both same person)
+        if (target.equals(existing)) {
+            return false;
+        }
+
+        // Case 2: Target is empty, but a loan record currently exists in DB -> Delete
+        if (target.isBlank()) {
+            delete(bookId);
             return true;
         }
-        return false;
+
+        // Case 3: Target has value, but no existing record in DB -> Insert
+        if (existing.isBlank()) {
+            insert(bookId, target);
+            return true;
+        }
+
+        // Case 4: Loan record exists, but loanee name changed -> Update
+        update(bookId, target);
+        return true;
     }
 
     private void insert(@IntRange(from = 1) final long bookId,

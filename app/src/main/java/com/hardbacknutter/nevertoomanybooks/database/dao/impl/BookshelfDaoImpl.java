@@ -31,6 +31,7 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -505,35 +506,66 @@ public class BookshelfDaoImpl
             }
         }
 
-        // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
+        // Fix IDs and remove duplicates; shelves don't use a Locale, hence no lookup done.
         pruneList(context, list);
 
-        // Just delete all current links; we'll insert them from scratch.
-        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete(null);
+        // Ensure all Bookshelves exist in DB so they all have a valid ID
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        for (final Bookshelf bookshelf : list) {
+            if (bookshelf.getId() == 0) {
+                insert(context, bookshelf, userLocale);
+            }
         }
 
-        // is there anything to insert ?
+        // Fetch current link states (Bookshelf ID)
+        final Set<Long> currentLinkStates = new HashSet<>();
+        try (Cursor cursor = db.rawQuery(Sql.FETCH_CURRENT_BOOK_LINKS,
+                                         new String[]{String.valueOf(bookId)})) {
+            while (cursor.moveToNext()) {
+                currentLinkStates.add(cursor.getLong(0));
+            }
+        }
+
+        // Check if any links have changed
+        boolean needsResync = currentLinkStates.size() != list.size();
+        if (!needsResync) {
+            for (final Bookshelf bookshelf : list) {
+                if (!currentLinkStates.contains(bookshelf.getId())) {
+                    needsResync = true;
+                    break;
+                }
+            }
+        }
+
+        // If no links changed, we're done
+        if (!needsResync) {
+            return;
+        }
+
+        // Wipe old links ONLY if previous links actually existed
+        if (!currentLinkStates.isEmpty()) {
+            deleteAllLinks(bookId);
+        }
+
+        // If there is nothing to insert, we're done
         if (list.isEmpty()) {
             return;
         }
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        // Insert the new ones.
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Bookshelf bookshelf : list) {
-                // create if needed - do NOT do updates here
-                if (bookshelf.getId() == 0) {
-                    insert(context, bookshelf, userLocale);
-                }
-                //2023-06-11: If we ever do updates here, then we need to check the triggers!
-                // also: look at AuthorDaoImpl/PublisherDaoImpl how we avoid unneeded updates
-
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, bookshelf.getId());
 
                 stmt.executeInsert(() -> "insert Book-Bookshelf");
             }
+        }
+    }
+    private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete(null);
         }
     }
 
@@ -622,7 +654,7 @@ public class BookshelfDaoImpl
 
     @Override
     public void delete(@NonNull final Context context,
-                          @NonNull final Bookshelf bookshelf) {
+                       @NonNull final Bookshelf bookshelf) {
         // Sanity check; we cannot delete 0==new; or -1==all_books,
         // and we're not allowed to delete the default shelf
         // The latter is normally prevented in the UI, but paranoia...
@@ -778,6 +810,11 @@ public class BookshelfDaoImpl
         static final String DELETE_BY_ID =
                 DELETE_FROM_ + TBL_BOOKSHELF.getName()
                 + _WHERE_ + DBKey.PK_ID + "=?";
+
+        private static final String FETCH_CURRENT_BOOK_LINKS =
+                SELECT_ + DBKey.FK_BOOKSHELF
+                + _FROM_ + TBL_BOOK_BOOKSHELF.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         /** Insert the link between a {@link Book} and a {@link Bookshelf}. */
         static final String INSERT_BOOK_LINK =

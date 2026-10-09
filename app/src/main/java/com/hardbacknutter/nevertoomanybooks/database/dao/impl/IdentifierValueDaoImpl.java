@@ -25,10 +25,13 @@ import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -81,31 +84,71 @@ public class IdentifierValueDaoImpl
 
         pruneList(list);
 
-        // Just delete all current links
-        try (SynchronizedStatement stmt1 = db.compileStatement(sql.DELETE_LINK_BY_FK)) {
-            stmt1.bindLong(1, fkId);
-            stmt1.executeUpdateDelete(null);
+        // Ensure all Identifiers exist in DB so they all have a valid ID
+        final Map<Long, String> targetLinkStates = new HashMap<>(list.size());
+        for (final Identifier.Value iv : list) {
+            @Nullable
+            Identifier identifier = find(iv.getKey(), entityType).orElse(null);
+            // Create if needed
+            if (identifier == null) {
+                identifier = new Identifier(iv.getKey(), entityType);
+                insert(identifier);
+            }
+            targetLinkStates.put(identifier.getId(), iv.getSid());
         }
 
-        // is there anything to insert ?
+        // Fetch current link states (Identifier ID -> SID value)
+        final Map<Long, String> currentLinkStates = new HashMap<>();
+        try (Cursor cursor = db.rawQuery(sql.FETCH_CURRENT_LINKS,
+                                         new String[]{String.valueOf(fkId)})) {
+            while (cursor.moveToNext()) {
+                currentLinkStates.put(cursor.getLong(0), cursor.getString(1));
+            }
+        }
+
+        // Check if any links or SID values have changed
+        boolean needsResync = currentLinkStates.size() != list.size();
+        if (!needsResync) {
+            for (final Map.Entry<Long, String> entry : targetLinkStates.entrySet()) {
+                final String currentSid = currentLinkStates.get(entry.getKey());
+                if (currentSid == null || !currentSid.equals(entry.getValue())) {
+                    needsResync = true;
+                    break;
+                }
+            }
+        }
+
+        // If no links or SID values changed, we're done
+        if (!needsResync) {
+            return;
+        }
+
+        // Wipe old links ONLY if previous links actually existed
+        if (!currentLinkStates.isEmpty()) {
+            deleteAllLinks(fkId);
+        }
+
+        // If there is nothing to insert, we're done
         if (list.isEmpty()) {
             return;
         }
 
+        // Insert the new ones.
         try (SynchronizedStatement stmt = db.compileStatement(sql.INSERT_LINK)) {
-            for (final Identifier.Value iv : list) {
-
-                Identifier identifier = find(iv.getKey(), entityType).orElse(null);
-                if (identifier == null) {
-                    identifier = new Identifier(iv.getKey(), entityType);
-                    insert(identifier);
-                }
+            for (final Map.Entry<Long, String> entry : targetLinkStates.entrySet()) {
                 stmt.bindLong(1, fkId);
-                stmt.bindLong(2, identifier.getId());
-                stmt.bindString(3, iv.getSid());
+                stmt.bindLong(2, entry.getKey());
+                stmt.bindString(3, entry.getValue());
 
                 stmt.executeInsert(() -> "insert FK-Identifier");
             }
+        }
+    }
+
+    private void deleteAllLinks(@IntRange(from = 1) final long fkId) {
+        try (SynchronizedStatement stmt = db.compileStatement(sql.DELETE_LINK_BY_FK)) {
+            stmt.bindLong(1, fkId);
+            stmt.executeUpdateDelete(null);
         }
     }
 
@@ -155,7 +198,7 @@ public class IdentifierValueDaoImpl
     @Override
     @NonNull
     public Optional<Long> findIdentifierOwnerId(@NonNull final String key,
-                                              @NonNull final String sid) {
+                                                @NonNull final String sid) {
         try (SynchronizedStatement stmt = db.compileStatement(
                 sql.FIND_FK_BY_IDENTIFIER_KEY_AND_SID)) {
             stmt.bindString(1, key);
@@ -175,6 +218,8 @@ public class IdentifierValueDaoImpl
         final String FIND_BY_LINK_ID;
 
         final String FIND_SID_BY_FK_AND_IDENTIFIER_KEY;
+
+        final String FETCH_CURRENT_LINKS;
 
         /** Insert the link between a {@link Book} or {@link Author} and an {@link Identifier}. */
         final String INSERT_LINK;
@@ -210,6 +255,11 @@ public class IdentifierValueDaoImpl
                     + ',' + linkTable.dotAs(DBKey.IDENTIFIERS.SID)
                     + _FROM_ + linkTable.startJoin(TBL_IDENTIFIERS)
                     + _WHERE_ + linkTable.dot(fk) + "=?";
+
+            FETCH_CURRENT_LINKS =
+                    SELECT_ + DBKey.FK_IDENTIFIER + ',' + DBKey.IDENTIFIERS.SID
+                    + _FROM_ + linkTable.getName()
+                    + _WHERE_ + fk + "=?";
 
             INSERT_LINK =
                     INSERT_INTO_ + linkTable.getName()

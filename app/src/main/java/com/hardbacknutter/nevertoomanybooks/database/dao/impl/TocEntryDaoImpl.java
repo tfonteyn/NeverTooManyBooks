@@ -279,7 +279,7 @@ public class TocEntryDaoImpl
     @Override
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
-                               @NonNull final Collection<TocEntry> tocEntries,
+                               @NonNull final Collection<TocEntry> list,
                                @NonNull final Function<TocEntry, Locale> localeSupplier)
             throws StorageException, ImageIOException, SQLException {
 
@@ -289,35 +289,23 @@ public class TocEntryDaoImpl
             }
         }
 
-        pruneList(context, tocEntries, localeSupplier);
-
-        // Just delete all current links; we'll re-insert them for easier positioning
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt.bindLong(1, bookId);
-            stmt.executeUpdateDelete(null);
-        }
-
-        // is there anything to insert ?
-        if (tocEntries.isEmpty()) {
-            return;
-        }
-
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
         final ReorderHelper reorderHelper = new ReorderHelper(LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales()));
 
-        // track inserted entries for reversing in case of error
+        pruneList(context, list, localeSupplier);
+
+        // Track inserted entries for reversing in case of error
         final List<TocEntry> actualInserts = new ArrayList<>();
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK);
-             SynchronizedStatement stmtInsToc = db.compileStatement(Sql.INSERT);
+        try (SynchronizedStatement stmtInsToc = db.compileStatement(Sql.INSERT);
              SynchronizedStatement stmtUpdToc = db.compileStatement(Sql.UPDATE)) {
 
-            long position = 0;
-            for (final TocEntry tocEntry : tocEntries) {
+            // Ensure all TocEntry and linked Authors exist in DB so they all have a valid ID
+            for (final TocEntry tocEntry : list) {
                 final Locale locale = localeSupplier.apply(tocEntry);
 
-                // Author must be handled separately;
+                // Author must be handled separately.
                 final Author author = tocEntry.getPrimaryAuthor();
                 authorDao.fixId(context, author, locale);
                 // Create if needed - NEVER do updates here
@@ -327,59 +315,127 @@ public class TocEntryDaoImpl
 
                 final String title = tocEntry.getTitle();
                 final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
+                final String normalisedObTitle = textNormaliser.strict(obTitle, locale);
+                final String pubDateIso = tocEntry.getFirstPublicationDate().getIsoString();
 
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());
-                    stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, textNormaliser.strict(obTitle, locale));
-                    stmtInsToc.bindString(4, tocEntry
-                            .getFirstPublicationDate().getIsoString());
+                    stmtInsToc.bindString(2, title);
+                    stmtInsToc.bindString(3, normalisedObTitle);
+                    stmtInsToc.bindString(4, pubDateIso);
                     final long iId = stmtInsToc.executeInsert(() -> ERROR_INSERT_FROM + tocEntry);
                     tocEntry.setId(iId);
                     actualInserts.add(tocEntry);
                 } else {
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
-                    stmtUpdToc.bindString(1, tocEntry.getTitle());
-                    stmtUpdToc.bindString(2, textNormaliser.strict(obTitle, locale));
-                    stmtUpdToc.bindString(3, tocEntry
-                            .getFirstPublicationDate().getIsoString());
-                    stmtUpdToc.bindLong(4, tocEntry.getId());
-                    stmtUpdToc.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tocEntry);
+
+                    // Check if existing record actually changed before executing UPDATE
+                    final Optional<TocEntry> oFound = findById(tocEntry.getId());
+                    if (oFound.isPresent()) {
+                        final TocEntry found = oFound.get();
+
+                        // tocEntry.merge(found);
+                        // final boolean changed = found.isIdentical(tocEntry));
+                        // URGENT: use the below equals, or the above merge/isIdentical ????
+                        final boolean changed =
+                                !found.getTitle().equals(title)
+                                || !found.getFirstPublicationDate()
+                                         .getIsoString()
+                                         .equals(pubDateIso);
+
+                        if (changed) {
+                            stmtUpdToc.bindString(1, title);
+                            stmtUpdToc.bindString(2, normalisedObTitle);
+                            stmtUpdToc.bindString(3, pubDateIso);
+                            stmtUpdToc.bindLong(4, tocEntry.getId());
+                            stmtUpdToc.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tocEntry);
+                        }
+                    }
                 }
+            }
 
-                // create the book<->TocEntry link.
-                //
-                // As we delete all links before insert/updating above, we normally
-                // *always* need to re-create the link here.
-                // However, this will fail if we inserted "The Universe" and updated "Universe, The"
-                // as the former will be stored as "Universe, The" so conflicting with the latter.
-                // We tried to mitigate this conflict before it could trigger an issue here, but it
-                // complicated the code and frankly ended in a chain of special condition
-                // code branches during processing of internet search data.
-                // So... let's just catch the SQL constraint exception and ignore it.
-                // (do not use the SQL 'REPLACE' command! We want to keep the original position)
-                try {
-                    position++;
-                    stmt.bindLong(1, tocEntry.getId());
-                    stmt.bindLong(2, bookId);
-                    stmt.bindLong(3, position);
-                    stmt.executeInsert(() -> "insert Book-TocEntry");
-                } catch (@NonNull final SQLiteConstraintException e) {
-                    // ignore and reset the position counter.
-                    position--;
+            // Fetch current link states (TocEntry ID strictly ordered by position)
+            final List<Long> currentLinkStates = new ArrayList<>();
+            try (Cursor cursor = db.rawQuery(Sql.FETCH_CURRENT_LINKS,
+                                             new String[]{String.valueOf(bookId)})) {
+                while (cursor.moveToNext()) {
+                    currentLinkStates.add(cursor.getLong(0));
+                }
+            }
 
-                    if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger().d(TAG, "insertOrUpdate",
-                                                    "tocEntry=" + tocEntry.getId(),
-                                                    "bookId=" + bookId,
-                                                    e);
+            // Check if any links or positions have changed
+            boolean needsResync = currentLinkStates.size() != list.size();
+            if (!needsResync) {
+                int index = 0;
+                for (final TocEntry tocEntry : list) {
+                    if (!currentLinkStates.get(index).equals(tocEntry.getId())) {
+                        needsResync = true;
+                        break;
+                    }
+                    index++;
+                }
+            }
+
+            // If no links or positions changed, we're done
+            if (!needsResync) {
+                return;
+            }
+
+            // Wipe old links ONLY if previous links actually existed
+            if (!currentLinkStates.isEmpty()) {
+                deleteAllLinks(bookId);
+            }
+
+            // If there is nothing to insert, we're done
+            if (list.isEmpty()) {
+                return;
+            }
+
+            // Insert the new ones.
+            long position = 0;
+            try (SynchronizedStatement stmtLink = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
+                for (final TocEntry tocEntry : list) {
+                    // create the book<->TocEntry link.
+                    //
+                    // As we delete all links before insert/updating above, we normally
+                    // *always* need to re-create the link here.
+                    // However, this will fail if we inserted
+                    // "The Universe" and updated "Universe, The"
+                    // as the former will be stored as "Universe, The"
+                    // and hence, will be conflicting with the latter.
+                    // We tried to mitigate this conflict before it could trigger an issue here,
+                    // but it complicated the code and frankly ended in a chain of special
+                    // condition code branches during processing of internet search data.
+                    // So... let's just catch the SQL constraint exception and ignore it.
+                    // (do not use the SQL 'REPLACE' command! We want to keep the original position)
+                    try {
+                        stmtLink.bindLong(1, tocEntry.getId());
+                        stmtLink.bindLong(2, bookId);
+                        stmtLink.bindLong(3, position + 1);
+                        stmtLink.executeInsert(() -> "insert Book-TocEntry");
+                        // ONLY increment if executeInsert succeeds
+                        position++;
+                    } catch (@NonNull final SQLiteConstraintException e) {
+                        if (BuildConfig.DEBUG /* always */) {
+                            LoggerFactory.getLogger().d(TAG, "insertOrUpdate",
+                                                        "tocEntry=" + tocEntry.getId(),
+                                                        "bookId=" + bookId,
+                                                        e);
+                        }
                     }
                 }
             }
         } catch (@NonNull final SQLException | StorageException e) {
             actualInserts.forEach(entry -> entry.setId(0));
             throw e;
+        }
+    }
+
+    private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete(null);
         }
     }
 
@@ -523,6 +579,12 @@ public class TocEntryDaoImpl
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_TOC_ENTRY
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + ')';
 
+        private static final String FETCH_CURRENT_LINKS =
+                SELECT_ + DBKey.FK_TOC_ENTRY
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?"
+                + _ORDER_BY_ + DBKey.BOOK_TOC_ENTRY_POSITION;
+
         /** Insert the link between a {@link Book} and a {@link TocEntry}. */
         static final String INSERT_BOOK_LINK =
                 INSERT_INTO_ + TBL_BOOK_TOC_ENTRIES.getName()
@@ -663,6 +725,7 @@ public class TocEntryDaoImpl
                 + ',' + DBKey.TITLE
                 + ',' + DBKey.TITLE_OB
                 + _FROM_ + TBL_TOC_ENTRIES.getName();
+
         private static final String OB_REBUILD =
                 UPDATE_ + TBL_TOC_ENTRIES.getName() + _SET_ + DBKey.TITLE_OB + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
