@@ -20,6 +20,8 @@
 
 pluginManagement {
     repositories {
+        // enable for using snapshot mannodermausPlugin
+        // maven { url = 'https://central.sonatype.com/repository/maven-snapshots' }
         google()
         mavenCentral()
         gradlePluginPortal()
@@ -28,6 +30,8 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        // enable for using snapshot mannodermausPlugin
+        // maven { url = 'https://central.sonatype.com/repository/maven-snapshots' }
         google()
         mavenCentral()
 
