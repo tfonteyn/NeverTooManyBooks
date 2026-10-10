@@ -309,6 +309,7 @@ public class SyncReaderFragment
 
     private void showCalibreMetaData(@NonNull final Bundle data) {
 
+        @SuppressWarnings("deprecation")
         final List<CalibreLibrary> libraries =
                 data.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST);
 
@@ -326,9 +327,11 @@ public class SyncReaderFragment
             vb.calibreLibrary.setOnItemClickListener(
                     (av, v, position, id) -> onCalibreLibrarySelected(libraries.get(position)));
 
+            @SuppressWarnings("deprecation")
             CalibreLibrary library = vm.getExtraArgs()
                                        .getParcelable(CalibreContentServer.BKEY_LIBRARY);
             if (library == null) {
+                //noinspection deprecation
                 library = data.getParcelable(CalibreContentServer.BKEY_LIBRARY);
             }
             //noinspection DataFlowIssue

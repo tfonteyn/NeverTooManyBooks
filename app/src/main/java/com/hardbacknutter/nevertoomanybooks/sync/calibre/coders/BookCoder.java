@@ -589,8 +589,8 @@ public final class BookCoder {
                 final String sid = remotes.optString(calKey);
                 if (!sid.isEmpty()) {
                     // MUST be converted to lc before we try and map
-                    CalibreIdentifiers.convertIdentifier(
-                            book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
+                    CalibreIdentifiers.convertWhenDecoding(
+                            calKey.toLowerCase(Locale.ENGLISH), sid, book, ivs);
                 }
             }
         }
@@ -1014,8 +1014,7 @@ public final class BookCoder {
         final JSONObject localIdentifiers = new JSONObject();
         localBook.getIdentifiers().forEach(iv -> {
             // Map our key to the calibre key, or if not found, just use the key itself
-            final String calKey = CalibreIdentifiers.IDENTIFIER_MAPPING_WRITER
-                    .getOrDefault(iv.getKey(), iv.getKey());
+            final String calKey = CalibreIdentifiers.convertWhenEncoding(iv.getKey());
             //noinspection DataFlowIssue
             localIdentifiers.put(calKey, iv.getSid());
         });

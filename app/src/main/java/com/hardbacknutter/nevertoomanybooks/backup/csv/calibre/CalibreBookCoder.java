@@ -416,8 +416,8 @@ public class CalibreBookCoder
               .filter(ids -> !ids[1].isEmpty())
               // [0] name, [1] value
               // The name MUST be converted to lc before we try and map
-              .forEach(id -> CalibreIdentifiers.convertIdentifier(
-                      book, id[0].toLowerCase(Locale.ENGLISH), id[1], ivs));
+              .forEach(id -> CalibreIdentifiers.convertWhenDecoding(
+                      id[0].toLowerCase(Locale.ENGLISH), id[1], book, ivs));
 
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);

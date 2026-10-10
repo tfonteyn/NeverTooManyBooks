@@ -111,10 +111,10 @@ public class CalibreContentServerWriter
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
-    public CalibreContentServerWriter(@NonNull final Context context,
-                                      @NonNull final Set<RecordType> recordTypes,
-                                      final boolean incremental,
-                                      final boolean deleteLocalBook)
+    CalibreContentServerWriter(@NonNull final Context context,
+                               @NonNull final Set<RecordType> recordTypes,
+                               final boolean incremental,
+                               final boolean deleteLocalBook)
             throws CertificateException {
 
         this.doCovers = recordTypes.contains(RecordType.Cover);
@@ -271,8 +271,6 @@ public class CalibreContentServerWriter
 
                 // Advance the offset for the next batch
                 offset += books.size();
-
-
             }
         }
     }

@@ -154,7 +154,7 @@ public class CalibreLibrary
                                        CalibreVirtualLibrary.class.getClassLoader());
 
         totalBooks = in.readInt();
-        //noinspection DataFlowIssue
+        //noinspection DataFlowIssue,deprecation
         Arrays.stream(in.readParcelableArray(CalibreCustomField.class.getClassLoader()))
               .forEach(field -> calibreCustomFields.add((CalibreCustomField) field));
     }
