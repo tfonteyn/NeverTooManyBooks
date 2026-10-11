@@ -152,6 +152,8 @@ public class ShowBookDetailsFragment
     private ActivityResultLauncher<Book> updateBookLauncher;
     /** Handle the edit-lender dialog. */
     private EditLenderLauncher editLenderLauncher;
+    /** {@code true} we're running in tablet-landscape. */
+    private boolean embedded;
 
     /**
      * Constructor.
@@ -191,7 +193,7 @@ public class ShowBookDetailsFragment
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
         aVm.init(args.getBookshelf());
 
-        final boolean embedded = args.isEmbedded();
+        embedded = args.isEmbedded();
         if (embedded) {
             // Create the vm in the Activity scope allowing it to be accessed by
             // the BooksOnBookshelf activity.
@@ -369,6 +371,15 @@ public class ShowBookDetailsFragment
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!embedded) {
+            updateToolbar(vm.getBook());
+        }
+    }
+
     /**
      * Entry point after the current Book was edited; either manually by the user,
      * or automatically with an internet update action.
@@ -441,9 +452,11 @@ public class ShowBookDetailsFragment
 
     /**
      * Called when the ViewModel triggers an update.
+     * <p>
      * Dev. note: this will get called FOR EACH fragment currently existing
      * in the ViewPager ... so ALSO for the fragments off-screen.
-     * Hence, DO NOT update the toolbar title here!
+     * Note that in embedded mode, we also need to update the toolbar
+     * from {@link #onResume()}.
      *
      * @param book to display
      */
@@ -775,17 +788,7 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
-                // Must use the Activity fm as the current fragment could be hosted by
-                // ShowBookPagerFragment or embedded inside the BoB
-                //noinspection DataFlowIssue
-                final FragmentManager fm = getActivity().getSupportFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(CalibrePreferencesFragment.TAG)
-                  .replace(R.id.content_frame,
-                           new CalibrePreferencesFragment(),
-                           CalibrePreferencesFragment.TAG)
-                  .commit();
+                openCalibreSettings();
                 return true;
 
             } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
@@ -809,6 +812,20 @@ public class ShowBookDetailsFragment
             //noinspection DataFlowIssue
             return vm.getMenuHandlers().stream().anyMatch(
                     h -> h.onMenuItemSelected(context, menuItemId, book));
+        }
+
+        private void openCalibreSettings() {
+            // Must use the Activity fm as the current fragment could be hosted by
+            // ShowBookPagerFragment or embedded inside the BoB
+            //noinspection DataFlowIssue
+            final FragmentManager fm = getActivity().getSupportFragmentManager();
+            fm.beginTransaction()
+              .setReorderingAllowed(true)
+              .addToBackStack(CalibrePreferencesFragment.TAG)
+              .replace(R.id.content_frame,
+                       new CalibrePreferencesFragment(),
+                       CalibrePreferencesFragment.TAG)
+              .commit();
         }
 
         private void deleteLoanee(@NonNull final Book book) {
