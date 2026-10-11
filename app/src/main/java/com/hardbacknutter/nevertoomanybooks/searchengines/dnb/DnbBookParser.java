@@ -505,20 +505,21 @@ class DnbBookParser {
         );
 
         private static final Map<String, Integer> AUTHOR_ROLE_MAPPING = Map.ofEntries(
-                Map.entry("aut", AuthorRole.WRITER),
-                Map.entry("aus", AuthorRole.ORIGINAL_SCRIPT_WRITER),
-                Map.entry("wpr", AuthorRole.FOREWORD),
                 Map.entry("aft", AuthorRole.AFTERWORD),
-                Map.entry("trl", AuthorRole.TRANSLATOR),
-                Map.entry("aui", AuthorRole.INTRODUCTION),
-                Map.entry("edt", AuthorRole.EDITOR),
-                Map.entry("ctb", AuthorRole.CONTRIBUTOR),
-                Map.entry("cov", AuthorRole.COVER_ARTIST),
-                Map.entry("nrt", AuthorRole.NARRATOR),
+                Map.entry("ant", AuthorRole.BIBLIOGRAPHIC_ANTECEDENT),
                 Map.entry("art", AuthorRole.ARTIST),
-                Map.entry("ink", AuthorRole.INKING),
+                Map.entry("aui", AuthorRole.INTRODUCTION),
+                Map.entry("aus", AuthorRole.ORIGINAL_SCRIPT_WRITER),
+                Map.entry("aut", AuthorRole.WRITER),
                 Map.entry("clr", AuthorRole.COLORIST),
-                Map.entry("ltr", AuthorRole.LETTERING)
+                Map.entry("cov", AuthorRole.COVER_ARTIST),
+                Map.entry("ctb", AuthorRole.CONTRIBUTOR),
+                Map.entry("edt", AuthorRole.EDITOR),
+                Map.entry("ink", AuthorRole.INKING),
+                Map.entry("ltr", AuthorRole.LETTERING),
+                Map.entry("nrt", AuthorRole.NARRATOR),
+                Map.entry("trl", AuthorRole.TRANSLATOR),
+                Map.entry("wpr", AuthorRole.FOREWORD)
         );
 
         /**

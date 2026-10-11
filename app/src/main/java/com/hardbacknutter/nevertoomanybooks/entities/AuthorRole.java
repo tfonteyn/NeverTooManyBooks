@@ -30,16 +30,15 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
+/**
+ * {@link DBDefinitions#DOM_BOOK_AUTHOR_ROLE_BITMASK}.
+ * NEWTHINGS: author role: add a bit flag
+ * Never change the bit value!
+ */
 public final class AuthorRole {
     /** Generic Author; the default. A single person created the book. */
     public static final int UNKNOWN = 0;
-    /**
-     * {@link DBDefinitions#DOM_BOOK_AUTHOR_ROLE_BITMASK}.
-     * NEWTHINGS: author role: add a bit flag
-     * Never change the bit value!
-     * <p>
-     * WRITER: primary or only writer. i.e. in contrast to any of the below.
-     */
+    /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int WRITER = 1;
     /**
      * WRITER: not distinguished for now. If we do, use {@code #ORIGINAL_SCRIPT_WRITER = 1 << 1;}
@@ -89,6 +88,10 @@ public final class AuthorRole {
     public static final int PSEUDONYM = 1 << 16;
     /** Comics only. */
     public static final int LETTERING = 1 << 17;
+    /** WRITER: The original book author when a book is adapted to a comic or movie.
+     * "bibliographic_antecedent" is how MARC21 calls this. */
+    public static final int BIBLIOGRAPHIC_ANTECEDENT = 1 << 18;
+
     /**
      * All valid bits for the role.
      * NEWTHINGS: author role: add to the mask
@@ -99,7 +102,7 @@ public final class AuthorRole {
             | TRANSLATOR | INTRODUCTION | EDITOR | CONTRIBUTOR
             | COVER_ARTIST | COVER_INKING | NARRATOR | COVER_COLORIST
             | ARTIST | INKING | STORYBOARD | COLORIST
-            | LETTERING;
+            | LETTERING | BIBLIOGRAPHIC_ANTECEDENT;
     /** Maps the role-bit to a string resource for the role-label. */
     static final Map<Integer, Integer> ROLES = new LinkedHashMap<>();
 
@@ -110,6 +113,7 @@ public final class AuthorRole {
     static {
         ROLES.put(WRITER, R.string.lbl_author_role_writer);
         ROLES.put(CONTRIBUTOR, R.string.lbl_author_role_contributor);
+        ROLES.put(BIBLIOGRAPHIC_ANTECEDENT, R.string.lbl_author_role_bibliographic_antecedent);
         ROLES.put(INTRODUCTION, R.string.lbl_author_role_intro);
         ROLES.put(FOREWORD, R.string.lbl_author_role_foreword);
         ROLES.put(AFTERWORD, R.string.lbl_author_role_afterword);
@@ -139,7 +143,7 @@ public final class AuthorRole {
                     TRANSLATOR, INTRODUCTION, EDITOR, CONTRIBUTOR,
                     COVER_ARTIST, COVER_INKING, NARRATOR, COVER_COLORIST,
                     ARTIST, INKING, STORYBOARD, COLORIST,
-                    LETTERING
+                    LETTERING, BIBLIOGRAPHIC_ANTECEDENT
             })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Role {

@@ -312,6 +312,7 @@
     <string name="lbl_author_pseudonym_of_X">tái bút. %1$s</string>
     <string name="lbl_author_role">Vai trò tác giả</string>
     <string name="lbl_author_role_artist">Minh họa</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Cốt truyện gốc</string>
     <string name="lbl_author_role_colorist">Chỉnh màu</string>
     <string name="lbl_author_role_contributor">Cộng tác</string>
     <string name="lbl_author_role_cover_artist">Ảnh bìa</string>

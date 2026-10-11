@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -72,6 +74,7 @@
     <string name="info_substitutions_one_per_line">Legg eina útskifting á hvørja reglu ella lat tað vera tóm fyri at strika merkið</string>
     <string name="lbl_author_role">Höfundsleiklutur</string>
     <string name="lbl_author_role_artist">Myndprýðing</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Upprunasøga</string>
     <string name="lbl_author_role_colorist">Litir</string>
     <string name="lbl_author_role_contributor">Medarbeiðari</string>
     <string name="lbl_author_role_cover_artist">Permulist</string>

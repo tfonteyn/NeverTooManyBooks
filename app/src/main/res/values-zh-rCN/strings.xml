@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -300,6 +302,7 @@
     <string name="lbl_author_pseudonym_of_X">笔名 %1$s</string>
     <string name="lbl_author_role">作者角色</string>
     <string name="lbl_author_role_artist">插图</string>
+    <string name="lbl_author_role_bibliographic_antecedent">原著</string>
     <string name="lbl_author_role_colorist">上色者</string>
     <string name="lbl_author_role_contributor">贡献者</string>
     <string name="lbl_author_role_cover_artist">封面</string>

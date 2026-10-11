@@ -290,6 +290,7 @@
     <string name="lbl_author_is_a_pen_name_of">Dit is een pseudoniem van:</string>
     <string name="lbl_author_role">Auteursrol</string>
     <string name="lbl_author_role_artist">Illustraties</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Oorspronkelijk verhaal</string>
     <string name="lbl_author_role_colorist">Inkleurder</string>
     <string name="lbl_author_role_contributor">Medewerker</string>
     <string name="lbl_author_role_cover_artist">Omslag</string>

@@ -53,6 +53,7 @@ public class AuthorRoleMapper {
         MAPPINGS.put("adapter", AuthorRole.WRITER);
 
         MAPPINGS.put("original script writer", AuthorRole.ORIGINAL_SCRIPT_WRITER);
+        MAPPINGS.put("original author", AuthorRole.BIBLIOGRAPHIC_ANTECEDENT);
 
         MAPPINGS.put("narrator", AuthorRole.NARRATOR);
         MAPPINGS.put("reading", AuthorRole.NARRATOR);
@@ -87,6 +88,7 @@ public class AuthorRoleMapper {
 
         MAPPINGS.put("contributor", AuthorRole.CONTRIBUTOR);
         MAPPINGS.put("additional material", AuthorRole.CONTRIBUTOR);
+        MAPPINGS.put("contributor, drawings", AuthorRole.CONTRIBUTOR);
 
 
         // French, unless listed above
@@ -97,9 +99,11 @@ public class AuthorRoleMapper {
         MAPPINGS.put("dessin", AuthorRole.ARTIST);
         MAPPINGS.put("inker", AuthorRole.INKING);
         MAPPINGS.put("avec la contribution de", AuthorRole.CONTRIBUTOR);
+        MAPPINGS.put("avec la contribution de, dessins", AuthorRole.CONTRIBUTOR);
         MAPPINGS.put("contribution", AuthorRole.CONTRIBUTOR);
         MAPPINGS.put("couleurs", AuthorRole.COLORIST);
         MAPPINGS.put("traduction", AuthorRole.TRANSLATOR);
+        MAPPINGS.put("auteur original)", AuthorRole.BIBLIOGRAPHIC_ANTECEDENT);
 
         // Dutch, unless listed above
         MAPPINGS.put("scenario", AuthorRole.WRITER);
@@ -109,6 +113,12 @@ public class AuthorRoleMapper {
         MAPPINGS.put("inkleuring", AuthorRole.COLORIST);
         MAPPINGS.put("vertaler", AuthorRole.TRANSLATOR);
         MAPPINGS.put("lettering", AuthorRole.LETTERING);
+        MAPPINGS.put("medewerker", AuthorRole.CONTRIBUTOR);
+        // amazon, they forgot to translate this
+        MAPPINGS.put("drawings, medewerker", AuthorRole.CONTRIBUTOR);
+        // amazon, for when/if they fix the above
+        MAPPINGS.put("tekeningen, medewerker", AuthorRole.CONTRIBUTOR);
+        MAPPINGS.put("oorspronkelijke auteur", AuthorRole.BIBLIOGRAPHIC_ANTECEDENT);
 
         // German, unless listed above
         MAPPINGS.put("autor", AuthorRole.WRITER);
@@ -117,6 +127,7 @@ public class AuthorRoleMapper {
         MAPPINGS.put("mitwirkender", AuthorRole.CONTRIBUTOR);
         MAPPINGS.put("mitwirkende", AuthorRole.CONTRIBUTOR);
         MAPPINGS.put("sonstige", AuthorRole.CONTRIBUTOR);
+        MAPPINGS.put("ursprünglicher autor", AuthorRole.CONTRIBUTOR);
         MAPPINGS.put("verfasser eines geleitworts", AuthorRole.FOREWORD);
         MAPPINGS.put("verfasser von ergänzendem text", AuthorRole.AFTERWORD);
         MAPPINGS.put("verfasser eines vorworts", AuthorRole.FOREWORD);
@@ -135,10 +146,15 @@ public class AuthorRoleMapper {
         MAPPINGS.put("traductor", AuthorRole.TRANSLATOR);
         MAPPINGS.put("ilustrador", AuthorRole.ARTIST);
         MAPPINGS.put("dibujos", AuthorRole.ARTIST);
+        MAPPINGS.put("colaborador", AuthorRole.CONTRIBUTOR);
+        MAPPINGS.put("autor original", AuthorRole.BIBLIOGRAPHIC_ANTECEDENT);
 
         // Italian, unless listed above
         MAPPINGS.put("testi", AuthorRole.WRITER);
+        MAPPINGS.put("autore", AuthorRole.WRITER);
         MAPPINGS.put("disegni", AuthorRole.ARTIST);
+        MAPPINGS.put("collaboratore", AuthorRole.CONTRIBUTOR);
+        MAPPINGS.put("autore originale", AuthorRole.BIBLIOGRAPHIC_ANTECEDENT);
 
         // There are obviously MANY missing.... both for the listed languages above and for
         // other languages not even considered here.

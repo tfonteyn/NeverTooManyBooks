@@ -17,7 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!--
+  -->
+
+<!--
     Reference sites:
     https://www.abbreviations.com/
 
@@ -899,6 +901,8 @@
          Co-author; someone who contributed to the content,
          but is not considered to be (one of) the main authors(s). -->
     <string name="lbl_author_role_contributor">Contributor</string>
+    <!-- Author role:  The original book author (writer) when a book is adapted to a comic or movie. -->
+    <string name="lbl_author_role_bibliographic_antecedent">Original story</string>
     <!-- Author role: the person who wrote an introduction at the start of the book.
          A book can have both an "Introduction" and a "Foreword". -->
     <string name="lbl_author_role_intro">Introduction</string>

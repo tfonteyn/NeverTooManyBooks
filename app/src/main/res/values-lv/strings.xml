@@ -598,6 +598,7 @@
     <string name="option_download_ebook_format">Lejupielādēt e-grāmatu (%1$s)</string>
     <string name="option_enable_sync_options">Iespējot sinhronizācijas opcijas</string>
     <string name="lbl_author_role_writer">Autors</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Oriģinālstāsts</string>
     <string name="lbl_author_role_translator">Tulkotājs</string>
     <string name="lbl_author_role_editor">Redaktors</string>
     <string name="lbl_author_role_contributor">Līdzautors</string>

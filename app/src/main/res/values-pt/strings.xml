@@ -341,6 +341,7 @@
     <string name="lbl_condition_book_reading_copy">Cópia de leitura</string>
     <string name="lbl_author_role_translator">Tradutor</string>
     <string name="lbl_author_role_inking">Pintura</string>
+    <string name="lbl_author_role_bibliographic_antecedent">História original</string>
     <string name="lbl_author_role_colorist">Pintor</string>
     <string name="lbl_author_role_cover_artist">Arte da capa</string>
     <string name="lbl_author_role_cover_inking">Pintura da capa</string>

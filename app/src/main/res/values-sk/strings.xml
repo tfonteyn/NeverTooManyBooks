@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -242,6 +243,7 @@
     <string name="lbl_condition_dust_cover_missing_or_bad">Chýbajúci/uspokojivý</string>
     <string name="lbl_condition_dust_cover_none">Žiadny</string>
     <string name="lbl_author_role_writer">Spisovateľ</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Pôvodný príbeh</string>
     <string name="lbl_author_role_editor">Editor</string>
     <string name="lbl_author_role_contributor">Spolupracovník</string>
     <string name="lbl_author_role_intro">Úvod</string>

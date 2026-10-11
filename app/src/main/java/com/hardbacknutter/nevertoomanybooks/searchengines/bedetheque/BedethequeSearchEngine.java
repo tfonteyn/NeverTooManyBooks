@@ -859,12 +859,19 @@ public class BedethequeSearchEngine
                     break;
                 }
 
-                case "Scénario :":
-                case "Adapté de :": {
+                case "Scénario :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.WRITER;
                         parseAuthor(context, a, AuthorRole.WRITER, book);
+                    }
+                    break;
+                }
+                case "Adapté de :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorRole = AuthorRole.BIBLIOGRAPHIC_ANTECEDENT;
+                        parseAuthor(context, a, AuthorRole.BIBLIOGRAPHIC_ANTECEDENT, book);
                     }
                     break;
                 }

@@ -277,6 +277,8 @@ class EditBookAuthorDelegate
         roleButtons.put(AuthorRole.TRANSLATOR, vb.cbxAuthorRoleTranslator);
         roleButtons.put(AuthorRole.EDITOR, vb.cbxAuthorRoleEditor);
         roleButtons.put(AuthorRole.NARRATOR, vb.cbxAuthorRoleNarrator);
+        roleButtons.put(AuthorRole.BIBLIOGRAPHIC_ANTECEDENT,
+                        vb.cbxAuthorRoleBibliographicAntecedent);
 
         roleButtons.put(AuthorRole.ARTIST, vb.cbxAuthorRoleArtist);
         roleButtons.put(AuthorRole.INKING, vb.cbxAuthorRoleInking);

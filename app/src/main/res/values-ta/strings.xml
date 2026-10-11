@@ -357,6 +357,7 @@
     <string name="lbl_condition_dust_cover_missing_or_bad">காணவில்லை/நியாயமானது</string>
     <string name="lbl_condition_dust_cover_none">எதுவுமில்லை</string>
     <string name="lbl_author_role_writer">எழுத்தாளர்</string>
+    <string name="lbl_author_role_bibliographic_antecedent">மூலக் கதை</string>
     <string name="lbl_author_role_translator">மொழிபெயர்</string>
     <string name="lbl_author_role_editor">திருத்தி</string>
     <string name="lbl_author_role_contributor">பங்களிப்பாளர்</string>

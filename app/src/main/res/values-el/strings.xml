@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -291,6 +294,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_author_role">Ρόλος συγγραφέα</string>
     <string name="lbl_author_role_afterword">Επίμετρο</string>
     <string name="lbl_author_role_artist">Εικονογράφηση</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Αρχική ιστορία</string>
     <string name="lbl_author_role_colorist">Χρωματισμός</string>
     <string name="lbl_author_role_contributor">Συνεισφέρων</string>
     <string name="lbl_author_role_cover_artist">Εικονογράφηση Εξωφύλλου</string>

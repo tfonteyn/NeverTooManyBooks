@@ -531,46 +531,50 @@ public class StripInfoSearchEngine
 
                             switch (label) {
                                 case "Scenario":
-                                case "Naar":
-                                case "Bewerking":
+                                case "Bewerking": {
                                     i += parseAuthor(td, AuthorRole.WRITER, book);
                                     break;
-
-                                case "Tekeningen":
+                                }
+                                case "Naar": {
+                                    i += parseAuthor(td, AuthorRole.BIBLIOGRAPHIC_ANTECEDENT, book);
+                                    break;
+                                }
+                                case "Tekeningen": {
                                     i += parseAuthor(td, AuthorRole.ARTIST, book);
                                     break;
-
-                                case "Kleuren":
+                                }
+                                case "Kleuren": {
                                     i += parseAuthor(td, AuthorRole.COLORIST, book);
                                     break;
-                                case "Inkting":
+                                }
+                                case "Inkting": {
                                     i += parseAuthor(td, AuthorRole.INKING, book);
                                     break;
-
-                                case "Cover":
+                                }
+                                case "Cover": {
                                     i += parseAuthor(td, AuthorRole.COVER_ARTIST, book);
                                     break;
-
-                                case "Inkting cover":
+                                }
+                                case "Inkting cover": {
                                     i += parseAuthor(td, AuthorRole.COVER_INKING, book);
                                     break;
-
-                                case "Vertaling":
+                                }
+                                case "Vertaling": {
                                     i += parseAuthor(td, AuthorRole.TRANSLATOR, book);
                                     break;
-
-                                case "Storyboard":
+                                }
+                                case "Storyboard": {
                                     i += parseAuthor(td, AuthorRole.STORYBOARD, book);
                                     break;
-
-                                case "Lettering":
+                                }
+                                case "Lettering": {
                                     i += parseAuthor(td, AuthorRole.LETTERING, book);
                                     break;
-
-                                case "Uitgever(s)":
+                                }
+                                case "Uitgever(s)": {
                                     i += parsePublisher(td, book);
                                     break;
-
+                                }
                                 case "Jaar": {
                                     final String text = extractText(td);
                                     if (text != null && !text.isEmpty()) {
@@ -635,25 +639,27 @@ public class StripInfoSearchEngine
                                     i += parseEmptyLabel(td, book);
                                     break;
                                 }
-                                case "Cycli":
+                                case "Cycli": {
                                     // not currently used. Example: Cyclus 2 nr. 1
                                     // This is subseries 2, book 1, inside a series.
                                     // (also known as 'story-arc')
                                     break;
-
+                                }
                                 case "Redactie":
-                                case "Vormgeving":
+                                case "Vormgeving": {
                                     // type: list of Authors
                                     // not currently used. Defined by multi-author "concept" series.
                                     // Example: https://www.stripinfo.be/reeks/strip/
                                     // 62234_XIII_Mystery_1_De_Mangoest
                                     break;
-
-                                default:
+                                }
+                                default: {
                                     if (BuildConfig.DEBUG /* always */) {
                                         LoggerFactory.getLogger()
                                                      .d(TAG, "parseDoc", "unknown label=" + label);
                                     }
+                                    break;
+                                }
                             }
                             i++;
                         }

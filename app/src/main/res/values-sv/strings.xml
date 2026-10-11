@@ -324,6 +324,7 @@
     <string name="lbl_author_role">Författarroll</string>
     <string name="lbl_author_role_afterword">Efterord</string>
     <string name="lbl_author_role_artist">Illustratör</string>
+    <string name="lbl_author_role_bibliographic_antecedent">Originalhistoria</string>
     <string name="lbl_author_role_colorist">Färgläggare</string>
     <string name="lbl_author_role_contributor">Medförfattare</string>
     <string name="lbl_author_role_cover_artist">Omslagsillustratör</string>

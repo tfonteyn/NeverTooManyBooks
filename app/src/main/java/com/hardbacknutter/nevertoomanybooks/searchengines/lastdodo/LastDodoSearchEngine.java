@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -797,24 +797,36 @@ public class LastDodoSearchEngine
     /**
      * Found an Author.
      * <p>
-     * The site uses a format of "family-name, givennames" but gets the typical
-     * "Van", "De", ... family name prefixes wrongly in the given names part.
+     * The site uses a format of "family-name, givennames" but puts the typical
+     * "Van", "De", ... family name prefixes in the given names part.
      * So we TRY to get around that before calling {@link Author#from(String)}.
      * <pre>
      *     "Astier, Laurent"
-     *     "Tilburgh, Dieter Van"
+     *     "Tilburgh, Dieter Van"  => the family name is "Van Tilburgh"
      * </pre>
      *
      * @param td   data td
-     * @param type of this entry
+     * @param role of this entry
      * @param book Bundle to update
      */
     private void parseAuthor(@NonNull final Element td,
-                             @AuthorRole.Role final int type,
+                             @AuthorRole.Role final int role,
                              @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {
             String text = a.text();
+
+            // Scenarist:  Verne, Jules [naar]
+            // i.e. the original book author uses a suffix " [naar]".
+            @AuthorRole.Role
+            final int actualRole;
+            if (text.endsWith(" [naar]")) {
+                text = text.substring(0, text.length() - 7);
+                actualRole = AuthorRole.BIBLIOGRAPHIC_ANTECEDENT;
+            } else {
+                actualRole = role;
+            }
+
             if (text.contains(",")) {
                 final String[] split = text.split(",");
                 if (split.length == 2) {
@@ -830,7 +842,7 @@ public class LastDodoSearchEngine
                     author.setIdentifierValue(Identifier.SID_LAST_DODO_NL, siId);
                 }
             }
-            bookParserHelper.addAuthor(author, type, book, false);
+            bookParserHelper.addAuthor(author, actualRole, book, false);
         }
     }
 
