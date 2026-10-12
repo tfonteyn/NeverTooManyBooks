@@ -142,6 +142,7 @@ public abstract class TaskBase<Result>
             try {
                 @NonNull
                 final Result result = doWork();
+                // 'soft' cancel
                 if (isCancelled()) {
                     status = Status.Cancelled;
                     setTaskCancelled(result);
@@ -150,6 +151,7 @@ public abstract class TaskBase<Result>
                     setTaskFinished(result);
                 }
             } catch (@NonNull final CancellationException e) {
+                // 'hard' cancel
                 status = Status.Cancelled;
                 setTaskCancelled(null);
 
