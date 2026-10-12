@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
 import javax.xml.parsers.SAXParser;
 
@@ -147,9 +148,11 @@ public class HttpCall {
      * @param request to execute
      *
      * @throws IOException on generic/other IO failures
+     *
+     * @throws CancellationException if the user cancelled us
      */
     public void head(@NonNull final Request request)
-            throws IOException {
+            throws IOException, CancellationException {
         // silly, sure...  but let's keep the calls clear by calling this method "head"
         get(request, null);
     }
@@ -165,12 +168,13 @@ public class HttpCall {
      * @return the processed response
      *
      * @throws IOException on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @Nullable
     public <R> R get(@NonNull final String url,
                      @Nullable final Map<String, String> headers,
                      @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
+            throws IOException, CancellationException {
         final Request request = createGetRequest(url, headers);
         return get(request, responseProcessor);
     }
@@ -184,12 +188,13 @@ public class HttpCall {
      *
      * @return the processed response
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @Nullable
     public <R> R get(@NonNull final Request request,
                      @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
+            throws IOException, CancellationException {
 
         call = httpClient.newCall(request);
         try (Response response = getResponse(request)) {
@@ -206,12 +211,13 @@ public class HttpCall {
      *
      * @return the processed response
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @Nullable
     public <R> R post(@NonNull final Request request,
                       @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
+            throws IOException, CancellationException {
 
         call = httpClient.newCall(request);
         try (Response response = getResponse(request)) {
@@ -232,7 +238,7 @@ public class HttpCall {
     // URGENT: TEST HEADERS
     private <R> R getWithRedirectHandling(@NonNull final Request request,
                                           @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
+            throws IOException, CancellationException {
 
         call = httpClient.newBuilder()
                          .followRedirects(false)
@@ -333,14 +339,16 @@ public class HttpCall {
      *
      * @return the processed response
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
+     *
      * @see #postAuthenticationForm(String, Map, RequestBody, ResponseProcessor)
      */
     @Nullable
     // URGENT: TEST HEADERS
     private <R> R postWithRedirectHandling(@NonNull final Request request,
                                            @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
+            throws IOException, CancellationException {
 
         call = httpClient.newBuilder()
                          .followRedirects(false)
@@ -419,15 +427,16 @@ public class HttpCall {
      *
      * @return the response as a single {@code String}
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @NonNull
     public String getAsString(@NonNull final Request request)
-            throws IOException {
+            throws IOException, CancellationException {
 
         call = httpClient.newCall(request);
         try (Response response = getResponse(request)) {
-             return response.body().string();
+            return response.body().string();
         }
     }
 
@@ -478,16 +487,26 @@ public class HttpCall {
      *
      * @return response
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @NonNull
     private Response getResponse(@NonNull final Request request)
-            throws IOException {
+            throws IOException, CancellationException {
         if (logEnabled) {
             logRequest(request);
         }
-        //noinspection DataFlowIssue
-        final Response response = call.execute();
+        final Response response;
+        try {
+            //noinspection DataFlowIssue
+            response = call.execute();
+        } catch (@NonNull final IOException e) {
+            if (call.isCanceled()) {
+                throw new CancellationException();
+            }
+            // a real error
+            throw e;
+        }
         checkResponseCode(response);
         return response;
     }
@@ -592,7 +611,7 @@ public class HttpCall {
 
         try (BufferedInputStream bis = new BufferedInputStream(response.body().byteStream(),
                                                                bufferSize)) {
-                return responseProcessor.apply(response, bis);
+            return responseProcessor.apply(response, bis);
         }
     }
 
