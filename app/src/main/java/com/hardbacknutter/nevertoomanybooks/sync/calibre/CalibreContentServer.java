@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -1257,14 +1258,15 @@ public final class CalibreContentServer
      * @param calibreBookId   numeric book id
      * @param changes         (delta) fields to update
      *
-     * @throws IOException   on generic/other IO failures
-     * @throws JSONException upon any parsing error
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
+     * @throws JSONException         upon any parsing error
      */
     @WorkerThread
     void pushChanges(@NonNull final String libraryStringId,
                      final int calibreBookId,
                      @NonNull final JSONObject changes)
-            throws IOException, JSONException {
+            throws IOException, CancellationException, JSONException {
 
         final JSONArray loadedBookIds = new JSONArray()
                 .put(calibreBookId);
@@ -1327,7 +1329,8 @@ public final class CalibreContentServer
      *
      * @return the file
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @WorkerThread
     @NonNull
@@ -1335,7 +1338,7 @@ public final class CalibreContentServer
                   @NonNull final Book book,
                   @NonNull final Uri folder,
                   @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, CancellationException {
 
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
 
@@ -1685,13 +1688,14 @@ public final class CalibreContentServer
      *
      * @return content
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException           on generic/other IO failures
+     * @throws CancellationException if the user cancelled us
      */
     @WorkerThread
     @NonNull
     private String fetch(@NonNull final String url,
                          final int buffer)
-            throws IOException {
+            throws IOException, CancellationException {
 
         jsonFetchCall = new HttpCall(httpClient,
                                      ACCEPT_LANGUAGE_HEADER,
