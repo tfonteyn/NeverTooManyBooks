@@ -34,7 +34,7 @@ public interface LoaneeDao {
      *
      * @param book to process
      *
-     * @return {@code true} for success.
+     * @return {@code true} if any changes were made
      */
     boolean setLoanee(@NonNull Book book);
 
@@ -47,7 +47,7 @@ public interface LoaneeDao {
      * @param bookId book to lend
      * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
      *
-     * @return {@code true} for success.
+     * @return {@code true} if any changes were made
      */
     boolean setLoanee(@IntRange(from = 1) long bookId,
                       @Nullable String loanee);

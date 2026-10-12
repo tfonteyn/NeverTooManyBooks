@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,16 +37,16 @@ public interface CalibreDao {
      *
      * @param context Current context
      * @param book    to process
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @NonNull Book book);
+    boolean insertOrUpdate(@NonNull Context context,
+                           @NonNull Book book);
 
     /**
      * Store the Calibre data for the given {@link Book}.
      * <p>
-     * New {@link CalibreLibrary} are added, existing ones are NOT updated.
-     * <p>
-     * Because this method deals with a list of items to insert, it returns a simple boolean.
+     * A new {@link CalibreLibrary} is added, an existing one is NOT updated.
      *
      * @param context Current context
      * @param book    to process
@@ -55,6 +55,19 @@ public interface CalibreDao {
      *         {@code false} if no insert was <strong>attempted</strong>
      */
     boolean insert(@NonNull Context context,
+                   @NonNull Book book);
+
+    /**
+     * Update the Calibre data for the given {@link Book}.
+     * <p>
+     * A new {@link CalibreLibrary} is added, an existing one is NOT updated.
+     *
+     * @param context Current context
+     * @param book    to process
+     *
+     * @return {@code true} if any changes were made
+     */
+    boolean update(@NonNull Context context,
                    @NonNull Book book);
 
     /**

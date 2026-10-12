@@ -277,10 +277,11 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               @NonNull final Collection<TocEntry> list,
-                               @NonNull final Function<TocEntry, Locale> localeSupplier)
+    public boolean insertOrUpdate(@NonNull final Context context,
+                                  @IntRange(from = 1) final long bookId,
+                                  final boolean doUpdates,
+                                  @NonNull final Collection<TocEntry> list,
+                                  @NonNull final Function<TocEntry, Locale> localeSupplier)
             throws StorageException, ImageIOException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -288,6 +289,8 @@ public class TocEntryDaoImpl
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
+
+        boolean changesMade = false;
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
         final ReorderHelper reorderHelper = new ReorderHelper(LocaleListUtils.asList(
@@ -311,6 +314,7 @@ public class TocEntryDaoImpl
                 // Create if needed - NEVER do updates here
                 if (author.getId() == 0) {
                     authorDao.insert(context, author, locale);
+                    changesMade = true;
                 }
 
                 final String title = tocEntry.getTitle();
@@ -326,7 +330,8 @@ public class TocEntryDaoImpl
                     final long iId = stmtInsToc.executeInsert(() -> ERROR_INSERT_FROM + tocEntry);
                     tocEntry.setId(iId);
                     actualInserts.add(tocEntry);
-                } else {
+                    changesMade = true;
+                } else if (doUpdates) {
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
 
@@ -350,6 +355,7 @@ public class TocEntryDaoImpl
                             stmtUpdToc.bindString(3, pubDateIso);
                             stmtUpdToc.bindLong(4, tocEntry.getId());
                             stmtUpdToc.executeUpdateDelete(() -> ERROR_UPDATE_FROM + tocEntry);
+                            changesMade = true;
                         }
                     }
                 }
@@ -379,17 +385,18 @@ public class TocEntryDaoImpl
 
             // If no links or positions changed, we're done
             if (!needsResync) {
-                return;
+                return changesMade;
             }
 
             // Wipe old links ONLY if previous links actually existed
             if (!currentLinkStates.isEmpty()) {
                 deleteAllLinks(bookId);
+                changesMade = true;
             }
 
             // If there is nothing to insert, we're done
             if (list.isEmpty()) {
-                return;
+                return changesMade;
             }
 
             // Insert the new ones.
@@ -430,6 +437,8 @@ public class TocEntryDaoImpl
             actualInserts.forEach(entry -> entry.setId(0));
             throw e;
         }
+
+        return true;
     }
 
     private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
@@ -488,7 +497,7 @@ public class TocEntryDaoImpl
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     try {
-                        insertOrUpdate(context, bookId,
+                        insertOrUpdate(context, bookId, false,
                                        book.getToc(),
                                        tocEntry -> bookLocale);
                     } catch (@NonNull final StorageException e) {
@@ -579,7 +588,7 @@ public class TocEntryDaoImpl
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_TOC_ENTRY
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + ')';
 
-        private static final String FETCH_CURRENT_LINKS =
+        static final String FETCH_CURRENT_LINKS =
                 SELECT_ + DBKey.FK_TOC_ENTRY
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_BOOK + "=?"

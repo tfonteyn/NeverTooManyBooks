@@ -108,7 +108,7 @@ public interface AuthorDao
                               @NonNull final Collection<Author> list,
                               @NonNull final Function<Author, Locale> localeSupplier) {
         return pruneList(context, list, localeSupplier,
-                // Don't look up the locale a 2nd time.
+                         // Don't look up the locale a 2nd time.
                          (current, locale) -> fixId(context, current, locale));
     }
 
@@ -253,19 +253,20 @@ public interface AuthorDao
      *
      * @param context        Current context
      * @param bookId         of the book
-     * @param doUpdates      set to {@code true} to force each {@link Author} to be updated.
-     *                       <strong>ONLY</strong> set this when actually needed.
+     * @param doUpdates      set to {@code true} to allow {@link Author}s to be updated.
      * @param list           the list of {@link Author}'s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @return {@code true} if any changes were made
      *
      * @throws ImageIOException on image I/O related errors.
      * @throws StorageException on image storage failures
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        boolean doUpdates,
-                        @NonNull Collection<Author> list,
-                        @NonNull Function<Author, Locale> localeSupplier)
+    boolean insertOrUpdate(@NonNull Context context,
+                           @IntRange(from = 1) long bookId,
+                           boolean doUpdates,
+                           @NonNull Collection<Author> list,
+                           @NonNull Function<Author, Locale> localeSupplier)
             throws StorageException, ImageIOException;
 
     /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,11 +33,13 @@ public interface StripInfoDao {
      * Delete, update existing or insert the StripInfo data for the given {@link Book}.
      *
      * @param book to process
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Book book);
+    boolean insertOrUpdate(@NonNull Book book);
 
     /**
-     * Store the given {@link StripInfoCollectionData}.
+     * Store the StripInfo data for the given {@link Book}.
      *
      * @param book to process
      *
@@ -45,6 +47,15 @@ public interface StripInfoDao {
      *         {@code false} if no insert was <strong>attempted</strong>
      */
     boolean insert(@NonNull Book book);
+
+    /**
+     * Update the StripInfo data for the given {@link Book}.
+     *
+     * @param book to process
+     *
+     * @return {@code true} if any changes were made
+     */
+    boolean update(@NonNull Book book);
 
     /**
      * Delete all data related to StripInfo for the given book.

@@ -51,8 +51,10 @@ public interface IdentifierValueDao {
      * @param entityType type of the foreign key entity
      * @param fkId       foreign-key id
      * @param list       the list of {@link Identifier.Value}s
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Identifier.EntityType entityType,
+    boolean insertOrUpdate(@NonNull Identifier.EntityType entityType,
                         @IntRange(from = 1) long fkId,
                         @NonNull Collection<Identifier.Value> list);
 

@@ -59,6 +59,14 @@ public class LoaneeDaoImpl
         return insertOrUpdate(bookId, loanee);
     }
 
+    /**
+     * Set or remove the loanee on the given book id.
+     *
+     * @param bookId to update
+     * @param loanee to set; {@code null} or {@code ""} to remove
+     *
+     * @return {@code true} if any changes were made
+     */
     private boolean insertOrUpdate(@IntRange(from = 1) final long bookId,
                                    @Nullable final String loanee) {
         final String target = loanee == null ? "" : loanee.strip();

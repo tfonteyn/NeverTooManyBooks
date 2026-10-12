@@ -182,17 +182,17 @@ public interface SeriesDao
      *
      * @param context        Current context
      * @param bookId         of the book
-     * @param doUpdates      set to {@code true} to force each {@link Series} to be updated.
-     *                       <strong>ONLY</strong> set this when actually needed.
-     *                       Do not set this during for example an import.
+     * @param doUpdates      set to {@code true} to allow {@link Series}s to be updated.
      * @param list           the list of {@link Series}'s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        boolean doUpdates,
-                        @NonNull Collection<Series> list,
-                        @NonNull Function<Series, Locale> localeSupplier);
+    boolean insertOrUpdate(@NonNull Context context,
+                           @IntRange(from = 1) long bookId,
+                           boolean doUpdates,
+                           @NonNull Collection<Series> list,
+                           @NonNull Function<Series, Locale> localeSupplier);
 
     /**
      * Moves all books from the 'source' {@link Series}, to the 'target' {@link Series}.

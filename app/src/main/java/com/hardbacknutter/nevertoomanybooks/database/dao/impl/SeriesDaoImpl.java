@@ -269,11 +269,11 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               final boolean doUpdates,
-                               @NonNull final Collection<Series> list,
-                               @NonNull final Function<Series, Locale> localeSupplier)
+    public boolean insertOrUpdate(@NonNull final Context context,
+                                  @IntRange(from = 1) final long bookId,
+                                  final boolean doUpdates,
+                                  @NonNull final Collection<Series> list,
+                                  @NonNull final Function<Series, Locale> localeSupplier)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -282,6 +282,8 @@ public class SeriesDaoImpl
             }
         }
 
+        boolean changesMade = false;
+
         pruneList(context, list, localeSupplier);
 
         // Ensure all Series exist in DB so they all have a valid ID
@@ -289,13 +291,11 @@ public class SeriesDaoImpl
             final Locale locale = localeSupplier.apply(series);
             fixId(context, series, locale);
 
-            // Create if needed - do NOT do updates unless explicitly allowed
+            // Create if needed - do NOT do updates unless allowed
             if (series.getId() == 0) {
                 insert(context, series, locale);
+                changesMade = true;
             } else if (doUpdates) {
-                // ONLY update if there are actual changes.
-                // Otherwise, the trigger "after_update_on" would update
-                // DATE_LAST_UPDATED__UTC for all related books.
                 final Optional<Series> oFound = findById(series.getId());
                 if (oFound.isPresent()) {
                     final Series found = oFound.get();
@@ -304,6 +304,7 @@ public class SeriesDaoImpl
                     // Check for the name AND user fields being equal.
                     if (!found.isIdentical(series)) {
                         update(context, series, locale);
+                        changesMade = true;
                     }
                 }
             }
@@ -338,17 +339,18 @@ public class SeriesDaoImpl
 
         // If no links or positions changed, we're done
         if (!needsResync) {
-            return;
+            return changesMade;
         }
 
         // Wipe old links ONLY if previous links actually existed
         if (!currentLinkStates.isEmpty()) {
             deleteAllLinks(bookId);
+            changesMade = true;
         }
 
         // If there is nothing to insert, we're done
         if (list.isEmpty()) {
-            return;
+            return changesMade;
         }
 
         // Insert the new ones.
@@ -365,6 +367,7 @@ public class SeriesDaoImpl
                 stmt.executeInsert(() -> "insert Book-Series");
             }
         }
+        return true;
     }
 
     private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
@@ -684,7 +687,7 @@ public class SeriesDaoImpl
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_SERIES
                 + _FROM_ + TBL_BOOK_SERIES.getName() + ')';
 
-        private static final String FETCH_CURRENT_BOOK_LINKS =
+        static final String FETCH_CURRENT_BOOK_LINKS =
                 SELECT_ + DBKey.FK_SERIES
                 + ',' + DBKey.SERIES.BOOK_SERIES_POSITION
                 + ',' + DBKey.SERIES.BOOK_SERIES_NUMBER

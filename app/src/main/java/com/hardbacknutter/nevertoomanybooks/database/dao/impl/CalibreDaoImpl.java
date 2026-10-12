@@ -24,7 +24,9 @@ import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,6 +52,8 @@ public class CalibreDaoImpl
     private static final String TAG = "CalibreDaoImpl";
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
+
     private final CalibreLibraryDao calibreLibraryDao;
 
     /**
@@ -76,7 +80,7 @@ public class CalibreDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
+    public boolean insertOrUpdate(@NonNull final Context context,
                                @NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -85,25 +89,27 @@ public class CalibreDaoImpl
             }
         }
 
-        // FIXME/TEST: there are currently no triggers on the table
-        //  to reset the book last-update date. Hence, delete+insert is FINE.
-        //  If we do add a trigger, this code needs to properly check for changes
-        //  before doing any delete/inserts
-        // Just delete all current data and insert from scratch.
-        delete(book);
-        insert(context, book);
+        final Optional<CalibreBookData> oExisting = findByLocalBookId(book.getId());
+        if (oExisting.isPresent()) {
+            final CalibreBookData existing = oExisting.get();
+            if (existing.getCalibreBookId() == book.getLong(DBKey.CALIBRE.BOOK_ID)
+                && existing.getLibraryId() == book.getLong(DBKey.FK_CALIBRE_LIBRARY)
+                && Objects.equals(existing.getCalibreBookUuid(),
+                                  book.getString(DBKey.CALIBRE.BOOK_UUID, null))
+                && Objects.equals(existing.getFileFormat(),
+                                  book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null))) {
+                return false;
+            }
+
+            return update(context, book);
+        } else {
+            return insert(context, book);
+        }
     }
 
-    @Override
-    public boolean insert(@NonNull final Context context,
-                          @NonNull final Book book) {
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (!db.inTransaction()) {
-                throw new TransactionException(TransactionException.REQUIRED);
-            }
-        }
-
+    @Nullable
+    private CalibreLibrary getOrCreateLibrary(@NonNull final Context context,
+                                              @NonNull final Book book) {
         final CalibreLibrary library;
 
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
@@ -119,7 +125,7 @@ public class CalibreDaoImpl
             }
         } else if (book.contains(DBKey.FK_CALIBRE_LIBRARY)) {
             library = calibreLibraryDao.findById(book.getLong(DBKey.FK_CALIBRE_LIBRARY))
-                                .orElse(null);
+                                       .orElse(null);
             if (library == null) {
                 // The book did not have a full library object;
                 // It did have a library id, but that library does not exist.
@@ -130,7 +136,7 @@ public class CalibreDaoImpl
                     LoggerFactory.getLogger()
                                  .d(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
                 }
-                return false;
+                return null;
             }
         } else {
             // This can happen if the import data contained old (pre) v2.5.1
@@ -140,6 +146,25 @@ public class CalibreDaoImpl
                 LoggerFactory.getLogger()
                              .d(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
             }
+            return null;
+        }
+
+        return library;
+    }
+
+    @Override
+    public boolean insert(@NonNull final Context context,
+                          @NonNull final Book book) {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        final CalibreLibrary library = getOrCreateLibrary(context, book);
+        if (library == null) {
+            // bail out but do NOT throw an error!
             return false;
         }
 
@@ -152,7 +177,35 @@ public class CalibreDaoImpl
 
             stmt.executeInsert(() -> ERROR_INSERT_FROM + book);
         }
+        return true;
+    }
 
+    @Override
+    public boolean update(@NonNull final Context context,
+                          @NonNull final Book book) {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        final CalibreLibrary library = getOrCreateLibrary(context, book);
+        if (library == null) {
+            // bail out but do NOT throw an error!
+            return false;
+        }
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            stmt.bindLong(1, book.getInt(DBKey.CALIBRE.BOOK_ID));
+            stmt.bindString(2, book.getString(DBKey.CALIBRE.BOOK_UUID));
+            stmt.bindString(3, book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
+            stmt.bindLong(4, library.getId());
+
+            stmt.bindLong(5, book.getId());
+
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + book);
+        }
         return true;
     }
 
@@ -174,6 +227,14 @@ public class CalibreDaoImpl
                 + ',' + DBKey.CALIBRE.BOOK_MAIN_FORMAT
                 + ',' + DBKey.FK_CALIBRE_LIBRARY
                 + ") VALUES (?,?,?,?,?)";
+
+        static final String UPDATE =
+                UPDATE_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName() + _SET_
+                + DBKey.CALIBRE.BOOK_ID + "=?"
+                + DBKey.CALIBRE.BOOK_UUID + "=?"
+                + DBKey.CALIBRE.BOOK_MAIN_FORMAT + "=?"
+                + DBKey.FK_CALIBRE_LIBRARY + "=?"
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         static final String FIND_BY_LOCAL_BOOK_ID =
                 SELECT_ + DBKey.CALIBRE.BOOK_ID

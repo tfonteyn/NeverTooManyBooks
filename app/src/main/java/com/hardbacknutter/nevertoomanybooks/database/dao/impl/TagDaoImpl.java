@@ -216,10 +216,11 @@ public class TagDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                                @IntRange(from = 1) final long bookId,
-                                @NonNull final Collection<Tag> list,
-                                @NonNull final Function<Tag, Locale> localeSupplier)
+    public boolean insertOrUpdate(@NonNull final Context context,
+                                  @IntRange(from = 1) final long bookId,
+                                  final boolean doUpdates,
+                                  @NonNull final Collection<Tag> list,
+                                  @NonNull final Function<Tag, Locale> localeSupplier)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -228,24 +229,25 @@ public class TagDaoImpl
             }
         }
 
+        boolean changesMade = false;
+
         pruneList(context, list, localeSupplier);
 
         // Ensure all Tags exist in DB so they all have a valid ID
         for (final Tag tag : list) {
             fixId(tag);
 
-            // Create if needed
+            // Create if needed - do NOT do updates unless allowed
             if (tag.getId() == 0) {
                 insert(tag);
-            } else {
-                // ONLY update if there are actual changes.
-                // Otherwise, the trigger "after_update_on" would update
-                // DATE_LAST_UPDATED__UTC for all related books.
+                changesMade = true;
+            } else if (doUpdates) {
                 final Optional<Tag> oFound = findById(tag.getId());
                 if (oFound.isPresent()) {
                     final Tag found = oFound.get();
                     if (!found.getName().equals(tag.getName())) {
                         update(tag);
+                        changesMade = true;
                     }
                 }
             }
@@ -275,17 +277,18 @@ public class TagDaoImpl
 
         // If no links or positions changed, we're done
         if (!needsResync) {
-            return;
+            return changesMade;
         }
 
         // Wipe old links ONLY if previous links actually existed
         if (!currentLinkStates.isEmpty()) {
             deleteAllLinks(bookId);
+            changesMade = true;
         }
 
         // If there is nothing to insert, we're done
         if (list.isEmpty()) {
-            return;
+            return changesMade;
         }
 
         // Insert the new ones.
@@ -297,6 +300,7 @@ public class TagDaoImpl
                 stmt.executeInsert(() -> "insert Book-Tag");
             }
         }
+        return true;
     }
 
     private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
@@ -393,7 +397,7 @@ public class TagDaoImpl
                     }
                     // delete old links and store all new links
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, destList, tag -> locale);
+                    insertOrUpdate(context, bookId, false, destList, tag -> locale);
                 }
             }
 
@@ -500,7 +504,7 @@ public class TagDaoImpl
                         LoggerFactory.getLogger()
                                      .d(TAG, "ApplyMappings: " + before + " -> " + after);
                     }
-                    insertOrUpdate(context, bookId, after, tag -> locale);
+                    insertOrUpdate(context, bookId, false, after, tag -> locale);
                     bookDao.touch(bookId);
 
                     bookCount++;

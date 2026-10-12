@@ -125,7 +125,7 @@ public class BookDaoImpl
      * @throws SQLException on failures
      */
     private void touch(@NonNull final Collection<Long> bookIds)
-        throws SQLException {
+            throws SQLException {
         try (SynchronizedStatement stmt = db.compileStatement(
                 Sql.UPDATE_BOOKS_SET + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds))) {
             stmt.executeUpdateDelete(null);
@@ -200,10 +200,10 @@ public class BookDaoImpl
     }
 
     @Override
-    public void update(@NonNull final Context context,
-                       @NonNull final BookDaoHelper bookDaoHelper,
-                       @NonNull final Book book,
-                       @NonNull final Set<ImportFlag> flags)
+    public boolean update(@NonNull final Context context,
+                          @NonNull final BookDaoHelper bookDaoHelper,
+                          @NonNull final Book book,
+                          @NonNull final Set<ImportFlag> flags)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -211,6 +211,8 @@ public class BookDaoImpl
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
+
+        boolean changesMade = false;
 
         final ContentValues cv = bookDaoHelper.process(context, book, false);
 
@@ -238,12 +240,16 @@ public class BookDaoImpl
             // throws SQLException
             db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
                       new String[]{String.valueOf(book.getId())});
+
+            changesMade = true;
         }
 
         // always lookup and restore the UUID
         final String uuid = getBookUuid(book.getId());
         SanityCheck.requireValue(uuid, ERROR_UUID);
         book.setUuid(uuid);
+
+        return changesMade;
     }
 
     @Override
@@ -363,7 +369,7 @@ public class BookDaoImpl
 
     @Override
     public void setLocation(@NonNull final Collection<Long> bookIds,
-                               @NonNull final String location) {
+                            @NonNull final String location) {
         // Sanity check
         if (bookIds.isEmpty()) {
             return;
@@ -380,7 +386,7 @@ public class BookDaoImpl
 
     @Override
     public void setRead(@NonNull final Book book,
-                           final boolean read) {
+                        final boolean read) {
         final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = read ? now : "";
 

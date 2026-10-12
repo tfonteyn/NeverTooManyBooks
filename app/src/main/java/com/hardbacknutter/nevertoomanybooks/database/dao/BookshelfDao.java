@@ -136,7 +136,7 @@ public interface BookshelfDao {
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Bookshelf> list) {
         return pruneList(context, list,
-                // Don't look up the locale a 2nd time.
+                         // Don't look up the locale a 2nd time.
                          (current, locale) -> fixId(context, current, locale));
     }
 
@@ -198,10 +198,12 @@ public interface BookshelfDao {
      * @param context Current context
      * @param bookId  of the book
      * @param list    the list of bookshelves
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        @NonNull Collection<Bookshelf> list);
+    boolean insertOrUpdate(@NonNull Context context,
+                           @IntRange(from = 1) long bookId,
+                           @NonNull Collection<Bookshelf> list);
 
     /**
      * Moves all books from the 'source' {@link Bookshelf}, to the 'target' {@link Bookshelf}.

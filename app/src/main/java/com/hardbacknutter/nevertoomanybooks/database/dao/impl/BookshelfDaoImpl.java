@@ -495,7 +495,7 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
+    public boolean insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Bookshelf> list)
             throws SQLException {
@@ -506,6 +506,8 @@ public class BookshelfDaoImpl
             }
         }
 
+        boolean changesMade = false;
+
         // Fix IDs and remove duplicates; shelves don't use a Locale, hence no lookup done.
         pruneList(context, list);
 
@@ -514,6 +516,7 @@ public class BookshelfDaoImpl
         for (final Bookshelf bookshelf : list) {
             if (bookshelf.getId() == 0) {
                 insert(context, bookshelf, userLocale);
+                changesMade = true;
             }
         }
 
@@ -539,17 +542,18 @@ public class BookshelfDaoImpl
 
         // If no links changed, we're done
         if (!needsResync) {
-            return;
+            return changesMade;
         }
 
         // Wipe old links ONLY if previous links actually existed
         if (!currentLinkStates.isEmpty()) {
             deleteAllLinks(bookId);
+            changesMade = true;
         }
 
         // If there is nothing to insert, we're done
         if (list.isEmpty()) {
-            return;
+            return changesMade;
         }
 
         // Insert the new ones.
@@ -561,7 +565,9 @@ public class BookshelfDaoImpl
                 stmt.executeInsert(() -> "insert Book-Bookshelf");
             }
         }
+        return true;
     }
+
     private void deleteAllLinks(@IntRange(from = 1) final long bookId) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);

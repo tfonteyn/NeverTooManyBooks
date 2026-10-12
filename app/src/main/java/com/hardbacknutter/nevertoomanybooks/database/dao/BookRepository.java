@@ -161,13 +161,15 @@ public class BookRepository {
      *                May contain extra data which will be ignored.
      * @param flags   See {@link BookDao.ImportFlag} for flag definitions
      *
+     * @return {@code true} if any changes were made
+     *
      * @throws ImageIOException on image I/O related errors.
      * @throws StorageException on image storage failures
      * @throws SQLException     on any failures
      */
-    public void update(@NonNull final Context context,
-                       @NonNull final Book book,
-                       @NonNull final Set<BookDao.ImportFlag> flags)
+    public boolean update(@NonNull final Context context,
+                          @NonNull final Book book,
+                          @NonNull final Set<BookDao.ImportFlag> flags)
             throws StorageException, ImageIOException, SQLException {
         Synchronizer.SyncLock txLock = null;
         try {
@@ -176,20 +178,30 @@ public class BookRepository {
             }
 
             // Update the book itself
-            bookDao.update(context, bookDaoHelper, book, flags);
+            final boolean bookWasChanged = bookDao.update(context, bookDaoHelper, book, flags);
 
             // add the links to series, authors,...
-            insertBookLinks(context, book, flags);
+            boolean otherChangesMade = insertBookLinks(context, book, flags);
 
-            // populate the search suggestions table
+            // Updating the FTS; this is not considered a 'wasUpdated'
+            // as it has no effect on the actual data.
             ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
             // move the covers from the cache dir to their permanent dir/name
-            persistImages(book);
+            otherChangesMade = persistImages(book) || otherChangesMade;
+
+            if (!bookWasChanged && otherChangesMade) {
+                // We did not change the book itself, but links or images were changed.
+                // Explicitly flag the book as updated.
+                bookDao.touch(book);
+            }
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
+
+            return bookWasChanged || otherChangesMade;
+
         } catch (@NonNull final SQLException | StorageException e) {
             LoggerFactory.getLogger().e(TAG, e, ERROR_UPDATING_BOOK_FROM + book);
             throw e;
@@ -208,18 +220,20 @@ public class BookRepository {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context    Current context
-     * @param book       A collection with the columns to be set. May contain extra data.
-     * @param flags      See {@link BookDao.ImportFlag} for flag definitions
+     * @param context Current context
+     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param flags   See {@link BookDao.ImportFlag} for flag definitions
+     *
+     * @return {@code true} if any changes were made
      *
      * @throws ImageIOException     on image I/O related errors.
      * @throws StorageException     on image storage failures
      * @throws SQLException         on any failures
      * @throws TransactionException (debug) if there is no current transaction
      */
-    private void insertBookLinks(@NonNull final Context context,
-                                 @NonNull final Book book,
-                                 @NonNull final Set<BookDao.ImportFlag> flags)
+    private boolean insertBookLinks(@NonNull final Context context,
+                                    @NonNull final Book book,
+                                    @NonNull final Set<BookDao.ImportFlag> flags)
             throws StorageException, ImageIOException, SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -227,6 +241,8 @@ public class BookRepository {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
+
+        boolean changesMade = false;
 
         // Only lookup locales when we're NOT in batch mode (i.e. NOT doing an import)
         final boolean lookupLocale = !flags.contains(BookDao.ImportFlag.RunInBatch);
@@ -237,22 +253,23 @@ public class BookRepository {
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final ServiceLocator sl = ServiceLocator.getInstance();
 
         if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but never updated
-            serviceLocator.getBookshelfDao().insertOrUpdate(context,
-                                                            book.getId(),
-                                                            book.getBookshelves());
+            //noinspection ConstantValue
+            changesMade = sl.getBookshelfDao().insertOrUpdate(context, book.getId(),
+                                                              book.getBookshelves())
+                          || changesMade;
         }
 
         if (book.contains(Book.BKEY_AUTHOR_LIST)) {
-            serviceLocator.getAuthorDao().insertOrUpdate(context,
-                                                         book.getId(), true,
-                                                         book.getAuthors(),
-                                                         author -> bookLocale);
+            // Insert new entries AND update existing ones as needed.
+            changesMade = sl.getAuthorDao().insertOrUpdate(context, book.getId(), true,
+                                                           book.getAuthors(),
+                                                           author -> bookLocale)
+                          || changesMade;
         }
-
 
         if (book.contains(Book.BKEY_SERIES_LIST)) {
             final Function<Series, Locale> localeSupplier = series -> {
@@ -262,66 +279,71 @@ public class BookRepository {
                     return bookLocale;
                 }
             };
-            serviceLocator.getSeriesDao().insertOrUpdate(context,
-                                                         book.getId(), true,
-                                                         book.getSeries(),
-                                                         localeSupplier);
+            // Insert new entries AND update existing ones as needed.
+            changesMade = sl.getSeriesDao().insertOrUpdate(context, book.getId(), true,
+                                                           book.getSeries(),
+                                                           localeSupplier)
+                          || changesMade;
         }
 
         if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
-            serviceLocator.getPublisherDao().insertOrUpdate(context,
-                                                            book.getId(), true,
-                                                            book.getPublishers(),
-                                                            publisher -> bookLocale);
+            // Insert new entries AND update existing ones as needed.
+            changesMade = sl.getPublisherDao().insertOrUpdate(context, book.getId(), true,
+                                                              book.getPublishers(),
+                                                              publisher -> bookLocale)
+                          || changesMade;
         }
 
         if (book.contains(Book.BKEY_TOC_LIST)) {
-            // TOC entries are two steps away; they can exist in other books
-            // Hence we will both insert new entries
-            // AND update existing ones as needed.
-            serviceLocator.getTocEntryDao().insertOrUpdate(context,
-                                                           book.getId(),
-                                                           book.getToc(),
-                                                           tocEntry -> bookLocale);
+            // TOC entries are two steps away; they can exist in other books.
+            // Insert new entries AND update existing ones as needed.
+            changesMade = sl.getTocEntryDao().insertOrUpdate(context, book.getId(), true,
+                                                             book.getToc(),
+                                                             tocEntry -> bookLocale)
+                          || changesMade;
         }
 
         if (book.contains(Book.BKEY_TAG_LIST)) {
             // These are two steps away; they can exist in other books.
-            // We will insert new entries
-            // AND update existing ones as needed.
-            serviceLocator.getTagDao().insertOrUpdate(context,
-                                                      book.getId(),
-                                                      book.getTags(),
-                                                      tag -> bookLocale);
+            // Insert new entries AND update existing ones as needed.
+            changesMade = sl.getTagDao().insertOrUpdate(context, book.getId(), true,
+                                                        book.getTags(),
+                                                        tag -> bookLocale)
+                          || changesMade;
         }
 
         if (book.contains(Identifier.Value.BKEY_LIST)) {
             // These are two steps away; they can exist in other books.
             // However, we in fact do NOT use id's except for the internal database references.
             // Instead, we always work with the String key.
-            // We will insert new entries
-            // but there is nothing to update as such.
-            serviceLocator.getBookIdentifierDao()
-                          .insertOrUpdate(Identifier.EntityType.Book,
-                                          book.getId(), book.getIdentifiers());
+            // Insert new entries but there is nothing to update as such.
+            changesMade = sl.getBookIdentifierDao().insertOrUpdate(Identifier.EntityType.Book,
+                                                                   book.getId(),
+                                                                   book.getIdentifiers())
+                          || changesMade;
         }
 
         // Returning a book == deleting the loanee,
         // is handled directly, here we only need to bother with insert/update
         if (book.contains(DBKey.LOANEE_NAME)) {
-            serviceLocator.getLoaneeDao().setLoanee(book);
+            changesMade = sl.getLoaneeDao().setLoanee(book)
+                          || changesMade;
         }
 
         // Handle synchronisation field.
         if (book.contains(DBKey.CALIBRE.BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
-            serviceLocator.getCalibreDao().insertOrUpdate(context, book);
+            changesMade = sl.getCalibreDao().insertOrUpdate(context, book)
+                          || changesMade;
         }
 
         // Handle synchronisation field.
         if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
-            serviceLocator.getStripInfoDao().insertOrUpdate(book);
+            changesMade = sl.getStripInfoDao().insertOrUpdate(book)
+                          || changesMade;
         }
+
+        return changesMade;
     }
 
     /**
@@ -331,15 +353,19 @@ public class BookRepository {
      *
      * @param book to process
      *
+     * @return {@code true} if any changes were made
+     *
      * @throws ImageIOException on image I/O related errors.
      * @throws StorageException on image storage failures
      */
     @SuppressWarnings("OverlyBroadThrowsClause")
-    private void persistImages(@NonNull final Book book)
+    private boolean persistImages(@NonNull final Book book)
             throws StorageException, ImageIOException {
 
         final String uuid = book.getUuid();
         final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
+
+        boolean changesMade = false;
 
         for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
             if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
@@ -366,7 +392,11 @@ public class BookRepository {
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+
+                changesMade = true;
             }
         }
+
+        return changesMade;
     }
 }

@@ -104,16 +104,20 @@ public interface TocEntryDao
      *
      * @param context        Current context
      * @param bookId         of the book
+     * @param doUpdates      set to {@code true} to allow {@link TocEntry}s to be updated.
      * @param list           the list of {@link TocEntry}
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @return {@code true} if any changes were made
      *
      * @throws ImageIOException on image I/O related errors.
      * @throws StorageException on image storage failures
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        @NonNull Collection<TocEntry> list,
-                        @NonNull Function<TocEntry, Locale> localeSupplier)
+    boolean insertOrUpdate(@NonNull Context context,
+                           @IntRange(from = 1) long bookId,
+                           boolean doUpdates,
+                           @NonNull Collection<TocEntry> list,
+                           @NonNull Function<TocEntry, Locale> localeSupplier)
             throws StorageException, ImageIOException;
 
     /**

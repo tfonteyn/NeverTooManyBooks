@@ -45,6 +45,7 @@ public class StripInfoDaoImpl
     private static final String TAG = "StripInfoDaoImpl";
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     /**
      * Constructor.
@@ -70,7 +71,7 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Book book) {
+    public boolean insertOrUpdate(@NonNull final Book book) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -78,13 +79,18 @@ public class StripInfoDaoImpl
             }
         }
 
-        // FIXME/TEST: there are currently no triggers on the table
-        //  to reset the book last-update date. Hence, delete+insert is FINE.
-        //  If we do add a trigger, this code needs to properly check for changes
-        //  before doing any delete/inserts
-        // Just delete all current data and insert from scratch.
-        delete(book);
-        insert(book);
+        final Optional<StripInfoCollectionData> oExisting = findByLocalBookId(book.getId());
+        if (oExisting.isPresent()) {
+            final StripInfoCollectionData fromBook =
+                    book.getParcelable(StripInfoCollectionData.BKEY);
+            if (oExisting.get().equals(fromBook)) {
+                return false;
+            }
+
+            return update(book);
+        } else {
+            return insert(book);
+        }
     }
 
     @Override
@@ -122,6 +128,41 @@ public class StripInfoDaoImpl
     }
 
     @Override
+    public boolean update(@NonNull final Book book) {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        final StripInfoCollectionData data = book.getParcelable(StripInfoCollectionData.BKEY);
+        if (data == null) {
+            return false;
+        }
+
+        final String lastSync = data.getLastSync();
+        final String dateTime = lastSync != null ? SqlEncode.dateTime(lastSync) : "";
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            int i = 0;
+            stmt.bindLong(++i, data.getSid());
+            stmt.bindLong(++i, data.getCollectionId());
+            stmt.bindBoolean(++i, data.isOwned());
+            stmt.bindBoolean(++i, data.isDigital());
+            stmt.bindBoolean(++i, data.isWanted());
+            stmt.bindLong(++i, data.getAmount());
+            stmt.bindString(++i, dateTime);
+
+            stmt.bindLong(++i, book.getId());
+
+            stmt.executeUpdateDelete(() -> ERROR_UPDATE_FROM + data);
+        }
+
+        return true;
+    }
+
+    @Override
     public void delete(@NonNull final Book book) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
             stmt.bindLong(1, book.getId());
@@ -142,6 +183,17 @@ public class StripInfoDaoImpl
                 + ',' + DBKey.STRIP_INFO.AMOUNT
                 + ',' + DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC
                 + ") VALUES (?,?,?,?,?,?,?,?)";
+
+        static final String UPDATE =
+                UPDATE_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName() + _SET_
+                + DBKey.STRIP_INFO.BOOK_ID + "=?"
+                + DBKey.STRIP_INFO.COLLECTION_ID + "=?"
+                + DBKey.STRIP_INFO.OWNED + "=?"
+                + DBKey.STRIP_INFO.DIGITAL + "=?"
+                + DBKey.STRIP_INFO.WANTED + "=?"
+                + DBKey.STRIP_INFO.AMOUNT + "=?"
+                + DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC + "=?"
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         static final String FIND_BY_LOCAL_BOOK_ID =
                 SELECT_ + DBKey.FK_BOOK

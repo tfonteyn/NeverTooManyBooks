@@ -443,11 +443,11 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               final boolean doUpdates,
-                               @NonNull final Collection<Author> list,
-                               @NonNull final Function<Author, Locale> localeSupplier)
+    public boolean insertOrUpdate(@NonNull final Context context,
+                                  @IntRange(from = 1) final long bookId,
+                                  final boolean doUpdates,
+                                  @NonNull final Collection<Author> list,
+                                  @NonNull final Function<Author, Locale> localeSupplier)
             throws StorageException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -456,6 +456,8 @@ public class AuthorDaoImpl
             }
         }
 
+        boolean changesMade = false;
+
         pruneList(context, list, localeSupplier);
 
         // Ensure all Authors exist in DB so they all have a valid ID
@@ -463,13 +465,11 @@ public class AuthorDaoImpl
             final Locale locale = localeSupplier.apply(author);
             fixId(context, author, locale);
 
-            // Create if needed - do NOT do updates unless explicitly allowed
+            // Create if needed - do NOT do updates unless allowed
             if (author.getId() == 0) {
                 insert(context, author, locale);
+                changesMade = true;
             } else if (doUpdates) {
-                // ONLY update if there are actual changes.
-                // Otherwise, the trigger "after_update_on" would update
-                // DATE_LAST_UPDATED__UTC for all related books.
                 final Optional<Author> oFound = findById(author.getId());
                 if (oFound.isPresent()) {
                     final Author found = oFound.get();
@@ -478,6 +478,7 @@ public class AuthorDaoImpl
                     // Check for the name AND user fields being different.
                     if (!found.isIdentical(author)) {
                         update(context, author, locale);
+                        changesMade = true;
                     }
                 }
             }
@@ -513,17 +514,18 @@ public class AuthorDaoImpl
 
         // If no links, positions, or roles changed, we're done
         if (!needsResync) {
-            return;
+            return changesMade;
         }
 
         // Wipe old links ONLY if previous links actually existed
         if (!currentLinkStates.isEmpty()) {
             deleteAllLinks(bookId);
+            changesMade = true;
         }
 
         // If there is nothing to insert, we're done
         if (list.isEmpty()) {
-            return;
+            return changesMade;
         }
 
         // Insert the new ones.
@@ -540,6 +542,7 @@ public class AuthorDaoImpl
                 stmt.executeInsert(() -> "insert Book-Author");
             }
         }
+        return true;
     }
 
     private void deleteAllLinks(@IntRange(from = 1) final long bookId) {

@@ -214,13 +214,12 @@ public class PublisherDaoImpl
         }
     }
 
-
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               final boolean doUpdates,
-                               @NonNull final Collection<Publisher> list,
-                               @NonNull final Function<Publisher, Locale> localeSupplier)
+    public boolean insertOrUpdate(@NonNull final Context context,
+                                  @IntRange(from = 1) final long bookId,
+                                  final boolean doUpdates,
+                                  @NonNull final Collection<Publisher> list,
+                                  @NonNull final Function<Publisher, Locale> localeSupplier)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -229,6 +228,8 @@ public class PublisherDaoImpl
             }
         }
 
+        boolean changesMade = false;
+
         pruneList(context, list, localeSupplier);
 
         // Ensure all Publishers exist in DB so they all have a valid ID
@@ -236,19 +237,18 @@ public class PublisherDaoImpl
             final Locale locale = localeSupplier.apply(publisher);
             fixId(context, publisher, locale);
 
-            // Create if needed - do NOT do updates unless explicitly allowed
+            // Create if needed - do NOT do updates unless allowed
             if (publisher.getId() == 0) {
                 insert(context, publisher, locale);
+                changesMade = true;
             } else if (doUpdates) {
-                // ONLY update if there are actual changes.
-                // Otherwise, the trigger "after_update_on" would update
-                // DATE_LAST_UPDATED__UTC for all related books.
                 final Optional<Publisher> oFound = findById(publisher.getId());
                 if (oFound.isPresent()) {
                     final Publisher found = oFound.get();
                     publisher.merge(found);
                     if (!found.isIdentical(publisher)) {
                         update(context, publisher, locale);
+                        changesMade = true;
                     }
                 }
             }
@@ -279,17 +279,18 @@ public class PublisherDaoImpl
 
         // If no links or positions changed, we're done
         if (!needsResync) {
-            return;
+            return changesMade;
         }
 
         // Wipe old links ONLY if previous links actually existed
         if (!currentLinkStates.isEmpty()) {
             deleteAllLinks(bookId);
+            changesMade = true;
         }
 
         // If there is nothing to insert, we're done
         if (list.isEmpty()) {
-            return;
+            return changesMade;
         }
 
         // Insert the new ones.
@@ -304,6 +305,7 @@ public class PublisherDaoImpl
                 stmt.executeInsert(() -> "insert Book-Publisher");
             }
         }
+        return true;
     }
 
     private void deleteAllLinks(@IntRange(from = 1) final long bookId) {

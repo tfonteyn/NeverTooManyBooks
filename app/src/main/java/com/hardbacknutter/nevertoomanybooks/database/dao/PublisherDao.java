@@ -160,13 +160,13 @@ public interface PublisherDao
      *
      * @param context        Current context
      * @param bookId         of the book
-     * @param doUpdates      set to {@code true} to force each {@link Publisher} to be updated.
-     *                       <strong>ONLY</strong> set this when actually needed.
-     *                       Do not set this during for example an import.
+     * @param doUpdates      set to {@code true} to allow {@link Publisher}s to be updated.
      * @param list           the list of {@link Publisher}'s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Context context,
+    boolean insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
                         boolean doUpdates,
                         @NonNull Collection<Publisher> list,

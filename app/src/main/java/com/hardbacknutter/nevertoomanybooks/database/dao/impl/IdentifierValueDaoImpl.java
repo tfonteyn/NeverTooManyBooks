@@ -71,9 +71,9 @@ public class IdentifierValueDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Identifier.EntityType entityType,
-                               @IntRange(from = 1) final long fkId,
-                               @NonNull final Collection<Identifier.Value> list)
+    public boolean insertOrUpdate(@NonNull final Identifier.EntityType entityType,
+                                  @IntRange(from = 1) final long fkId,
+                                  @NonNull final Collection<Identifier.Value> list)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -82,6 +82,8 @@ public class IdentifierValueDaoImpl
             }
         }
 
+        boolean changesMade = false;
+
         pruneList(list);
 
         // Ensure all Identifiers exist in DB so they all have a valid ID
@@ -89,10 +91,12 @@ public class IdentifierValueDaoImpl
         for (final Identifier.Value iv : list) {
             @Nullable
             Identifier identifier = find(iv.getKey(), entityType).orElse(null);
-            // Create if needed
+
+            // Create if needed - doing updates is not applicable
             if (identifier == null) {
                 identifier = new Identifier(iv.getKey(), entityType);
                 insert(identifier);
+                changesMade = true;
             }
             targetLinkStates.put(identifier.getId(), iv.getSid());
         }
@@ -120,17 +124,18 @@ public class IdentifierValueDaoImpl
 
         // If no links or SID values changed, we're done
         if (!needsResync) {
-            return;
+            return changesMade;
         }
 
         // Wipe old links ONLY if previous links actually existed
         if (!currentLinkStates.isEmpty()) {
             deleteAllLinks(fkId);
+            changesMade = true;
         }
 
         // If there is nothing to insert, we're done
         if (list.isEmpty()) {
-            return;
+            return changesMade;
         }
 
         // Insert the new ones.
@@ -143,6 +148,7 @@ public class IdentifierValueDaoImpl
                 stmt.executeInsert(() -> "insert FK-Identifier");
             }
         }
+        return true;
     }
 
     private void deleteAllLinks(@IntRange(from = 1) final long fkId) {

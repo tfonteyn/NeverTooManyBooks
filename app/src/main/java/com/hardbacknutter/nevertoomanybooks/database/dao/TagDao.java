@@ -185,13 +185,17 @@ public interface TagDao {
      *
      * @param context        Current context
      * @param bookId         of the book
+     * @param doUpdates      set to {@code true} to allow {@link Tag}s to be updated.
      * @param list           the list of {@link Tag}s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @return {@code true} if any changes were made
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        @NonNull Collection<Tag> list,
-                        @NonNull Function<Tag, Locale> localeSupplier);
+    boolean insertOrUpdate(@NonNull Context context,
+                           @IntRange(from = 1) long bookId,
+                           boolean doUpdates,
+                           @NonNull Collection<Tag> list,
+                           @NonNull Function<Tag, Locale> localeSupplier);
 
     /**
      * Get a list of the {@link Tag}s for a book.

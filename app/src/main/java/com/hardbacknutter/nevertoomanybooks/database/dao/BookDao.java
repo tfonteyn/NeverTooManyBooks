@@ -72,14 +72,14 @@ public interface BookDao {
 
     /**
      * Create a new {@link Book}.
+     * <p>
+     * <strong>Transaction:</strong> required
      *
      * @param context       Current context
      * @param bookDaoHelper to use
      * @param book          object to insert. Will be updated with the id.
      *                      May contain extra data which will be ignored.
      * @param flags         See {@link ImportFlag} for flag definitions
-     * <p>
-     * <strong>Transaction:</strong> required
      *
      * @return the row id of the newly inserted row
      *
@@ -109,12 +109,14 @@ public interface BookDao {
      *                      May contain extra data which will be ignored.
      * @param flags         See {@link ImportFlag} for flag definitions
      *
+     * @return {@code true} if any changes were made
+     *
      * @throws SQLException on failure
      */
-    void update(@NonNull Context context,
-                @NonNull BookDaoHelper bookDaoHelper,
-                @NonNull Book book,
-                @NonNull Set<ImportFlag> flags)
+    boolean update(@NonNull Context context,
+                   @NonNull BookDaoHelper bookDaoHelper,
+                   @NonNull Book book,
+                   @NonNull Set<ImportFlag> flags)
             throws SQLException;
 
     /**
