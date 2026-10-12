@@ -370,10 +370,12 @@ public class StripInfoReader
                             @NonNull final Book book,
                             @NonNull final Book delta)
             throws StorageException {
-        bookRepository.update(context, delta, EnumSet.of(
+
+        if (bookRepository.update(context, delta, EnumSet.of(
                 BookDao.ImportFlag.RunInBatch,
-                BookDao.ImportFlag.UseUpdateDateIfPresent));
-        results.booksUpdated++;
+                BookDao.ImportFlag.UseUpdateDateIfPresent))) {
+            results.booksUpdated++;
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,

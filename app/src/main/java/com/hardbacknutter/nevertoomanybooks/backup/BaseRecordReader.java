@@ -237,10 +237,12 @@ public abstract class BaseRecordReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book book)
             throws StorageException {
-        bookRepository.update(context, book,
+
+        if (bookRepository.update(context, book,
                               EnumSet.of(BookDao.ImportFlag.RunInBatch,
-                                         BookDao.ImportFlag.UseUpdateDateIfPresent));
-        results.booksUpdated++;
+                                         BookDao.ImportFlag.UseUpdateDateIfPresent))) {
+            results.booksUpdated++;
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger()

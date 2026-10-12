@@ -513,10 +513,11 @@ public class CalibreContentServerReader
             return;
         }
 
-        bookRepository.update(context, delta, EnumSet.of(
+        if (bookRepository.update(context, delta, EnumSet.of(
                 BookDao.ImportFlag.RunInBatch,
-                BookDao.ImportFlag.UseUpdateDateIfPresent));
-        results.booksUpdated++;
+                BookDao.ImportFlag.UseUpdateDateIfPresent))) {
+            results.booksUpdated++;
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             LoggerFactory.getLogger().d(
