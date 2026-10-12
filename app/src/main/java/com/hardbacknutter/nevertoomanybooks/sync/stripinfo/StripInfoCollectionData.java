@@ -27,6 +27,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -47,8 +49,11 @@ public class StripInfoCollectionData
             return new StripInfoCollectionData[size];
         }
     };
+
     private static final String TAG = "StripInfoCollectionData";
+    /** Bundle key to pass this object around. */
     public static final String BKEY = TAG + ":data";
+
     /** StripInfo book-id; i.e. our external-id. */
     private long sid;
     /**
@@ -178,6 +183,29 @@ public class StripInfoCollectionData
 
     public void setLastSync(@Nullable final String lastSync) {
         this.lastSync = lastSync;
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final StripInfoCollectionData that = (StripInfoCollectionData) o;
+        return sid == that.sid
+               && collectionId == that.collectionId
+               && wanted == that.wanted
+               && owned == that.owned
+               && digital == that.digital
+               && amount == that.amount
+               && Objects.equals(lastSync, that.lastSync);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sid, collectionId, wanted, owned, digital, amount, lastSync);
     }
 
     @Override
