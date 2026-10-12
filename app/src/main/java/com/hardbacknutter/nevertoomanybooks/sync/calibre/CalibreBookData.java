@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -51,7 +52,9 @@ public class CalibreBookData
             return new CalibreBookData[size];
         }
     };
+
     private static final String TAG = "CalibreBookData";
+    /** Bundle key to pass this object around. */
     public static final String BKEY = TAG + ":data";
 
     /**
@@ -59,13 +62,12 @@ public class CalibreBookData
      */
     @IntRange(from = 1)
     private final long libraryId;
-    @Nullable
-    private CalibreLibrary library;
-
     @IntRange(from = 1)
     private final long calibreBookId;
     @NonNull
     private final String calibreBookUuid;
+    @Nullable
+    private CalibreLibrary library;
     @Nullable
     private String fileFormat;
 
@@ -153,6 +155,27 @@ public class CalibreBookData
 
         // we should never get here... flw
         return Optional.empty();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final CalibreBookData that = (CalibreBookData) o;
+        return libraryId == that.libraryId
+               && calibreBookId == that.calibreBookId
+               && Objects.equals(library, that.library)
+               && Objects.equals(calibreBookUuid, that.calibreBookUuid)
+               && Objects.equals(fileFormat, that.fileFormat);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(libraryId, library, calibreBookId, calibreBookUuid, fileFormat);
     }
 
     @Override
