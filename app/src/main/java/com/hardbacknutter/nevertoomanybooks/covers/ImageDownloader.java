@@ -229,6 +229,12 @@ public class ImageDownloader {
                 }
             }
 
+            // explicit check: this is merely as documentation
+            // for if we ever DO want to throw IOExceptions
+            if (call != null && call.isCanceled()) {
+                return Optional.empty();
+            }
+
             // we swallow IOExceptions, **EXCEPT** when the disk is full.
             if (FileUtils.isDiskFull(e)) {
                 throw e;
