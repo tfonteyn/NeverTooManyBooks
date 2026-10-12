@@ -246,43 +246,13 @@ public class CalibreContentServerReader
             @SuppressWarnings("DataFlowIssue")
             final String libraryStringId = library.getLibraryStringId();
 
-            String lastModifiedQuery = null;
-            // If we want new-books-only (Updates.Skip)
-            // or new-books-and-updates (Updates.OnlyNewer),
-            // we limit the fetch to the sync-date. This speeds up the process.
-            if (updateOption == DataReader.Updates.Skip
-                || updateOption == DataReader.Updates.OnlyNewer) {
-
-                // last_modified:">2021-01-15", so we do a "minusDays(1)" first
-                // Due to rounding, we might get some books we don't need, but that's OK.
-                // %22: quote
-                // %3E: '>'
-                // ==> avoids an extra url encoding step
-                if (syncDate != null) {
-                    lastModifiedQuery = CalibreBookJsonKey.LAST_MODIFIED + ":%22%3E"
-                                        + syncDate.minusDays(1)
-                                                  .format(DateTimeFormatter.ISO_LOCAL_DATE)
-                                        + "%22";
-                }
-            }
-
-            final BookCoder bookCoder = new BookCoder(dateParser, realNumberParser);
-
-            // First go get ALL the applicable book ids in one go.
-            final JSONObject response;
-            if (lastModifiedQuery == null) {
-                response = server.getBookIds(libraryStringId, Integer.MAX_VALUE, 0);
-            } else {
-                response = server.search(libraryStringId, Integer.MAX_VALUE, 0,
-                                         lastModifiedQuery);
-            }
-
-            if (progressListener.isCancelled()) {
+            final JSONObject response = fetchBookIds(libraryStringId);
+            if (response.getInt(CalibreContentServer.RESPONSE_TAG_TOTAL_NUM) == 0) {
+                // abort; this should never happen... flw
                 return results;
             }
 
-            if (response.getInt(CalibreContentServer.RESPONSE_TAG_TOTAL_NUM) == 0) {
-                // abort; this should never happen... flw
+            if (progressListener.isCancelled()) {
                 return results;
             }
 
@@ -303,6 +273,8 @@ public class CalibreContentServerReader
             long lastUpdate = 0;
 
             progressListener.setMaxPos(totalNum);
+
+            final BookCoder bookCoder = new BookCoder(dateParser, realNumberParser);
 
             // we handle book objects in pages, i.e. offset and num
             int offset = 0;
@@ -356,6 +328,48 @@ public class CalibreContentServerReader
         }
 
         return results;
+    }
+
+    /**
+     * Get ALL the applicable book ids in one go; uses the syncDate as needed.
+     *
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     *
+     * @return server response
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @NonNull
+    private JSONObject fetchBookIds(final String libraryStringId)
+            throws IOException {
+        String lastModifiedQuery = null;
+        // If we want new-books-only (Updates.Skip)
+        // or new-books-and-updates (Updates.OnlyNewer),
+        // we limit the fetch to the sync-date. This speeds up the process.
+        if (updateOption == Updates.Skip
+            || updateOption == Updates.OnlyNewer) {
+
+            // last_modified:">2021-01-15", so we do a "minusDays(1)" first
+            // Due to rounding, we might get some books we don't need, but that's OK.
+            // %22: quote
+            // %3E: '>'
+            // ==> avoids an extra url encoding step
+            if (syncDate != null) {
+                lastModifiedQuery = CalibreBookJsonKey.LAST_MODIFIED + ":%22%3E"
+                                    + syncDate.minusDays(1)
+                                              .format(DateTimeFormatter.ISO_LOCAL_DATE)
+                                    + "%22";
+            }
+        }
+
+        final JSONObject response;
+        if (lastModifiedQuery == null) {
+            response = server.getBookIds(libraryStringId, Integer.MAX_VALUE, 0);
+        } else {
+            response = server.search(libraryStringId, Integer.MAX_VALUE, 0,
+                                     lastModifiedQuery);
+        }
+        return response;
     }
 
     /**
