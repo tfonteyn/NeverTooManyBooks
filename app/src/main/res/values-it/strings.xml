@@ -749,7 +749,7 @@
     <string name="warning_image_copy_failed">L’immagine non può essere copiata.</string>
     <string name="warning_image_not_found">L’immagine non è stata trovata.</string>
     <string name="warning_immediate_global_changes">ATTENZIONE: le modifiche salvate vengono applicate immediatamente a tutti i libri.</string>
-    <string name="warning_import_csv_bc">AVVERTENZA: L’importazione dei dati può aggiornare i dati del libro già esistenti con nuove informazioni se la colonna UUID non è presente e l\'ID nel file di importazione è lo stesso di un ID esistente. Questo di solito va bene se si è modificato un campo in un file esportato. Se si è creato un nuovo record di libro o si stanno importando i libri di qualcun altro, assicurarsi che il campo UUID sia presente o che il campo ID sia vuoto.</string>
+    <string name="warning_import_csv_bc">AVVERTENZA: L’importazione dei dati può aggiornare i dati del libro già esistenti con nuove informazioni se la colonna UUID non è presente e l’ID nel file di importazione è lo stesso di un ID esistente. Questo di solito va bene se si è modificato un campo in un file esportato. Se si è creato un nuovo record di libro o si stanno importando i libri di qualcun altro, assicurarsi che il campo UUID sia presente o che il campo ID sia vuoto.</string>
     <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">e altri %1$d.</string>
     <string name="warning_import_failed_for_these_books">L’importazione non è riuscita per questi libri/rubriche:</string>
@@ -978,9 +978,9 @@
     </plurals>
     <plurals name="freq_ordinal_yearly" tools:ignore="MissingQuantity">
         <item quantity="one">Annuale</item>
-        <item quantity="other">%1$d all\'anno</item>
+        <item quantity="other">%1$d all’anno</item>
     </plurals>
-    <string name="lbl_edition_info">Informazioni dell\'edizione</string>
+    <string name="lbl_edition_info">Informazioni dell’edizione</string>
     <string name="lbl_limit_request_speed_info">Aggiunge un breve ritardo tra le richieste per evitare un sovraccarico del server e blocchi IP.</string>
     <string name="lbl_limit_request_speed">Limite velocità della richiesta</string>
     <string name="lbl_api_token">Token API</string>
