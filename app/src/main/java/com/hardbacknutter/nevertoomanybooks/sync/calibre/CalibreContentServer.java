@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.AnyThread;
@@ -158,6 +159,7 @@ import okhttp3.RequestBody;
  *   key:
  *   "library_path": "C:\\Users\\USER\\Downloads\\test",
  */
+@SuppressWarnings("FieldNotUsedInToString")
 public final class CalibreContentServer
         implements ConnectionValidator {
 
@@ -351,6 +353,9 @@ public final class CalibreContentServer
      */
     @Nullable
     private Boolean pluginInstalled;
+    /** Dotted version of the installed plugin; e.g. "1.0.0". */
+    @Nullable
+    private String pluginVersion;
 
     @Nullable
     private HttpCall jsonFetchCall;
@@ -674,6 +679,13 @@ public final class CalibreContentServer
                                                     .getId();
 
         final JSONObject response = fetchLibraryInfo();
+        if (isPluginInstalled()) {
+            pluginVersion = response.getJSONObject("plugin").getString("version");
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, this.toString());
+        }
 
         final JSONObject libraryMap = response.getJSONObject(RESPONSE_AJAX_LIBRARY_MAP);
         final String defaultLibraryId = response.getString(RESPONSE_AJAX_DEFAULT_LIBRARY);
@@ -1555,32 +1567,28 @@ public final class CalibreContentServer
 
         String response;
 
-        if (pluginInstalled == null) {
+        // Either this is first connection, or we already know the plugin was installed
+        if (pluginInstalled == null || pluginInstalled) {
             try {
-                // Try our plugin endpoint first
                 response = fetch(String.format(Endpoints.NTMB_GET_LIBRARY_INFO, serverUri),
                                  BUFFER_SMALL);
-                // if we don't get a 404, our plugin is installed
                 pluginInstalled = true;
+                return new JSONObject(response);
 
             } catch (@NonNull final HttpNotFoundException e) {
-                // our plugin is not installed
-                pluginInstalled = false;
-                // use the standard Calibre endpoint
-                response = fetch(String.format(Endpoints.GET_LIBRARY_INFO, serverUri),
-                                 BUFFER_SMALL);
+                // Either not installed, or the server was not accesible.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "", e);
+                }
             }
-        } else if (pluginInstalled) {
-            response = fetch(String.format(Endpoints.NTMB_GET_LIBRARY_INFO, serverUri),
-                             BUFFER_SMALL);
-        } else {
-            response = fetch(String.format(Endpoints.GET_LIBRARY_INFO, serverUri),
-                             BUFFER_SMALL);
         }
 
-        if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG, "pluginInstalled=" + pluginInstalled);
-        }
+        // use the standard Calibre endpoint; will throw if not available
+        response = fetch(String.format(Endpoints.GET_LIBRARY_INFO, serverUri),
+                         BUFFER_SMALL);
+        // The server was available, but our plugin was not.
+        // This will prevent a needless try on the next fetchLibraryInfo call.
+        pluginInstalled = false;
 
         return new JSONObject(response);
     }
@@ -1766,6 +1774,16 @@ public final class CalibreContentServer
                 postCall.cancel();
             }
         }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "CalibreContentServer{"
+               + "serverUri=" + serverUri
+               + ", pluginInstalled=" + pluginInstalled
+               + ", pluginVersion='" + pluginVersion + '\''
+               + '}';
     }
 
     public static class Builder {

@@ -18,12 +18,15 @@
 
 from calibre.customize import ContentServerPlugin
 
+# Used by the version-endpoint and by the gradle build
+PLUGIN_VERSION = (1, 0, 0)
+
 class NeverTooManyBooksPlugin(ContentServerPlugin):
-    name = 'NeverTooManyBooks Calibre plugin'
-    description = 'Provides endpoints to get virtual library info'
+    name = 'NeverTooManyBooks'
+    description = 'Provides endpoints to facilitate synchronisation'
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'hardbacknutter'
-    version = (1, 0, 0)
+    version =  PLUGIN_VERSION
     minimum_calibre_version = (9, 12, 0)
 
     # noinspection method-may-be-static

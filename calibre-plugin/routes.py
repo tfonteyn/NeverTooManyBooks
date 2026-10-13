@@ -21,6 +21,7 @@ from calibre.srv.errors import HTTPNotFound
 from calibre.srv.routes import endpoint, json
 from calibre.srv.utils import get_db
 
+
 @endpoint('/nevertoomanybooks/library-info', postprocess=json)
 def library_info(ctx, rd):
     """
@@ -30,9 +31,14 @@ def library_info(ctx, rd):
     The 'library_map' and 'default_library' are kept identical with
     the original Calibre call.
 
-    All extra information is put in 'library_data' keyed by the same libraryStringId
-    as used in 'library_map'.
+    'plugin':       The version of this plugin
+    'library_data': Extra information on the libraries, keyed by the same libraryStringId
+                    as used in 'library_map'.
     """
+
+    # lazy import to prevent circular initialisation issues.
+    from . import PLUGIN_VERSION
+
     library_map, default_library = ctx.library_info(rd)
     library_data = {}
 
@@ -55,10 +61,12 @@ def library_info(ctx, rd):
             library_data[libId] = details
 
     return {
+        'plugin': {'version': ".".join(map(str, PLUGIN_VERSION))},
         'library_map': library_map,
         'default_library': default_library,
         'library_data': library_data
     }
+
 
 @endpoint('/nevertoomanybooks/virtual-libraries-for-books/{library_id=None}',
           postprocess=json)
@@ -82,6 +90,7 @@ def virtual_libraries_for_books(ctx, rd, library_id):
 
         return db.virtual_libraries_for_books(ids)
     return None
+
 
 @endpoint('/nevertoomanybooks/prep-for-pushing/{library_id=None}',
           postprocess=json)

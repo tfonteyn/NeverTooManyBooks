@@ -370,8 +370,8 @@ def getCalibrePluginVersion() {
     def pluginFile = file("${project.rootDir}/calibre-plugin/__init__.py")
     // paranoia
     if (pluginFile.exists()) {
-        // Match/find: version = (1, 0, 0) or version=(1,0,0)
-        def matcher = pluginFile.text =~ /version\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/
+        // Match/find: PLUGIN_VERSION = (1, 0, 0) or PLUGIN_VERSION=(1,0,0)
+        def matcher = pluginFile.text =~ /PLUGIN_VERSION\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/
         if (matcher.find()) {
             return "${matcher.group(1)}.${matcher.group(2)}.${matcher.group(3)}"
         }
@@ -380,7 +380,7 @@ def getCalibrePluginVersion() {
     return "1.0.0"
 }
 
-// Standalone plugin build
+// Calibre plugin build
 def zipCalibrePlugin = tasks.register("zipCalibrePlugin", Zip) {
     group = "calibre"
     description = "Packs the Calibre plugin into a ZIP file."
@@ -391,6 +391,9 @@ def zipCalibrePlugin = tasks.register("zipCalibrePlugin", Zip) {
 
     archiveFileName = "ntmb-calibre-plugin-${getCalibrePluginVersion()}.zip"
     destinationDirectory = layout.buildDirectory.dir("outputs/calibre-plugin")
+
+    // Force rebuild
+    outputs.upToDateWhen { false }
 }
 
 // Hook up the plugin build for full builds
