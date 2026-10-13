@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -447,30 +448,26 @@ public class SyncReaderFragment
      */
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ReaderResults result) {
+        final Context context = getContext();
+        final String report;
         //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
+        final List<String> bulletPoints = result.createReport(context);
+        if (bulletPoints.isEmpty()) {
+            report = context.getString(R.string.info_nothing_to_do);
+        } else {
+            report = String.join("\n", bulletPoints);
+        }
+
+        new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.info_24px)
                 .setTitle(titleId)
-                .setMessage(createReport(result))
+                .setMessage(report)
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     //noinspection DataFlowIssue
                     SyncContractOutput.Read.finishActivityAndSend(getActivity());
                 })
                 .create()
                 .show();
-    }
-
-    /**
-     * Transform the successful result data into a user-friendly report.
-     *
-     * @param result to report
-     *
-     * @return report string
-     */
-    @NonNull
-    private String createReport(@NonNull final ReaderResults result) {
-        //noinspection DataFlowIssue
-        return String.join("\n", result.createReport(getContext()));
     }
 
     private void closeProgressDialog() {
