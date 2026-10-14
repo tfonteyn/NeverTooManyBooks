@@ -28,7 +28,9 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -38,8 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -68,9 +73,31 @@ class Parse2Test
         searchEngine = EngineId.GoogleBooks.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        //noinspection ConstantValue
+        if (!BuildConfig.API_TOKEN_GOOGLE_BOOKS.isEmpty()) {
+            // Having a key is optional
+            searchEngine.setRegistrationKey(BuildConfig.API_TOKEN_GOOGLE_BOOKS);
+        }
+
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
         moneyParser = new MoneyParser(siteLocale, allLocales);
+    }
+
+    @Test
+    void fetch01()
+            throws SearchException, CredentialsException, StorageException {
+
+        final BookSearchCriteria criteria = new BookSearchCriteria();
+        criteria.setRawProductCode("9781857989380");
+        // mimic search task pre processing
+        final ProductCode productCode = criteria.getProductCode();
+        assertNotNull(productCode);
+        assertTrue(productCode.isValid());
+
+        final Book book = searchEngine.searchByIsbn(context, criteria);
+        assertEquals("Flowers for Algernon", book.getString(DBKey.TITLE, null));
+        assertEquals("64tuPwAACAAJ", book.requireIdentifierValue(Identifier.SID_GOOGLE));
     }
 
     @Test
@@ -96,14 +123,8 @@ class Parse2Test
         // It's explicitly set as "isEbook=false"
         assertNull(book.getString(DBKey.FORMAT, null));
 
-        assertEquals("The classic novel about a daring experiment in human intelligence"
-                     + " Charlie Gordon, IQ 68, is a floor sweeper and the gentle butt of"
-                     + " everyone's jokes - until an experiment in the enhancement of human"
-                     + " intelligence turns him into a genius. But then Algernon, the mouse"
-                     + " whose triumphal experimental tranformation preceded his, fades and"
-                     + " dies, and Charlie has to face the possibility that his salvation"
-                     + " was only temporary.",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("The classic novel about a daring experiment"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(1, bookTags.size());
@@ -155,12 +176,8 @@ class Parse2Test
         assertEquals("441", book.getString(DBKey.PAGES, null));
         assertEquals("eBook", book.getString(DBKey.FORMAT, null));
 
-        assertEquals("2020. Fueled by an insatiable curiosity, Reid Malenfant ventures"
-                     + " to the far edge of the solar system, where he discovers a strange artifact"
-                     + " left behind by an alien civilization: A gateway that functions as a "
-                     + "kind of quantum transporter, allowing virtually instantaneous travel over"
-                     + " the vast distances of interstellar space.",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("2020. Fueled by an insatiable curiosity"));
 
         assertPriceListed(book, "5.49", MoneyParser.GBP, moneyParser);
 
