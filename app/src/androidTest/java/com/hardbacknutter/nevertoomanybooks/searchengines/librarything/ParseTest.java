@@ -52,15 +52,16 @@ class ParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        //noinspection ConstantValue
-        if (BuildConfig.API_TOKEN_LIBRARY_THING.isEmpty()) {
-            throw new IllegalArgumentException("API token not set");
-        }
-        searchEngine.setRegistrationKey(BuildConfig.API_TOKEN_LIBRARY_THING);
-
         EngineId.LibraryThing.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+
+        //noinspection ConstantValue
+        if (BuildConfig.API_TOKEN_LIBRARY_THING.isEmpty()) {
+            // Having a key is mandatory
+            throw new IllegalArgumentException("API token not set");
+        }
+        searchEngine.setRegistrationKey(BuildConfig.API_TOKEN_LIBRARY_THING);
     }
 
     @Test
