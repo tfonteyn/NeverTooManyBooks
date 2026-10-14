@@ -57,7 +57,7 @@ okhttpAndroid = "5.5.0"
 okhttpAuthenticationDiggest = "3.1.1"
 
 # http://commons.apache.org/proper/commons-codec/
-apacheCommonsCodec = "1.22.1"
+apacheCommonsCodec = "1.23.0"
 # http://commons.apache.org/proper/commons-compress/
 apacheCommonsCompress = "1.28.0"
 
