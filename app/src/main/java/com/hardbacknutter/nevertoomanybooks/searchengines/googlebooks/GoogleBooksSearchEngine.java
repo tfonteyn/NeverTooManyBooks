@@ -113,10 +113,14 @@ import com.hardbacknutter.org.json.JSONObject;
  *         Getting started</a>
  * @see <a href="https://developers.google.com/books/docs/v1/reference/volumes#resource-representations">
  *         resource-representations</a>
- * @see <a href="https://developers.google.com/books/docs/static-links>static-links</a>
- * @see <a href="https://console.cloud.google.com">Google Cloud Console</a>
+ * @see <a href="https://developers.google.com/books/docs/
+ *         static-links>static-links</a>
+ * @see <a href="https://console.cloud.google.com">
+ *         Google Cloud Console</a>
  * @see <a href="https://ttsforfree.com/en/blogs/google-books-api-key-step-by-step/">
  *         google-books-api-key-step-by-step</a>
+ * @see <a href="https://developers.google.com/books/docs/v1/reference/volumes/list">
+ *         Try it</a>
  */
 public class GoogleBooksSearchEngine
         extends SearchEngineBase
@@ -258,6 +262,17 @@ public class GoogleBooksSearchEngine
         return fragment;
     }
 
+    /**
+     * Append the registration key if available.
+     *
+     * @param url to process
+     *
+     * @return {@code url&key=...} or {@code ulr}
+     */
+    private String createFullUrl(@NonNull final String url) {
+        return getRegistrationKey().map(key -> url + "&key=" + key).orElse(url);
+    }
+
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
@@ -347,7 +362,7 @@ public class GoogleBooksSearchEngine
 
         httpCall = httpFutureFactory.createGetDocumentRequest();
 
-        final String fullUrl = getRegistrationKey().map(key -> "&key=" + key).orElse(url);
+        final String fullUrl = createFullUrl(url);
         try {
             final String response = httpCall.getAsString(fullUrl, (con, s) -> s);
 
@@ -724,7 +739,7 @@ public class GoogleBooksSearchEngine
         if (url.startsWith("http:")) {
             url = "https:" + url.substring(5);
         }
-        return Optional.of(url);
+        return Optional.of(createFullUrl(url));
     }
 
     @Override
