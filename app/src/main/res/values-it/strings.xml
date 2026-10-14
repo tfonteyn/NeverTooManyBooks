@@ -1003,7 +1003,7 @@
         <p>Tocca il menu delle opzioni, seleziona <b>Nuovo progetto</b>, chiamalo <i>Books API</i> e fai clic su <b>Crea</b>.</p>
         <p>Nella notifica, tocca il progetto oppure utilizza nuovamente il menu per toccare <b>Seleziona un progetto</b>.</p>
         <p>3. Attiva la Books API:</p>
-        <p>Tocca il menu principale, seleziona <b>API e servizi</b> e quindi <b>Biblioteca</b>. Ora dovrai ruotare il dispositivo in orizzontale. Nel campo di ricerca digita 'books', scorri verso il basso e seleziona la scheda <b>Books API</b>.</p>
+        <p>Tocca il menu principale, seleziona <b>API e servizi</b> e quindi <b>Biblioteca</b>. Ora dovrai ruotare il dispositivo in orizzontale. Nel campo di ricerca digita \'books\', scorri verso il basso e seleziona la scheda <b>Books API</b>.</p>
         <p>Nella schermata successiva tocca <b>Attiva</b> e ruota nuovamente il dispositivo in verticale.</p>
         <p>4. Crea la chiave:</p>
         <p>Tocca il pulsante <b>Crea credenziali</b>, seleziona <i>Books API</i>, seleziona <i>Dati pubblici</i> e poi tocca <b>Avanti</b>.</p>
