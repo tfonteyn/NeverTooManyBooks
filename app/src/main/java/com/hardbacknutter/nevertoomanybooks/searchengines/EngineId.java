@@ -319,7 +319,9 @@ public enum EngineId
                 // All sites unless added above
                 type.addSite(Amazon, true);
                 type.addSite(Goodreads, true);
-                type.addSite(GoogleBooks, true);
+                // 2026-10-14: switch off by default, even when using a registration key
+                // we often get a 503 back.
+                type.addSite(GoogleBooks, false);
                 type.addSite(Isfdb, true);
                 type.addSite(BookFinder, true);
                 type.addSite(OpenLibrary, true);
