@@ -101,7 +101,7 @@ public final class CalibreIdentifiers {
             // We want to add the "isbn_10"/"isbn_13" keys to the identifiers.
         }
 
-        if (calKey.length() > 6 && calKey.startsWith(AMAZON)) {
+        if (calKey.length() >= 6 && calKey.startsWith(AMAZON)) {
             // Other than strict "amazon", there are variants
             // for local sites; e.g. "amazon_nl", "amazon_fr",...
             // The actual ASIN is always the same,
