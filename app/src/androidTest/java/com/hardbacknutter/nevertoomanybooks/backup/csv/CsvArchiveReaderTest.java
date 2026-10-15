@@ -23,6 +23,8 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 import android.database.Cursor;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -92,41 +94,57 @@ class CsvArchiveReaderTest
         booksPresent = bookDao.count();
     }
 
-    @SuppressWarnings("LocalCanBeFinal")
+    @NonNull
+    private ImportHelper createImportHelper()
+            throws DataReaderException, IOException {
+        final File file = TestUtils.createFile(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                new File(context.getCacheDir(), "testdata.csv"));
+        return new ImportHelper(context, Uri.fromFile(file));
+    }
+
+    @NonNull
+    private ImportResults runImport(@NonNull final DataReader.Updates overwrite)
+            throws DataReaderException, IOException, CertificateException,
+                   CredentialsException, StorageException {
+
+        final ImportHelper importHelper = createImportHelper();
+        importHelper.addRecordType(RecordType.Books);
+        importHelper.setUpdateOption(overwrite);
+        return importHelper.read(context, new TestProgressListener(TAG));
+    }
+
     @Test
     void books()
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        File file;
-        ImportHelper importHelper;
-        Optional<ArchiveMetaData> oMetaData;
-        ArchiveMetaData metaData;
-        ImportResults importResults;
+        books_01_initialInsert();
+        books_02_delete1BookThenOverwrite();
+        books_03_delete3booksAndModify1ThenOnlyNewer();
+        books_04_modify1bookThenOverwrite();
+    }
 
-        Book book;
+    private void books_01_initialInsert()
+            throws DataReaderException, IOException, CredentialsException,
+                   CertificateException, StorageException {
 
-        file = TestUtils.createFile(
-                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
-                new File(context.getCacheDir(), "testdata.csv"));
-
-        importHelper = new ImportHelper(context, Uri.fromFile(file));
-
-        oMetaData = importHelper.readMetaData(context);
+        final ImportHelper importHelper = createImportHelper();
+        final Optional<ArchiveMetaData> oMetaData = importHelper.readMetaData(context);
         assertTrue(oMetaData.isPresent());
-        metaData = oMetaData.get();
+        final ArchiveMetaData metaData = oMetaData.get();
         assertNotNull(metaData);
         assertTrue(metaData.getData().containsKey(CsvFormat.BKEY));
-
-        assertEquals(CsvFormat.BC,
-                     metaData.getData().getParcelable(CsvFormat.BKEY));
-
-        // "testdata.csv" does contain such a field
+        //noinspection deprecation
+        assertEquals(CsvFormat.BC, metaData.getData().getParcelable(CsvFormat.BKEY));
+        // "testdata.csv" DOES contain such a field
         assertTrue(metaData.getData().getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
+
 
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
-        importResults = importHelper.read(context, new TestProgressListener(TAG));
+        final ImportResults importResults = importHelper
+                .read(context, new TestProgressListener(TAG));
 
         assertEquals(4, importResults.booksProcessed);
         assertEquals(4, importResults.getBooksCreated());
@@ -143,83 +161,78 @@ class CsvArchiveReaderTest
         checkBook1();
         checkBook2();
         checkBook3Rating();
+    }
 
-        // Delete 1 book; then re-import using "Overwrite"
+    private void books_02_delete1BookThenOverwrite()
+            throws DataReaderException, IOException, CertificateException,
+                   CredentialsException, StorageException {
+
+        // delete 1 book
         bookDao.delete(BOOK_ID_02);
         assertFalse(bookDao.bookExists(BOOK_ID_02));
 
-        file = TestUtils.createFile(
-                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
-                new File(context.getCacheDir(), "testdata.csv"));
-
-        importHelper = new ImportHelper(context, Uri.fromFile(file));
-        importHelper.addRecordType(RecordType.Books);
-        importHelper.setUpdateOption(DataReader.Updates.Overwrite);
-        importResults = importHelper.read(context, new TestProgressListener(TAG));
+        final ImportResults importResults = runImport(DataReader.Updates.Overwrite);
 
         assertEquals(4, importResults.booksProcessed);
         assertEquals(1, importResults.getBooksCreated());
-        assertEquals(3, importResults.getBooksUpdated());
+        assertEquals(0, importResults.getBooksUpdated());
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
         assertEquals(booksPresent + 4, bookDao.count());
+    }
 
-        // Delete 3 books, and modify 1; then re-import using "OnlyNewer"
+    private void books_03_delete3booksAndModify1ThenOnlyNewer()
+            throws DataReaderException, IOException, CertificateException,
+                   CredentialsException, StorageException {
+
+        // Delete 3 books
         bookDao.delete(BOOK_ID_01);
         bookDao.delete(BOOK_ID_03);
         bookDao.delete(BOOK_ID_04);
         assertFalse(bookDao.bookExists(BOOK_ID_01));
         assertFalse(bookDao.bookExists(BOOK_ID_03));
         assertFalse(bookDao.bookExists(BOOK_ID_04));
-
+        // and modify 1: the imported one will be ignored as the local modification date is newer
         try (Cursor cursor = bookDao.fetchById(BOOK_ID_02)) {
             assertTrue(cursor.moveToFirst());
-            book = Book.from(cursor);
+            final Book book = Book.from(cursor);
             bookDao.setRead(book, true);
-
-            file = TestUtils.createFile(
-                    com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
-                    new File(context.getCacheDir(), "testdata.csv"));
-
-            importHelper = new ImportHelper(context, Uri.fromFile(file));
-            importHelper.addRecordType(RecordType.Books);
-            importHelper.setUpdateOption(DataReader.Updates.OnlyNewer);
-            importResults = importHelper.read(context, new TestProgressListener(TAG));
-
-            assertEquals(4, importResults.booksProcessed);
-            assertEquals(3, importResults.getBooksCreated());
-            assertEquals(0, importResults.getBooksUpdated());
-            assertEquals(1, importResults.booksSkipped);
-            assertEquals(0, importResults.booksFailed);
-            assertEquals(booksPresent + 4, bookDao.count());
         }
 
+        final ImportResults importResults = runImport(DataReader.Updates.OnlyNewer);
+
+        assertEquals(4, importResults.booksProcessed);
+        assertEquals(3, importResults.getBooksCreated());
+        assertEquals(0, importResults.getBooksUpdated());
+        assertEquals(1, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
+        assertEquals(booksPresent + 4, bookDao.count());
+    }
+
+    private void books_04_modify1bookThenOverwrite()
+            throws DataReaderException, IOException, CertificateException,
+                   CredentialsException, StorageException {
+
+        // modify 1 book: the imported one will always overwrite this
         try (Cursor cursor = bookDao.fetchById(BOOK_ID_02)) {
             assertTrue(cursor.moveToFirst());
-            book = Book.from(cursor);
+            final Book book = Book.from(cursor);
             assertTrue(book.isRead());
-
-            // same import, but using DataReader.Updates.Overwrite
-            file = TestUtils.createFile(
-                    com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
-                    new File(context.getCacheDir(), "testdata.csv"));
-
-            importHelper = new ImportHelper(context, Uri.fromFile(file));
-            importHelper.addRecordType(RecordType.Books);
-            importHelper.setUpdateOption(DataReader.Updates.Overwrite);
-            importResults = importHelper.read(context, new TestProgressListener(TAG));
-
-            assertEquals(4, importResults.booksProcessed);
-            assertEquals(0, importResults.getBooksCreated());
-            assertEquals(4, importResults.getBooksUpdated());
-            assertEquals(0, importResults.booksSkipped);
-            assertEquals(0, importResults.booksFailed);
-            assertEquals(booksPresent + 4, bookDao.count());
         }
+
+        final ImportResults importResults = runImport(DataReader.Updates.Overwrite);
+
+        assertEquals(4, importResults.booksProcessed);
+        assertEquals(0, importResults.getBooksCreated());
+        assertEquals(1, importResults.getBooksUpdated());
+        assertEquals(0, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
+        assertEquals(booksPresent + 4, bookDao.count());
 
         try (Cursor cursor = bookDao.fetchById(BOOK_ID_02)) {
             assertTrue(cursor.moveToFirst());
-            book = Book.from(cursor);
+            final Book book = Book.from(cursor);
+            // Check we've been overwritten
             assertFalse(book.isRead());
         }
     }

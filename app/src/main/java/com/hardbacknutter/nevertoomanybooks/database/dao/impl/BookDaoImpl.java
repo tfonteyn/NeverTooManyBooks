@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -222,7 +223,9 @@ public class BookDaoImpl
         }
 
         // Reminder: We're updating ONLY the fields present in the ContentValues.
-        // Other fields in the database row are not affected.
+        // Any fields which are identical to the currently stored value are filtered out.
+
+        filterForUpdates(book.getId(), cv);
 
         final boolean hasLastUpdateDate = cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC);
         // If cv has 2+ keys, or if it has 1 key that isn't the timestamp, we have data changes
@@ -250,6 +253,76 @@ public class BookDaoImpl
         book.setUuid(uuid);
 
         return changesMade;
+    }
+
+    /**
+     * Load the current book data for the columns given in the ContentValues
+     * and compare their values with the values we're inserting.
+     * Remove values which are identical.
+     *
+     * @param id book id
+     * @param cv values
+     */
+    private void filterForUpdates(final long id,
+                                  @NonNull final ContentValues cv) {
+        if (cv.size() == 0) {
+            return;
+        }
+
+        final String[] keys = cv.keySet().toArray(new String[0]);
+        final String sql = SELECT_ + String.join(",", keys)
+                           + _FROM_ + TBL_BOOKS.getName()
+                           + _WHERE_ + DBKey.PK_ID + "=?"
+                           + " LIMIT 1";
+
+        try (Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(id)})) {
+            if (cursor.moveToFirst()) {
+                final List<String> keysToRemove = new ArrayList<>();
+                for (int i = 0; i < keys.length; i++) {
+                    final String key = keys[i];
+                    @Nullable
+                    final Object rawNewValue = cv.get(key);
+                    @Nullable
+                    final String currentValue = cursor.isNull(i)
+                                                ? null : cursor.getString(i);
+                    if (areValuesEqual(rawNewValue, currentValue)) {
+                        keysToRemove.add(key);
+                    }
+                }
+
+                for (final String key : keysToRemove) {
+                    cv.remove(key);
+                }
+            }
+        }
+    }
+
+    private boolean areValuesEqual(@Nullable final Object rawNewValue,
+                                   @Nullable final String currentValue) {
+        if (rawNewValue == null && currentValue == null) {
+            // both null
+            return true;
+        }
+        if (rawNewValue == null || currentValue == null) {
+            // one null, one not-null
+            return false;
+        }
+
+        final String newValueStr = rawNewValue.toString();
+
+        // exact string match
+        if (newValueStr.equals(currentValue)) {
+            return true;
+        }
+
+        // BigDecimal fallback: this eliminates all floating point precision issues
+        try {
+            return new BigDecimal(newValueStr).compareTo(new BigDecimal(currentValue)) == 0;
+        } catch (@NonNull final NumberFormatException e) {
+            // We've already checked string-equality, hence, if either one isn't a valid number,
+            // they are not equal.
+            return false;
+        }
     }
 
     @Override
