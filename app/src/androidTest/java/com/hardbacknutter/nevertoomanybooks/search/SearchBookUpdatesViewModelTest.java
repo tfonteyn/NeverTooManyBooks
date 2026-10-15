@@ -51,6 +51,7 @@ class SearchBookUpdatesViewModelTest
         extends BaseDBTest {
 
     private static final String TAG = "SearchBookUpdatesVM";
+    private static final int BOOK_ID = 123;
 
     @BeforeEach
     void setup()
@@ -63,6 +64,7 @@ class SearchBookUpdatesViewModelTest
             throws IOException {
 
         final Book localBook = new Book();
+        localBook.setId(BOOK_ID);
         localBook.setTitle("local-title");
         localBook.add(Author.from("local author"));
         localBook.add(Publisher.from("local publisher"));
@@ -91,10 +93,10 @@ class SearchBookUpdatesViewModelTest
         final Map<String, SyncField> fieldsWanted = processor.filter(localBook);
         Log.d(TAG, fieldsWanted.toString());
 
-        final Book delta = processor.process(context, 123, localBook, remoteBook, fieldsWanted);
+        final Book delta = processor.process(context, BOOK_ID, localBook, remoteBook, fieldsWanted);
         assertNotNull(delta);
 
-        assertEquals(123, delta.getId());
+        assertEquals(BOOK_ID, delta.getId());
 
         // CopyIfBlank and local is-blank
         final List<Identifier.Value> identifiers = delta.getIdentifiers();
@@ -111,6 +113,7 @@ class SearchBookUpdatesViewModelTest
             throws IOException {
 
         final Book localBook = new Book();
+        localBook.setId(BOOK_ID);
         localBook.setTitle("local-title");
         localBook.add(Author.from("local author"));
         localBook.add(Publisher.from("local publisher"));
@@ -148,14 +151,14 @@ class SearchBookUpdatesViewModelTest
         final Map<String, SyncField> fieldsWanted = processor.filter(localBook);
         Log.d(TAG, fieldsWanted.toString());
 
-        final Book delta = processor.process(context, 123, localBook, remoteBook, fieldsWanted);
+        final Book delta = processor.process(context, BOOK_ID, localBook, remoteBook, fieldsWanted);
         assertNotNull(delta);
 
         // _id=123,
         // author_list=[Author{id=0, familyName=`Author`, givenNames=`Real`, complete=false,
         //                     role=0b0: Role{}, realAuthor=null}],
         // publisher_list=[Publisher{id=0, name=`Real Pub`}, Publisher{id=0, name=`MySelf`}]}]}
-        assertEquals(123, delta.getId());
+        assertEquals(BOOK_ID, delta.getId());
 
         // Added
         assertEquals("remote colour", delta.getString(DBKey.COLOR, null));

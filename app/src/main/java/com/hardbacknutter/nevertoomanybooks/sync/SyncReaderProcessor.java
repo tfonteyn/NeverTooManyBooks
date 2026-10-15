@@ -164,8 +164,7 @@ public class SyncReaderProcessor {
             case CopyIfBlank: {
                 // If our local book does not have this data, add the field as 'wanted'
                 if (field.getType() == SyncField.Type.LIST) {
-                    return !localBook.contains(field.getKey())
-                           || localBook.getParcelableArrayList(field.getKey()).isEmpty();
+                    return localBook.getParcelableArrayList(field.getKey()).isEmpty();
                 }
 
                 for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
@@ -325,8 +324,7 @@ public class SyncReaderProcessor {
                 // remove the unneeded field from the delta (remote book)
                 final boolean hasData;
                 if (field.getType() == SyncField.Type.LIST) {
-                    hasData = !localBook.contains(field.getKey())
-                              || !localBook.getParcelableArrayList(field.getKey()).isEmpty();
+                    hasData = !localBook.getParcelableArrayList(field.getKey()).isEmpty();
                 } else {
                     hasData = !isEmptyOrZero(localBook.get(field.getKey(), realNumberParser));
                 }
