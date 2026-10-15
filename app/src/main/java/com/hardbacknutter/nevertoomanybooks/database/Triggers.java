@@ -197,85 +197,44 @@ final class Triggers {
 
     private static void series(@NonNull final SQLiteDatabase db) {
 
-        /* After deleting a {@link Series}. */
         afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_SERIES);
 
-        /*
-         * After updating a {@link Series},
-         * update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        final String name = "after_update_on" + TBL_SERIES.getName();
-        final String body = bodyAfterUpdateOn(TBL_SERIES, TBL_BOOK_SERIES, DBKey.FK_SERIES);
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+        // dev note: the name "after_update_on" is missing a "_" at the end!
+        createLinkTableUpdateTrigger(db, "after_update_on",
+                                     TBL_SERIES, TBL_BOOK_SERIES, DBKey.FK_SERIES);
     }
 
     private static void publisher(@NonNull final SQLiteDatabase db) {
 
-        /* After deleting a {@link Publisher}. */
         afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_PUBLISHER);
 
-        /*
-         * After updating a {@link Publisher},
-         * update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        final String name = "after_update_on" + TBL_PUBLISHERS.getName();
-        final String body = bodyAfterUpdateOn(TBL_PUBLISHERS, TBL_BOOK_PUBLISHER,
-                                              DBKey.FK_PUBLISHER);
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+        // dev note: the name "after_update_on" is missing a "_" at the end!
+        createLinkTableUpdateTrigger(db, "after_update_on",
+                                     TBL_PUBLISHERS, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
     }
 
     private static void tags(@NonNull final SQLiteDatabase db) {
 
-        /* After deleting a {@link Tag}. */
         afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_TAG);
 
-        /*
-         * After updating a {@link Tag},
-         * update the books last-update-date.
-         *
-         * dev note: the name "after_update_on" is missing a "_" at the end!
-         */
-        final String name = "after_update_on" + TBL_TAGS.getName();
-        final String body = bodyAfterUpdateOn(TBL_TAGS, TBL_BOOK_TAG, DBKey.FK_TAG);
-
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+        // dev note: the name "after_update_on" is missing a "_" at the end!
+        createLinkTableUpdateTrigger(db, "after_update_on",
+                                     TBL_TAGS, TBL_BOOK_TAG, DBKey.FK_TAG);
     }
 
     private static void tocEntry(@NonNull final SQLiteDatabase db) {
 
-        /* After deleting a {@link TocEntry}. */
         afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_TOC_ENTRIES);
 
-        /*
-         * After updating a {@link TocEntry},
-         * update the books last-update-date.
-         */
-        final String name = "after_update_on_" + TBL_TOC_ENTRIES.getName();
-        final String body = bodyAfterUpdateOn(TBL_TOC_ENTRIES, TBL_BOOK_TOC_ENTRIES,
-                                              DBKey.FK_TOC_ENTRY);
+        createLinkTableUpdateTrigger(db, "after_update_on_",
+                                     TBL_TOC_ENTRIES, TBL_BOOK_TOC_ENTRIES, DBKey.FK_TOC_ENTRY);
 
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
-        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
     }
 
     private static void identifiers(@NonNull final SQLiteDatabase db) {
 
-        /* After deleting an {@link Identifier}. */
         afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_IDENTIFIER);
 
-        /*
-         * After updating the name of an {@link Identifier},
-         * update the books last-update-date.
-         */
         final String name = "after_update_of_" + TBL_IDENTIFIERS.getName() + "_name";
         final String body =
                 AFTER_UPDATE_OF_ + DBKey.IDENTIFIERS.NAME + " ON " + TBL_IDENTIFIERS.getName()
@@ -285,31 +244,15 @@ final class Triggers {
                 + " IS NOT NEW." + DBKey.IDENTIFIERS.NAME
 
                 + _BEGIN_
-                + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
-                + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_IDENTIFIER.getName()
-                + _WHERE_ + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
+                + createLinkUpdateSql(TBL_BOOK_IDENTIFIER, DBKey.FK_IDENTIFIER)
                 + _END;
 
         db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
     }
 
-    @NonNull
-    private static String bodyAfterUpdateOn(@NonNull final TableDefinition table,
-                                            @NonNull final TableDefinition linkTable,
-                                            @NonNull final String linkColumn) {
-        return AFTER_UPDATE_ON_ + table.getName()
-               + _FOR_EACH_ROW
-               + _BEGIN_
-               + UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
-               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + linkTable.getName()
-               + _WHERE_ + linkColumn + "=OLD." + DBKey.PK_ID + ");"
-               + _END;
-    }
-
     private static void loanee(@NonNull final SQLiteDatabase db) {
 
-        /* After a lend-out Book is returned. */
         afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_LOANEE);
 
         String name;
@@ -365,6 +308,31 @@ final class Triggers {
 
         db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    private static void createLinkTableUpdateTrigger(@NonNull final SQLiteDatabase db,
+                                                     @NonNull final String namePrefix,
+                                                     @NonNull final TableDefinition table,
+                                                     @NonNull final TableDefinition linkTable,
+                                                     @NonNull final String linkColumn) {
+
+        final String name = namePrefix + table.getName();
+        final String body = AFTER_UPDATE_ON_ + table.getName()
+                            + _FOR_EACH_ROW
+                            + _BEGIN_
+                            + createLinkUpdateSql(linkTable, linkColumn)
+                            + _END;
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+    }
+
+    @NonNull
+    private static String createLinkUpdateSql(@NonNull final TableDefinition linkTable,
+                                              @NonNull final String linkColumn) {
+        return UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + _IN_
+               + '(' + SELECT_ + DBKey.FK_BOOK + _FROM_ + linkTable.getName()
+               + _WHERE_ + linkColumn + "=OLD." + DBKey.PK_ID + ");";
     }
 
     public static void dropAllTriggers(@NonNull final SQLiteDatabase db) {
