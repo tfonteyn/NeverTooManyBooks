@@ -52,6 +52,7 @@ public class EditSeriesViewModel
      * @see #saveIfUnique(Context)
      */
     private Series currentEdit;
+    @Nullable
     private String bookIssn;
 
     private SeriesDao dao;
@@ -66,7 +67,7 @@ public class EditSeriesViewModel
             dao = ServiceLocator.getInstance().getSeriesDao();
 
             original = args.getItem();
-            bookIssn = Objects.requireNonNull(args.getBookIssn());
+            bookIssn = args.getBookIssn();
 
             currentEdit = new Series(original, true);
         }
