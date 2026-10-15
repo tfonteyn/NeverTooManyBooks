@@ -176,7 +176,7 @@ class CsvArchiveReaderTest
         assertEquals(4, importResults.booksProcessed);
         assertEquals(1, importResults.getBooksCreated());
         assertEquals(0, importResults.getBooksUpdated());
-        assertEquals(0, importResults.booksSkipped);
+        assertEquals(3, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
         assertEquals(booksPresent + 4, bookDao.count());
     }
@@ -225,7 +225,7 @@ class CsvArchiveReaderTest
         assertEquals(4, importResults.booksProcessed);
         assertEquals(0, importResults.getBooksCreated());
         assertEquals(1, importResults.getBooksUpdated());
-        assertEquals(0, importResults.booksSkipped);
+        assertEquals(3, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
         assertEquals(booksPresent + 4, bookDao.count());
 

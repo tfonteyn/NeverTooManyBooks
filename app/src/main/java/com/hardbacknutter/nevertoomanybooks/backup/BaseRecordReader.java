@@ -242,6 +242,9 @@ public abstract class BaseRecordReader
                               EnumSet.of(BookDao.ImportFlag.RunInBatch,
                                          BookDao.ImportFlag.UseUpdateDateIfPresent))) {
             results.booksUpdated++;
+        } else {
+            // no changes made
+            results.booksSkipped++;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {

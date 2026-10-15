@@ -192,7 +192,6 @@ class JsonArchiveWriterTest
         assertEquals(exportResults.getBookCount() - 1, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
 
-
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
 
@@ -200,12 +199,11 @@ class JsonArchiveWriterTest
         assertNotNull(importResults);
         assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
-
         assertEquals(0, importResults.getBooksCreated());
-        // we did an overwrite of ALL books
-        assertEquals(bookInDb, importResults.getBooksUpdated());
-        // so we skipped none
-        assertEquals(0, importResults.booksSkipped);
+        // we did an overwrite of ALL books, but only ONE book had actual changes
+        assertEquals(1, importResults.getBooksUpdated());
+        // we skipped all the others
+        assertEquals(43, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
     }
 }
