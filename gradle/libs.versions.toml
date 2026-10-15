@@ -9,11 +9,11 @@ compileSdk = "37"
 javaToolchain = "25"
 
 # https://developer.android.com/build/releases/gradle-plugin-roadmap
-androidGradlePlugin = "9.3.1"
+androidGradlePlugin = "9.4.1"
 
 # https://github.com/mannodermaus/android-junit-framework
-mannodermausPlugin = "2.0.1"
-mannodermausInstrumentation = "2.0.1"
+mannodermausPlugin = "2.0.2"
+mannodermausInstrumentation = "2.0.2"
 
 # https://developer.android.com/jetpack/androidx/versions
 
