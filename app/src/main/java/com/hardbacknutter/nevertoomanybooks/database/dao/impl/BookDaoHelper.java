@@ -109,16 +109,17 @@ public class BookDaoHelper {
      * Examine the values and make any changes necessary before writing the data.
      * Called during {@link BookDao#insert} and {@link BookDao#update}.
      *
-     * @param context Current context
-     * @param book    to process
-     * @param isNew   flag; whether the book is entirely 'new' or it's an update
+     * @param context  Current context
+     * @param book     to process
+     * @param isInsert {@code true}: when the book will be inserted, i.e. the id is {@code 0} or
+     *                 {@code false}: when an update will be done, i.e. the id is {@code NOT 0}
      *
      * @return New and filtered ContentValues
      */
     @NonNull
     ContentValues process(@NonNull final Context context,
                           @NonNull final Book book,
-                          final boolean isNew) {
+                          final boolean isInsert) {
 
         final Locale userLocale = userLocales.get(0);
 
@@ -181,7 +182,7 @@ public class BookDaoHelper {
         }
 
         // clean-up null and blank fields as needed.
-        processNullsAndBlanks(book, isNew);
+        processNullsAndBlanks(book, isInsert);
 
         // lastly filter and extract the name/value pairs for the book table columns
         // leaving all other data in the Book object as-is.
@@ -396,28 +397,30 @@ public class BookDaoHelper {
      * <p>
      * For new books, REMOVE those keys.
      * Existing books, REPLACE those keys with the default value for the column.
-     *  @param book  to process
      *
-     * @param isNew flag; whether the book is entirely 'new' or it's an update
+     * @param book     to process
+     * @param isInsert flag
      */
     @VisibleForTesting
     public void processNullsAndBlanks(@NonNull final Book book,
-                                      final boolean isNew) {
+                                      final boolean isInsert) {
         for (final Domain domain : tableDomains.values()) {
             if (book.contains(domain.getName()) && domain.hasDefault()) {
-                // We don't care about Money here. Value/Currency are treated as Number/String
+                // We don't care about Money here.
+                // Value/Currency are treated as Number/String
                 final Object o = book.get(domain.getName());
-                if (
-                    // Fields which are null but not allowed to be
-                        o == null && domain.isNotNull()
-                        ||
-                        // Fields which are null/blank but not allowed to be
-                        (o == null || o.toString().isBlank()) && domain.isNotBlank()) {
 
-                    if (isNew) {
+                // Fields which are null but not allowed to be null
+                final boolean isNull = o == null && domain.isNotNull();
+                // Fields which are null/blank but not allowed to be blank
+                final boolean isBlank = (o == null || o.toString().isBlank())
+                                        && domain.isNotBlank();
+
+                if (isNull || isBlank) {
+                    if (isInsert) {
                         book.remove(domain.getName());
                     } else {
-                        // restore the column to its default value.
+                        // For updates, explicitly restore the column to its default value.
                         //noinspection DataFlowIssue
                         book.putString(domain.getName(), domain.getDefault());
                     }
@@ -460,24 +463,14 @@ public class BookDaoHelper {
 
             // Check if there is a matching column, and never update a PK.
             if (columnInfo != null && !columnInfo.isPrimaryKey()) {
-                // We don't care about Money here. Value/Currency are treated as Number/String
+                // We don't care about Money here.
+                // Value/Currency are treated as Number/String
                 final Object entry = book.get(key);
 
-                // Fields which are equal to their default are skipped
-                final Domain domain = tableDomains.get(key);
-                if (domain != null) {
-                    // FIXME: there may be others we need to add here;
-                    //  Refactor for universal solution, maybe domain.isDefault(entry) ?
-                    //  We may also avoid even checking datetime fields which are current_timestamp
-                    if (entry instanceof Boolean
-                        && ((boolean) entry ? "1" : "0").equals(domain.getDefault())) {
-                        continue;
-                    }
-                    if (entry != null && entry.toString().equals(domain.getDefault())) {
-                        continue;
-                    }
-                }
-
+                // Reminder: do not make the mistake of skipping
+                // fields which are equal to their default.
+                // For inserts this is a micro optimisation.
+                // but for updates this would prevent overwriting values
                 if (entry == null) {
                     if (columnInfo.isNullable()) {
                         cv.putNull(key);
