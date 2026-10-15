@@ -35,7 +35,7 @@ public final class Porbase {
 
     private static final String SITE_URL = "https://porbase.bnportugal.gov.pt";
     private static final String BOOK_URL = "https://id.bnportugal.gov.pt/bib/porbase/%s";
-    private static final String AUTHOR_URL = "https://id.bnportugal.gov.pt/aut/catbnp/%1";
+    private static final String AUTHOR_URL = "https://id.bnportugal.gov.pt/aut/catbnp/%s";
 
     private Porbase() {
     }
