@@ -69,6 +69,11 @@ class CsvArchiveReaderTest
 
     private static final String TAG = "CsvArchiveReaderTest";
 
+    private static final int BOOK_ID_01 = 666000001;
+    private static final int BOOK_ID_02 = 666000002;
+    private static final int BOOK_ID_03 = 666000003;
+    private static final int BOOK_ID_04 = 666000004;
+
     private BookDao bookDao;
     private int booksPresent;
 
@@ -79,10 +84,10 @@ class CsvArchiveReaderTest
 
         bookDao = ServiceLocator.getInstance().getBookDao();
 
-        bookDao.delete(666000001);
-        bookDao.delete(666000002);
-        bookDao.delete(666000003);
-        bookDao.delete(666000004);
+        bookDao.delete(BOOK_ID_01);
+        bookDao.delete(BOOK_ID_02);
+        bookDao.delete(BOOK_ID_03);
+        bookDao.delete(BOOK_ID_04);
 
         booksPresent = bookDao.count();
     }
@@ -129,10 +134,10 @@ class CsvArchiveReaderTest
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
 
-        assertTrue(bookDao.bookExists(666000001));
-        assertTrue(bookDao.bookExists(666000002));
-        assertTrue(bookDao.bookExists(666000003));
-        assertTrue(bookDao.bookExists(666000004));
+        assertTrue(bookDao.bookExists(BOOK_ID_01));
+        assertTrue(bookDao.bookExists(BOOK_ID_02));
+        assertTrue(bookDao.bookExists(BOOK_ID_03));
+        assertTrue(bookDao.bookExists(BOOK_ID_04));
         assertEquals(booksPresent + 4, bookDao.count());
 
         checkBook1();
@@ -140,8 +145,8 @@ class CsvArchiveReaderTest
         checkBook3Rating();
 
         // Delete 1 book; then re-import using "Overwrite"
-        bookDao.delete(666000002);
-        assertFalse(bookDao.bookExists(666000002));
+        bookDao.delete(BOOK_ID_02);
+        assertFalse(bookDao.bookExists(BOOK_ID_02));
 
         file = TestUtils.createFile(
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
@@ -160,14 +165,14 @@ class CsvArchiveReaderTest
         assertEquals(booksPresent + 4, bookDao.count());
 
         // Delete 3 books, and modify 1; then re-import using "OnlyNewer"
-        bookDao.delete(666000001);
-        bookDao.delete(666000003);
-        bookDao.delete(666000004);
-        assertFalse(bookDao.bookExists(666000001));
-        assertFalse(bookDao.bookExists(666000003));
-        assertFalse(bookDao.bookExists(666000004));
+        bookDao.delete(BOOK_ID_01);
+        bookDao.delete(BOOK_ID_03);
+        bookDao.delete(BOOK_ID_04);
+        assertFalse(bookDao.bookExists(BOOK_ID_01));
+        assertFalse(bookDao.bookExists(BOOK_ID_03));
+        assertFalse(bookDao.bookExists(BOOK_ID_04));
 
-        try (Cursor cursor = bookDao.fetchById(666000002)) {
+        try (Cursor cursor = bookDao.fetchById(BOOK_ID_02)) {
             assertTrue(cursor.moveToFirst());
             book = Book.from(cursor);
             bookDao.setRead(book, true);
@@ -189,7 +194,7 @@ class CsvArchiveReaderTest
             assertEquals(booksPresent + 4, bookDao.count());
         }
 
-        try (Cursor cursor = bookDao.fetchById(666000002)) {
+        try (Cursor cursor = bookDao.fetchById(BOOK_ID_02)) {
             assertTrue(cursor.moveToFirst());
             book = Book.from(cursor);
             assertTrue(book.isRead());
@@ -212,7 +217,7 @@ class CsvArchiveReaderTest
             assertEquals(booksPresent + 4, bookDao.count());
         }
 
-        try (Cursor cursor = bookDao.fetchById(666000002)) {
+        try (Cursor cursor = bookDao.fetchById(BOOK_ID_02)) {
             assertTrue(cursor.moveToFirst());
             book = Book.from(cursor);
             assertFalse(book.isRead());
@@ -222,8 +227,8 @@ class CsvArchiveReaderTest
     private void checkBook1() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        final Book book = Book.from(666000001);
-        assertEquals(666000001, book.getId());
+        final Book book = Book.from(BOOK_ID_01);
+        assertEquals(BOOK_ID_01, book.getId());
         assertEquals("Myths and Folk Tales of Ireland", book.getString(DBKey.TITLE, null));
         assertEquals("0486224309", book.getString(DBKey.ISBN, null));
         // "1975-06-01" => day will be dropped
@@ -278,8 +283,8 @@ class CsvArchiveReaderTest
     private void checkBook2() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        final Book book = Book.from(666000002);
-        assertEquals(666000002, book.getId());
+        final Book book = Book.from(BOOK_ID_02);
+        assertEquals(BOOK_ID_02, book.getId());
         assertEquals("Dracula", book.getString(DBKey.TITLE, null));
         assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
         assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE, null));
@@ -340,7 +345,7 @@ class CsvArchiveReaderTest
     private void checkBook3Rating() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        final Book book = Book.from(666000003);
+        final Book book = Book.from(BOOK_ID_03);
         // "3,55"
         assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
     }
