@@ -234,7 +234,7 @@ public class BookSearchCriteria {
      */
     @NonNull
     public ProductCode requireProductCode() {
-        return Objects.requireNonNull(productCode, ERROR_PRODUCT_CODE_NOT_SET);
+        return Objects.requireNonNull(getProductCode(), ERROR_PRODUCT_CODE_NOT_SET);
     }
 
     /**
