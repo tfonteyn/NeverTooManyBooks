@@ -105,11 +105,13 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **BOL.com** (Dutch and more; Shop)
 - **databazeknih.cz** (Czech and more; Catalogue)
 - **dnb.de** (German; Catalogue)
+- **D&R** (Turkish; Shop; ISBN search)
 - **Douban.com** (Chinese; Catalogue)
 - ~~**Goodreads** (English and more; Catalogue)~~ is permanently blocking and will be removed in the next release.
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)
+- **Kitapseç** (Turkish; Shop; ISBN search)
 - **LastDodo** (Dutch and more; Catalogue; European Comics)
 - **OpenLibrary** (English and more; Catalogue)
 - **StripInfo** (Dutch and more; Catalogue; European Comics)

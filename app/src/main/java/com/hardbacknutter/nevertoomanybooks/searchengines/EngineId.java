@@ -58,10 +58,12 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderS
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dr.DrSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kitapsec.KitapsecSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
@@ -143,11 +145,13 @@ public enum EngineId
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
     Dnb(DnbSearchEngine.class, true),
     Douban(DoubanSearchEngine.class, true),
+    Dr(DrSearchEngine.class, true),
     // 2026-08-18: switched off due to AWS WAF blocks
     Goodreads(GoodreadsSearchEngine.class, false),
     GoogleBooks(GoogleBooksSearchEngine.class, true),
     Isfdb(IsfdbSearchEngine.class, true),
     KbNl(KbNlSearchEngine.class, true),
+    Kitapsec(KitapsecSearchEngine.class, true),
     LastDodoNl(LastDodoSearchEngine.class, true),
     LibraryThing(LibraryThingSearchEngine.class, true),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
@@ -271,6 +275,7 @@ public enum EngineId
         // Site activation is partially done depending on the device or user set language
         // matching the site language.
 
+        final boolean isTurkish = languages.isUserLanguage(context, "tur");
         final boolean isChinese = languages.isUserLanguage(context, "zho");
         final boolean isCzech = languages.isUserLanguage(context, "cze");
         final boolean isDutch = languages.isUserLanguage(context, "nld");
@@ -294,6 +299,8 @@ public enum EngineId
                 // {@link SearchEngine.ByText}
 
                 // Try to optimise by putting the most-likely-wanted at the top
+                type.addSite(Dr, isTurkish);
+                type.addSite(Kitapsec, isTurkish);
                 if (isPolish) {
                     type.addSite(BibliotecePl, true);
                 }
