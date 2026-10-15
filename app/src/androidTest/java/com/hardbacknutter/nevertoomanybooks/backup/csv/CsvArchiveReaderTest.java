@@ -288,7 +288,7 @@ class CsvArchiveReaderTest
         assertEquals("454", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
-        assertEquals("11.0", book.getString(DBKey.PRICE_LISTED, null));
+        assertEquals("11", book.getString(DBKey.PRICE_LISTED, null));
 
         assertEquals(Book.ContentType.Book, book.getContentType());
         assertEquals("", book.getString(DBKey.LOCATION, null));
