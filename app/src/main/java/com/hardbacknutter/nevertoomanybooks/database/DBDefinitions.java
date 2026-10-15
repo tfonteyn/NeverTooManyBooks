@@ -1062,6 +1062,9 @@ public final class DBDefinitions {
         DOM_BOOK_RATING =
                 new Domain.Builder(DBKey.RATING, SqLiteDataType.Real)
                         .notNull()
+                        // The default SHOULD have been the double value: 0d,
+                        // but for backwards compatibility we cannot change this anymore
+                        // without rebuilding the table.... this is overkill.
                         .withDefault(0)
                         .build();
         DOM_BOOK_PRIVATE_NOTES =
