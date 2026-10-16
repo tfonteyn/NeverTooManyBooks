@@ -1018,6 +1018,15 @@ public class Author
     }
 
     /**
+     * Set the names.
+     *
+     * @param familyName Family name
+     */
+    public void setFamilyName(@NonNull final String familyName) {
+        this.familyName = familyName;
+    }
+
+    /**
      * Get the given name ('first' name) of this Author.
      * Will be {@code ""} if unknown.
      *
@@ -1026,6 +1035,15 @@ public class Author
     @NonNull
     public String getGivenNames() {
         return givenNames;
+    }
+
+    /**
+     * Set the names.
+     *
+     * @param givenNames Given names
+     */
+    public void setGivenNames(@NonNull final String givenNames) {
+        this.givenNames = givenNames;
     }
 
     /**
