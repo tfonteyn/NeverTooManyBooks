@@ -196,7 +196,8 @@ class AuthorParseTest
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
 
-        assertEquals(1, author.getIdentifiers().size());
+        assertEquals(1, author.getIdentifiers().size(),
+                     "2026-02-23: CAN FAIL WITH zero results which is a site problem");
         final Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());

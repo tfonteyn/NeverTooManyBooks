@@ -339,7 +339,7 @@ class ParseTest
         Author author;
         author = allAuthors.get(0);
         assertEquals("Corbeyran", author.getFamilyName());
-        assertEquals("Éric", author.getGivenNames());
+        assertEquals("Eric", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1964-12-14", author.getBirthDate().orElse(null));
         author = allAuthors.get(1);

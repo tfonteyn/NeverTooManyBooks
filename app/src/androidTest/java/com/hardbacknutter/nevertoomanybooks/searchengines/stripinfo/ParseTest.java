@@ -263,7 +263,7 @@ class ParseTest
         assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Maltaite", author.getFamilyName());
-        assertEquals("Éric", author.getGivenNames());
+        assertEquals("Eric", author.getGivenNames());
         assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Mézières", author.getFamilyName());
@@ -539,7 +539,7 @@ class ParseTest
         assertEquals(2, authors.size());
 
         Author author = authors.get(0);
-        assertEquals("Duchâteau", author.getFamilyName());
+        assertEquals("Duchateau", author.getFamilyName());
         assertEquals("André-Paul", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
 

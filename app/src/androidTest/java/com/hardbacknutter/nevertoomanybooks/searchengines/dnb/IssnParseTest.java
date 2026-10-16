@@ -86,7 +86,7 @@ class IssnParseTest
         assertEquals("01768824", book.getString(DBKey.ISBN, null));
 
         assertEquals("010441638", book.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("ZDB50387-3", book.getIdentifierValue("DE-599").orElse(null));
+        assertEquals("ZDB50387-3", book.getIdentifierValue("de-599").orElse(null));
         assertEquals("85119872", book.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
 
         final List<Series> seriesList = book.getSeries();

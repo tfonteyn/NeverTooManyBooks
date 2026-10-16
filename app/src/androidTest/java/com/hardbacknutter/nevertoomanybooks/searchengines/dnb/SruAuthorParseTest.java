@@ -26,12 +26,10 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
@@ -65,7 +63,7 @@ class SruAuthorParseTest
 
     @Test
     void parse118646109()
-            throws IOException, SearchException, CredentialsException {
+            throws IOException {
         final String locationHeader = "https://services.dnb.de/sru/authorities?version=1.1&operation=searchRetrieve&query=nid%3D118646109&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_118646109;
@@ -90,7 +88,7 @@ class SruAuthorParseTest
 
     @Test
     void parse118678175()
-            throws IOException, SearchException, CredentialsException {
+            throws IOException {
         final String locationHeader = "https://services.dnb.de/sru/authorities?version=1.1&operation=searchRetrieve&query=nid%3D118678175&recordSchema=MARC21-xml";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_118678175;
@@ -115,7 +113,7 @@ class SruAuthorParseTest
 
     @Test
     void parse1300021055()
-            throws IOException, SearchException, CredentialsException {
+            throws IOException {
         final String locationHeader = "https://services.dnb.de/sru/authorities?version=1.1&operation=searchRetrieve&query=nid%3D1300021055&recordSchema=MARC21-xml";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_1300021055;
@@ -137,7 +135,7 @@ class SruAuthorParseTest
 
     @Test
     void parse128409142()
-            throws SearchException, CredentialsException, IOException {
+            throws IOException {
 
         final String locationHeader = "https://services.dnb.de/sru/authorities?version=1.1&operation=searchRetrieve&query=nid%3D128409142&recordSchema=MARC21-xml";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -162,7 +160,7 @@ class SruAuthorParseTest
 
         assertEquals(3, author.getIdentifiers().size());
         assertEquals("128409142", author.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("128409142", author.getIdentifierValue("DE-588").orElse(null));
+        assertEquals("128409142", author.getIdentifierValue("de-588").orElse(null));
         assertEquals("Q114237", author.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
 
         final Author realAuthor = author.getRealAuthor();
@@ -175,6 +173,6 @@ class SruAuthorParseTest
 
         assertEquals(2, realAuthor.getIdentifiers().size());
         assertEquals("1216065012", realAuthor.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("1216065012", realAuthor.getIdentifierValue("DE-588").orElse(null));
+        assertEquals("1216065012", realAuthor.getIdentifierValue("de-588").orElse(null));
     }
 }

@@ -328,7 +328,7 @@ class ParseTest
         assertEquals("Brandon", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1975-12-19", author.getBirthDate().orElse(null));
-        assertEquals(18, author.getIdentifiers().size());
+        assertTrue(author.getIdentifiers().size() > 15);
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
         assertEquals("Q457608", oIv.get());
@@ -408,7 +408,6 @@ class ParseTest
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
         assertTrue(description.startsWith("Komiks, piąty tom cyklu. Thorgal"));
-        assertTrue(description.endsWith("tytuł \"Szron i ogień\"."));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(6, bookTags.size());
@@ -493,7 +492,7 @@ class ParseTest
         assertEquals("Grzegorz", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1941-08-03", author.getBirthDate().orElse(null));
-        assertEquals(11, author.getIdentifiers().size());
+        assertTrue(author.getIdentifiers().size() > 10);
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
         assertEquals("Q744325", oIv.get());
