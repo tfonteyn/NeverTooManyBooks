@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -232,7 +232,7 @@ abstract class KbNlHandlerBase
             }
             case PSI_URL: {
                 if (inUrlPermalink) {
-                    processPermalink(builder.toString());
+                    parsePermalink(builder.toString());
                     inUrlPermalink = false;
                 }
                 inUrl = false;
@@ -255,7 +255,7 @@ abstract class KbNlHandlerBase
         builder.append(ch, start, length);
     }
 
-    protected abstract void processPermalink(@NonNull String permaLink);
+    protected abstract void parsePermalink(@NonNull String permaLink);
 
     protected abstract void processEntry(@NonNull String currentLabel,
                                          @NonNull List<CurrentData> currentData);

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -61,14 +62,14 @@ class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
-
-    private KbNlSearchEngine searchEngine;
+    private static final String UTF_8 = "UTF-8";
+    private KbNlHtmlSearchEngine searchEngine;
     private SAXParser saxParser;
 
     private static void verify9020612476(@NonNull final Book book) {
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
         assertEquals("9020612476", book.getString(DBKey.ISBN, null));
-        assertEquals("428377971", book.requireIdentifierValue(Identifier.SID_KBNL));
+        assertEquals("428377971", book.getIdentifierValue(Identifier.SID_KBNL).orElse(null));
 
         assertEquals("[2e dr.]", book.getString(DBKey.EDITION_INFO, null));
         assertEquals("1973", book.getString(DBKey.PUBLICATION_DATE, null));
@@ -123,9 +124,7 @@ class ParseTest
         final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertEquals(1, series.size());
-        final Series expectedSeries;
-        expectedSeries = new Series("Discus-serie");
-        assertEquals(expectedSeries, series.get(0));
+        assertEquals("Discus-serie", series.get(0).getTitle());
     }
 
     @BeforeEach
@@ -141,7 +140,7 @@ class ParseTest
     }
 
     @NonNull
-    private Book getBook(final int resId)
+    private Book getFromXml(final int resId)
             throws IOException, SAXException {
         final Book book = new Book();
         final KbNlBookHandler bookHandler =
@@ -160,16 +159,18 @@ class ParseTest
     void parseList01()
             throws IOException, SAXException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_list_1);
+        final Book book = getFromXml(com.hardbacknutter.nevertoomanybooks.test.
+                                          R.raw.kbnl_list_1_xml);
 
         assertEquals("SHW?FRST=1", book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null));
     }
 
     @Test
-    void parseBook01()
+    void parseBook01xml()
             throws IOException, SAXException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_book_1);
+        final Book book = getFromXml(com.hardbacknutter.nevertoomanybooks.test.
+                                          R.raw.kbnl_book_1_xml);
 
         assertEquals("De Foundation", book.getString(DBKey.TITLE, null));
 
@@ -237,7 +238,8 @@ class ParseTest
     void parseComic()
             throws IOException, SAXException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_comic_1);
+        final Book book = getFromXml(com.hardbacknutter.nevertoomanybooks.test.
+                                          R.raw.kbnl_comic_1_xml);
 
         assertEquals("De buitengewone reis", book.getString(DBKey.TITLE, null));
         assertEquals("9789463731454", book.getString(DBKey.ISBN, null));
@@ -336,23 +338,42 @@ class ParseTest
     }
 
     @Test
-    void MultiResult()
+    void multiResult()
             throws SearchException, CredentialsException, StorageException {
 
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setRawProductCode("9020612476");
         // this will first hit a multi-result page, take the first book, and fetch that.
         final Book book = searchEngine.searchByIsbn(context, criteria);
+        Log.d(TAG, book.toString());
 
         verify9020612476(book);
     }
 
+    // Test an "old" book where the data is rather unstructured.
+    // The parser will do a best-effort.
     @Test
-    void parseOldBook()
+    void parseOldBookXml()
             throws IOException, SAXException {
-        // Test an "old" book where the data is rather unstructured.
-        // The parser will do a best-effort.
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_old_book);
+        final Book book = getFromXml(com.hardbacknutter.nevertoomanybooks.test.
+                                          R.raw.kbnl_old_book_xml);
+
+        verify9020612476(book);
+    }
+
+    // Test an "old" book where the data is rather unstructured.
+    // The parser will do a best-effort.
+    @Test
+    void parseOldBookHtml()
+            throws IOException, SearchException, CredentialsException, StorageException {
+
+        final String locationHeader = "https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=1";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_old_book_html;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(document, book);
+        Log.d(TAG, book.toString());
 
         verify9020612476(book);
     }
@@ -385,7 +406,7 @@ class ParseTest
     @Test
     void parseMagazine()
             throws IOException, SAXException {
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_eos);
+        final Book book = getFromXml(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_eos_xml);
 
         assertEquals("Eos magazine : technologie voor de mens Eos Eos wetenschap",
                      book.getString(DBKey.TITLE, null));

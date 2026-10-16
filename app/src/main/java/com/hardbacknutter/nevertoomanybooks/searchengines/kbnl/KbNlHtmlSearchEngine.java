@@ -32,7 +32,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -41,9 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
@@ -53,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -111,13 +106,11 @@ public class KbNlHtmlSearchEngine
     private static final String BOOK_URL = KbNlSearchEngine.HOST_URL
                                            + "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
-    @Nullable
-    private String tmpSeriesNr;
-
     @NonNull
     private String dbVersion = DEFAULT_DB_VERSION;
     @NonNull
     private String setNr = DEFAULT_SET_NUMBER;
+    private final BookParser bookParser;
 
     /**
      * Constructor.
@@ -134,6 +127,8 @@ public class KbNlHtmlSearchEngine
     public KbNlHtmlSearchEngine(@NonNull final Context context,
                                 @NonNull final SearchEngineConfig config) {
         super(context, config);
+
+        bookParser = new BookParser();
     }
 
     /**
@@ -264,7 +259,7 @@ public class KbNlHtmlSearchEngine
     @VisibleForTesting
     @Nullable
     String parseMultiResult(@NonNull final Element titleList) {
-        final Element a = titleList.selectFirst("td.rec_title > div > a");
+        final Element a = titleList.selectFirst("td.rec_title a");
         if (a == null) {
             return null;
         }
@@ -293,114 +288,139 @@ public class KbNlHtmlSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        tmpSeriesNr = null;
+        final Element permaLink = document.selectFirst("div.footer a");
+        if (permaLink != null) {
+            bookParser.parsePermalink(permaLink.attr("href"), book);
+        }
 
         final Elements trs = document.select("table[summary='title presentation'] tr");
         for (final Element tr : trs) {
-            final Element label = tr.selectFirst("td.rec_lable > div > span");
-            if (label != null) {
-                final Element td = tr.selectFirst("td.rec_title");
-                if (td != null) {
-                    final String s = label.text().strip();
-                    switch (s) {
-                        case "Titel:":
-                            processTitle(td, book);
+            final Element labelElement = tr.selectFirst("td.rec_lable > div > span");
+            if (labelElement != null) {
+                final String label = labelElement.text().strip();
+                // The "rec_title" is the value element for the label.
+                final Element valueElement = tr.selectFirst("td.rec_title");
+                if (valueElement != null) {
+                    switch (label) {
+                        case "Title:":
+                        case "Titel:": {
+                            parseTitle(valueElement, book);
                             break;
-
-                        case "Auteur:":
-                            parseAuthor(td, AuthorRole.WRITER, book);
+                        }
+                        case "Author:":
+                        case "Auteur:": {
+                            parseAuthor(valueElement, AuthorRole.WRITER, book);
                             break;
-                        case "Medewerker:":
-                            parseAuthor(td, AuthorRole.CONTRIBUTOR, book);
+                        }
+                        case "Collaborator:":
+                        case "Medewerker:": {
+                            parseAuthor(valueElement, AuthorRole.CONTRIBUTOR, book);
                             break;
+                        }
+                        case "Artist:":
                         case "Kunstenaar:":
-                            parseAuthor(td, AuthorRole.ARTIST, book);
+                        case "Illustrator:": {
+                            parseAuthor(valueElement, AuthorRole.ARTIST, book);
                             break;
-
-                        case "Colorist:":
-                            parseAuthor(td, AuthorRole.COLORIST, book);
+                        }
+                        case "Colorist:": {
+                            parseAuthor(valueElement, AuthorRole.COLORIST, book);
                             break;
-                        case "Vertaler:":
-                            parseAuthor(td, AuthorRole.TRANSLATOR, book);
+                        }
+                        case "Translator:":
+                        case "Vertaler:": {
+                            parseAuthor(valueElement, AuthorRole.TRANSLATOR, book);
                             break;
-
-                        case "Reeks:":
-                            processSeries(td, book);
+                        }
+                        case "Series:":
+                        case "Reeks:": {
+                            parseSeries(valueElement, book);
                             break;
-
-                        case "Deel / delen:":
-                            processSeriesNumber(td);
+                        }
+                        case "Part(s):":
+                        case "Deel / delen:": {
+                            parseSeriesNumber(valueElement);
                             break;
-
-                        case "Uitgever:":
-                            parsePublisher(td, book);
+                        }
+                        case "Publisher:":
+                        case "Uitgever:": {
+                            parsePublisher(valueElement, book);
                             break;
-
-                        case "Jaar:":
-                            processDatePublished(td, book);
+                        }
+                        case "Year:":
+                        case "Jaar:": {
+                            parseDatePublished(valueElement, book);
                             break;
-
-                        case "Omvang:":
-                            processPages(td, book);
+                        }
+                        case "Extent:":
+                        case "Omvang:": {
+                            parsePages(valueElement, book);
                             break;
-
+                        }
                         case "ISBN:":
-                            parseIsbn(td, book);
+                        case "ISSN:": {
+                            // only one of the two will be present
+                            parseProductCode(valueElement, book);
                             break;
-
-                        case "Illustratie:":
+                        }
+                        case "Illustration:":
+                        case "Illustratie:": {
                             // e.g.: gekleurde illustraties
-                            //TODO: extract color
+                            parseIllustration(valueElement, book);
                             break;
-
-                        case "Formaat:":
-                            // e.g.: Formaat: 30 cm
-                            // instead we get the format from the ISBN line
+                        }
+                        case "Size:":
+                        case "Formaat:": {
+                            // seen, but skipped for now; it's one dimension, the height
+                            // so librarians know if it will fit on a shelf...
+                            // Formaat: 30 cm
                             break;
-
-                        case "Editie:":
+                        }
+                        case "Editie:": {
                             // e.g.: Eerste druk
                             // e.g.: [2e dr.]
+                            parseEditionInfo(valueElement, book);
                             break;
-
-                        case "Annotatie editie:":
+                        }
+                        case "Contains:":
+                        case "Bevat / omvat:":
+                        case "Abstract:":
+                        case "Samenvatting:": {
+                            parseDescription(valueElement, book);
+                            break;
+                        }
+                        case "Noot:":
+                        case "Note:":
+                        case "Annotatie:":
+                        case "Annotatie editie:": {
                             // e.g.: Omslag vermeldt: K2
                             // e.g.: Opl. van 750 genummerde ex
                             // e.g.: Vert. van: Cromwell Stone. - Delcourt, cop. 1993
+                            parseAnnotation(valueElement, book);
+                            parseDescription(valueElement, book);
                             break;
+                        }
 
-                        case "Noot:":
+                        case "Physical information:":
+                        case "Fysieke informatie:": {
+                            // "1 file (PDF)"
                             break;
-
-                        case "Bĳlage:":
+                        }
+                        case "Annex:":
+                        case "Bĳlage:": {
                             // e.g.: kleurenprent van oorspr. cover
                             break;
-
-                        case "Trefwoord Depot:":
-                            // not used
-                        case "Aanvraagnummer:":
-                            // not used
-                        case "Uitleenindicatie:":
-                            // not used
-                        case "Aanvraaginfo:":
-                            // not used
+                        }
+                        case "Numbering:":
+                        case "Nummering:": {
+                            // unstructured.
                             break;
+                        }
 
                         default:
                             // ignore
                             break;
                     }
-                }
-            }
-        }
-
-        if (tmpSeriesNr != null) {
-            final String title = book.getTitle();
-            // should never happen, but paranoia...
-            if (!title.isBlank()) {
-                final String s = SearchEngineUtils.cleanName(title);
-                if (!s.isBlank()) {
-                    book.add(Series.from(s, tmpSeriesNr));
                 }
             }
         }
@@ -412,19 +432,11 @@ public class KbNlHtmlSearchEngine
         }
     }
 
-    private void processTitle(@NonNull final Element td,
-                              @NonNull final Book book) {
-        final Element a = td.selectFirst("a");
-        if (a == null) {
-            return;
-        }
-        final String[] cleanedData = a.text().split("/");
-        final String s = SearchEngineUtils.cleanText(cleanedData[0]);
-        if (!s.isBlank()) {
-            book.setTitle(s);
-        }
-        // It's temping to decode cleanedData[1],
-        // but the data has proven to be very unstructured and mostly unusable.
+    private void parseTitle(@NonNull final Element td,
+                            @NonNull final Book book) {
+
+        final String[] cleanedData = td.text().split("/");
+        bookParser.parseTitle(cleanedData, book);
     }
 
     private void parseAuthor(@NonNull final Element td,
@@ -435,50 +447,35 @@ public class KbNlHtmlSearchEngine
             return;
         }
         for (final Element a : aas) {
-            // remove a year part in the name
-            String s = a.text().split("\\(")[0].strip();
-            // reject separators as for example: <psi:text>;</psi:text>
-            if (s.length() == 1) {
-                return;
-            }
-
-            s = SearchEngineUtils.cleanName(s);
-            if (!s.isBlank()) {
-                bookParserHelper.addAuthor(Author.from(s), type, book, false);
+            final Author author = bookParser.parseAuthor(a.text(), a.attr("href"));
+            if (author != null) {
+                bookParserHelper.addAuthor(author, type, book, false);
             }
         }
     }
 
-    private void processSeries(@NonNull final Element td,
-                               @NonNull final Book book) {
+    private void parseSeries(@NonNull final Element td,
+                             @NonNull final Book book) {
         final Element span = td.selectFirst("span");
         if (span == null) {
             return;
         }
         // Note how this is different from the psi result
-        final String s = SearchEngineUtils.cleanName(span);
-        if (!s.isBlank()) {
-            book.add(Series.from(s, tmpSeriesNr));
-        }
-        tmpSeriesNr = null;
+        final String text = span.text();
+        bookParser.parseSeries(text, book);
     }
 
-    private void processSeriesNumber(@NonNull final Element td) {
-        // This element is listed BEFORE the Series ("reeks") itself so store it tmp.
+    private void parseSeriesNumber(@NonNull final Element td) {
         final Element span = td.selectFirst("span");
         if (span == null) {
             return;
         }
-        final String[] nrStr = span.text().split("/")[0].split(" ");
-        if (nrStr.length > 1) {
-            tmpSeriesNr = nrStr[1];
-        } else {
-            tmpSeriesNr = nrStr[0];
-        }
+        final String text = span.text();
+        bookParser.parseSeriesNumber(text);
     }
 
-    private void parseIsbn(@NonNull final Element td,
-                           @NonNull final Book book) {
+    private void parseProductCode(@NonNull final Element td,
+                                  @NonNull final Book book) {
         if (book.hasProductCode()) {
             return;
         }
@@ -486,22 +483,8 @@ public class KbNlHtmlSearchEngine
         if (spans.isEmpty()) {
             return;
         }
-        // oh boy... aside of actual/valid ISBN numbers we've also seen things like
-        // " : 42.00F"
-        final String isbnText = ISBN.cleanText(spans.get(0).text());
-        // so we do a crude test on the length and hope for the best
-        // (don't do a full ISBN test here, no need)
-        if (isbnText.length() == 10 || isbnText.length() == 13) {
-            book.setRawProductCode(isbnText);
-        }
-        if (spans.size() > 1) {
-            if (!book.contains(DBKey.FORMAT)) {
-                String format = spans.get(1).text();
-                if (format.startsWith("(")) {
-                    format = format.substring(1, format.length() - 1);
-                }
-                book.setFormat(format);
-            }
+        for (final Element span : spans) {
+            bookParser.parseProductCodeAndFormat(span.text(), book);
         }
     }
 
@@ -511,22 +494,12 @@ public class KbNlHtmlSearchEngine
         if (spans.isEmpty()) {
             return;
         }
-        String text = spans.stream()
-                           .map(Element::text)
-                           .filter(name -> !name.isEmpty())
-                           .collect(Collectors.joining(" "));
-        // the part before the ":" is (usually?) the city. 2nd part is the name
-        if (text.contains(":")) {
-            text = text.split(":")[1].strip();
-        }
-        text = SearchEngineUtils.cleanName(text);
-        if (!text.isBlank()) {
-            book.add(Publisher.from(text));
-        }
+        final String text = spans.text();
+        bookParser.parsePublisher(text, book);
     }
 
-    private void processDatePublished(@NonNull final Element td,
-                                      @NonNull final Book book) {
+    private void parseDatePublished(@NonNull final Element td,
+                                    @NonNull final Book book) {
         if (book.contains(DBKey.PUBLICATION_DATE)) {
             return;
         }
@@ -534,22 +507,13 @@ public class KbNlHtmlSearchEngine
         if (span == null) {
             return;
         }
-        // It's not good... we've seen some different notations.
-        // e.g.:  [2019]
-        // e.g.:  c1977, cover 1978
-        // Grab the first bit before a comma, and strip it for digits + hope for the best
-        final String year = SearchEngineUtils.digits(span.text().split(",")[0]);
-        if (!year.isEmpty()) {
-            try {
-                book.setPublicationDate(Integer.parseInt(year));
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-        }
+
+        final String text = span.text();
+        bookParser.parseDatePublished(text, book);
     }
 
-    private void processPages(@NonNull final Element td,
-                              @NonNull final Book book) {
+    private void parsePages(@NonNull final Element td,
+                            @NonNull final Book book) {
         if (book.contains(DBKey.PAGES)) {
             return;
         }
@@ -557,15 +521,29 @@ public class KbNlHtmlSearchEngine
         if (span == null) {
             return;
         }
-        final String pagesStr = span.text().split(" ")[0];
-        try {
-            book.setPages(Integer.parseInt(pagesStr));
-        } catch (@NonNull final NumberFormatException e) {
-            // use source
-            book.setPages(pagesStr);
-        }
+        final String text = span.text().split(" ")[0];
+        bookParser.parsePages(text, book);
     }
 
+    private void parseIllustration(@NonNull final Element td,
+                                   @NonNull final Book book) {
+        bookParser.parseIllustration(td.text(), book);
+    }
+
+    private void parseEditionInfo(final Element td,
+                                  final Book book) {
+        bookParser.parseEditionInfo(td.text(), book);
+    }
+
+    private void parseAnnotation(@NonNull final Element td,
+                                 @NonNull final Book book) {
+        bookParser.parseAnnotation(td.text(), book);
+    }
+
+    private void parseDescription(@NonNull final Element td,
+                                  @NonNull final Book book) {
+        bookParser.parseDescription(td.text(), book);
+    }
 
     /**
      * Wrapper for {@link #searchCoverByEdition(Context, AltEdition, int, ImageWebSize)}.

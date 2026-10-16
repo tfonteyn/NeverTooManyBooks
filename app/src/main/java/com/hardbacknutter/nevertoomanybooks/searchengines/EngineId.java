@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEng
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlHtmlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
@@ -147,7 +147,7 @@ public enum EngineId
     Goodreads(GoodreadsSearchEngine.class, false),
     GoogleBooks(GoogleBooksSearchEngine.class, true),
     Isfdb(IsfdbSearchEngine.class, true),
-    KbNl(KbNlSearchEngine.class, true),
+    KbNl(KbNlHtmlSearchEngine.class, true),
     LastDodoNl(LastDodoSearchEngine.class, true),
     LibraryThing(LibraryThingSearchEngine.class, true),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
@@ -690,11 +690,11 @@ public enum EngineId
         @NonNull
         private final Locale defaultLocale;
 
-        @Nullable
-        private String charSetName;
-
         private final Map<Identifier.EntityType, String> identifierKeys =
                 new EnumMap<>(Identifier.EntityType.class);
+
+        @Nullable
+        private String charSetName;
 
         private boolean multipleCoverSizes;
 

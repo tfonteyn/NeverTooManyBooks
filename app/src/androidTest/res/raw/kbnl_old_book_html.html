@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:psi="http://oclc.org/xml/" lang="nl">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<base href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/">
+<link rel="STYLESHEET" href="https://webggc.oclc.org/~r_cbs/worldcat_gui/css_stylesheet.php">
+<link rel="STYLESHEET" href="https://webggc.oclc.org/~r_cbs/worldcat_gui/stylesheet_2.37.css">
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/favicons/default.ico">
+<link rel="alternate" type="application/rss+xml" href="?DB=2.37&amp;SEARCH=00yS!i1007!t9020612476!m!r1!aY!o2!cN.oR.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%019020612476%01%01%01Y%01%01%02&amp;EDOC=187840893&amp;COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E7a5ecf3a-9b1,A,H,R82.14.155.119,FY">
+<link rel="search" type="application/opensearchdescription+xml" title="Koninklijke Bibliotheek" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/XML=1.0/SEARCHPLUGIN?NAME=Koninklijke+Bibliotheek&amp;FAVICON=">
+<title>Welkom in de KB-catalogus boeken en tijdschriften</title>
+<script>
+
+// Next functions are for the search clear icon. Similar to input type="search" with these differences:
+// - It also works in Firefox (67);
+// - the cross is always visible if there is text in the search box, not only if it has focus;
+// - the cross is always visible on (re)load because there is no onload event to turn it off if the input is empty.
+function getSiblingByClassName(el, className) {
+    var container = el.parentNode;
+    var siblings = container.getElementsByClassName && container.getElementsByClassName(className);
+    return (siblings && siblings.length && siblings[0]);
+}
+// Called from the searchClearIcon (click)
+// Clears the searchInput.
+function searchInputClear(ev) {
+    var searchInput = getSiblingByClassName(ev.target, 'searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    ev.target.style.display = 'none';
+    searchInput.focus();
+    ev.preventDefault();
+}
+// Called from the searchInput (input/focus)
+// Adjusts visibility of the searchClearIcon (display only if there is text in the searchInput).
+function searchToggleIcon(ev) {
+    var searchClearIcon = getSiblingByClassName(ev.target, 'searchClearIcon');
+    if (searchClearIcon) {
+        searchClearIcon.style.display = ev.target.value != '' ? '' : 'none';
+    }
+}
+</script>
+</head>
+<body OnLoad="var e = window.onload_LONGTITLE; if (e) e();">
+<a name="top"></a><div class="topbox">
+<div class="menu">
+<span class="de-emph_xsmall">gebruiker: </span><span class="xsmall">KOB ORS default login</span>
+</div>
+<span class="logo"><img alt="Koninklijke Bibliotheek" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/logos/logo_xml_kb.svg" border="" title="Koninklijke Bibliotheek"></span><div class="navbar" role="navigation" aria-label="Site">
+<span class="copyright">Copyright © 2026 OCLC</span><span class="navflags"><img alt="Nederlands" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/flags/ne-.gif" width="16" height="10" border="" title="Nederlands"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="4" height="1" border="" title=""><a href="LNG=EN/SHW?FRST=1"><img alt="Engels" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/flags/en.gif" width="16" height="10" border="" title="Engels"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="4" height="1" border="" title=""></a></span><span class="nav"><a class="nav0" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/">Zoeken</a><span class="navsep"></span><span class="nav1">Resultaten</span><span class="navsep"></span><a class="nav0" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/ADVANCED_SEARCHFILTER">Geavanceerd</a><span class="navsep"></span><a class="nav0" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/PSSL">Mijn archief</a><span class="navsep"></span><a class="nav0" href="https://kb.alma.exlibrisgroup.com/discovery/account?vid=31UKB_NLN:Services&amp;section=overview" target="_blank">Lenergegevens</a><span class="navsep"></span><a class="nav0" href="https://webggc.oclc.org/~r_cbs/psi_help/?DB=2.37&amp;LNG=NE&amp;COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E7a5ecf3a-9b1,A,H,R82.14.155.119,FY&amp;MENUIKT=1016,4,2001,1004,1009,8050,5040,5004,4014,53,1007,2,3003" target="_blank">Help</a><span class="nav1"></span><span class="navsep"></span><a class="nav0" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/PRIVACY">Privacyverklaring</a></span>
+</div>
+<div class="cmdbox_margin"><form class="form" role="search" method="GET" action="CMD"><div class="cmdbox cmdbox_bg">
+<div><span><span class="right5"><select class="cmdsel" aria-label="Zoek kommando" name="ACT"><OPTION VALUE="SRCH">zoeken [of]</OPTION>
+<OPTION VALUE="SRCHA" SELECTED>zoeken [en]</OPTION>
+<OPTION VALUE="BRWS">index scannen</OPTION>
+<OPTION VALUE="AND">verkleinen</OPTION>
+<OPTION VALUE="OR">vergroten</OPTION>
+<OPTION VALUE="NOT">behalve</OPTION>
+<OPTION VALUE="RLV">herschik</OPTION></select></span><span class="right5"><select class="cmdsel" aria-label="zoeksleutel" name="IKT"><OPTION VALUE="1016">alle woorden</OPTION>
+<OPTION VALUE="4">titelwoorden</OPTION>
+<OPTION VALUE="2001">hele titel tijdschrift</OPTION>
+<OPTION VALUE="1004">auteur, medewerker</OPTION>
+<OPTION VALUE="1009">trefwoord persoon</OPTION>
+<OPTION VALUE="8050">trefwoord Depot</OPTION>
+<OPTION VALUE="5040">trefwoord (GOO)</OPTION>
+<OPTION VALUE="5004">basisclassificatie</OPTION>
+<OPTION VALUE="4014">code KB</OPTION>
+<OPTION VALUE="53">aanvraagnummer</OPTION>
+<OPTION VALUE="1007" SELECTED>isbn, issn</OPTION>
+<OPTION VALUE="2">organisatie, congres</OPTION>
+<OPTION VALUE="3003">uitgever, drukker</OPTION></select></span><label for="cmdboxInternal.sortBy" class="smaller"> sorteer op </label><span class="left5"><select name="SRT" size="1" class="cmdsel" id="cmdboxInternal.sortBy"><OPTION VALUE="LST_Ya">jaar van publicatie</OPTION>
+<OPTION VALUE="RLV" SELECTED>relevantie</OPTION>
+<OPTION VALUE="LST_aty">auteur</OPTION>
+<OPTION VALUE="LST_tay">titel</OPTION></select></span></span></div>
+<div class="cmdbar">
+<span class="right5"><div class="searchContainer">
+<input aria-label="zoekterm" class="cmd searchInput" oninput="searchToggleIcon(event)" onfocus="searchToggleIcon(event)" type="text" name="TRM" value="9020612476" size="70"><a class="searchClearIcon" onclick="searchInputClear(event)">×</a>
+</div></span><span class="right5"><input type="submit" class="button" value="zoeken"></span><span class="xsmall"><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=1&amp;CMD_COLLAPSE=Y">minder</a></span>
+</div>
+<div class="smaller">
+<span class="right5"><input id="cmdboxInternal.fuzzy" type="checkbox" class="cmd" name="FUZZY" value="Y"></span><label for="cmdboxInternal.fuzzy" style="vertical-align:top;margin-right:10px;">zoeken bij benadering</label>
+</div>
+</div></form></div>
+<div class="tabline"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="1" height="1" border="" title=""></div>
+<div class="tabbar" role="navigation" aria-label="Resultaatpagina's">
+<span class="page_nav"><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=1">eerste</a></span><span class="de-emph_sep"> | </span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=3">vorige</a></span><span class="de-emph_sep"> | </span><span class="block_nav_sel">1</span><span class="de-emph_sep"> | </span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=2">2</a><span class="de-emph_sep"> | </span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=3">3</a><span class="de-emph_sep"> | </span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=2">volgende</a></span><span class="de-emph_sep"> | </span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=3">laatste</a></span></span><span class="tabs"><a class="tab0" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/NXT?FRST=1">titellijst</a><span class="tab1">titelgegevens</span><a class="tab0" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/HIST">zoekgeschiedenis</a><a class="tab0" href="https://www.kb.nl/onderzoeken-vinden/bronnen/kb-catalogus/trefwoorden">Toelichting Trefwoorden</a>
+ </span>
+</div>
+<div class="tabline"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="1" height="1" border="" title=""></div>
+</div>
+<div class="lrmargin">
+<div class="result_title"><div><span xmlns:xd="http://www.pnp-software.com/XSLTdoc"><table summary="query info" border="0" cellpadding="0" cellspacing="0"><tr>
+<td class="title"><span>resultaten</span></td>
+<td class="result">zoeken [en]</td>
+<td class="result">(isbn, issn)</td>
+<td class="result_trm"><psi:queryVar name="srchActs" ikt="(isbn, issn)" mode="S" flag="Y">9020612476</psi:queryVar></td>
+<td></td>
+<td class="result">
+<span class="de-emph_sep"> | </span><span>3 treffers</span>
+</td>
+</tr></table></span></div></div>
+<div class="bottom10">
+<div class="tabline_prs"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="1" height="1" border="" title=""></div>
+<div class="tabbar_prs"><span class="tabs"><span class="tab1">labels</span></span></div>
+<div class="tabline_prs"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="1" height="1" border="" title=""></div>
+</div>
+<div class="float_left"><div class="linkbox">
+<div><a class="link_gen" href="FAM?PPN=428377971&amp;MPSORT=A">verwant</a></div>
+<div><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/RESULTS_SAVEINFO_LONG?FRST=1&amp;LAST=1&amp;HITS=3&amp;PPN=428377971">bewaren</a></div>
+</div></div>
+<div role="main" aria-label="Resultaten">
+<div class="rec_mat_long">
+<img alt="Online bronnen" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/worldcat_icons/binary.gif" width="20" height="20" border="" title="Online bronnen"><br><a class="link_gen" href="PRS=PP/SHW?FRST=1"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="20" height="20" border="" title=""></a>
+</div>
+<div class="rec_presentation">
+<script language="javascript" type="text/javascript">
+    <!--
+    function onload_LONGTITLE() {
+        var fold_title = true;
+	var counter = 1;
+	while ( fold_title ) {
+	    var row_always_open = window.document.getElementById("labelledrow_always_open_"+counter);
+	    var row_open = window.document.getElementById("labelledrow_open_"+counter);
+	    var row_closed = window.document.getElementById("labelledrow_closed_"+counter);
+	    if ( row_open != null && row_closed != null ) {
+		row_open.style.display = 'none';
+		row_closed.style.display = 'table-row';
+	    } else if ( row_always_open != null ){
+	    } else {
+		fold_title=false;
+	    }
+	    counter+=1;
+	}
+    }
+    function open_close_title_display(open_id,close_id) {
+	var title_open = window.document.getElementById(open_id);
+	var title_close = window.document.getElementById(close_id);
+	if ( title_open != null ) {
+	    title_close.style.display = 'none';
+	    title_open.style.display = 'table-row';
+	}
+    }
+    //-->
+    </script><table summary="title presentation">
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Titel: </span></div></td>
+<td class="rec_title"><div>
+<span>De </span><span><a class="link_gen" href="CLK?IKT=4&amp;TRM=Discus">Discus</a></span><span> </span><span><a class="link_gen" href="CLK?IKT=4&amp;TRM=valt">valt</a></span><span> aan / door R. Feenstra ; geïllustreerd door G. van Straaten</span>
+</div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Auteur: </span></div></td>
+<td class="rec_title"><div><span><a class="link_gen" href="REL?PPN=068852002">Ruurd Feenstra (1904-1974) (ISNI 0000 0000 2173 3650) </a></span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Illustrator: </span></div></td>
+<td class="rec_title"><div><span><a class="link_gen" href="REL?PPN=068862334">Gerard van Straaten (1924-2011) (ISNI 0000 0003 6888 9806) </a></span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Jaar: </span></div></td>
+<td class="rec_title"><div><span>[1973]</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Editie: </span></div></td>
+<td class="rec_title"><div><span>[2e dr.]</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Uitgever: </span></div></td>
+<td class="rec_title"><div>
+<span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Alkmaar">Alkmaar</a></span><span> : </span><span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Kluitman">Kluitman</a></span>
+</div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Reeks: </span></div></td>
+<td class="rec_title"><div>
+<span><a class="link_gen" href="CLK?IKT=12&amp;TRM=851863523&amp;REC=*">Discus-serie</a></span><span>; </span><span><a class="link_gen" href="CLK?IKT=12&amp;TRM=821611178&amp;REC=*">Kluitman jeugdserie</a></span><span> ; </span><span><a class="link_gen" href="CLK?IKT=12&amp;TRM=821611178&amp;REC=*">J 1247</a></span>
+</div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Annotatie editie: </span></div></td>
+<td class="rec_title"><div><span>1e dr.: 1970</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Omvang: </span></div></td>
+<td class="rec_title"><div><span>157 p</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Illustratie: </span></div></td>
+<td class="rec_title"><div><span>zw. ill</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>ISBN: </span></div></td>
+<td class="rec_title"><div><span class="highlight">90-206-1247-6</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Andere versie: </span></div></td>
+<td class="rec_title"><div><span><a class="link_gen" href="CLK?IKT=12&amp;TRM=364277793&amp;REC=*">De Discus valt aan</a></span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Trefwoord Depot: </span></div></td>
+<td class="rec_title">
+<div><span><a class="link_gen" href="REL?PPN=075610744">jeugdboeken ; verhalen</a></span></div>
+<div><span> </span></div>
+<div><span>Gegevens origineel</span></div>
+</td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Locatie origineel: </span></div></td>
+<td class="rec_title">
+<div><span>NL / Koninklijke Bibliotheek / KW Kluitman 3471</span></div>
+<div><span> </span></div>
+</td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"></td>
+<td class="rec_title"><div><span>Gegevens gedigitaliseerde reproductie</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Jaar: </span></div></td>
+<td class="rec_title"><div><span>[2020]</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Uitgever: </span></div></td>
+<td class="rec_title"><div>
+<span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Den">Den</a></span><span> </span><span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Haag">Haag</a></span><span> : </span><span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Koninklijke">Koninklijke</a></span><span> </span><span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Bibliotheek">Bibliotheek</a></span>
+</div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Vervaardiger: </span></div></td>
+<td class="rec_title"><div>
+<span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Heiloo">Heiloo</a></span><span> : </span><span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=Picturae">Picturae</a></span><span> </span><span><a class="link_gen" href="CLK?IKT=3003&amp;TRM=BV">BV</a></span>
+</div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Fysieke informatie: </span></div></td>
+<td class="rec_title">
+<div><span>1 file (PDF)</span></div>
+<div><span> </span></div>
+<div><span> </span></div>
+<div><span> </span></div>
+</td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Aanvraagnummer: </span></div></td>
+<td class="rec_title"><div><span>Digitaal bestand</span></div></td>
+</tr>
+<tr style="display:table-row;">
+<td class="rec_lable"><div><span>Toegang: </span></div></td>
+<td class="rec_title"><div><span><a class="link_gen" href="http://resolver.kb.nl/resolve?urn=MMKB25:050480000" target="_blank">Delpher</a></span></div></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="footer">
+<span class="rec_mat_long"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/empty.gif" width="1" height="1" border="" title=""></span><span><a href="https://webggc.oclc.org/cbs/xslt/DB=2.37/XMLPRS=Y/PPN?PPN=428377971" target="_blank"><img alt="" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/gui/permalink.gif" border="" title=""></a></span>
+</div>
+<div class="footer_nav"><span class="page_nav"><span class="right5"><form name="goto" action="NXT" method="GET" class="goto">
+<span><input class="button_goto" type="submit" value="ga naar"></span><span class="lr5"><input name="FRST" type="text" size="6"></span>
+</form></span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=1">eerste</a></span><span class="de-emph_sep"> | </span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=3">vorige</a></span><span class="de-emph_sep"> | </span><span class="block_nav_sel">1</span><span class="de-emph_sep"> | </span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=2">2</a><span class="de-emph_sep"> | </span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=3">3</a><span class="de-emph_sep"> | </span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=2">volgende</a></span><span class="de-emph_sep"> | </span><span><a class="link_gen" href="https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=3">laatste</a></span></span></div>
+</div>
+<div class="top10"></div>
+</body>
+</html>

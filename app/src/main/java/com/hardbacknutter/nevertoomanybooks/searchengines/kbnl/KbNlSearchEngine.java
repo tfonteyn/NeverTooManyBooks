@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -28,15 +29,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.xml.parsers.SAXParser;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -78,6 +85,8 @@ public class KbNlSearchEngine
                    SearchEngine.ByIssn,
                    SearchEngine.ByExternalId,
                    SearchEngine.CoverByEdition {
+
+    private static final String TAG = "KbNlSearchEngine";
 
     /** {@link SearchEngineConfig#getHostUrl()}. */
     static final String HOST_URL = "https://webggc.oclc.org";
@@ -308,8 +317,28 @@ public class KbNlSearchEngine
                                    @NonNull final Book book)
             throws IOException, SAXException {
 
-        // Do the actual parsing which will populate the book.
-        parser.parse(is, handler);
+        if (BuildConfig.DEBUG /* always */) {
+            // Read the stream into a String
+            final String xmlContent;
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                xmlContent = reader.lines().collect(Collectors.joining("\n"));
+            }
+
+            final int len = Math.min(xmlContent.length(), 40000);
+            Log.d(TAG, xmlContent.substring(0, len));
+
+            final InputStream parserStream = new ByteArrayInputStream(
+                    xmlContent.getBytes(StandardCharsets.UTF_8));
+            // Do the actual parsing which will populate the book.
+            parser.parse(parserStream, handler);
+
+        } else {
+            // Do the actual parsing which will populate the book.
+            parser.parse(is, handler);
+        }
+
+
 
         // Extract the site tracking values.
         //noinspection DataFlowIssue

@@ -20,91 +20,45 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.SAXException;
 
 class KbNlBookHandler
         extends KbNlHandlerBase {
 
-    private static final Pattern TRANSLATION_PATTERN = Pattern.compile(
-            ".*?(?:Vert\\. van:|Vertaling van:)\\s*(.*)",
-            Pattern.UNICODE_CASE);
-    private static final Pattern ISBN_BOUNDARY_PATTERN = Pattern.compile("[;)]");
-    /** Example: {@code "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=852323123"}. */
-    private static final Pattern PERMALINK_PATTERN = Pattern.compile(
-            ".*?https.*?PPN=(\\d+).*", Pattern.UNICODE_CASE);
-    private static final Pattern PAGES_PATTERN = Pattern.compile(".*?(\\d+) pagina.*",
-                                                                 Pattern.UNICODE_CASE);
-
-    /** Example: {@code REL?PPN=068561504}. */
-    private static final Pattern AUTHOR_ID = Pattern.compile("REL\\?PPN=(\\d+)");
-    /** Split the author name from the trailing bracketed sections. */
-    private static final Pattern AUTHOR_NAME = Pattern.compile("(?=\\()");
-    /** Loop over the bracketed sections after the author name. */
-    private static final Pattern AUTHOR_BRACKETED_SUFFIX = Pattern.compile("\\((.*?)\\)");
-    /** Parse the bracketed section with the author dates. */
-    private static final Pattern BIRTH_DEATH_DATES =
-            Pattern.compile("(\\d\\d\\d\\d)-(\\d\\d\\d\\d|)");
-
     @NonNull
     private final BookParserHelper bookParserHelper;
-    @Nullable
-    private String tmpSeriesNr;
+    @NonNull
+    private final BookParser bookParser;
 
     /**
      * Constructor.
      *
      * @param bookParserHelper to use
-     * @param data         Book to update
+     * @param data             Book to update
      */
     KbNlBookHandler(@NonNull final BookParserHelper bookParserHelper,
                     @NonNull final Book data) {
         super(data);
         this.bookParserHelper = bookParserHelper;
-    }
 
-    @Override
-    public void startDocument()
-            throws SAXException {
-        super.startDocument();
-
-        tmpSeriesNr = null;
+        bookParser = new BookParser();
     }
 
     @Override
     public void endDocument()
             throws SAXException {
         super.endDocument();
-
-        if (tmpSeriesNr != null) {
-            final String title = book.getTitle();
-            // should never happen, but paranoia...
-            if (!title.isBlank()) {
-                final String s = SearchEngineUtils.cleanName(title);
-                if (!s.isBlank()) {
-                    book.add(Series.from(s, tmpSeriesNr));
-                }
-            }
-        }
 
         // There is no language field; e.g. French books data is the same as Dutch ones.
         // just add Dutch and hope for the best.
@@ -114,12 +68,8 @@ class KbNlBookHandler
     }
 
     @Override
-    protected void processPermalink(@NonNull final String permaLink) {
-        final Matcher matcher = PERMALINK_PATTERN.matcher(permaLink);
-        if (matcher.find()) {
-            final String ppn = matcher.group(1);
-            book.setIdentifierValue(Identifier.SID_KBNL, ppn);
-        }
+    protected void parsePermalink(@NonNull final String permaLink) {
+        bookParser.parsePermalink(permaLink, book);
     }
 
     /**
@@ -136,89 +86,83 @@ class KbNlBookHandler
                                 @NonNull final List<CurrentData> currentData) {
         switch (currentLabel) {
             case "Title":
-            case "Titel":
-                processTitle(currentData);
+            case "Titel": {
+                parseTitle(currentData);
                 break;
-
+            }
             case "Author":
-            case "Auteur":
+            case "Auteur": {
                 parseAuthor(currentData, AuthorRole.WRITER);
                 break;
-
+            }
             case "Collaborator":
-            case "Medewerker":
+            case "Medewerker": {
                 parseAuthor(currentData, AuthorRole.CONTRIBUTOR);
                 break;
-
+            }
             case "Artist":
             case "Kunstenaar":
-                // artist is for comics etc
-            case "Illustrator":
-                // illustrator (label is same in Dutch) is for books
-                // Just put them both down as artists
+            case "Illustrator": {
+                // illustrator (label is same in Dutch)
                 parseAuthor(currentData, AuthorRole.ARTIST);
                 break;
-
-            case "Colorist":
+            }
+            case "Colorist": {
                 parseAuthor(currentData, AuthorRole.COLORIST);
                 break;
+            }
             case "Translator":
-            case "Vertaler":
+            case "Vertaler": {
                 parseAuthor(currentData, AuthorRole.TRANSLATOR);
                 break;
-
+            }
             case "Series":
-            case "Reeks":
+            case "Reeks": {
                 processSeries(currentData);
                 break;
-
+            }
             case "Part(s)":
-            case "Deel / delen":
+            case "Deel / delen": {
                 processSeriesNumber(currentData);
                 break;
-
+            }
             case "Publisher":
-            case "Uitgever":
+            case "Uitgever": {
                 parsePublisher(currentData);
                 break;
-
+            }
             case "Year":
-            case "Jaar":
+            case "Jaar": {
                 parseDatePublished(currentData);
                 break;
-
+            }
             case "Extent":
-            case "Omvang":
+            case "Omvang": {
                 processPages(currentData);
                 break;
-
+            }
             case "ISBN":
-            case "ISSN":
+            case "ISSN": {
                 // only one of the two will be present
                 parseProductCode(currentData);
                 break;
-
+            }
             case "Illustration":
-            case "Illustratie":
-                processIllustration(currentData);
+            case "Illustratie": {
+                parseIllustration(currentData);
                 break;
-
+            }
             case "Size":
-            case "Formaat":
+            case "Formaat": {
                 // seen, but skipped for now; it's one dimension, the height
                 // so librarians know if it will fit on a shelf...
                 // Formaat: 30 cm
                 break;
-
-            case "Physical information":
-            case "Fysieke informatie":
-                // "1 file (PDF)"
-                break;
-
-            case "Editie":
+            }
+            case "Editie": {
                 parseEditionInfo(currentData);
                 break;
-
+            }
             case "Contains":
             case "Bevat / omvat":
             case "Abstract":
@@ -233,28 +177,34 @@ class KbNlBookHandler
             // Note/Annotatie
             // Annotation edition / Annotatie editie
             case "Noot":
-                // drop down to Note
             case "Note":
             case "Annotatie":
                 // It's unclear if this is just an alternative field used
                 // for the same type of information. But as usual,... it's unstructured.
             case "Annotation edition":
-            case "Annotatie editie":
+            case "Annotatie editie": {
                 // Parse semi-structured data
                 parseAnnotation(currentData);
                 // add to the description
                 parseDescription(currentData);
                 break;
+            }
 
+            case "Physical information":
+            case "Fysieke informatie": {
+                // "1 file (PDF)"
+                break;
+            }
             case "Annex":
-            case "Bĳlage":
+            case "Bĳlage": {
                 // kleurenprent van oorspr. cover ?
                 break;
-
+            }
             case "Numbering":
-            case "Nummering":
-                // ISSN .. but unstructured.
+            case "Nummering": {
+                // unstructured.
                 break;
+            }
 
             default:
                 // ignore
@@ -267,10 +217,7 @@ class KbNlBookHandler
                                        .map(cd -> cd.data)
                                        .filter(s -> !s.isEmpty())
                                        .collect(Collectors.joining(" "));
-        final String s = SearchEngineUtils.cleanText(data);
-        if (!s.isBlank()) {
-            book.setEditionInfo(s);
-        }
+        bookParser.parseEditionInfo(data, book);
     }
 
     /**
@@ -320,11 +267,7 @@ class KbNlBookHandler
                                        .map(cd -> cd.data)
                                        .filter(s -> !s.isEmpty())
                                        .collect(Collectors.joining(" "));
-
-        final Matcher matcher = TRANSLATION_PATTERN.matcher(data);
-        if (matcher.find()) {
-            book.setTranslatedFromTitle(matcher.group(1));
-        }
+        bookParser.parseAnnotation(data, book);
     }
 
     /**
@@ -350,7 +293,7 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processTitle(@NonNull final List<CurrentData> currentData) {
+    private void parseTitle(@NonNull final List<CurrentData> currentData) {
 
         final String[] cleanedData = currentData
                 .stream()
@@ -358,12 +301,7 @@ class KbNlBookHandler
                 .collect(Collectors.joining(" "))
                 .split("/");
 
-        final String s = SearchEngineUtils.cleanText(cleanedData[0]);
-        if (!s.isBlank()) {
-            book.setTitle(s);
-        }
-        // It's temping to decode [1], as this is the author as it appears on the cover,
-        // but the data has proven to be very unstructured and mostly unusable.
+        bookParser.parseTitle(cleanedData, book);
     }
 
     /**
@@ -412,58 +350,11 @@ class KbNlBookHandler
     void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
                      @AuthorRole.Role final int type) {
         for (final CurrentData cd : currentData) {
-            final String[] parts = AUTHOR_NAME.split(cd.data, 2);
 
-            String name = parts[0].strip();
-            // reject separators as for example: <psi:text>;</psi:text>
-            if (name.length() == 1) {
-                return;
+            final Author author = bookParser.parseAuthor(cd.data, cd.url);
+            if (author != null) {
+                bookParserHelper.addAuthor(author, type, book, false);
             }
-
-            name = SearchEngineUtils.cleanName(name);
-            if (name.isBlank()) {
-                return;
-            }
-
-            final Author author = Author.from(name);
-
-            if (cd.url != null) {
-                final Matcher matcher = AUTHOR_ID.matcher(cd.url);
-                if (matcher.find()) {
-                    final String siId = matcher.group(1);
-                    if (siId != null) {
-                        author.setIdentifierValue(Identifier.SID_KBNL, siId);
-                    }
-                }
-            }
-            if (parts.length > 1) {
-                // "Isaak Judovič Ozimov (1920-1992) (ISNI 0000 0001 2259 0564)"
-                // parts[1] == "(1920-1992) (ISNI 0000 0001 2259 0564)"
-                // parts[1] == "(1976-) (ISNI 0000 0004 8004 6868)"
-                final Matcher matcher = AUTHOR_BRACKETED_SUFFIX.matcher(parts[1]);
-                while (matcher.find()) {
-                    final String s = matcher.group(1);
-                    if (s != null) {
-                        if (s.startsWith("ISNI")) {
-                            final ISNI isni = new ISNI(s.substring(4));
-                            if (isni.isValid()) {
-                                author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
-                            }
-                        } else {
-                            final Matcher bddMatcher = BIRTH_DEATH_DATES.matcher(s);
-                            if (bddMatcher.find()) {
-                                author.setBirthDate(bddMatcher.group(1));
-                                final String deathDate = bddMatcher.group(2);
-                                if (deathDate != null) {
-                                    author.setDeathDate(deathDate);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            bookParserHelper.addAuthor(author, type, book, false);
         }
     }
 
@@ -493,11 +384,8 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void processSeries(@NonNull final List<CurrentData> currentData) {
-        final String s = SearchEngineUtils.cleanName(currentData.get(0).data);
-        if (!s.isBlank()) {
-            book.add(Series.from(s));
-            // the number part is totally unstructured
-        }
+        final String text = currentData.get(0).data;
+        bookParser.parseSeries(text, book);
     }
 
     /**
@@ -514,14 +402,8 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void processSeriesNumber(@NonNull final List<CurrentData> currentData) {
-        // This element is listed BEFORE the Series ("reeks") itself so store it tmp.
-        // Note it's often missing altogether
-        final String[] nrStr = currentData.get(0).data.split("/")[0].split(" ");
-        if (nrStr.length > 1) {
-            tmpSeriesNr = nrStr[1];
-        } else {
-            tmpSeriesNr = nrStr[0];
-        }
+        final String text = currentData.get(0).data;
+        bookParser.parseSeriesNumber(text);
     }
 
     /**
@@ -569,24 +451,7 @@ class KbNlBookHandler
     private void parseProductCode(@NonNull final List<CurrentData> currentData) {
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
-            if (Character.isDigit(text.charAt(0))) {
-                if (!book.hasProductCode()) {
-                    final String codeStr = ISBN.cleanText(text.split(":")[0]);
-                    // Do a crude test on the length and hope for the best
-                    // (don't do a full ISBN test here, no need)
-                    // 8 for ISSN, 10/13 for ISBN-
-                    if (codeStr.length() == 8
-                        || codeStr.length() == 10
-                        || codeStr.length() == 13) {
-                        book.setRawProductCode(codeStr);
-                    }
-                }
-            } else if (text.charAt(0) == '(') {
-                if (!book.contains(DBKey.FORMAT)) {
-                    // Skip the 1st bracket, and split either on closing or on semicolon
-                    book.setFormat(ISBN_BOUNDARY_PATTERN.split(text.substring(1))[0].strip());
-                }
-            }
+            bookParser.parseProductCodeAndFormat(text, book);
         }
     }
 
@@ -620,18 +485,11 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void parsePublisher(@NonNull final List<CurrentData> currentData) {
-        String text = currentData.stream()
-                                 .map(cd -> cd.data)
-                                 .filter(name -> !name.isEmpty())
-                                 .collect(Collectors.joining(" "));
-        // the part before the ":" is (usually?) the city. 2nd part is the name
-        if (text.contains(":")) {
-            text = text.split(":")[1].strip();
-        }
-        text = SearchEngineUtils.cleanName(text);
-        if (!text.isBlank()) {
-            book.add(Publisher.from(text));
-        }
+        final String text = currentData.stream()
+                                       .map(cd -> cd.data)
+                                       .filter(name -> !name.isEmpty())
+                                       .collect(Collectors.joining(" "));
+        bookParser.parsePublisher(text, book);
     }
 
     /**
@@ -667,17 +525,11 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void parseDatePublished(@NonNull final List<CurrentData> currentData) {
-        if (!book.contains(DBKey.PUBLICATION_DATE)) {
-            // Grab the first bit before a comma, and strip it for digits + hope for the best
-            final String year = SearchEngineUtils.digits(currentData.get(0).data.split(",")[0]);
-            if (!year.isEmpty()) {
-                try {
-                    book.setPublicationDate(Integer.parseInt(year));
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
-            }
+        if (book.contains(DBKey.PUBLICATION_DATE)) {
+            return;
         }
+        final String text = currentData.get(0).data;
+        bookParser.parseDatePublished(text, book);
     }
 
     /**
@@ -707,31 +559,11 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void processPages(@NonNull final List<CurrentData> currentData) {
-        if (!book.contains(DBKey.PAGES)) {
-            final String data = currentData.get(0).data;
-
-            final Matcher matcher = PAGES_PATTERN.matcher(data);
-            if (matcher.find()) {
-                try {
-                    final String group = matcher.group(1);
-                    if (group != null && !group.isEmpty()) {
-                        book.setPages(Integer.parseInt(group));
-                        return;
-                    }
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
-            }
-            try {
-                book.setPages(Integer.parseInt(data.split(" ")[0]));
-                return;
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-
-            // use source
-            book.setPages(data);
+        if (book.contains(DBKey.PAGES)) {
+            return;
         }
+        final String text = currentData.get(0).data;
+        bookParser.parsePages(text, book);
     }
 
     /**
@@ -753,31 +585,20 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processIllustration(@NonNull final List<CurrentData> currentData) {
-        if (!book.contains(DBKey.COLOR)) {
-            book.setColor(currentData.get(0).data);
-        }
+    private void parseIllustration(@NonNull final List<CurrentData> currentData) {
+        bookParser.parseIllustration(currentData.get(0).data, book);
     }
 
     private void parseDescription(@NonNull final List<CurrentData> currentData) {
         // Merging the lines is not perfect.
         // The data does not contain one sentence/paragraph in each line.
         // Sometimes just words mid-sentence... oh well.
-        String desc = currentData
+        final String desc = currentData
                 .stream()
                 .map(cd -> cd.data)
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.joining(" "));
 
-        desc = SearchEngineUtils.cleanText(desc);
-        if (!desc.isBlank()) {
-            // append... the site has (at least) two fields we want to collect
-            final String previous = book.getDescription();
-            if (!previous.isEmpty()) {
-                desc = previous + (previous.endsWith("\n") ? "" : "\n")
-                       + '\n' + desc;
-            }
-            book.setDescription(desc);
-        }
+        bookParser.parseDescription(desc, book);
     }
 }
