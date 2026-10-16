@@ -106,14 +106,14 @@ class AuthorListLoader {
 
         // There can be 100's or even 1000's of Authors. Pass an iterator
         // to the insert method so we can parse/insert one-by-one.
-        final Iterator<Element> iterator = document.select("ul.nav-liste > li > a")
+        final Iterator<Element> iterator = document.select("ul.bdt-liste > li > a")
                                                    .iterator();
 
         bedethequeCacheDao.insert(siteLocale, () -> {
             if (iterator.hasNext()) {
                 final Element a = iterator.next();
                 final String url = a.attr("href");
-                final Element span = a.selectFirst("span.libelle");
+                final Element span = a.selectFirst("span.bdt-liste-libelle");
                 if (span != null) {
                     final String name = span.text();
                     return new BdtAuthor(name, url);
