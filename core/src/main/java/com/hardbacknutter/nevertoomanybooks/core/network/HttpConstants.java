@@ -23,14 +23,14 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 public final class HttpConstants {
 
     /**
-     * RELEASE: USER_AGENT_FIREFOX: Last updated: 2026-10-03.
+     * RELEASE: USER_AGENT_FIREFOX: Last updated: 2026-10-15.
      *
      * @see <a href="https://www.whatismybrowser.com/guides/the-latest-user-agent/">
      *     whatismybrowser</a>
      */
     public static final String USER_AGENT_FIREFOX =
             // Windows 11
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0";
 
             // "Mozilla/5.0 (Android 16; Mobile; rv:157.0) Gecko/152.0 Firefox/157.0"
 
