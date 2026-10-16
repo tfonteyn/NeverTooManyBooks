@@ -108,7 +108,7 @@ class AuthorParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Author author = resolver.parse(document);
         assertNotNull(author);
-        assertEquals("Leo", author.getFamilyName());
+        assertEquals("Leo (1)", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals("1944-12-13", author.getBirthDate().orElse(null));
 
