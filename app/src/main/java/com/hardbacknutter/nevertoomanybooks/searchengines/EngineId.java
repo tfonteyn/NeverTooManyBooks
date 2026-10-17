@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSea
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlHtmlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kitapsec.KitapsecSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
@@ -148,6 +149,7 @@ public enum EngineId
     GoogleBooks(GoogleBooksSearchEngine.class, true),
     Isfdb(IsfdbSearchEngine.class, true),
     KbNl(KbNlHtmlSearchEngine.class, true),
+    Kitapsec(KitapsecSearchEngine.class, true),
     LastDodoNl(LastDodoSearchEngine.class, true),
     LibraryThing(LibraryThingSearchEngine.class, true),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
@@ -279,6 +281,7 @@ public enum EngineId
         final boolean isPolish = languages.isUserLanguage(context, "pol");
         final boolean isPortuguese = languages.isUserLanguage(context, "por");
         final boolean isSlovak = languages.isUserLanguage(context, "slo");
+        final boolean isTurkish = languages.isUserLanguage(context, "tur");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
@@ -315,6 +318,9 @@ public enum EngineId
                 if (isFrench) {
                     type.addSite(Bnf, true);
                 }
+                if (isTurkish) {
+                    type.addSite(Kitapsec, true);
+                }
 
                 // All sites unless added above
                 type.addSite(Amazon, true);
@@ -334,6 +340,9 @@ public enum EngineId
 
                 type.addSite(Bol, isDutch || isFrench);
 
+                if (!isTurkish) {
+                    type.addSite(Kitapsec, false);
+                }
                 if (!isPolish) {
                     type.addSite(BibliotecePl, false);
                 }
