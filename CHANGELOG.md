@@ -1,3 +1,34 @@
+### 8.1.0
+
+NEW:
+
+- Performance increase when swiping between books
+- Calibre sync performance has been improved by a magnitude.
+  The Calibre extension code is rewritten as a Calibre plugin.
+  Requires Calibre 9.12.0 but makes installation very easy.
+- BedeTheque rewrite to adapt the major site changes.
+- LibraryThing can be used for alternative-edition searches. Registration is however required.
+- GoogleBooks registration (optional) to prevent "Quota exceeded" errors.
+- kb.nl supports ISSN searches
+- Settings dialogs now follow user-settings for dialog/bottomsheet
+
+FIXES:
+
+- GitHub #250: intentionally inserting duplicate books could fail
+- fixed the group book-count. This fixes in particular "Grouping on dates"
+  and "Grouping on Series, then on Author" but is generic and valid
+  for all similar situations.
+- Sync with Calibre will now properly handle the rating-field.
+- editing the bookshelves WHILE editing a book will now correctly
+  rename/delete shelves on the book
+- popup menu/submenu on screen positioning fixed
+- tablets: display dialogs properly sized instead of too large / too small.
+- tablets: editing tags now works properly
+
+REMOVED:
+- Goodreads. They now use AWS WAF blocking. There is currently no solution to get around that.
+
+---
 ### 8.0.0
 
 NEW:
