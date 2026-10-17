@@ -4,6 +4,7 @@ NEW:
 - Calibre sync performance has been improved by a magnitude.
   The Calibre extension code is rewritten as a Calibre plugin.
   Requires Calibre 9.12.0 but makes installation very easy.
+- BedeTheque rewrite to adapt the major site changes.
 - LibraryThing can be used for alternative-edition searches. Registration is however required.
 - GoogleBooks registration (optional) to prevent "Quota exceeded" errors.
 - kb.nl supports ISSN searches
