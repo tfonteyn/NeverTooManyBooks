@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
+import android.util.Log;
+
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -75,6 +77,8 @@ class SearchByIsbnTest
         criteria.setRawProductCode("9781849182089");
         final Book book = ((SearchEngine.ByIsbn) searchEngine).searchByIsbn(context, criteria);
         assertNotNull(book);
+        Log.d(TAG, book.toString());
+
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("anglais", book.getString(DBKey.LANGUAGE, null));
         // this is good enough... the local junit tests do the full parse test
