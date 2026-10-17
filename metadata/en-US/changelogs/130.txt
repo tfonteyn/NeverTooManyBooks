@@ -9,5 +9,3 @@ REMOVED:
 - Goodreads. They now use AWS WAF blocking.
 
 Full details: See https://github.com/tfonteyn/NeverTooManyBooks/blob/dev/CHANGELOG.md
-
-Details: https://github.com/tfonteyn/NeverTooManyBooks/blob/dev/CHANGELOG.md
