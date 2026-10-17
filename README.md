@@ -34,7 +34,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 - [Goodreads CSV files](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-goodreads)
 - Calibre CSV files import, or full [synchronization with a Calibre Server](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Calibre)
 
-### Download the latest release: 8.0.0
+### Download the latest release: 8.1.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" 
@@ -106,7 +106,6 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **databazeknih.cz** (Czech and more; Catalogue)
 - **dnb.de** (German; Catalogue)
 - **Douban.com** (Chinese; Catalogue)
-- ~~**Goodreads** (English and more; Catalogue)~~ is permanently blocking and will be removed in the next release.
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)
