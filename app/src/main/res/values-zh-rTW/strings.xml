@@ -982,4 +982,5 @@
         <p>在下方貼上金鑰。</p>]]></string>
     <string name="confirm_registration_required">註冊 %1$s 是必要的。\n\n您之後也可以在此網站設定中的「%2$s」區塊找到此資訊。</string>
     <string name="confirm_registration_optional">註冊 %1$s 是可選的。\n\n您之後也可以在此網站設定中的「%2$s」區塊找到此資訊。</string>
+    <string name="site_description_turkish">土耳其語</string>
 </resources>

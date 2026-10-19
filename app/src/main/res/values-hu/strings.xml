@@ -997,4 +997,5 @@
         <p>Illeszd be a kulcsot alább.</p>]]></string>
     <string name="confirm_registration_required">A regisztráció a(z) %1$s webhelyen kötelező.\n\nEzeket az információkat később is megtalálhatja az oldal beállításaiban a „%2$s” részben.</string>
     <string name="confirm_registration_optional">A regisztráció a(z) %1$s webhelyen opcionális.\n\nEzeket az információkat később is megtalálhatja az oldal beállításaiban a „%2$s” részben.</string>
+    <string name="site_description_turkish">Török</string>
 </resources>

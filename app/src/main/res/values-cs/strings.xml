@@ -1046,4 +1046,5 @@
             <p>Klepněte na tlačítko <b>Create Credentials</b>, vyberte <i>Books API</i>, poté <i>Public data</i> a klepněte na <b>Next</b>.</p>
             <p>Zobrazí se klíč (řetězec začínající na `AIza`). Zkopírujte klíč a nezapomeňte klepnout na <b>Done</b>.</p>
             <p>Vložte klíč níže.</p>]]></string>
+    <string name="site_description_turkish">Turečtina</string>
 </resources>

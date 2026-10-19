@@ -1038,4 +1038,5 @@
         <p>Wklej klucz poniżej.</p>]]></string>
     <string name="confirm_registration_required">Rejestracja w witrynie %1$s jest wymagana.\n\nTe informacje można również znaleźć w późniejszym terminie w sekcji „%2$s” w ustawieniach tej witryny.</string>
     <string name="confirm_registration_optional">Rejestracja w witrynie %1$s jest opcjonalna.\n\nTe informacje można również znaleźć w późniejszym terminie w sekcji „%2$s” w ustawieniach tej witryny.</string>
+    <string name="site_description_turkish">Turecki</string>
 </resources>

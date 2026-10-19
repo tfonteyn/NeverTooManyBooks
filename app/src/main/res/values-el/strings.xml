@@ -999,4 +999,5 @@ A question mark is written as the character semicolon: ';'
             <p>Πατήστε το κουμπί <b>Create Credentials</b>, επιλέξτε το <i>Books API</i>, στη συνέχεια το <i>Public data</i> και, τέλος, πατήστε <b>Next</b></p>
             <p>Θα εμφανιστεί το κλειδί (μια γραμμή που ξεκινά με `AIza`). Αντιγράψτε το κλειδί και πατήστε <b>Done</b></p>
             <p>Επικολλήστε το κλειδί παρακάτω.</p>]]></string>
+    <string name="site_description_turkish">Τουρκικά</string>
 </resources>

@@ -997,4 +997,5 @@
             <p>Preme o botón <b>Create Credentials</b>, escolle <i>Books API</i>, selecciona <i>Public data</i>, e toca <b>Next</b></p>
             <p>Amosarase a chave (comeza con `AIza`). Copia a chave e asegúrate de premer <b>Done</b></p>
             <p>Pega a chave abaixo.</p>]]></string>
+    <string name="site_description_turkish">Turco</string>
 </resources>

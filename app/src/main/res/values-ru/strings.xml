@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -1042,4 +1044,5 @@
             <p>Нажмите кнопку <b>Create Credentials</b>, выберите <i>Books API</i>, затем <i>Public data</i> и нажмите <b>Next</b>.</p>
             <p>Отобразится ключ (строка, начинающаяся с `AIza`). Скопируйте ключ и обязательно нажмите <b>Done</b>.</p>
             <p>Вставьте ключ ниже.</p>]]></string>
+    <string name="site_description_turkish">Турецкий</string>
 </resources>

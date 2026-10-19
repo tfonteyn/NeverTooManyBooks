@@ -980,4 +980,5 @@
         <p>Dán khóa vào bên dưới.</p>]]></string>
     <string name="confirm_registration_required">Đăng ký với %1$s là bắt buộc.\n\nBạn cũng có thể tìm lại thông tin này sau trong mục “%2$s” tại phần cài đặt cho trang web này.</string>
     <string name="confirm_registration_optional">Đăng ký với %1$s là tùy chọn.\n\nBạn cũng có thể tìm lại thông tin này sau trong mục “%2$s” tại phần cài đặt cho trang web này.</string>
+    <string name="site_description_turkish">Tiếng Thổ Nhĩ Kỳ</string>
 </resources>

@@ -997,4 +997,5 @@
         <p>Fügen Sie den Schlüssel unten ein.</p>]]></string>
     <string name="confirm_registration_required">Eine Registrierung bei %1$s ist erforderlich.\n\nSie können diese Informationen auch zu einem späteren Zeitpunkt unter „%2$s“ in den Einstellungen für diese Website finden.</string>
     <string name="confirm_registration_optional">Eine Registrierung bei %1$s ist optional.\n\nSie können diese Informationen auch zu einem späteren Zeitpunkt unter „%2$s“ in den Einstellungen für diese Website finden.</string>
+    <string name="site_description_turkish">Türkisch</string>
 </resources>

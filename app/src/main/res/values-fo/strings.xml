@@ -257,4 +257,5 @@
         <p>Lím nykilin inn niðanfyri.</p>]]></string>
     <string name="confirm_registration_required">Tilmelding hjá %1$s er kravd.\n\nTú kanst eisini finna hesar upplýsingar seinni undir “%2$s”-partinum í Stillingum fyri hesa síðuna.</string>
     <string name="confirm_registration_optional">Tilmelding hjá %1$s er valfrí.\n\nTú kanst eisini finna hesar upplýsingar seinni undir “%2$s”-partinum í Stillingum fyri hesa síðuna.</string>
+    <string name="site_description_turkish">Turkiskt</string>
 </resources>

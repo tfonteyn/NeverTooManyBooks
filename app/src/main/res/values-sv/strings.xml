@@ -1001,4 +1001,5 @@
         <p>Klistra in nyckeln nedan.</p>]]></string>
     <string name="confirm_registration_required">Registrering hos %1$s krävs.\n\nDu kan även hitta den här informationen vid ett senare tillfälle under avsnittet ”%2$s” i inställningarna för denna webbplats.</string>
     <string name="confirm_registration_optional">Registrering hos %1$s är valfri.\n\nDu kan även hitta den här informationen vid ett senare tillfälle under avsnittet ”%2$s” i inställningarna för denna webbplats.</string>
+    <string name="site_description_turkish">Turkiska</string>
 </resources>

@@ -997,4 +997,5 @@
         <p>Plak de sleutel hieronder.</p>]]></string>
     <string name="confirm_registration_required">Registratie bij %1$s is verplicht.\n\nU kunt deze informatie op een later tijdstip ook terugvinden onder het gedeelte “%2$s” in de instellingen voor deze site.</string>
     <string name="confirm_registration_optional">Registratie bij %1$s is optioneel.\n\nU kunt deze informatie op een later tijdstip ook terugvinden onder het gedeelte “%2$s” in de instellingen voor deze site.</string>
+    <string name="site_description_turkish">Turks</string>
 </resources>

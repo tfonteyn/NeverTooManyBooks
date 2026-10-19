@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -1008,4 +1010,5 @@
         <p>Collez la clé ci-dessous.</p>]]></string>
     <string name="confirm_registration_required">L’inscription sur %1$s est obligatoire.\n\nVous pourrez également retrouver ces informations ultérieurement dans la section « %2$s » des paramètres de ce site.</string>
     <string name="confirm_registration_optional">L’inscription sur %1$s est facultative.\n\nVous pourrez également retrouver ces informations ultérieurement dans la section « %2$s » des paramètres de ce site.</string>
+    <string name="site_description_turkish">Turc</string>
 </resources>

@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -1033,4 +1035,5 @@
             <p>Klepnite na tlačidlo <b>Create Credentials</b>, vyberte <i>Books API</i>, potom <i>Public data</i> a klepnite na <b>Next</b>.</p>
             <p>Zobrazí sa kľúč (reťazec začínajúci na `AIza`). Skopírujte kľúč a nezabudnite klepnúť na <b>Done</b>.</p>
             <p>Vložte kľúč nižšie.</p>]]></string>
+    <string name="site_description_turkish">Turečtina</string>
 </resources>

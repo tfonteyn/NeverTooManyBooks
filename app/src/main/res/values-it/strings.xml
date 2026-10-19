@@ -1011,4 +1011,5 @@
         <p>Incolla la chiave qui sotto.</p>]]></string>
     <string name="confirm_registration_required">La registrazione su %1$s è obbligatoria.\n\nPuoi trovare queste informazioni anche in un secondo momento nella sezione “%2$s” nelle impostazioni di questo sito.</string>
     <string name="confirm_registration_optional">La registrazione su %1$s è facoltativa.\n\nPuoi trovare queste informazioni anche in un secondo momento nella sezione “%2$s” nelle impostazioni di questo sito.</string>
+    <string name="site_description_turkish">Turco</string>
 </resources>

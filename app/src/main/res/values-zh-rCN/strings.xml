@@ -982,4 +982,5 @@
         <p>在下方粘贴密钥。</p>]]></string>
     <string name="confirm_registration_required">注册 %1$s 是必需的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
     <string name="confirm_registration_optional">注册 %1$s 是可选的。\n\n你之后也可以在此站点设置中的 “%2$s” 部分找到该信息。</string>
+    <string name="site_description_turkish">土耳其语</string>
 </resources>

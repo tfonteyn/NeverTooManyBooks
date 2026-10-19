@@ -1016,4 +1016,5 @@
         <p>Ielīmējiet atslēgu zemāk.</p>]]></string>
     <string name="confirm_registration_required">Reģistrācija vietnē %1$s ir obligāta.\n\nŠo informāciju varēsiet atrast arī vēlāk šīs vietnes iestatījumu sadaļā “%2$s”.</string>
     <string name="confirm_registration_optional">Reģistrācija vietnē %1$s nav obligāta.\n\nŠo informāciju varēsiet atrast arī vēlāk šīs vietnes iestatījumu sadaļā “%2$s”.</string>
+    <string name="site_description_turkish">Turku</string>
 </resources>

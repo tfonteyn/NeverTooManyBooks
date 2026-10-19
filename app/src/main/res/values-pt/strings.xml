@@ -1009,4 +1009,5 @@
         <p>Cole a chave abaixo.</p>]]></string>
     <string name="confirm_registration_required">O registo em %1$s é obrigatório.\n\nPoderá também encontrar esta informação mais tarde na secção “%2$s” nas definições deste site.</string>
     <string name="confirm_registration_optional">O registo em %1$s é opcional.\n\nPoderá também encontrar esta informação mais tarde na secção “%2$s” nas definições deste site.</string>
+    <string name="site_description_turkish">Turco</string>
 </resources>
