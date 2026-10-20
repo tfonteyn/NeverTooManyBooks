@@ -31,7 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -93,7 +92,7 @@ class ParseTest
 
     @Test
     void parse01()
-            throws IOException, ImageStorageException {
+            throws IOException, StorageException {
 
         final String locationHeader = "https://www.kitapsec.com/Products/Sarkac-4-Haraf-Yan-Boyamali-Ephesus-Yayinlari-953233.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -143,7 +142,7 @@ class ParseTest
 
     @Test
     void parse02()
-            throws IOException, ImageStorageException {
+            throws IOException, StorageException {
 
         final String locationHeader = "https://www.kitapsec.com/Products/Algernona-Cicekler-Daniel-Keyes-Koridor-Yayincilik-407251.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
