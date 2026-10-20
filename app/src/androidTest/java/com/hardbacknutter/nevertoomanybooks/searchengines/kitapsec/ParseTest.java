@@ -83,7 +83,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.kitapsec_multiresult_9786255701831;
 
-        final Document document = loadDocument(resId, null, locationHeader);
+        final Document document = loadHtml(resId, null, locationHeader);
         final String url = searchEngine.parseMultiResult(document, ISBN.parse("9786255701831"));
 
         assertEquals("https://www.kitapsec.com/Products"
@@ -98,7 +98,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.kitapsec_9786255701831;
 
-        final Document document = loadDocument(resId, null, locationHeader);
+        final Document document = loadHtml(resId, null, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -148,7 +148,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.kitapsec_9786054629862;
 
-        final Document document = loadDocument(resId, null, locationHeader);
+        final Document document = loadHtml(resId, null, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());

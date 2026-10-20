@@ -87,7 +87,7 @@ class SruParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783453321892;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, "9783453321892",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
@@ -151,7 +151,7 @@ class SruParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783426226681;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, "9783426226681",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
@@ -204,7 +204,7 @@ class SruParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783734163296;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, "9783734163296",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
@@ -267,7 +267,7 @@ class SruParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783770411849;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, "9783770411849",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);

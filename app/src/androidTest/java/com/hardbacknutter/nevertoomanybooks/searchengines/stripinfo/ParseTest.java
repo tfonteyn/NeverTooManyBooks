@@ -88,7 +88,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_336348_hauteville_house_14_de_37ste_parallel;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
@@ -167,7 +167,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_2060_de_boom_van_de_twee_lentes_1_de_boom_van_de_twee_lentes;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
@@ -311,7 +311,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_181604_mat_cover;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
@@ -376,7 +376,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_316016_johan_en_pirrewiet_int_5_de_integrale_5;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -439,7 +439,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_17030_comanche_1_red_dust;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -500,7 +500,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_8155_de_avonturen_van_de_3l_7_spoken_in_de_grot;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -557,7 +557,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_multi_result_le_chant_du_pluvier;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://stripinfo.be/reeks/strip/84392_Le_chant_du_pluvier_1_Le_chant_du_pluvier",
                      searchEngine.parseMultiResult(document));
     }
@@ -571,7 +571,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_multi_result_le_chant_du_pluvier;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         searchEngine.parseRootDocument(context, ISBN.parse("9782756010830"),

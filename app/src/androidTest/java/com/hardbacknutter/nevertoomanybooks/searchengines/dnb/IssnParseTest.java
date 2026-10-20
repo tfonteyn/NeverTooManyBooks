@@ -73,7 +73,7 @@ class IssnParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.zdb_issn_0176_8824;
 
-        final Document document = loadDocument(resId, UTF_8, "", Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, "");
         final Book book = new Book();
         searchEngine.parseFromIssn(context, document, issn, book);
 

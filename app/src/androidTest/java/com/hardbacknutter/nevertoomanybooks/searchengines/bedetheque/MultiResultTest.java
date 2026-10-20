@@ -61,7 +61,7 @@ class MultiResultTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_miltiresult_magdalena;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final String url = searchEngine.parseMultiResult(document);
         assertNotNull(url);
         // This is a live search, so this result can change overtime.

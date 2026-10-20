@@ -78,7 +78,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.last_dodo_multi_result;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://www.lastdodo.nl/nl/items/1332103-de-3-zonnen-van-vinea?q=zonnen+van+vinea",
                      searchEngine.parseMultiResult(document));
     }
@@ -90,7 +90,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.lastdodo_7323911_de_37ste_parallel;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, true, true}, book);
         Log.d(TAG, book.toString());
@@ -216,7 +216,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.lastdodo_9789463943109_het_venijn;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, true, true}, book);
         Log.d(TAG, book.toString());
@@ -291,7 +291,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.lastdodo_2871290733_sioban;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, true, true}, book);
         Log.d(TAG, book.toString());

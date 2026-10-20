@@ -68,7 +68,7 @@ class SruAuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_118646109;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
 
         Author author = resolver.parse(document);
         assertNotNull(author);
@@ -93,7 +93,7 @@ class SruAuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_118678175;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
 
         Author author = resolver.parse(document);
         assertNotNull(author);
@@ -118,7 +118,7 @@ class SruAuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_1300021055;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
 
         Author author = resolver.parse(document);
         assertNotNull(author);
@@ -141,7 +141,7 @@ class SruAuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_author_128409142;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
 
         final Author author = resolver.parse(document);
         assertNotNull(author);

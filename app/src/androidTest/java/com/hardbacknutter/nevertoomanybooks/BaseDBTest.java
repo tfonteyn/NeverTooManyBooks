@@ -232,20 +232,43 @@ public class BaseDBTest {
                              .findFirst();
     }
 
-    /** Load and parse a JSoup document from a raw HTML resource. */
+    /**
+     * Load and parse a JSoup document from a raw HTML resource.
+     *
+     * @param resId          resource file to load
+     * @param charset        override, or leave {@code null} to use the meta-tag value found
+     * @param locationHeader the actual url of the page which is not always identical
+     *                       to the embedded location
+     */
     @NonNull
-    protected Document loadDocument(final int resId,
-                                    @Nullable final String charset,
-                                    @NonNull final String locationHeader)
+    protected Document loadHtml(final int resId,
+                                @Nullable final String charset,
+                                @NonNull final String locationHeader)
             throws IOException {
         return loadDocument(resId, charset, locationHeader, Parser.htmlParser());
     }
 
+    /**
+     * Load and parse a JSoup document from a raw resource.
+     *
+     * @param resId          resource file to load
+     * @param charset        override, or leave {@code null} to use the meta-tag value found
+     * @param locationHeader the actual url of the page which is not always identical
+     *                       to the embedded location
+     */
     @NonNull
-    protected Document loadDocument(final int resId,
-                                    @Nullable final String charset,
-                                    @NonNull final String locationHeader,
-                                    @NonNull final Parser parser)
+    protected Document loadXml(final int resId,
+                               @Nullable final String charset,
+                               @NonNull final String locationHeader)
+            throws IOException {
+        return loadDocument(resId, charset, locationHeader, Parser.xmlParser());
+    }
+
+    @NonNull
+    private Document loadDocument(final int resId,
+                                  @Nullable final String charset,
+                                  @NonNull final String locationHeader,
+                                  @NonNull final Parser parser)
             throws IOException {
         final Document document;
         // getContext(): we want the "androidTest" context which is where our test resources live

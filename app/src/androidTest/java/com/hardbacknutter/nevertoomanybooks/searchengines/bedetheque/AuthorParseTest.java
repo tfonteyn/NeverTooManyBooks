@@ -80,7 +80,7 @@ class AuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_auteur_96_bd_leloup_roger;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Author author = resolver.parse(document);
         assertNotNull(author);
         Log.d(TAG, author.toString());
@@ -105,7 +105,7 @@ class AuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_auteur_97_bd_leo;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Author author = resolver.parse(document);
         assertNotNull(author);
         assertEquals("Leo (1)", author.getFamilyName());
@@ -136,7 +136,7 @@ class AuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_liste_auteurs_bd_l;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
 
         final AuthorListLoader authorListLoader = new AuthorListLoader(context, searchEngine);
         final boolean ok = authorListLoader.parseAuthorList(document);

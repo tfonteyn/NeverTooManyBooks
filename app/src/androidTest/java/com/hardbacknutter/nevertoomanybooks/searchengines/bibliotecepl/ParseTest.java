@@ -93,7 +93,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_multi_result;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://w.bibliotece.pl/446634/Ziele%C5%84+szmaragdu",
                      searchEngine.parseMultiResult(document));
     }
@@ -107,7 +107,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_9788321331966;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
         book.setRawProductCode("9788321331966");
@@ -125,7 +125,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_9788384252963;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
         book.setRawProductCode("9788384252963");
@@ -191,7 +191,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_9788380837744;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
         book.setRawProductCode("9788380837744");
@@ -266,7 +266,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_9788368591095;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
         book.setRawProductCode("9788367023290");
@@ -388,7 +388,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_9788328172241;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
         book.setRawProductCode("9788328172241");
@@ -531,7 +531,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bibliotece_pl_9788377052730;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
         book.setRawProductCode("9788377052730");

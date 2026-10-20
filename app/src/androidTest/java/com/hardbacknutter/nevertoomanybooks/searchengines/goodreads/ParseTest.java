@@ -540,7 +540,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.goodreads_9780062683250;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -555,7 +555,7 @@ class ParseTest
         final String locationHeader = "https://www.goodreads.com/search?q=foundation+and+empire&qid=rMtPCIQx9m";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.goodreads_multi_result_foundation_and_empire;
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://www.goodreads.com/book/show/29581.Foundation_and_Empire?from_search=true&from_srp=true&qid=rMtPCIQx9m&rank=1",
                      searchEngine.parseMultiResult(document));
     }

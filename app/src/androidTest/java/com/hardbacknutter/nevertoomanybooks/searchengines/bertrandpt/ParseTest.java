@@ -82,7 +82,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_multi_9789895812899;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://www.bertrand.pt/livro/a-livraria-cinnamon-bun-laurie-gilmore/30923903",
                      searchEngine.parseMultiResult(document));
     }
@@ -95,7 +95,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_9789895812899;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false},
                            book);
@@ -145,7 +145,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_multi_9789897734939;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://www.bertrand.pt/livro/fundacao-e-terra-isaac-asimov/27980329",
                      searchEngine.parseMultiResult(document));
     }
@@ -159,7 +159,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_9789897734939;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false},
                            book);

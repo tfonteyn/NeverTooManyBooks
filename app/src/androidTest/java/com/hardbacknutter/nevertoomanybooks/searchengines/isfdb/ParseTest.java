@@ -95,8 +95,8 @@ class ParseTest
                 .R.raw.isfdb_112781;
 
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -182,8 +182,8 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_431964;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -256,8 +256,8 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_542125;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -337,8 +337,8 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_pr373190;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -419,8 +419,8 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_808391;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());

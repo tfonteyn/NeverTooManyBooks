@@ -71,7 +71,7 @@ class AuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.goodreads_author_2965845;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
 
         // limit to Goodreads only
         ServiceLocator.getInstance().getSharedPreferences()

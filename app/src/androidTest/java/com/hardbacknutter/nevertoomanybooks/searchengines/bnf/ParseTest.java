@@ -97,7 +97,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bnf_lettre_de_mon_moulin;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, null,new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
@@ -151,7 +151,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bnf_47592158;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
+        final Document document = loadXml(resId, UTF_8, locationHeader);
 
         final Book book = new Book();
         searchEngine.parse(context, document, null,new boolean[]{true, false, false, false}, book);
@@ -249,7 +249,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bnf_45842142;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, null, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());

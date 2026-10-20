@@ -82,8 +82,8 @@ class AuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_author_49;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
 
         final Author author = resolver.parse(context, document, "49");
         assertNotNull(author);
@@ -141,8 +141,8 @@ class AuthorParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_author_3358;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
 
         final Author author = resolver.parse(context, document, "3358");
         parsePaulFrench(author);

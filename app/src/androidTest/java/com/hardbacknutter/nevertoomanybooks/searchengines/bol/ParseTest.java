@@ -91,7 +91,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_multi_1_result_9789056478193;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://www.bol.com/be/nl/p/nijntjes-voorleesfeest/9200000122271922/",
                      searchEngine.parseMultiResult(document));
     }
@@ -104,7 +104,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_asimov_foundation;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         assertEquals("https://www.bol.com/be/nl/p/foundation/9200000037157117/",
                      searchEngine.parseMultiResult(document));
     }
@@ -125,7 +125,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789044652901_be_nl_dutch;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, ISBN.parse("9789044652901"),
                            document, new boolean[]{true, true, false, false},
@@ -188,7 +188,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789044544725;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, ISBN.parse("9789044544725"),
                            document, new boolean[]{true, true, false, false},
@@ -258,7 +258,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789056478193;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, ISBN.parse("9789056478193"),
                            document, new boolean[]{true, true, false, false},
@@ -306,7 +306,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9781841593326;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, ISBN.parse("9781841593326"),
                            document, new boolean[]{true, true, false, false},
@@ -375,7 +375,7 @@ class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789046832073;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, ISBN.parse("9789046832073"),
                            document, new boolean[]{true, true, false, false},

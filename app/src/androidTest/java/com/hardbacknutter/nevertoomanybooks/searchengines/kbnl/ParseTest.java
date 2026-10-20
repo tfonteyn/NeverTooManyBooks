@@ -370,7 +370,7 @@ class ParseTest
         final String locationHeader = "https://webggc.oclc.org/cbs/xslt/DB=2.37/SET=9/TTL=1/SHW?FRST=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_old_book_html;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(document, book);
         Log.d(TAG, book.toString());

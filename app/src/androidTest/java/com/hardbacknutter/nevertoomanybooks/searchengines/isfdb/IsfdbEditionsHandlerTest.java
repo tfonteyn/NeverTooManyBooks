@@ -70,8 +70,8 @@ class IsfdbEditionsHandlerTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_11169_multi_edition;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         assertNotNull(document);
         assertTrue(document.hasText());
 
@@ -93,8 +93,8 @@ class IsfdbEditionsHandlerTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_1360173_multi_edition;
 
-        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                                               locationHeader);
+        final Document document = loadHtml(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                           locationHeader);
         assertNotNull(document);
         assertTrue(document.hasText());
 

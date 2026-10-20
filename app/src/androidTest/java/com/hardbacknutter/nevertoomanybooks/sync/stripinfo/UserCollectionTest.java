@@ -94,7 +94,7 @@ class UserCollectionTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_collection;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
 
         final UserCollection uc = new UserCollection(context, httpCallFactory, userId,
                                                      bookshelfMapper);
@@ -138,7 +138,7 @@ class UserCollectionTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_collection_last_page;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadHtml(resId, UTF_8, locationHeader);
 
         final UserCollection uc = new UserCollection(context, httpCallFactory, userId,
                                                      bookshelfMapper);
