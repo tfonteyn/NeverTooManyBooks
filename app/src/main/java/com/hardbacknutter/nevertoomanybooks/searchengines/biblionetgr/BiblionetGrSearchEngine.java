@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -45,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -59,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverMoneyDecimalPoint;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -137,7 +135,7 @@ public class BiblionetGrSearchEngine
     public BiblionetGrSearchEngine(@NonNull final Context context,
                                    @NonNull final SearchEngineConfig config) {
         super(context, config);
-        bookParserHelper.setMoneyParserLocaleResolver(MoneyParserLocaleResolver.INSTANCE);
+        bookParserHelper.setMoneyParserLocaleResolver(LocaleResolverMoneyDecimalPoint.INSTANCE);
 
         authorResolverHelper = new AuthorResolverHelper();
     }
@@ -204,9 +202,9 @@ public class BiblionetGrSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException  on authentication/login failures
-     * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws  StorageException     on image storage failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws StorageException     on image storage failures
      */
     @WorkerThread
     private void multiResult(@NonNull final Context context,
@@ -261,11 +259,11 @@ public class BiblionetGrSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException      on image storage failures
-     * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws CredentialsException  on authentication/login failures
-     *                               This should only occur if the engine calls/relies on
-     *                               secondary sites.
+     * @throws StorageException     on image storage failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -374,7 +372,7 @@ public class BiblionetGrSearchEngine
      *    }
      * </pre>
      *
-     * @param list  to parse
+     * @param list to parse
      * @param book to update
      */
     private void processAuthors(@NonNull final Collection<Element> list,
@@ -764,23 +762,5 @@ public class BiblionetGrSearchEngine
         }
 
         return httpCallFactory.saveImage(url, null, bookId, cIdx, null);
-    }
-
-    private static final class MoneyParserLocaleResolver
-            implements LocaleResolver {
-
-        static final LocaleResolver INSTANCE = new MoneyParserLocaleResolver();
-
-        @NonNull
-        @Override
-        public List<Locale> resolveLocales(@NonNull final Context context,
-                                           @NonNull final Locale siteLocale) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            // The Greek Locale uses the "," as the decimal separator,
-            // but the site uses "." instead.
-            // While we would normally parse here with the site Locale,
-            // we parse the mony value with the UK one instead to force a "."
-            return LocaleListUtils.asList(Locale.UK, userLocales);
-        }
     }
 }
