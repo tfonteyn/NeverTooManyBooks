@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverMoneyDecimalPoint;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -106,6 +107,7 @@ public class KitapsecSearchEngine
     public KitapsecSearchEngine(@NonNull final Context context,
                                 @NonNull final SearchEngineConfig config) {
         super(context, config);
+        bookParserHelper.setMoneyParserLocaleResolver(LocaleResolverMoneyDecimalPoint.INSTANCE);
     }
 
     /**
@@ -229,7 +231,7 @@ public class KitapsecSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on image storage failures
+     * @throws StorageException on image storage failures
      */
     @VisibleForTesting
     public void parse(@NonNull final Context context,
@@ -250,9 +252,6 @@ public class KitapsecSearchEngine
         // The title is an utter mess...
         //
         // When a book is part of a series, the series name+nr is prepended.
-        // We COULD parse it by splitting by the first ':',
-        // but that might be tricky if the title genuinely contains a ':'
-        // For now, we're leaving it in.
         //
         // The site MAY append the writer.
         // The site MAY append the publisher.
@@ -447,7 +446,7 @@ public class KitapsecSearchEngine
     private Optional<String> parseCover(@NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                            @IntRange(from = 0, to = 1) final int cIdx)
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
         final Element a = document.selectFirst("#dtyResimlerIc a");
