@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.LocaleResolverMoneyDecimalPoint;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -339,7 +340,7 @@ public class AmazonSearchEngine
                               @NonNull final SearchEngineConfig config) {
         super(context, config);
         bookParserHelper.setDateParserLocaleResolver(SpanishPortugueseFallbackLocaleResolver.INSTANCE);
-        bookParserHelper.setMoneyParserLocaleResolver(MoneyParserLocaleResolver.INSTANCE);
+        bookParserHelper.setMoneyParserLocaleResolver(LocaleResolverMoney.INSTANCE);
     }
 
     /**
@@ -984,10 +985,19 @@ public class AmazonSearchEngine
         }
     }
 
-    private static final class MoneyParserLocaleResolver
+    /**
+     * Amazon does not give a hoot about other countries outside of the US.
+     * So, for example, on the german site we find prices like "€12.34", i.e. using a dot
+     * as the decimal separator instead of the proper comma as used in Germany.
+     * We're keeping the site-locale first to guard against Amazon doing the right thing...
+     * but add the US Locale in the meantime.
+     * <p>
+     * This implementation is a variation on {@link LocaleResolverMoneyDecimalPoint}.
+     */
+    private static final class LocaleResolverMoney
         implements LocaleResolver {
 
-        static final LocaleResolver INSTANCE = new MoneyParserLocaleResolver();
+        static final LocaleResolver INSTANCE = new LocaleResolverMoney();
 
         @NonNull
         @Override
@@ -995,11 +1005,7 @@ public class AmazonSearchEngine
                                            @NonNull final Locale siteLocale) {
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> tmpAllLocales = LocaleListUtils.asList(siteLocale, userLocales);
-            // Amazon does not give a hoot about other countries outside of the US.
-            // So, for example, on the german site we find prices like "€12.34", i.e. using a dot
-            // as the decimal separator instead of the proper comma as used in Germany.
-            // We're keeping the site-locale first to guard against Amazon doing the right thing...
-            // but add the US Locale in the meantime.
+
             final List<Locale> allLocales = new ArrayList<>(tmpAllLocales);
             allLocales.add(Locale.US);
 
