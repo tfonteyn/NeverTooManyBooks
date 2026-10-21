@@ -143,21 +143,9 @@ public final class AppLocaleImpl
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
             return systemLocales.get(0);
         } else {
-            // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
-            final String[] parts;
-            if (localeSpec.contains("_")) {
-                parts = localeSpec.split("_");
-            } else {
-                parts = localeSpec.split("-");
-            }
-            switch (parts.length) {
-                case 1:
-                    return new Locale(parts[0]);
-                case 2:
-                    return new Locale(parts[0], parts[1]);
-                default:
-                    return new Locale(parts[0], parts[1], parts[2]);
-            }
+            // Create a Locale from a concatenated Locale string
+            // from both old style and new style separators. e.g. 'de', 'en_AU', 'fr-FR, ...
+            return Locale.forLanguageTag(localeSpec.replace('_', '-'));
         }
     }
 
