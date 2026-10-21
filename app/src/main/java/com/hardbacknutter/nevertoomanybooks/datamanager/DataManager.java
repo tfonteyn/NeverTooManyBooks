@@ -432,6 +432,7 @@ public class DataManager
      * @param key   Key of data object
      * @param value to store
      */
+    @Discouraged(message = "Don't use unless absolutely needed")
     public void putDouble(@NonNull final String key,
                           final double value) {
         rawData.putDouble(key, value);
