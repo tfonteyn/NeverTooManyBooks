@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -45,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,9 +66,10 @@ class ParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.BiblionetGr.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.BiblionetGr.createSearchEngine(context);
@@ -101,6 +102,8 @@ class ParseTest
     @Test
     void parse9789603211495()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://biblionet.gr/%CE%B7-%CE%B3%CE%B1%CE%BB%CE%B5%CF%81%CE%B1-%CF%84%CE%BF%CF%85-%CE%BF%CE%B2%CE%B5%CE%BB%CE%B9%CE%BE-607";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -179,6 +182,8 @@ class ParseTest
     @Test
     void parse9789602489147()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://biblionet.gr/%CE%BF-%CE%BA%CF%89%CE%BD%CF%83%CF%84%CE%B1%CE%BD%CF%84%CE%B9%CE%BD%CE%BF%CF%82-%CF%87%CE%B1%CF%84%CE%B6%CE%BF%CF%80%CE%BF%CF%85%CE%BB%CE%BF%CF%82-%CF%89%CF%82-%CF%83%CF%85%CE%B3%CE%B3%CF%81%CE%B1%CF%86%CE%B5%CE%B1%CF%82-%CE%BA%CE%B1%CE%B9-%CE%B8%CE%B5%CF%89%CF%81%CE%B7%CF%84%CE%B9%CE%BA%CE%BF%CF%82-10323";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

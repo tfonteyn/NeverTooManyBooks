@@ -20,18 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks.citations;
 
+import android.content.Context;
+
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,14 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RISCitationTest
         extends BaseDBTest {
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void cite() {
+        final Context context = createContext();
+
         final Book book = new Book();
         book.setTitle("The Deeper Meaning of Liff");
         book.setRawProductCode("1234567890123");

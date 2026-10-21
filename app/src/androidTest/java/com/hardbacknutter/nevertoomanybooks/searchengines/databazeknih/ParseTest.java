@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -47,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,9 +75,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.DatabazeKnih.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.DatabazeKnih.createSearchEngine(context);
@@ -97,6 +98,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.databazeknih.cz/prehled-knihy/pripad-levoruke-damy-546691";
 
@@ -187,6 +189,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.databazeknih.cz/prehled-knihy/p-s-267961";
 
@@ -266,6 +269,7 @@ class ParseTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.databazeknih.cz/prehled-knihy/sonety-milencin-narek-dvojjazycna-kniha-694";
 
@@ -361,6 +365,7 @@ class ParseTest
     @Test
     void parseMulti01()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.databazeknih.cz/prehled-knihy/nadace-nadacia-nadace-15829";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -446,6 +451,7 @@ class ParseTest
     @Test
     void parseWithToc01()
             throws IOException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.databazeknih.cz/povidky-z-knihy/ja-robot-246";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

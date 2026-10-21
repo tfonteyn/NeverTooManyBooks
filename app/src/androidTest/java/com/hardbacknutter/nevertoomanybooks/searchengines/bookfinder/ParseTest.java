@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -39,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,9 +61,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.BookFinder.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.BookFinder.createSearchEngine(context);
@@ -77,6 +78,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.bookfinder.com/search_s/?st=sr&ac=qr&mode=basic&author=&title=&isbn=9780441020348&lang=en&destination=us&currency=USD&binding=*&keywords=&publisher=&min_year=&max_year=&minprice=&maxprice=";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

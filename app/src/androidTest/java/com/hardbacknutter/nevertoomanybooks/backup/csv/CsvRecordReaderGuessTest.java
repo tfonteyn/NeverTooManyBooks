@@ -20,14 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
+import android.content.Context;
+
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,15 +59,10 @@ class CsvRecordReaderGuessTest
             "\"genre\",\"language\",\"date_added\",\"goodreads_book_id\"," +
             "\"last_goodreads_sync_date\",\"last_update_date\",\"book_uuid\",\n";
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void guessBC()
             throws DataReaderException {
+        final Context context = createContext();
         final List<String> columns = CsvRecordReader.parse(context, 0, BC);
         final CsvFormat format = CsvFormat.guess(BC, columns);
 
@@ -78,6 +72,7 @@ class CsvRecordReaderGuessTest
     @Test
     void guessGoodreads()
             throws DataReaderException {
+        final Context context = createContext();
         final List<String> columns = CsvRecordReader.parse(context, 0, GOODREADS);
         final CsvFormat format = CsvFormat.guess(GOODREADS, columns);
 
@@ -87,6 +82,7 @@ class CsvRecordReaderGuessTest
     @Test
     void guessCalibre()
             throws DataReaderException {
+        final Context context = createContext();
         final List<String> columns = CsvRecordReader.parse(context, 0, CALIBRE);
         final CsvFormat format = CsvFormat.guess(CALIBRE, columns);
 
@@ -96,6 +92,7 @@ class CsvRecordReaderGuessTest
     @Test
     void guessCalibreWithComments()
             throws DataReaderException {
+        final Context context = createContext();
         final List<String> columns = CsvRecordReader.parse(context, 0, CALIBRE_WITH_COMMENTS);
         final CsvFormat format = CsvFormat.guess(CALIBRE_WITH_COMMENTS, columns);
 

@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -32,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,9 +52,10 @@ class SearchByIsbnTest
     private SearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bedetheque.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bedetheque.createSearchEngine(context);
@@ -64,6 +65,8 @@ class SearchByIsbnTest
     @Test
     void Isbn9781849182089()
             throws SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         // {series_list=[Series{id=0, title=`Lucky Luke`, complete=false, number=`148`},
         // language=anglais, format=Couverture souple,
         // date_published=2014-08, isbn=9781849182089,

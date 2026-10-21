@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -30,14 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -46,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,9 +68,10 @@ class IsfdbXmlPublicationTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Isfdb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Isfdb.createSearchEngine(context);
@@ -91,7 +90,9 @@ class IsfdbXmlPublicationTest
 
     @Test
     void singleByExtId()
-            throws ParserConfigurationException, IOException, SAXException {
+            throws IOException {
+        final Context context = createContext();
+
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_425189;
 

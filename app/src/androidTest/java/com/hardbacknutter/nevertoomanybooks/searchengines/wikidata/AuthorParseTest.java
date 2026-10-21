@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.wikidata;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -28,12 +29,10 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -53,9 +52,10 @@ class AuthorParseTest
     private WikidataAuthorParser authorParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Wikidata.getConfig().setHttpLoggingEnabled(true);
         final WikidataSearchEngine searchEngine = EngineId.Wikidata.createSearchEngine(context);
@@ -115,6 +115,8 @@ class AuthorParseTest
     @Test
     void asimov()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
+
         final Author author = new Author("Asimov", "Isaac");
 
         final boolean resolved = resolver.resolve(context, author);

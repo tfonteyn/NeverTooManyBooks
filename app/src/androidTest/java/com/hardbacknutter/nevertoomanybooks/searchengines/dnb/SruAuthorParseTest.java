@@ -20,20 +20,18 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,9 +48,10 @@ class SruAuthorParseTest
     private DnbAuthorResolver resolver;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Dnb.getConfig().setHttpLoggingEnabled(true);
         final DnbSearchEngine searchEngine = EngineId.Dnb.createSearchEngine(context);

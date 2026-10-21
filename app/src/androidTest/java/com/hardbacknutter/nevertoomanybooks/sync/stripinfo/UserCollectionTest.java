@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -37,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,9 +70,10 @@ class UserCollectionTest
     private HttpFutureFactory httpCallFactory;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         final StripInfoSearchEngine searchEngine = EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
@@ -89,6 +90,7 @@ class UserCollectionTest
     @Test
     void parseCollectionPage()
             throws IOException, SearchException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -132,6 +134,7 @@ class UserCollectionTest
     @Test
     void parseCollectionLastPage()
             throws IOException, SearchException {
+        final Context context = createContext();
 
         // The "3" near the end of the url == the 3rd page from the collection.
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/0000";

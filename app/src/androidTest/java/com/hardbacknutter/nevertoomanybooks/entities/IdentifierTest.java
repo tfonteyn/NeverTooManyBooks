@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
 import android.util.Pair;
 
 import java.util.HashSet;
@@ -28,10 +29,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.network.UrlPatterns;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,12 +41,6 @@ class IdentifierTest
     /** A Uri MUST have this placeholder. */
     private static final Pattern PLACEHOLDER = Pattern.compile("%s");
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     /**
      * Test key duplication and uri containing a placeholder.
      * Use the pattern from THIS class.
@@ -57,6 +49,8 @@ class IdentifierTest
      */
     @Test
     void createInitialList() {
+        final Context context = createContext();
+
         final Set<Pair<String, Identifier.EntityType>> keys = new HashSet<>();
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String key = identifier.getKey();
@@ -75,6 +69,8 @@ class IdentifierTest
     /** Test the site Uri, using the utility class. */
     @Test
     void validateSiteUrl() {
+        final Context context = createContext();
+
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String url = identifier.getSiteUrl();
             assertTrue(UrlPatterns.isBlankOrValidUrl(url), url);
@@ -84,6 +80,8 @@ class IdentifierTest
     /** Test the Uri, but using the utility class and NOT the local pattern. */
     @Test
     void validateUri() {
+        final Context context = createContext();
+
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String uri = identifier.getRawUri().orElse("");
             assertTrue(UrlPatterns.isBlankOrValidUriWith1s(uri), uri);

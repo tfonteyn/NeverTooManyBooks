@@ -20,15 +20,15 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
+import android.content.Context;
+
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,9 +44,10 @@ class NormaliseSeriesTitlesTest
     private Book book;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.LastDodoNl.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.LastDodoNl.createSearchEngine(context);
@@ -58,6 +59,8 @@ class NormaliseSeriesTitlesTest
     /** Dutch test data using site locale Dutch. */
     @Test
     void normalise() {
+        final Context context = createContext();
+
         book.add(Series.from("titel, De"));
 
         searchEngine.normaliseSeriesTitles(context, book);
@@ -70,6 +73,8 @@ class NormaliseSeriesTitlesTest
     /** Dutch test data using site locale Dutch. */
     @Test
     void normalise1() {
+        final Context context = createContext();
+
         book.add(Series.from("Dames van de Pillar To Post, De"));
 
         searchEngine.normaliseSeriesTitles(context, book);
@@ -82,6 +87,8 @@ class NormaliseSeriesTitlesTest
     /** Dutch test data using site locale Dutch. */
     @Test
     void normalise2() {
+        final Context context = createContext();
+
         book.add(Series.from("titel, De"));
         book.add(Series.from("De titel"));
 

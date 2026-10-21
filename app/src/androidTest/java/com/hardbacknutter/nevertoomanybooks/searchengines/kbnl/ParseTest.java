@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -45,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,9 +128,10 @@ class ParseTest
     }
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.KbNl.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.KbNl.createSearchEngine(context);
@@ -340,6 +341,7 @@ class ParseTest
     @Test
     void multiResult()
             throws SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setRawProductCode("9020612476");

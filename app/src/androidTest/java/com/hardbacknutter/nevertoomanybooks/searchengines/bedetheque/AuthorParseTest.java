@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -29,13 +30,11 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,9 +58,10 @@ class AuthorParseTest
     private BedethequeCacheDao bedethequeCacheDao;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bedetheque.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bedetheque.createSearchEngine(context);
@@ -132,6 +132,8 @@ class AuthorParseTest
     @Test
     void parse_downloaded_L_page()
             throws IOException {
+        final Context context = createContext();
+
         final String locationHeader = "https://www.bedetheque.com/liste_auteurs_BD_L.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_liste_auteurs_bd_l;
@@ -156,6 +158,7 @@ class AuthorParseTest
     @Test
     void liveLookup01()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final boolean modified;
         final Author author;
@@ -173,6 +176,7 @@ class AuthorParseTest
     @Test
     void liveLookup02()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final boolean modified;
         final Author author;
@@ -191,6 +195,7 @@ class AuthorParseTest
     @Test
     void liveLookup03()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final boolean modified;
         final Author author;
@@ -210,6 +215,7 @@ class AuthorParseTest
     @Test
     void liveLookup_no_pseudonym01()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final Author author = new Author("Giraud", "Jean");
 
@@ -233,6 +239,7 @@ class AuthorParseTest
     @Test
     void liveLookup_with_pseudonym01()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final Author author = new Author("Moebius", "");
 
@@ -270,6 +277,7 @@ class AuthorParseTest
     @Test
     void liveLookup_with_pseudonym02()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         // WRONG diacritic on purpose. Actual is "Jijé"
         final Author author = new Author("Jije", "");

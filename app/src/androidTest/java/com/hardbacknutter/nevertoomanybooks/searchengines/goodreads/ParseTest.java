@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -45,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.nodes.Document;
@@ -67,9 +67,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Goodreads.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Goodreads.createSearchEngine(context);
@@ -90,6 +91,8 @@ class ParseTest
     @Test
     void parseNextDataJson9789604419197()
             throws IOException, StorageException, CredentialsException {
+        final Context context = createContext();
+
         final Book book = new Book();
         final JSONObject document = loadJSONObject(
                 com.hardbacknutter.nevertoomanybooks.test
@@ -199,6 +202,7 @@ class ParseTest
     @Test
     void parseNextDataJson9789028453807()
             throws IOException, StorageException, CredentialsException {
+        final Context context = createContext();
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(
@@ -268,6 +272,7 @@ class ParseTest
     @Test
     void parseNextDataJson9780062683250()
             throws IOException, StorageException, CredentialsException {
+        final Context context = createContext();
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(
@@ -352,6 +357,7 @@ class ParseTest
     @Test
     void parseNextDataJson9780553803723()
             throws IOException, StorageException, CredentialsException {
+        final Context context = createContext();
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject
@@ -459,6 +465,7 @@ class ParseTest
     @Test
     void withNulls()
             throws IOException, StorageException, CredentialsException {
+        final Context context = createContext();
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -535,6 +542,7 @@ class ParseTest
     @Test
     void parseHtml9780062683250()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.goodreads.com/book/show/49867186-the-left-handed-booksellers-of-london?ac=1&from_search=true&qid=ubH6XArsmP&rank=2";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

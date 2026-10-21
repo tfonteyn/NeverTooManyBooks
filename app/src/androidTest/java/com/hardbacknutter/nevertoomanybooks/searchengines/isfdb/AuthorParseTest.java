@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -32,12 +33,10 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,9 +55,10 @@ class AuthorParseTest
     private IsfdbAuthorResolver resolver;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Isfdb.getConfig().setHttpLoggingEnabled(true);
         final IsfdbSearchEngine searchEngine = EngineId.Isfdb.createSearchEngine(context);
@@ -77,6 +77,7 @@ class AuthorParseTest
     @Test
     void parse49()
             throws IOException, SearchException, CredentialsException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/ea.cgi?49";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -111,6 +112,7 @@ class AuthorParseTest
     @Test
     void liveParse49()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final Author author = new Author("Robinson", "Kim Stanley");
         author.setIdentifierValue(Identifier.SID_ISFDB, 49);
@@ -136,6 +138,7 @@ class AuthorParseTest
     @Test
     void parsePaulFrench()
             throws SearchException, CredentialsException, IOException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/ea.cgi?3358";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -151,6 +154,7 @@ class AuthorParseTest
     @Test
     void liveParsePaulFrench()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
 
         final Author author = new Author("French", "Paul");
         author.setIdentifierValue(Identifier.SID_ISFDB, "3358");

@@ -20,16 +20,16 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
+import android.content.Context;
+
 import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,9 +45,10 @@ class AltEditionsTest
     private OpenLibrarySearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.OpenLibrary.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.OpenLibrary.createSearchEngine(context);
@@ -57,6 +58,8 @@ class AltEditionsTest
     @Test
     void searchAlternativeEditionsTest()
             throws SearchException {
+        final Context context = createContext();
+
         final List<AltEditionOpenLibrary> editions = searchEngine
                 .searchAlternativeEditions(context, ISBN.parse("9780141339092"));
 

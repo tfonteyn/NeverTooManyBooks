@@ -24,9 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONArray;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +40,9 @@ class IdentifierValueCoderTest
     private IdentifierValueCoder identifierValueCoder;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
         identifierValueCoder = new IdentifierValueCoder();
     }
 

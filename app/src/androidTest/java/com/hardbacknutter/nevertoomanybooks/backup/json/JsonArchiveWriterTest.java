@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
+import android.content.Context;
 import android.net.Uri;
 
 import java.io.File;
@@ -50,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,9 +73,11 @@ class JsonArchiveWriterTest
     private BookRepository bookRepository;
 
     @BeforeEach
-    void setup()
-            throws StorageException, IOException, DataReaderException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         bookDao = ServiceLocator.getInstance().getBookDao();
         bookRepository = new BookRepository(context);
@@ -91,6 +93,7 @@ class JsonArchiveWriterTest
     void styles()
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
+        final Context context = createContext();
 
         final File file = new File(context.getFilesDir(), TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
@@ -130,6 +133,7 @@ class JsonArchiveWriterTest
     void books()
             throws DataReaderException, DataWriterException, IOException,
                    StorageException, CredentialsException, CertificateException {
+        final Context context = createContext();
 
         final File file = new File(context.getFilesDir(), TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored

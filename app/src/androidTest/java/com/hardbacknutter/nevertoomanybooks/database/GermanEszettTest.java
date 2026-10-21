@@ -20,14 +20,16 @@
 
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -50,9 +52,11 @@ class GermanEszettTest
     private AuthorDao authorDao;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup("de_DE");
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext("de_DE");
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         final SynchronizedDb db = serviceLocator.getDb();
 
@@ -74,6 +78,7 @@ class GermanEszettTest
 
     @Test
     void germanEszett() {
+        final Context context = createContext();
         final Locale bookLocale = Locale.GERMANY;
 
         final List<Author> authorList = new ArrayList<>();

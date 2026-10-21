@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.author;
 
+import android.content.Context;
+
 import java.util.Locale;
 import java.util.Optional;
 
@@ -30,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,16 +53,17 @@ class EditAuthorViewModelTest
     private Locale locale;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()
                       .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
                       .apply();
 
-        dao = serviceLocator.getAuthorDao();
+        dao = ServiceLocator.getInstance().getAuthorDao();
         locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // make sure neither are present
@@ -81,6 +83,7 @@ class EditAuthorViewModelTest
     @Test
     void rename()
             throws StorageException {
+        final Context context = createContext();
 
         dao.insert(context, new Author(WRONG_FAMILY, WRONG_GIVEN), locale);
 
@@ -105,6 +108,7 @@ class EditAuthorViewModelTest
     @Test
     void rename2()
             throws StorageException {
+        final Context context = createContext();
 
         dao.insert(context, new Author(CORRECT_FAMILY, CORRECT_GIVEN), locale);
 

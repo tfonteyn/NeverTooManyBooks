@@ -19,13 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,10 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FormatMapperTest
         extends BaseDBTest {
 
-    private Book book;
-    private FormatMapper mapper;
-    private String key;
-
     @NonNull
     static Stream<Arguments> data() {
         return Stream.of(
@@ -51,29 +48,18 @@ class FormatMapperTest
         );
     }
 
-    /**
-     * We're not using the {@code setup()} as usual, as we need
-     * to update the super's Locale for EACH set of test parameters.
-     *
-     * @param localeCode to use
-     */
-    private void setupThisTest(@NonNull final String localeCode)
-            throws StorageException {
-        super.setup(localeCode);
-
-        book = new Book();
-        mapper = new FormatMapper(Locale.UK);
-        key = mapper.getKey();
-    }
-
     @ParameterizedTest
     @MethodSource("data")
     void basic(@NonNull final String fLocaleCode,
                @NonNull final String fInput,
-               @NonNull final String fExpected)
-            throws StorageException {
-        setupThisTest(fLocaleCode);
+               @NonNull final String fExpected) {
 
+        final Context context = createContext(fLocaleCode);
+
+        final FormatMapper mapper = new FormatMapper(Locale.UK);
+        final String key = mapper.getKey();
+
+        final Book book = new Book();
         book.putString(key, fInput);
         mapper.map(context, book);
 

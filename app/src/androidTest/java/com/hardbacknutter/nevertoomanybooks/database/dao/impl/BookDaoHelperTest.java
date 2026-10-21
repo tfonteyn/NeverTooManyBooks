@@ -20,13 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
+import android.content.Context;
 
 import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -35,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,15 +49,17 @@ class BookDaoHelperTest
     private TableInfo tableInfo;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
-        tableInfo = serviceLocator.getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
+        tableInfo = ServiceLocator.getInstance().getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
     }
 
     @Test
     void contentValues() {
+        final Context context = createContext();
+
         final List<Locale> userLocales = List.of(Locale.US);
 
         final Book book = new Book();

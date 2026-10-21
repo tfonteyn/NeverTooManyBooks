@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.kitapsec;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -40,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,9 +61,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.BookFinder.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Kitapsec.createSearchEngine(context);
@@ -93,6 +94,7 @@ class ParseTest
     @Test
     void parse01()
             throws IOException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.kitapsec.com/Products/Sarkac-4-Haraf-Yan-Boyamali-Ephesus-Yayinlari-953233.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -143,6 +145,7 @@ class ParseTest
     @Test
     void parse02()
             throws IOException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.kitapsec.com/Products/Algernona-Cicekler-Daniel-Keyes-Koridor-Yayincilik-407251.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

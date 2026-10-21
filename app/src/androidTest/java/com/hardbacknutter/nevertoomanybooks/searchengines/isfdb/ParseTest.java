@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,9 +66,10 @@ class ParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Isfdb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Isfdb.createSearchEngine(context);
@@ -89,6 +90,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -177,6 +179,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -251,6 +254,7 @@ class ParseTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -332,6 +336,7 @@ class ParseTest
     @Test
     void parse04()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?373190";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -414,6 +419,7 @@ class ParseTest
     @Test
     void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?808391";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

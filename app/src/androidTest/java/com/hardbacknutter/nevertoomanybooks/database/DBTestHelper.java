@@ -52,8 +52,8 @@ class DBTestHelper {
     long[] publisherIdArray;
     TocEntry[] tocEntryArray;
 
-    DBTestHelper(final ServiceLocator serviceLocator) {
-        this.serviceLocator = serviceLocator;
+    DBTestHelper() {
+        this.serviceLocator = ServiceLocator.getInstance();
         clearDatabaseAndInitArrays();
     }
 

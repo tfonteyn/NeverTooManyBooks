@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.zip;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -44,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,9 +65,11 @@ class ZipArchiveWriterTest
     private ISODateParser dateParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException, IOException, DataReaderException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
 
@@ -79,6 +82,8 @@ class ZipArchiveWriterTest
     void write()
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
+        final Context context = createContext();
+
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -114,6 +119,7 @@ class ZipArchiveWriterTest
                       final int expectedNrOfBooks)
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
+        final Context context = createContext();
 
         final ImportHelper importHelper = new ImportHelper(context, uri);
         // The default, fail if the default was changed without changing this test!

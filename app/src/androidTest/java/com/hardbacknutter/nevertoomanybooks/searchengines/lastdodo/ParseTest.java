@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -40,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,9 +61,10 @@ class ParseTest
     private LastDodoSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.LastDodoNl.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.LastDodoNl.createSearchEngine(context);
@@ -85,6 +86,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -210,6 +212,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, CredentialsException, IOException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/8838967-schoot-der-aarde";
 
@@ -285,6 +288,7 @@ class ParseTest
     @Test
     void parse03()
             throws SearchException, CredentialsException, IOException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/37600-sioban";
 

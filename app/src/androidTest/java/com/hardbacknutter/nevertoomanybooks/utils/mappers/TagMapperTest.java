@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.List;
@@ -27,12 +28,9 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,14 +46,10 @@ class TagMapperTest
             new TagMapping("removeMe", Set.of())
     );
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void doTest() {
+        final Context context = createContext();
+
         final TagMapper tagMapper = new TagMapper(Locale.US, mappings);
 
         final List<Tag> tags = List.of(new Tag("qwerty"),

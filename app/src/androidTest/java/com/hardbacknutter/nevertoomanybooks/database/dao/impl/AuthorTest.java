@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.Context;
+
 import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
@@ -27,11 +29,10 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,15 +66,16 @@ class AuthorTest
     private AuthorDao authorDao;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
-        authorDao = serviceLocator.getAuthorDao();
+        authorDao = ServiceLocator.getInstance().getAuthorDao();
     }
 
     @Test
     void pruneAuthorList01() {
+        final Context context = createContext();
 
         final Locale bookLocale = Locale.getDefault();
 
@@ -175,6 +177,8 @@ class AuthorTest
 
     @Test
     void pruneAuthorList02() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> authorList = new ArrayList<>();
@@ -216,6 +220,8 @@ class AuthorTest
 
     @Test
     void pruneAuthorList03() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> authorList = new ArrayList<>();
@@ -248,6 +254,8 @@ class AuthorTest
 
     @Test
     void pruneAuthorList04() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> authorList = new ArrayList<>();
@@ -269,6 +277,8 @@ class AuthorTest
 
     @Test
     void pruneGeorgianNames01() {
+        final Context context = createContext();
+
         // Georgian / Georgia
         final Locale bookLocale = new Locale("ka", "GE");
 
@@ -296,6 +306,8 @@ class AuthorTest
 
     @Test
     void pruneGermanEszett() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.GERMANY;
 
         final List<Author> authorList = new ArrayList<>();
@@ -320,6 +332,8 @@ class AuthorTest
 
     @Test
     void pruneWithDash() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.GERMANY;
 
         final String familyName = "Larsson";
@@ -344,6 +358,8 @@ class AuthorTest
 
     @Test
     void pruneWithDash2() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.US;
 
         final String familyName = "Pelt";

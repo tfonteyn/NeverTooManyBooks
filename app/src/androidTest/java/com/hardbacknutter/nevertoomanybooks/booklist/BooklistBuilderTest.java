@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.Collection;
@@ -39,10 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,9 +59,11 @@ class BooklistBuilderTest
     private UserStyle style;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         style = (UserStyle) getBuiltinStyle().clone(context);
         style.setName("test");
@@ -76,13 +77,17 @@ class BooklistBuilderTest
 
     @AfterEach
     void breakdown() {
+        final Context context = createContext();
+
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
-        serviceLocator.getStyles().delete(style);
+        ServiceLocator.getInstance().getStyles().delete(style);
     }
 
     @Test
     void t01() {
+        final Context context = createContext();
+
         // force all book level fields
         style.setFieldVisibility(FieldVisibility.Screen.List, Long.MAX_VALUE);
         // all groups...

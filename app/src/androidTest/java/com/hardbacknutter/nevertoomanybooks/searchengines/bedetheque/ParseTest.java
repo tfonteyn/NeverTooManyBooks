@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -40,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,9 +62,10 @@ class ParseTest
     private BedethequeSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bedetheque.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bedetheque.createSearchEngine(context);
@@ -74,6 +75,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, CredentialsException, StorageException, IOException {
+        final Context context = createContext();
 
         // Blondin et Cirage:  Les soucoupes volantes
         final String locationHeader = "https://www.bedetheque.com/BD-Blondin-et-Cirage-Tome-9a1978-01-Les-soucoupes-volantes-18770.html";
@@ -159,6 +161,7 @@ class ParseTest
     @Test
     void parse01LaterEdition()
             throws SearchException, CredentialsException, StorageException, IOException {
+        final Context context = createContext();
 
         // Blondin et Cirage:  Les soucoupes volantes
         // but a later edition, Collection : Péchés de jeunesse
@@ -251,6 +254,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, CredentialsException, StorageException, IOException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -313,6 +317,7 @@ class ParseTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.bedetheque.com/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

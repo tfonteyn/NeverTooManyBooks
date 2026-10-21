@@ -23,9 +23,8 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,15 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class LanguageTest
         extends BaseDBTest {
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void ancientGreek() {
-        final Languages l = serviceLocator.getLanguages();
+        final Languages l = ServiceLocator.getInstance().getLanguages();
 
         // result is "grc" which is correct
         assertEquals("grc", l.getLocaleIsoFromISO3("grc", Locale.UK));
@@ -66,7 +59,7 @@ class LanguageTest
         // 'francouzský': 'fr',
         // 'španělský': 'es',
         // 'italský': 'it'}
-        final Languages l = serviceLocator.getLanguages();
+        final Languages l = ServiceLocator.getInstance().getLanguages();
 
         final Locale czech = new Locale("cs", "CZ");
         l.createLanguageMappingCache(czech);
@@ -96,7 +89,7 @@ class LanguageTest
         //   'francouzský': 'fr',
         //   'španělský': 'es',
         //   'italský': 'it'}
-        final Languages l = serviceLocator.getLanguages();
+        final Languages l = ServiceLocator.getInstance().getLanguages();
 
         final Locale slovak = new Locale("sk", "SK");
         l.createLanguageMappingCache(slovak);

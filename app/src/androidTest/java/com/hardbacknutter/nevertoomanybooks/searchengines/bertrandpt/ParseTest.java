@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -41,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,9 +61,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.BertrandPt.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.BertrandPt.createSearchEngine(context);
@@ -90,6 +91,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.bertrand.pt/pesquisa/9789895812899";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -153,6 +155,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader =
                 "https://www.bertrand.pt/pesquisa/9789897734939";

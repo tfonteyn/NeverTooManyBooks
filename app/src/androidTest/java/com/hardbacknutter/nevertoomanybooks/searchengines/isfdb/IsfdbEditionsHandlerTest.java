@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -26,11 +27,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,9 +51,10 @@ class IsfdbEditionsHandlerTest
     private IsfdbSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Isfdb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Isfdb.createSearchEngine(context);
@@ -65,6 +64,7 @@ class IsfdbEditionsHandlerTest
     @Test
     void parseMultiEdition()
             throws IOException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -88,6 +88,7 @@ class IsfdbEditionsHandlerTest
     @Test
     void parseMultiEdition2()
             throws IOException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -119,7 +120,8 @@ class IsfdbEditionsHandlerTest
      */
     @Test
     void searchSingleEditionIsbn()
-            throws SearchException, CredentialsException {
+            throws SearchException {
+        final Context context = createContext();
 
         final String path = "https://www.isfdb.org/cgi-bin/se.cgi?arg=9020612476&type=ISBN";
         final Document document = searchEngine.loadHtml(context, path, null);
@@ -138,7 +140,8 @@ class IsfdbEditionsHandlerTest
      */
     @Test
     void searchMultiEditionIsbn()
-            throws SearchException, CredentialsException {
+            throws SearchException {
+        final Context context = createContext();
 
         final String path = "https://www.isfdb.org/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         final Document document = searchEngine.loadHtml(context, path, null);

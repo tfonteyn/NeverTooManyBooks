@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -42,10 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,9 +65,10 @@ class SruParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Dnb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Dnb.createSearchEngine(context);
@@ -82,6 +82,7 @@ class SruParseTest
     @Test
     void parse9783453321892()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783453321892&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -146,6 +147,7 @@ class SruParseTest
     @Test
     void parse9783426226681()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783426226681&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -200,6 +202,8 @@ class SruParseTest
     @Test
     void parse9783734163296()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783734163296&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783734163296;
@@ -263,6 +267,8 @@ class SruParseTest
     @Test
     void parse9783770411849()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783770411849&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783770411849;

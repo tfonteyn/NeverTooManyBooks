@@ -36,6 +36,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.InstantTaskExecutorExtension;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsInput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,10 +92,13 @@ class BookTest
      * Copy two pictures from the Pictures directory to the temp directory.
      */
     @BeforeEach
-    void setup()
-            throws IOException, StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-        h = new DBTestHelper(serviceLocator);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
+        h = new DBTestHelper();
 
         loaneeDao = serviceLocator.getLoaneeDao();
 
@@ -121,13 +124,13 @@ class BookTest
 
         // insert ONLY author[0]
         h.authorIdArray[0] = serviceLocator.getAuthorDao().insert(context, h.authorArray[0],
-                                                                  bookLocale);
+                                                                       bookLocale);
         authorList.clear();
         authorList.add(h.authorArray[0]);
 
         // insert ONLY publisher[0]
         h.publisherIdArray[0] = serviceLocator.getPublisherDao()
-                                              .insert(context, h.publisherArray[0],
+                                                   .insert(context, h.publisherArray[0],
                                                       bookLocale);
         publisherList.clear();
         publisherList.add(h.publisherArray[0]);
@@ -159,6 +162,7 @@ class BookTest
     @Test
     void book()
             throws IOException, StorageException {
+        final Context context = createContext();
 
         final int bookIdx = 0;
 
@@ -166,7 +170,7 @@ class BookTest
         final long bookId = prepareAndInsertBook(context, bookIdx);
         Book book = Book.from(bookId);
         assertEquals(bookId, book.getId());
-        assertBookMatchesInitialInsert(book, bookIdx);
+        assertBookMatchesInitialInsert(context, book, bookIdx);
 
         List<Author> authors;
         /*
@@ -212,6 +216,7 @@ class BookTest
     @Test
     void lending()
             throws IOException, StorageException {
+        final Context context = createContext();
 
         final int bookIdx = 0;
 
@@ -238,6 +243,7 @@ class BookTest
     @Test
     void covers()
             throws IOException, StorageException {
+        final Context context = createContext();
 
         final int bookIdx = 0;
 
@@ -261,8 +267,8 @@ class BookTest
         book = Book.from(bookId);
         final String uuid = book.getString(DBKey.BOOK_UUID, null);
 
-        assertBookHasPersistedCover(book, 0);
-        assertBookHasPersistedCover(book, 1);
+        assertBookHasPersistedCover(context, book, 0);
+        assertBookHasPersistedCover(context, book, 1);
 
         // We've used both temp files, so files 1+2 should be gone now
         // but 3+4 will still be there
@@ -275,13 +281,13 @@ class BookTest
         assertBookHasNoTempCovers(book);
 
         // sanity check the cover is really there
-        assertBookHasPersistedCover(book, 1);
+        assertBookHasPersistedCover(context, book, 1);
         // remove it
         book.removeImage(context, 1);
         // there must NOT be any temp cover fileSpecs.
         assertBookHasNoTempCovers(book);
         // the front cover should still be there
-        assertBookHasPersistedCover(book, 0);
+        assertBookHasPersistedCover(context, book, 0);
         //the back cover must be gone
         assertFalse(new File(coverDir, uuid + "_1" + EXT_JPG).exists());
 
@@ -298,13 +304,15 @@ class BookTest
         // there must NOT be any temp cover fileSpecs.
         assertBookHasNoTempCovers(book);
         // We once again must have front and back cover
-        assertBookHasPersistedCover(book, 0);
-        assertBookHasPersistedCover(book, 1);
+        assertBookHasPersistedCover(context, book, 0);
+        assertBookHasPersistedCover(context, book, 1);
     }
 
     @Test
     void showBookVM()
             throws StorageException, IOException {
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         final int bookIdx = 0;
 
@@ -323,7 +331,7 @@ class BookTest
 
         final Book retrieved = vm.getBook();
         assertEquals(bookId, retrieved.getId());
-        assertBookMatchesInitialInsert(retrieved, bookIdx);
+        assertBookMatchesInitialInsert(context, retrieved, bookIdx);
     }
 
     /**
@@ -366,7 +374,8 @@ class BookTest
         return bookId;
     }
 
-    private void assertBookMatchesInitialInsert(@NonNull final Book book,
+    private void assertBookMatchesInitialInsert(@NonNull final Context context,
+                                                @NonNull final Book book,
                                                 @SuppressWarnings("SameParameterValue") final int bookIdx)
             throws ImageStorageException {
 
@@ -394,7 +403,7 @@ class BookTest
         assertEquals(1, publishers.size());
         assertEquals(this.h.publisherArray[0], publishers.get(0));
 
-        assertBookHasPersistedCover(book, 0);
+        assertBookHasPersistedCover(context, book, 0);
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[2]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[3]));
@@ -434,7 +443,8 @@ class BookTest
      * @param book to check
      * @param cIdx 0..n image index
      */
-    private void assertBookHasPersistedCover(@NonNull final Book book,
+    private void assertBookHasPersistedCover(@NonNull final Context context,
+                                             @NonNull final Book book,
                                              @IntRange(from = 0, to = 3) final int cIdx) {
         // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));

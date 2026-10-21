@@ -19,15 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,15 +48,17 @@ class PublisherTest
     private PublisherDao publisherDao;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
-        publisherDao = serviceLocator.getPublisherDao();
+        publisherDao = ServiceLocator.getInstance().getPublisherDao();
     }
 
     @Test
     void bidi() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -103,6 +106,8 @@ class PublisherTest
 
     @Test
     void prunePublisherNames01() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -143,6 +148,8 @@ class PublisherTest
 
     @Test
     void prunePublisherNames02() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -183,6 +190,8 @@ class PublisherTest
 
     @Test
     void prunePublisherNames03() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -240,6 +249,8 @@ class PublisherTest
      */
     @Test
     void pruneReorderedDuplications() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();

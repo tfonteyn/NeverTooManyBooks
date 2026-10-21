@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.Context;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -41,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,9 +60,11 @@ class BookDaoImplTest
     private BookRepository bookRepository;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         authorDao = serviceLocator.getAuthorDao();
         publisherDao = serviceLocator.getPublisherDao();
@@ -93,6 +97,7 @@ class BookDaoImplTest
     @Test
     void insertDuplicate()
             throws StorageException {
+        final Context context = createContext();
 
         final Publisher publisher = Publisher.from("Reprodukt");
         final long p1 = publisherDao.insert(context, publisher, Locale.GERMANY);

@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -66,6 +65,7 @@ import com.hardbacknutter.org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -73,9 +73,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({"OverlyBroadThrowsClause", "MissingJavadoc"})
 public class BaseDBTest {
-
-    protected ServiceLocator serviceLocator;
-    protected Context context;
 
     protected static void assertPriceListed(@NonNull final Book book,
                                             @NonNull final String expectedValue,
@@ -122,14 +119,10 @@ public class BaseDBTest {
         assertEquals(expectedCurrency, book.getString(key + DBKey.CURRENCY_SUFFIX, null));
     }
 
-    /**
-     * Setup.
-     *
-     * @param uiLocale the user configured UI Locale.
-     */
+    @BeforeEach
     @CallSuper
-    public void setup(@NonNull final String uiLocale)
-            throws StorageException {
+    protected void setup()
+            throws Exception {
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                                        .detectLeakedSqlLiteObjects()
                                        .detectLeakedClosableObjects()
@@ -137,13 +130,13 @@ public class BaseDBTest {
                                        .penaltyLog()
                                        .build());
 
-        serviceLocator = ServiceLocator.getInstance();
+        final Context context = createContext(AppLocale.SYSTEM_LANGUAGE);
+
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         final SharedPreferences.Editor editor = serviceLocator.getSharedPreferences()
                                                               .edit();
-        editor.putString(AppLocale.PK_UI_LOCALE, uiLocale)
-              .putString(CoverVolume.PK_VOLUME_INDEX, "0")
-
+        editor.putString(CoverVolume.PK_VOLUME_INDEX, "0")
               .putBoolean(IdentifiersEditorContract.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
               .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
               .putBoolean(ColorMapper.PK_SEARCH_REFORMAT_COLOR, true)
@@ -173,9 +166,6 @@ public class BaseDBTest {
                          + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")
               .apply();
 
-        // This will use the AppLocale.PK_UI_LOCALE prefs to determine the user Locale
-        context = serviceLocator.getLocalizedAppContext();
-
         // Bootstrap the cover storage
         final int configuredVolume = CoverVolume.getVolume();
         assertEquals(0, configuredVolume);
@@ -196,8 +186,18 @@ public class BaseDBTest {
     }
 
     @NonNull
-    public Context getContext() {
-        return context;
+    protected Context createContext() {
+        return createContext(AppLocale.SYSTEM_LANGUAGE);
+    }
+
+    @NonNull
+    protected Context createContext(@NonNull final String uiLocale) {
+        ServiceLocator.getInstance()
+                      .getSharedPreferences()
+                      .edit()
+                      .putString(AppLocale.PK_UI_LOCALE, uiLocale)
+                      .apply();
+        return ServiceLocator.getInstance().getLocalizedAppContext();
     }
 
     /**
@@ -207,6 +207,7 @@ public class BaseDBTest {
      */
     @NonNull
     protected Style getBuiltinStyle() {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         return BuiltinStyle.ALL.stream()
                                .filter(def -> def.getId() == BuiltinStyle.ID_FOR_TESTING_ONLY)
                                .findFirst()
@@ -223,6 +224,7 @@ public class BaseDBTest {
      */
     @NonNull
     protected Optional<WritableStyle> getUserStyle() {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         return serviceLocator.getStyles()
                              .getStyles(true)
                              .stream()

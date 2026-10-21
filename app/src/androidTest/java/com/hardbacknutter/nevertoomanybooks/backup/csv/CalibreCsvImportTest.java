@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.LocaleList;
@@ -58,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,16 +77,16 @@ class CalibreCsvImportTest
     private int booksPresent;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        final ServiceLocator locator = ServiceLocator.getInstance();
-
-        bookDao = locator.getBookDao();
+        bookDao = serviceLocator.getBookDao();
         booksPresent = bookDao.count();
 
-        final BookshelfDao bookshelfDao = locator.getBookshelfDao();
+        final BookshelfDao bookshelfDao = serviceLocator.getBookshelfDao();
         final Optional<Bookshelf> cal = bookshelfDao.findByName("Calibre Library");
         if (cal.isPresent()) {
             final Bookshelf bookshelf = cal.get();
@@ -102,6 +102,7 @@ class CalibreCsvImportTest
     void calibre()
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
+        final Context context = createContext();
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
@@ -123,6 +124,7 @@ class CalibreCsvImportTest
         assertTrue(oMetaData.isPresent());
         metaData = oMetaData.get();
         assertNotNull(metaData);
+        //noinspection deprecation
         Assertions.assertEquals(CsvFormat.Calibre,
                                 metaData.getData().getParcelable(CsvFormat.BKEY));
         assertTrue(metaData.getData().containsKey(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));

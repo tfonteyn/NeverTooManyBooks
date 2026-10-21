@@ -20,17 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.series;
 
+import android.content.Context;
+
 import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -49,16 +49,17 @@ class EditSeriesViewModelTest
     private Locale locale;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()
                       .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
                       .apply();
 
-        dao = serviceLocator.getSeriesDao();
+        dao = ServiceLocator.getInstance().getSeriesDao();
         locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // make sure neither are present
@@ -76,6 +77,7 @@ class EditSeriesViewModelTest
 
     @Test
     void rename() {
+        final Context context = createContext();
 
         dao.insert(context, new Series(WRONG), locale);
 

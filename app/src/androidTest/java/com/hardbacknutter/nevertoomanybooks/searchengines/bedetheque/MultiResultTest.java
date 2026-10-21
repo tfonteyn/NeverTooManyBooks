@@ -20,13 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,9 +45,10 @@ class MultiResultTest
     private BedethequeSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bedetheque.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bedetheque.createSearchEngine(context);

@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -27,7 +28,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -36,10 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,9 +55,10 @@ class IssnParseTest
     private DnbSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Dnb.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Dnb.createSearchEngine(context);
@@ -69,6 +68,8 @@ class IssnParseTest
     @Test
     void m64er()
             throws IOException {
+        final Context context = createContext();
+
         final String issn = "0176-8824";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.zdb_issn_0176_8824;

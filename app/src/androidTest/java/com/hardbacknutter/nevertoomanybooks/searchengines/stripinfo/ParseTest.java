@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,9 +71,10 @@ class ParseTest
     private StripInfoSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.StripInfoBe.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.StripInfoBe.createSearchEngine(context);
@@ -83,6 +84,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/336348_Hauteville_House_14_De_37ste_parallel";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -162,6 +164,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -306,6 +309,7 @@ class ParseTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/181604_Okiya_het_huis_van_verboden_geneugten_1_Het_huis_van_verboden_geneugten";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -371,6 +375,7 @@ class ParseTest
     @Test
     void parseIntegrale()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -434,6 +439,7 @@ class ParseTest
     @Test
     void parseIntegrale2()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/17030_Comanche_1_Red_Dust";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -495,6 +501,7 @@ class ParseTest
     @Test
     void parseFavReeks2()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -566,6 +573,7 @@ class ParseTest
     @Test
     void multiResult()
             throws SearchException, CredentialsException, StorageException, IOException {
+        final Context context = createContext();
 
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=chant+du+pluvier";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

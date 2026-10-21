@@ -19,17 +19,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
+
 import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,10 +69,12 @@ class BookInsertTest
     private BookRepository bookRepository;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-        h = new DBTestHelper(serviceLocator);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+
+        h = new DBTestHelper();
 
         bookRepository = new BookRepository(context);
     }
@@ -81,6 +85,9 @@ class BookInsertTest
     @Test
     void inserting()
             throws StorageException {
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
         List<Long> bookIdList;
         List<AuthorWork> works;
 

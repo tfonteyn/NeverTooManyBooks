@@ -20,15 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.text.InputType;
 import android.widget.EditText;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,14 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EditTextFieldTest
         extends BaseDBTest {
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void mask() {
+        final Context context = createContext();
+
         final EditText editText = new EditText(context);
 
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -59,6 +53,8 @@ class EditTextFieldTest
 
     @Test
     void setting() {
+        final Context context = createContext();
+
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()
                       // "1" words

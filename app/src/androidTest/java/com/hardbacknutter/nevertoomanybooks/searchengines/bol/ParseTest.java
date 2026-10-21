@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,9 +63,10 @@ class ParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bol.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bol.createSearchEngine(context);
@@ -113,12 +114,26 @@ class ParseTest
      * be/nl + dutch book
      *
      * <pre>
-     *     {"@type":"Book","name":"Alter ego","@description":"<b>Genomineerd voor de NS Publieksprijs 2023</b> Het leven lacht Lynn eindelijk toe. Ze is getrouwd met de twintig jaar oudere Camiel Storm, een bekende chef-kok, en verzorgt met verve de pr voor diens sterrenrestaurant De Luwte. Voor de buitenwereld vormen de twee een succesvol powerkoppel. Maar terwijl Camiel avond na avond de sterren van de hemel staat te koken, onderhoudt Lynn een passievolle affaire met de jonge, opvliegende Laurens. Door ambitieuze uitbreidingsplannen komt het huwelijk verder onder druk te staan. En wanneer er onverklaarbare dingen gebeuren in en rond de villa van Camiel en Lynn, kan Lynn bij niemand terecht. Esther Verhoef is een van de succesvolste en veelzijdigste schrijvers van Nederland. Zij is onze meest bekroonde en genomineerde thrillerauteur. Van haar psychologische thrillers en romans zijn in eigen land ruim 2,9 miljoen exemplaren verkocht. ‘Esther Verhoef hoort duidelijk tot de schrijvende elite in ons land.’ Algemeen Dagblad ‘Als je de adrenaline van de recensent nog tot diep in de nacht laat stromen, is dat vakwerk.’ De Volkskrant ‘Verhoef bewijst keer op keer dat zij in Nederland de koningin van het genre genoemd mag worden.’ Vrij Nederland Over De Nachtdienst: ‘De schrijfster doet haar langjarige reputatie als “koningin van de Nederlandse thriller” opnieuw eer aan.’ De Telegraaf ‘De Nachtdienst is geraffineerd opgebouwd en nagelbijtend spannend.’ Margriet","url":"https://www.bol.com/be/nl/p/alter-ego/9300000135231906/","bookFormat":"https://schema.org/Paperback","isbn":"9789044652901","numberOfPages":"416","offers":{"@type":"Offer","price":"22.99","priceCurrency":"EUR","itemCondition":"https://schema.org/NewCondition","availability":"InStock","seller":{"@type":"Organization","name":"bol"}},"datePublished":"2023-03-28"}
+     *     {"@type":"Book",
+     *     "name":"Alter ego",
+     *     "@description":"<b>Genomineerd voor de NS Publieksprijs 2023</b>...",
+     *     "url":"https://www.bol.com/be/nl/p/alter-ego/9300000135231906/",
+     *     "bookFormat":"https://schema.org/Paperback",
+     *     "isbn":"9789044652901",
+     *     "numberOfPages":"416",
+     *     "offers":{"@type":"Offer",
+     *               "price":"22.99",
+     *               "priceCurrency":"EUR",
+     *               "itemCondition":"https://schema.org/NewCondition",
+     *               "availability":"InStock",
+     *               "seller":{"@type":"Organization","name":"bol"}},
+     *     "datePublished":"2023-03-28"}
      * </pre>
      */
     @Test
     void parse01()
             throws IOException, StorageException, SearchException {
+        final Context context = createContext();
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/alter-ego/9300000135231906/?cid=1786008557620-6794174876919";
@@ -183,6 +198,7 @@ class ParseTest
     @Test
     void parse02()
             throws IOException, StorageException, SearchException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.bol.com/be/nl/p/europa/9300000130411439/?promo=main_861_new_for_you___product_0_9300000130411439&bltgh=vwTKjOiKpqSmgLkGxPZJow.90_91.92.ProductImage";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -252,6 +268,7 @@ class ParseTest
     @Test
     void parse03()
             throws IOException, StorageException, SearchException {
+        final Context context = createContext();
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/nijntjes-voorleesfeest/9200000122271922/";
@@ -300,6 +317,7 @@ class ParseTest
     @Test
     void parse04()
             throws IOException, StorageException, SearchException {
+        final Context context = createContext();
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/foundation-trilogy/1001004009994645/";
@@ -369,6 +387,7 @@ class ParseTest
     @Test
     void parse05()
             throws IOException, StorageException, SearchException {
+        final Context context = createContext();
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/er-stromen-rivieren-in-de-lucht/9300000174936851/?bltgh=mY-mZ8dieLK1LnLXkKxH5g.hNfQd-6cIGnpHMA9c25Jow_0_24.29.ProductTitle";

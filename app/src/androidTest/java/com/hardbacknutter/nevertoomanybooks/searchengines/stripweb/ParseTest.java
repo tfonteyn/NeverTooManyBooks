@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -44,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,9 +66,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.StripWebBe.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.StripWebBe.createSearchEngine(context);
@@ -99,6 +100,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripweb.be/nl-nl/wanted-lucky-luke-2";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -171,6 +173,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader =
                 "https://www.stripweb.be/nl-nl/top-10/valstrikken-en-gevoelens";
@@ -286,6 +289,7 @@ class ParseTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.stripweb.be/nl-nl/xiii-box-delen-1-3";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

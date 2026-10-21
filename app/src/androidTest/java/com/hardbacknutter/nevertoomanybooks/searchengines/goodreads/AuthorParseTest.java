@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -28,12 +29,10 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,9 +52,10 @@ class AuthorParseTest
     private GoodreadsAuthorResolver resolver;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Goodreads.getConfig().setHttpLoggingEnabled(true);
         final GoodreadsSearchEngine searchEngine = EngineId.Goodreads.createSearchEngine(context);
@@ -67,6 +67,8 @@ class AuthorParseTest
     @Test
     void parse01()
             throws IOException {
+        final Context context = createContext();
+
         final String locationHeader = "https://www.goodreads.com/author/show/2965845.Frank_P_";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.goodreads_author_2965845;

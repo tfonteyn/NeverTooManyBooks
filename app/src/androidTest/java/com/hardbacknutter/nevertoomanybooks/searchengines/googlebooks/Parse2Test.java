@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -45,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -65,9 +65,10 @@ class Parse2Test
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.GoogleBooks.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.GoogleBooks.createSearchEngine(context);
@@ -87,6 +88,7 @@ class Parse2Test
     @Test
     void fetch01()
             throws SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setRawProductCode("9781857989380");
@@ -103,6 +105,8 @@ class Parse2Test
     @Test
     void parse1()
             throws IOException, StorageException {
+        final Context context = createContext();
+
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9781857989380
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -157,6 +161,7 @@ class Parse2Test
     @Test
     void parse2()
             throws IOException, StorageException {
+        final Context context = createContext();
 
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9780007499793
         final Book book = new Book();

@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
+import android.content.Context;
+
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -30,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,9 +51,10 @@ class SearchByIsbnTest
     private SearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bol.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bol.createSearchEngine(context);
@@ -62,6 +64,7 @@ class SearchByIsbnTest
     @Test
     void parseMultiResult01()
             throws SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setRawProductCode("9789056478193");

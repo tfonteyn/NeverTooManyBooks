@@ -22,13 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 import android.util.Log;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,15 +36,9 @@ class TableInfoTest
 
     private static final String TAG = "TableInfoTest";
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void bookTableInfo() {
-        final SynchronizedDb db = serviceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
         final TableInfo tableInfo = db.getTableInfo(DBDefinitions.TBL_BOOKS);
         assertNotNull(tableInfo);
 

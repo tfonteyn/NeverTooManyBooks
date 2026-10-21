@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -30,9 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,9 +57,9 @@ class PreferredStylesViewModelTest
     private PreferredStylesViewModel listVm;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         // delete any user-styles we created in previous tests.
@@ -102,6 +102,8 @@ class PreferredStylesViewModelTest
 
 
     private void cloneBuiltin(final boolean asPreferred) {
+        final Context context = createContext();
+
         listVm.refreshList();
 
         final List<Style> styleList = listVm.getList();
@@ -171,6 +173,8 @@ class PreferredStylesViewModelTest
     }
 
     private void cloneUserDefined(final boolean asPreferred) {
+        final Context context = createContext();
+
         listVm.refreshList();
 
         final List<Style> styleList = listVm.getList();
@@ -243,6 +247,8 @@ class PreferredStylesViewModelTest
      * Relies on finding a user-defined style!
      */
     private void editExisting(final boolean asPreferred) {
+        final Context context = createContext();
+
         listVm.refreshList();
 
         final List<Style> styleList = listVm.getList();

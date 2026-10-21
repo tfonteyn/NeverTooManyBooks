@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.wikidata;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -27,7 +28,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -57,9 +56,10 @@ class IisnParseTest
     private WikidataSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Wikidata.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Wikidata.createSearchEngine(context);
@@ -69,6 +69,7 @@ class IisnParseTest
     @Test
     void mfsf()
             throws IOException {
+        final Context context = createContext();
 
         final ProductCode pc = ISBN.parse("0024-984X");
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -113,6 +114,7 @@ class IisnParseTest
     @Test
     void guardian()
             throws IOException {
+        final Context context = createContext();
 
         final ProductCode pc = ISBN.parse("0261-3077");
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -161,6 +163,7 @@ class IisnParseTest
     @Test
     void nature()
             throws IOException {
+        final Context context = createContext();
 
         final ProductCode pc = ISBN.parse("0028-0836");
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test

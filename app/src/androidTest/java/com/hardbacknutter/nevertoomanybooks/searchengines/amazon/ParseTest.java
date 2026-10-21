@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -40,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,9 +60,10 @@ class ParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Amazon.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Amazon.createSearchEngine(context);
@@ -76,6 +77,7 @@ class ParseTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -119,6 +121,7 @@ class ParseTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -165,6 +168,7 @@ class ParseTest
     @Test
     void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -210,6 +214,7 @@ class ParseTest
     @Test
     void parse11()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.de/gp/product/3518366823";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -253,6 +258,7 @@ class ParseTest
     @Test
     void parse12()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.com/gp/product/3518366823";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -295,6 +301,7 @@ class ParseTest
     @Test
     void parse20()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.es/gp/product/1107480558";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -338,6 +345,7 @@ class ParseTest
     @Test
     void parse21()
             throws SearchException, IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://www.amazon.es/gp/product/840827578X";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

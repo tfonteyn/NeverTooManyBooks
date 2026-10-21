@@ -25,10 +25,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,14 +35,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class UserStyleTest
         extends BaseDBTest {
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void clone01() {
+        final Context context = createContext();
+
         final Style s1 = getBuiltinStyle();
 
         // clone a built-in Style

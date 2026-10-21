@@ -19,18 +19,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,15 +46,17 @@ class TocEntryTest
     private TocEntryDao tocEntryDao;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
-        tocEntryDao = serviceLocator.getTocEntryDao();
+        tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
     }
 
     @Test
     void pruneTocEntries01() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
@@ -111,6 +114,8 @@ class TocEntryTest
 
     @Test
     void pruneTocEntries02() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
@@ -161,6 +166,8 @@ class TocEntryTest
 
     @Test
     void pruneTocEntries03() {
+        final Context context = createContext();
+
         final Locale bookLocale = Locale.getDefault();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);

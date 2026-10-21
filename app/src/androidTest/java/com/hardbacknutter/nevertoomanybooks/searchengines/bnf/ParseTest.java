@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bnf;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -43,10 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -68,9 +67,10 @@ class ParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Bnf.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Bnf.createSearchEngine(context);
@@ -91,6 +91,8 @@ class ParseTest
     @Test
     void issn()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         // uses the "anywhere" but finds an issn.
         final String locationHeader =
                 "https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.anywhere+all+%22lettre%20de%20mon%20moulin%22&recordSchema=unimarcXchange&maximumRecords=1";
@@ -146,6 +148,7 @@ class ParseTest
     @Test
     void parse47592158()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.persistentid+all+%22ark:/12148/cb475921587%22&recordSchema=unimarcXchange&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -244,6 +247,7 @@ class ParseTest
     @Test
     void parse45842142()
             throws IOException, CredentialsException, StorageException {
+        final Context context = createContext();
 
         final String locationHeader = "https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.persistentid+all+%22ark:/12148/cb458421422%22&recordSchema=unimarcXchange&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

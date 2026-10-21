@@ -20,17 +20,18 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
+import android.content.Context;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -51,11 +52,13 @@ class BookCoderTest
     private IdentifierValueCoder identifierValueCoder;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+
         book = new Book();
-        bookCoder = new BookCoder(context, serviceLocator.getStyles().getDefault());
+        bookCoder = new BookCoder(context, ServiceLocator.getInstance().getStyles().getDefault());
         identifierValueCoder = new IdentifierValueCoder();
     }
 

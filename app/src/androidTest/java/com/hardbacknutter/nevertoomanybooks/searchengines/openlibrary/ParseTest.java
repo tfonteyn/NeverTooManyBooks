@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -38,8 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,9 +57,10 @@ class ParseTest
     private OpenLibrarySearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.OpenLibrary.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.OpenLibrary.createSearchEngine(context);
@@ -81,7 +81,9 @@ class ParseTest
 
     @Test
     void parse1()
-            throws IOException, StorageException, SearchException {
+            throws IOException, StorageException {
+        final Context context = createContext();
+
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
 
         // https://openlibrary.org/books/OL22853304M.json
@@ -184,7 +186,8 @@ class ParseTest
 
     @Test
     void parse2()
-            throws IOException, StorageException, SearchException {
+            throws IOException, StorageException {
+        final Context context = createContext();
 
         // https://openlibrary.org/search.json?q=9780734418227&fields=key,editions
 
@@ -252,7 +255,9 @@ class ParseTest
 
     @Test
     void parse3()
-            throws IOException, StorageException, SearchException {
+            throws IOException, StorageException {
+        final Context context = createContext();
+
         // https://openlibrary.org/search.json?q=9780141346830&fields=key,editions
 
         // https://openlibrary.org/books/OL28508809M.json
@@ -335,7 +340,9 @@ class ParseTest
 
     @Test
     void parse4()
-            throws IOException, StorageException, SearchException {
+            throws IOException, StorageException {
+        final Context context = createContext();
+
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
 
         // https://openlibrary.org/books/OL36696710M.json
@@ -485,7 +492,9 @@ class ParseTest
 
     @Test
     void parse5()
-            throws IOException, StorageException, SearchException {
+            throws IOException, StorageException {
+        final Context context = createContext();
+
         // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
 
         // https://openlibrary.org/books/OL7824144M.json
@@ -586,7 +595,9 @@ class ParseTest
 
     @Test
     void parse6()
-            throws IOException, StorageException, SearchException {
+            throws IOException, StorageException {
+        final Context context = createContext();
+
         // https://openlibrary.org/search.json?q=9781691706631&fields=key,editions
 
         // https://openlibrary.org/books/OL33899062M.json

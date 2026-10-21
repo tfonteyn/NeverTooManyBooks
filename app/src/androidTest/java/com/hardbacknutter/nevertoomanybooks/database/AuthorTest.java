@@ -19,18 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,16 +57,17 @@ class AuthorTest
     private DBTestHelper h;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         bookLocale = Locale.getDefault();
-        authorDao = serviceLocator.getAuthorDao();
+        authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         bookRepository = new BookRepository(context);
 
-        h = new DBTestHelper(serviceLocator);
+        h = new DBTestHelper();
     }
 
     /**
@@ -71,6 +76,7 @@ class AuthorTest
     @Test
     void crud()
             throws StorageException {
+        final Context context = createContext();
 
         h.authorIdArray[0] = authorDao.insert(context, h.authorArray[0], bookLocale);
         assertTrue(h.authorIdArray[0] > 0);
@@ -101,6 +107,7 @@ class AuthorTest
     @Test
     void renameAuthor()
             throws StorageException {
+        final Context context = createContext();
 
         final List<Long> bookIdList;
 
@@ -187,6 +194,7 @@ class AuthorTest
     @Test
     void renameAuthorWithTocs()
             throws StorageException {
+        final Context context = createContext();
 
         final List<Long> bookIdList;
         final List<AuthorWork> works;
@@ -266,6 +274,7 @@ class AuthorTest
     @Test
     void realAuthor()
             throws StorageException {
+        final Context context = createContext();
 
         int aIdx;
         Author resolved;
@@ -296,7 +305,7 @@ class AuthorTest
         h.authorIdArray[aIdx] = authorDao.insert(context, h.authorArray[aIdx], bookLocale);
         assertTrue(h.authorIdArray[aIdx] > 0);
 
-        reload();
+        reload(context);
 
         // do a simple test of the realAuthor so we know further tests use the correct start-data
         assertNull(h.authorArray[0].getRealAuthor());
@@ -311,7 +320,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(null);
         assertNull(resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertNull(h.authorArray[1].getRealAuthor());
@@ -326,7 +335,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(h.authorArray[0]);
         assertEquals(h.authorArray[0], resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertEquals(h.authorArray[0], h.authorArray[1].getRealAuthor());
@@ -339,7 +348,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(h.authorArray[0]);
         assertEquals(h.authorArray[0], resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertEquals(h.authorArray[0], h.authorArray[1].getRealAuthor());
@@ -352,7 +361,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(h.authorArray[4]);
         assertEquals(h.authorArray[4], resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertEquals(h.authorArray[0], h.authorArray[1].getRealAuthor());
@@ -365,7 +374,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(h.authorArray[4]);
         assertNull(resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertEquals(h.authorArray[0], h.authorArray[1].getRealAuthor());
@@ -378,7 +387,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(h.authorArray[3]);
         assertEquals(h.authorArray[4], resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertEquals(h.authorArray[4], h.authorArray[1].getRealAuthor());
@@ -391,7 +400,7 @@ class AuthorTest
         resolved = h.authorArray[aIdx].setRealAuthor(h.authorArray[2]);
         assertNull(resolved);
         authorDao.update(context, h.authorArray[aIdx], bookLocale);
-        reload();
+        reload(context);
 
         assertNull(h.authorArray[0].getRealAuthor());
         assertEquals(h.authorArray[4], h.authorArray[1].getRealAuthor());
@@ -400,7 +409,7 @@ class AuthorTest
         assertNull(h.authorArray[4].getRealAuthor());
     }
 
-    private void reload() {
+    private void reload(@NonNull final Context context) {
         for (int i = 0; i < TestConstants.AUTHOR_FULL_NAME.length; i++) {
             h.authorArray[i] = Author.from(TestConstants.AUTHOR_FULL_NAME[i]);
             h.authorArray[i] = authorDao.findByName(context, h.authorArray[i], bookLocale)

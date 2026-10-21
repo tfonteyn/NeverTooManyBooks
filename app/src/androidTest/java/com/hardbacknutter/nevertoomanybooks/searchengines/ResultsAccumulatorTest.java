@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.core.util.Function;
 import androidx.core.util.Pair;
@@ -32,8 +34,8 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -44,9 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,12 +62,6 @@ class ResultsAccumulatorTest
         extends BaseDBTest {
 
     private static final String SEARCH_ISBN = "9780552574471";
-
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
 
     @NonNull
     private Pair<Locale, Book> create01() {
@@ -412,8 +406,10 @@ class ResultsAccumulatorTest
 
     @Test
     void process() {
+        final Context context = createContext();
+
         final ResultsAccumulator resultsAccumulator =
-                new ResultsAccumulator(context, serviceLocator::getLanguages);
+                new ResultsAccumulator(context, ServiceLocator.getInstance()::getLanguages);
 
         final List<Pair<Locale, Book>> results = new ArrayList<>();
         results.add(create01());

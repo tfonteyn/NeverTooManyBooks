@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 
+import android.content.Context;
 import android.util.Log;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -32,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,9 +53,10 @@ class SearchByIsbnTest
     private SearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Amazon.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Amazon.createSearchEngine(context);
@@ -65,6 +66,8 @@ class SearchByIsbnTest
     @Test
     void Isbn0702315516()
             throws SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setRawProductCode("0702315516");
         final Book book = ((SearchEngine.ByIsbn) searchEngine).searchByIsbn(context, criteria);

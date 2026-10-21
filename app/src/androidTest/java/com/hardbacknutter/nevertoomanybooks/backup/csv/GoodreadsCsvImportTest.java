@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.LocaleList;
@@ -32,6 +33,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -56,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,9 +79,10 @@ class GoodreadsCsvImportTest
     private IdentifierValueDao bookIdentifierDao;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         bookIdentifierDao = serviceLocator.getBookIdentifierDao();
         bookDao = serviceLocator.getBookDao();
@@ -104,6 +106,7 @@ class GoodreadsCsvImportTest
     void goodreads()
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
+        final Context context = createContext();
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);

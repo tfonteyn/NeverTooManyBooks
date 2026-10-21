@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.List;
@@ -28,11 +29,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,9 +47,10 @@ class AltEditionsTest
     private DoubanSearchEngine searchEngine;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Douban.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Douban.createSearchEngine(context);
@@ -60,6 +60,8 @@ class AltEditionsTest
     @Test
     void searchAlternativeEditionsTest()
             throws SearchException, CredentialsException {
+        final Context context = createContext();
+
         final List<AltEditionDouban> editions = searchEngine
                 .searchAlternativeEditions(context, ISBN.parse("9787536692930"));
 

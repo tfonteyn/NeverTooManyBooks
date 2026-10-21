@@ -20,16 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import android.content.Context;
+
 import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.DBExpr;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +47,11 @@ class DomainExpressionsTest
     private UserStyle style;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         style = (UserStyle) getBuiltinStyle().clone(context);
         style.setName("test");
@@ -62,9 +65,11 @@ class DomainExpressionsTest
 
     @AfterEach
     void breakdown() {
+        final Context context = createContext();
+
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
-        serviceLocator.getStyles().delete(style);
+        ServiceLocator.getInstance().getStyles().delete(style);
     }
 
     /**

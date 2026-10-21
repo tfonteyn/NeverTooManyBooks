@@ -20,11 +20,10 @@
 
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import android.content.Context;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,14 +33,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CoverVolumeTest
         extends BaseDBTest {
 
-    @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     @Test
     void simple() {
+        final Context context = createContext();
+
         final int configuredVolume = CoverVolume.getVolume();
         assertEquals(0, configuredVolume);
 

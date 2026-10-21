@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
@@ -45,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,9 +69,10 @@ class ParseTest
     private RealNumberParser ratingNumberParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.BibliotecePl.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.BibliotecePl.createSearchEngine(context);
@@ -102,6 +103,8 @@ class ParseTest
     @Test
     void parse9788321331966()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://w.bibliotece.pl/546206/Historia+sztuki";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -120,6 +123,8 @@ class ParseTest
     @Test
     void parse9788384252963()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://w.bibliotece.pl/6985469/Ziele%C5%84";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -186,6 +191,8 @@ class ParseTest
     @Test
     void parse9788380837744()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://w.bibliotece.pl/3451326/Ona+i+dom+kt%C3%B3ry+ta%C5%84czy";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -261,6 +268,8 @@ class ParseTest
     @Test
     void parse9788368591095()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://w.bibliotece.pl/2261259/Studnia+wst%C4%85pienia";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -383,6 +392,8 @@ class ParseTest
     @Test
     void parse9788328172241()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://w.bibliotece.pl/6976045/Ruchome+miasto";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -526,6 +537,8 @@ class ParseTest
     @Test
     void parse9788377052730()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader =
                 "https://w.bibliotece.pl/3779215/Kr%C3%B3tkie+odpowiedzi+na+wielkie+pytania";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

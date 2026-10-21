@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -56,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,9 +80,9 @@ class CsvArchiveReaderTest
     private int booksPresent;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
         bookDao = ServiceLocator.getInstance().getBookDao();
 
@@ -95,7 +95,7 @@ class CsvArchiveReaderTest
     }
 
     @NonNull
-    private ImportHelper createImportHelper()
+    private ImportHelper createImportHelper(@NonNull final Context context)
             throws DataReaderException, IOException {
         final File file = TestUtils.createFile(
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
@@ -104,11 +104,12 @@ class CsvArchiveReaderTest
     }
 
     @NonNull
-    private ImportResults runImport(@NonNull final DataReader.Updates overwrite)
+    private ImportResults runImport(@NonNull final Context context,
+                                    @NonNull final DataReader.Updates overwrite)
             throws DataReaderException, IOException, CertificateException,
                    CredentialsException, StorageException {
 
-        final ImportHelper importHelper = createImportHelper();
+        final ImportHelper importHelper = createImportHelper(context);
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(overwrite);
         return importHelper.read(context, new TestProgressListener(TAG));
@@ -119,17 +120,19 @@ class CsvArchiveReaderTest
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        books_01_initialInsert();
-        books_02_delete1BookThenOverwrite();
-        books_03_delete3booksAndModify1ThenOnlyNewer();
-        books_04_modify1bookThenOverwrite();
+        final Context context = createContext();
+
+        books_01_initialInsert(context);
+        books_02_delete1BookThenOverwrite(context);
+        books_03_delete3booksAndModify1ThenOnlyNewer(context);
+        books_04_modify1bookThenOverwrite(context);
     }
 
-    private void books_01_initialInsert()
+    private void books_01_initialInsert(@NonNull final Context context)
             throws DataReaderException, IOException, CredentialsException,
                    CertificateException, StorageException {
 
-        final ImportHelper importHelper = createImportHelper();
+        final ImportHelper importHelper = createImportHelper(context);
         final Optional<ArchiveMetaData> oMetaData = importHelper.readMetaData(context);
         assertTrue(oMetaData.isPresent());
         final ArchiveMetaData metaData = oMetaData.get();
@@ -163,7 +166,7 @@ class CsvArchiveReaderTest
         checkBook3Rating();
     }
 
-    private void books_02_delete1BookThenOverwrite()
+    private void books_02_delete1BookThenOverwrite(@NonNull final Context context)
             throws DataReaderException, IOException, CertificateException,
                    CredentialsException, StorageException {
 
@@ -171,7 +174,7 @@ class CsvArchiveReaderTest
         bookDao.delete(BOOK_ID_02);
         assertFalse(bookDao.bookExists(BOOK_ID_02));
 
-        final ImportResults importResults = runImport(DataReader.Updates.Overwrite);
+        final ImportResults importResults = runImport(context, DataReader.Updates.Overwrite);
 
         assertEquals(4, importResults.booksProcessed);
         assertEquals(1, importResults.getBooksCreated());
@@ -181,7 +184,7 @@ class CsvArchiveReaderTest
         assertEquals(booksPresent + 4, bookDao.count());
     }
 
-    private void books_03_delete3booksAndModify1ThenOnlyNewer()
+    private void books_03_delete3booksAndModify1ThenOnlyNewer(@NonNull final Context context)
             throws DataReaderException, IOException, CertificateException,
                    CredentialsException, StorageException {
 
@@ -199,7 +202,7 @@ class CsvArchiveReaderTest
             bookDao.setRead(book, true);
         }
 
-        final ImportResults importResults = runImport(DataReader.Updates.OnlyNewer);
+        final ImportResults importResults = runImport(context, DataReader.Updates.OnlyNewer);
 
         assertEquals(4, importResults.booksProcessed);
         assertEquals(3, importResults.getBooksCreated());
@@ -209,7 +212,7 @@ class CsvArchiveReaderTest
         assertEquals(booksPresent + 4, bookDao.count());
     }
 
-    private void books_04_modify1bookThenOverwrite()
+    private void books_04_modify1bookThenOverwrite(@NonNull final Context context)
             throws DataReaderException, IOException, CertificateException,
                    CredentialsException, StorageException {
 
@@ -220,7 +223,7 @@ class CsvArchiveReaderTest
             assertTrue(book.isRead());
         }
 
-        final ImportResults importResults = runImport(DataReader.Updates.Overwrite);
+        final ImportResults importResults = runImport(context, DataReader.Updates.Overwrite);
 
         assertEquals(4, importResults.booksProcessed);
         assertEquals(0, importResults.getBooksCreated());

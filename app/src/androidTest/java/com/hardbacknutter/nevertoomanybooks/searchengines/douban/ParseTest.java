@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,9 +66,10 @@ class ParseTest
     private MoneyParser moneyParser;
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
+        final Context context = createContext();
 
         EngineId.Douban.getConfig().setHttpLoggingEnabled(true);
         searchEngine = EngineId.Douban.createSearchEngine(context);
@@ -190,6 +191,8 @@ class ParseTest
     @Test
     void parse9787536692930_36892731()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader = "https://book.douban.com/subject/36892731/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.douban_9787536692930_36892731;
@@ -246,6 +249,8 @@ class ParseTest
     @Test
     void parse9787536692930_36874304()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader = "https://book.douban.com/subject/36874304/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.douban_9787536692930_36874304;
@@ -325,6 +330,8 @@ class ParseTest
     @Test
     void parse9787549641864()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader = "https://book.douban.com/subject/36665775/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.douban_9787549641864_36665775;
@@ -481,6 +488,8 @@ class ParseTest
     @Test
     void parse9787532190294_36897178()
             throws IOException, SearchException, CredentialsException, StorageException {
+        final Context context = createContext();
+
         final String locationHeader = "https://book.douban.com/subject/36897178/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.douban_9787532190294_36897178;

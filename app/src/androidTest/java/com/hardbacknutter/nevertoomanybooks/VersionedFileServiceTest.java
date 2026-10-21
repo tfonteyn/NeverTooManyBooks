@@ -29,10 +29,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,9 +52,9 @@ class VersionedFileServiceTest
     private static final String SUBDIR = "TestDir";
 
     @BeforeEach
-    void setup()
-            throws StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    protected void setup()
+            throws Exception {
+        super.setup();
 
         File dir = getTmpDir();
         makeEmpty(dir);
