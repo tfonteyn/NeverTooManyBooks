@@ -144,8 +144,6 @@ class BookParser {
         text = SearchEngineUtils.cleanName(text);
         if (!text.isBlank()) {
             book.add(Publisher.from(text));
-        } else {
-            return;
         }
     }
 
