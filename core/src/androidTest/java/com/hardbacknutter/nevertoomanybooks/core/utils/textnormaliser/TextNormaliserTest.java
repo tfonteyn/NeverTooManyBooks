@@ -39,6 +39,7 @@ class TextNormaliserTest {
 
     @Test
     void other() {
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("en", "GB");
 
         String source;
@@ -54,8 +55,9 @@ class TextNormaliserTest {
 
     @Test
     void latinFrench() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("fr", "FR");
+
         assertEquals("France", locale.getDisplayCountry());
         assertEquals("French", locale.getDisplayLanguage());
         assertEquals("", locale.getScript());
@@ -80,8 +82,9 @@ class TextNormaliserTest {
 
     @Test
     void latinGerman() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("de", "DE");
+
         assertEquals("Germany", locale.getDisplayCountry());
         assertEquals("German", locale.getDisplayLanguage());
         assertEquals("", locale.getScript());
@@ -112,8 +115,9 @@ class TextNormaliserTest {
 
     @Test
     void latinPortuguese() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("pt", "PT");
+
         assertEquals("Portugal", locale.getDisplayCountry());
         assertEquals("Portuguese", locale.getDisplayLanguage());
         assertEquals("", locale.getScript());
@@ -131,8 +135,9 @@ class TextNormaliserTest {
     // https://en.wikipedia.org/wiki/Georgian_scripts
     @Test
     void georgian() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("ka", "GE");
+
         assertEquals("Georgia", locale.getDisplayCountry());
         assertEquals("Georgian", locale.getDisplayLanguage());
         assertEquals("", locale.getScript());
@@ -149,8 +154,9 @@ class TextNormaliserTest {
 
     @Test
     void greek() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("el", "GR");
+
         assertEquals("Greece", locale.getDisplayCountry());
         assertEquals("Greek", locale.getDisplayLanguage());
         assertEquals("", locale.getScript());
@@ -167,8 +173,9 @@ class TextNormaliserTest {
 
     @Test
     void russian() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("ru", "RU");
+
         assertEquals("Russia", locale.getDisplayCountry());
         assertEquals("Russian", locale.getDisplayLanguage());
         assertEquals("", locale.getScript());
@@ -185,8 +192,9 @@ class TextNormaliserTest {
 
     @Test
     void whitespace() {
-
+        @SuppressWarnings("deprecation")
         final Locale locale = new Locale("nl", "NL");
+
         final String source =
                 "aBc  Def " +
                 (char) 0x0009 +

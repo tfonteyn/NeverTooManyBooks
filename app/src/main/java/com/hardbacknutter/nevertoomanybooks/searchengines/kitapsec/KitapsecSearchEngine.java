@@ -69,6 +69,7 @@ public class KitapsecSearchEngine
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "kitapsec";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("tr", "TR");
 
     private static final String SEARCH_URL = HOST_URL + "/Arama/index.php?a=";

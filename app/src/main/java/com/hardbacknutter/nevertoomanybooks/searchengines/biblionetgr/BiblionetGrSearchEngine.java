@@ -85,6 +85,7 @@ public class BiblionetGrSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://biblionet.gr";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("el", "GR");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "biblionetgr";

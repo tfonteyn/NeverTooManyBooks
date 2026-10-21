@@ -87,6 +87,7 @@ public class BertrandPtSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.bertrand.pt";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("pt", "PT");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "bertrandpt";

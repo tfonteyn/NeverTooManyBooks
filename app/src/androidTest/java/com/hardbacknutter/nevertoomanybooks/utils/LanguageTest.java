@@ -61,6 +61,7 @@ class LanguageTest
         // 'italský': 'it'}
         final Languages l = ServiceLocator.getInstance().getLanguages();
 
+        @SuppressWarnings("deprecation")
         final Locale czech = new Locale("cs", "CZ");
         l.createLanguageMappingCache(czech);
 
@@ -91,6 +92,7 @@ class LanguageTest
         //   'italský': 'it'}
         final Languages l = ServiceLocator.getInstance().getLanguages();
 
+        @SuppressWarnings("deprecation")
         final Locale slovak = new Locale("sk", "SK");
         l.createLanguageMappingCache(slovak);
 

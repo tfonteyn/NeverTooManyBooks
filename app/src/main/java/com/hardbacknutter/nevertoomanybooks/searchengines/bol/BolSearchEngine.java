@@ -117,6 +117,7 @@ public class BolSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.bol.com";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("nl", "NL");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "bol";
@@ -226,6 +227,7 @@ public class BolSearchEngine
     public Locale getLocale(@NonNull final Context context) {
         // The site can display in French, but we always access the site in Dutch for now.
         // This should not cause any issue as searches show books in all languages.
+        //noinspection deprecation
         return new Locale("nl", getCountry().toUpperCase(Locale.ROOT));
     }
 

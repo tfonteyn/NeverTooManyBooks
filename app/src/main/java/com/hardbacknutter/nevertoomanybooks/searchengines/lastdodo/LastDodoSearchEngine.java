@@ -92,6 +92,7 @@ public class LastDodoSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.lastdodo.nl";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("nl", "NL");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "lastdodo";

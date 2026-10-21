@@ -91,6 +91,7 @@ public class KbNlSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     static final String HOST_URL = "https://webggc.oclc.org";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("nl", "NL");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "kbnl";

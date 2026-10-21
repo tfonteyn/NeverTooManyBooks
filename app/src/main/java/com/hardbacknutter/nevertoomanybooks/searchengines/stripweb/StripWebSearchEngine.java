@@ -100,6 +100,7 @@ public class StripWebSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.stripweb.be";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("nl", "BE");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "stripweb";

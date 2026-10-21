@@ -58,6 +58,7 @@ class RealNumberParserTest {
         );
     }
 
+    @SuppressWarnings("deprecation")
     @NonNull
     static Stream<Arguments> decCommaNoGrp() {
         return Stream.of(
@@ -67,6 +68,7 @@ class RealNumberParserTest {
         );
     }
 
+    @SuppressWarnings("deprecation")
     @NonNull
     static Stream<Arguments> decCommaGrpDot() {
         return Stream.of(
@@ -77,6 +79,7 @@ class RealNumberParserTest {
         );
     }
 
+    @SuppressWarnings("deprecation")
     @NonNull
     static Stream<Arguments> decDotGrpComma_decDotGrpComma() {
         return Stream.of(

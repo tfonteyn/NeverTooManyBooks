@@ -280,6 +280,7 @@ class AuthorTest
         final Context context = createContext();
 
         // Georgian / Georgia
+        @SuppressWarnings("deprecation")
         final Locale bookLocale = new Locale("ka", "GE");
 
         final List<Author> authorList = new ArrayList<>();

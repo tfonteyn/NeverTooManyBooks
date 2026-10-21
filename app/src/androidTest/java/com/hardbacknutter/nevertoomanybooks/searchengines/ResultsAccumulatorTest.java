@@ -264,7 +264,9 @@ class ResultsAccumulatorTest
 
         book.setPublishers(List.of(new Publisher("Corgi Childrens")));
 
-        return new Pair<>(new Locale("nl", "NL"), book);
+        @SuppressWarnings("deprecation")
+        final Locale locale = new Locale("nl", "NL");
+        return new Pair<>(locale, book);
     }
 
     private Book createResult_01_02_03() {

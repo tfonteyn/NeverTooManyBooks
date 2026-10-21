@@ -79,6 +79,7 @@ public class BibliotecePlSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://w.bibliotece.pl";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("pl", "PL");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "bibliotecepl";

@@ -96,6 +96,7 @@ public class DatabazeKnihSearchEngine
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.databazeknih.cz";
     /** {@link EngineId#getDefaultLocale()}. */
+    @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("cs", "CZ");
     /** {@link EngineId#getPreferenceKey()}. */
     private static final String HOST_PREF_KEY = "databazeknih";

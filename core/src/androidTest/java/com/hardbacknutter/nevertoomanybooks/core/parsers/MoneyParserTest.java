@@ -42,6 +42,7 @@ class MoneyParserTest {
 
     private static final BigDecimal twelveDotThreeFour = new BigDecimal("12.34");
 
+    @SuppressWarnings("deprecation")
     @NonNull
     static Stream<Arguments> readArgs() {
         return Stream.of(

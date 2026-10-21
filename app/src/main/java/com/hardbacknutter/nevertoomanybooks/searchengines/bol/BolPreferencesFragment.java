@@ -60,6 +60,7 @@ public class BolPreferencesFragment
         factory.singleChoice(BolSearchEngine.PK_BOL_COUNTRY,
                              R.string.lbl_country, null, p -> {
                     p.setIcon(R.drawable.language_24px);
+                    //noinspection deprecation
                     p.setEntries(new CharSequence[]{
                             getString(R.string.lbl_system_default),
                             //FIXME: these will always show in the device language
