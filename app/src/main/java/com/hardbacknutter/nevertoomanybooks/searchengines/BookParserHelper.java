@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -96,12 +97,24 @@ public class BookParserHelper {
         return new FullDateParser(isoDateParser, allLocales);
     }
 
+    /**
+     * Create a suitable {@link MoneyParser}.
+     * <p>
+     * The Locales used for number parsing are automatically resolved based on the
+     * SearchEngine.
+     *
+     * @param context    Current context
+     * @param siteLocale the Locale to use for parsing a currency string.
+     *
+     * @return new instance
+     */
+    @VisibleForTesting
     @NonNull
-    private MoneyParser createMoneyParser(@NonNull final Context context,
-                                          @NonNull final Locale siteLocale) {
-        final List<Locale> allLocales = moneyParserLocaleResolver
+    public MoneyParser createMoneyParser(@NonNull final Context context,
+                                         @NonNull final Locale siteLocale) {
+        final List<Locale> numberLocales = moneyParserLocaleResolver
                 .resolveLocales(context, siteLocale);
-        return new MoneyParser(siteLocale, allLocales);
+        return new MoneyParser(siteLocale, numberLocales);
     }
 
     /**
@@ -192,8 +205,8 @@ public class BookParserHelper {
     /**
      * Process the price-listed field according to the given site locale.
      *
-     * @param context    Current context
-     * @param siteLocale for parsing
+     * @param context     Current context
+     * @param siteLocale  for parsing
      * @param priceStr    the field as retrieved with or without currency embedded
      * @param currencyStr (optional) default currency string to use
      *                    when the priceStr does not have one
@@ -239,7 +252,7 @@ public class BookParserHelper {
      * @param book     Bundle to update
      */
     public void setTags(@NonNull final Collection<String> tagNames,
-                           @NonNull final Book book) {
+                        @NonNull final Book book) {
 
         final Set<String> tagsToIgnore = config.getTagsToIgnore();
         final List<Tag> tags = tagNames.stream()
