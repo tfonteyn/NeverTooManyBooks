@@ -188,6 +188,7 @@ public class DefaultBookCoder
     private static MoneyParser createMoneyParser(final List<Locale> userLocales) {
         // Special treatment for the floating point parsers,
         // due to CSV files potentially coming from "foreign" websites.
+        // This is not fool-proof but a best-effort
 
         // Make sure US is added so we can parse "dot" decimal-separator
         // even when the user Locale is a comma decimal-separator.

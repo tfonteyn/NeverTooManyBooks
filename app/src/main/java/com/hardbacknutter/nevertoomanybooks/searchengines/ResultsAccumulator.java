@@ -45,14 +45,14 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
@@ -144,6 +144,8 @@ class ResultsAccumulator {
             final Book result = localeBookPair.second;
             final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
             final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+            // By the time we get here, the monetary values should already have been
+            // parsed/resolved. This is a for edge cases and use the BOOK locale.
             final MoneyParser moneyParser = new MoneyParser(locale, allLocales);
             final DateParser<LocalDateTime> dateParser =
                     new FullDateParser(isoDateParser, allLocales);

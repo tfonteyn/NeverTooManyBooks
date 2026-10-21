@@ -81,7 +81,7 @@ class ParseTest
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
         ratingNumberParser = new RealNumberParser(allLocales);
-        moneyParser = new MoneyParser(siteLocale, allLocales);
+        moneyParser = searchEngine.getParserHelper().createMoneyParser(context, siteLocale);
     }
 
     @Test

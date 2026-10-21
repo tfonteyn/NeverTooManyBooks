@@ -81,8 +81,7 @@ class UserCollectionTest
         httpCallFactory = searchEngine.getHttpFutureFactory();
 
         final Locale siteLocale = searchEngine.getLocale(context);
-        final List<Locale> allLocales = List.of(siteLocale);
-        moneyParser = new MoneyParser(siteLocale, allLocales);
+        moneyParser = searchEngine.getParserHelper().createMoneyParser(context, siteLocale);
 
         bookshelfMapper = new BookshelfMapper();
     }

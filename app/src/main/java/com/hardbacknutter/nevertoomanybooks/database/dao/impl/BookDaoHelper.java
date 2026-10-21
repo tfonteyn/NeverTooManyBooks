@@ -145,6 +145,9 @@ public class BookDaoHelper {
         }
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        // By the time we get here, the monetary values should already have been
+        // parsed/resolved. This is a last-ditch intervention for edge cases.
+        // Therefor we only use the device/user locales.
         final MoneyParser moneyParser = new MoneyParser(userLocale, locales);
 
         // Handle TITLE
