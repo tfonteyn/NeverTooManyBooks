@@ -5,12 +5,14 @@ NEW:
 - Performance increase when swiping between books
 - Calibre sync performance has been improved by a magnitude.
   The Calibre extension code is rewritten as a Calibre plugin.
-  Requires Calibre 9.12.0 but makes installation very easy.
-- BedeTheque rewrite to adapt the major site changes.
+  Requires Calibre 9.12.0 but makes installation very easy. Read the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Calibre)
+- Bedetheque rewrite to adapt the major site changes.
 - LibraryThing can be used for alternative-edition searches. Registration is however required.
 - GoogleBooks registration (optional) to prevent "Quota exceeded" errors.
-- kb.nl supports ISSN searches
+- kb.nl rewrite to adapt the major site changes + now supports ISSN searches
 - Settings dialogs now follow user-settings for dialog/bottomsheet
+
+For more info on registration for Librarything/Googlebooks, see the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki#data-source-notes).
 
 FIXES:
 
@@ -27,6 +29,7 @@ FIXES:
 
 REMOVED:
 - Goodreads. They now use AWS WAF blocking. There is currently no solution to get around that.
+  You can still export a CSV file from Goodreads, and [import that into NTMB](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-goodreads).
 
 ---
 ### 8.0.0
