@@ -123,7 +123,11 @@ abstract class ViewOnSiteMenuHandler<T>
             final int menuItemId = View.generateViewId();
             menuIds.put(menuItemId, identifier.getKey());
 
-            parent.add(menuGroupResId, menuItemId, 0, identifier.getName())
+            final String menuTitle = context.getString(R.string.a_bracket_b_bracket,
+                                                       identifier.getName(),
+                                                       identifier.getKey());
+
+            parent.add(menuGroupResId, menuItemId, 0, menuTitle)
                   .setIcon(R.drawable.link_24px);
         }
 
