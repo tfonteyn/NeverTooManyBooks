@@ -38,7 +38,7 @@ class BookshelfFiltersOutput
     }
 
     static boolean fromBundle(@NonNull final Bundle args) {
-        return args.getBoolean(BKEY_MODIFIED);
+        return args.getBoolean(BKEY_MODIFIED, false);
     }
 
     @NonNull

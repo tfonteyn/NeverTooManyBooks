@@ -62,10 +62,18 @@ public class ReadingProgressOutput
     @NonNull
     static ReadingProgressOutput fromBundle(@NonNull final Bundle args) {
         @SuppressWarnings("deprecation")
-        final ReadingProgress progress = args.getParcelable(DBKey.READ_PROGRESS);
-        final boolean read = args.getBoolean(DBKey.READ__BOOL);
+        @Nullable
+        final ReadingProgress readingProgress = args.getParcelable(DBKey.READ_PROGRESS);
 
-        return new ReadingProgressOutput(progress, read);
+        @Nullable
+        final Boolean read;
+        if (args.containsKey(DBKey.READ__BOOL)) {
+            read = args.getBoolean(DBKey.READ__BOOL, false);
+        } else {
+            read = null;
+        }
+
+        return new ReadingProgressOutput(readingProgress, read);
     }
 
     @NonNull
