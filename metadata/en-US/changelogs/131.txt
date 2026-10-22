@@ -1,0 +1,3 @@
+FIXES:
+
+- GitHub #257 tracking progress not getting saved
