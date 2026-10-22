@@ -34,7 +34,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 - [Goodreads CSV files](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-goodreads)
 - Calibre CSV files import, or full [synchronization with a Calibre Server](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Calibre)
 
-### Download the latest release: 8.1.0
+### Download the latest release: 8.1.1
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" 

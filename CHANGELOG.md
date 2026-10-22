@@ -1,3 +1,10 @@
+### 8.1.1
+
+FIXES:
+
+- GitHub #257 tracking progress not getting saved
+
+---
 ### 8.1.0
 
 NEW:
