@@ -68,6 +68,8 @@ public final class FormatMapper
         MAPPINGS.put("geb.", R.string.book_format_hardcover);
         // dutch - KBNL
         MAPPINGS.put("gebonden", R.string.book_format_hardcover);
+        // dutch - LastDodo
+        MAPPINGS.put("hardcover met stofomslag", R.string.book_format_hardcover);
         // french - BOL
         MAPPINGS.put("couverture rigide", R.string.book_format_hardcover);
         // french - Stripweb
