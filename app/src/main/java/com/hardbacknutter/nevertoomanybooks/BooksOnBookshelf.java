@@ -187,9 +187,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <ol>When we do have search criteria:
  *     <li>during display of the list, the action bar home icon is set to 'up'</li>
  *     <li>Allows the user to re-open the nav drawer and refine the search.</li>
- *     <li>any 'up/back' action will trigger {@link #onBackPressed}</li>
- *     <li>{@link #onBackPressed} checks if there are search criteria, if so, clears and
- *     rebuild and suppresses the 'back' action</li>
+ *     <li>any 'up/back' action will trigger {@link #backClearsSearchCriteria}</li>
+ *     <li>{@link #backClearsSearchCriteria} checks if there are search criteria,
+ *     if so, clears and rebuild and suppresses the 'back' action</li>
  * </ol>
  * <p>
  * As an alternative to advanced/standard search, the user can also define filters on per-bookshelf
@@ -1644,6 +1644,7 @@ public class BooksOnBookshelf
         if (adapter.getItemCount() > 0) {
             // Make SURE the RecyclerView has populated at least one child view
             // before we start scrolling to the target-nodes
+            //noinspection CheckStyle
             vb.content.list.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(@NonNull final View v,
@@ -1699,6 +1700,7 @@ public class BooksOnBookshelf
                                        adapter.getItemCount());
             vb.content.list.postDelayed(() -> {
                 // 2nd scroll to previously stored position
+                //noinspection DataFlowIssue
                 positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                            topRowPos.getViewOffset(),
                                            adapter.getItemCount());
@@ -1800,7 +1802,7 @@ public class BooksOnBookshelf
         // details/edit.. screens which allow access to the global Settings
         // can trigger an Activity recreation and we could get here
         // during such recreation... which would crash the fragment transaction.
-        if (!(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))) {
+        if (!getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
             return;
         }
 
