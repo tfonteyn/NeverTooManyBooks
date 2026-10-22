@@ -42,10 +42,26 @@ public class SettingsInput {
 
     @NonNull
     static SettingsInput fromBundle(@NonNull final Bundle args) {
+        @Nullable
+        final String autoScrollKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY, null);
+        @Nullable
+        final Boolean autoScrollFlash;
+        if (args.containsKey(BKEY_AUTO_SCROLL_FLASH)) {
+            autoScrollFlash = args.getBoolean(BKEY_AUTO_SCROLL_FLASH, false);
+        } else {
+            autoScrollFlash = null;
+        }
+        @Nullable
+        final Boolean storageVolumeMissing;
+        if (args.containsKey(BKEY_MISSING_STORAGE_VOLUME)) {
+            storageVolumeMissing = args.getBoolean(BKEY_MISSING_STORAGE_VOLUME, false);
+        } else {
+            storageVolumeMissing = null;
+        }
+
         return new SettingsInput()
-                .setAutoScrollKey(args.getString(BKEY_AUTO_SCROLL_TO_KEY),
-                                  args.getBoolean(BKEY_AUTO_SCROLL_FLASH))
-                .setStorageVolumeMissing(args.getBoolean(BKEY_MISSING_STORAGE_VOLUME));
+                .setAutoScrollKey(autoScrollKey, autoScrollFlash)
+                .setStorageVolumeMissing(storageVolumeMissing);
     }
 
     @NonNull
