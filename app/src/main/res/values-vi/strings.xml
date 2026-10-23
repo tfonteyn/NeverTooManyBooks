@@ -236,7 +236,6 @@
     <string name="error_book_search_failed">Tìm kiếm sách không thành công.</string>
     <string name="error_search_failed_network">Vui lòng mở Thiết đặt và kiểm tra tùy chọn mạng cũng như Trang tìm kiếm của bạn.\nĐồng thời kiểm tra thiết đặt mạng thiết bị của bạn.</string>
     <string name="error_search_x_failed_y">Tìm kiếm trên %1$s không thành công: %2$s</string>
-    <string name="error_site_access_blocked">Quyền truy cập đã bị chặn bởi trang web.</string>
     <string name="error_site_authentication_failed">Xác thực %1$s không thành công</string>
     <string name="error_storage_not_accessible">Vui lòng kiểm tra xem bộ nhớ có thể truy cập được hay không.</string>
     <string name="error_storage_not_writable">Vui lòng kiểm tra xem bộ nhớ có thể ghi được không và có đủ dung lượng hay không.</string>

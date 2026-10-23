@@ -248,7 +248,6 @@
     <string name="error_record_must_contain_column">Posten måste innehålla ett fält med namnet ”%1$s”.</string>
     <string name="error_search_failed_network">Öppna inställningarna och kontrollera nätverk och sökplatspreferenser.\nKontrollera även enhetens nätverksinställningar.</string>
     <string name="error_search_x_failed_y">Sökning på %1$s misslyckades: %2$s</string>
-    <string name="error_site_access_blocked">Åtkomst blockerades av webbplatsen.</string>
     <string name="error_site_authentication_failed">%1$s autentisering misslyckades</string>
     <string name="error_storage_not_accessible">Kontrollera att lagringen är åtkomlig.</string>
     <string name="error_storage_not_writable">Kontrollera att lagringen är skrivbar och att det finns tillräckligt med utrymme.</string>

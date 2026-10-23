@@ -150,7 +150,6 @@
     <string name="error_certificate_invalid">சான்றிதழ் தவறானது அல்லது அணுக முடியாதது.</string>
     <string name="error_network_site_access_failed">%1$s ஐ அணுகும்போது பிணைய சிக்கல் இருந்தது. வலைத்தளம் முடிந்துவிட்டதா என்று சரிபார்க்கவும், சிக்கல் தொடர்ந்தால் ஆதரவைத் தொடர்பு கொள்ளவும்.</string>
     <string name="error_network_failed_try_again">இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.</string>
-    <string name="error_site_access_blocked">அணுகல் வலைத்தளத்தால் தடுக்கப்பட்டது.</string>
     <string name="error_http_401_authorization_failed">ஏற்பு தோல்வியடைந்தது</string>
     <string name="error_http_401_site_authorization_failed">%1$s அங்கீகாரத்தின் விளைவாக பிழை ஏற்பட்டது.</string>
     <string name="error_site_authentication_failed">%1$s ஏற்பு தோல்வியடைந்தது</string>

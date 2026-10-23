@@ -661,7 +661,6 @@
     <string name="warning_no_site_supports_this_method">UPOZORNENIE: žiadna z aktuálne vybratých stránok nepodporuje vyhľadávanie podľa %1$s. Použite ponuku stránok na povolenie alternatívnych stránok alebo použite iný spôsob vyhľadávania.</string>
     <string name="error_updates_aborted">Aktualizácie boli prerušené</string>
     <string name="error_network_site_access_failed">Vyskytol sa problém so sieťou pri prístupe k %1$s. Skontrolujte, či je webová stránka funkčná, a ak problém pretrváva, kontaktujte podporu.</string>
-    <string name="error_site_access_blocked">Prístup bol zablokovaný webovou stránkou.</string>
     <string name="error_http_403_site_forbidden">%1$s zablokoval prístup.</string>
     <string name="warning_import_failed_for_these_books">Import zlyhal pre tieto knihy/riadky:</string>
     <string name="error_book_search_failed">Vyhľadávanie knihy zlyhalo.</string>

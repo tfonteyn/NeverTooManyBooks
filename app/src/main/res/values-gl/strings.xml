@@ -139,7 +139,6 @@
     <string name="error_network_site_access_failed">Houbo un problema de rede accedendo a %1$s. Comproba se o sitio web está activo e, se o problema persiste, contacta coa asistencia.</string>
     <string name="error_unexpected_long">Ocurriu un erro inesperado. Se persiste o problema, contacta coa asistencia mediante a opción «%1$s» na parte inferior da páxina de configuración.</string>
     <string name="error_http_401_site_authorization_failed">Erro de autorización en %1$s.</string>
-    <string name="error_site_access_blocked">O acceso foi bloqueado polo sitio web.</string>
     <string name="error_search_failed_network">Por favor, abre Axustes e comproba as preferencias de rede e da páxina de busca.\nComproba tamén a configuración de rede do teu dispositivo.</string>
     <string name="and_others">%1$s…</string>
     <string name="error_auto_toc_population_failed">Fallou ao encher títulos de xeito automático.</string>

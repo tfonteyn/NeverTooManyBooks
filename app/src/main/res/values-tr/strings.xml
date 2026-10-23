@@ -793,7 +793,6 @@
     <string name="lbl_titles">Başlıklar</string>
     <string name="lbl_original_title">Orijinal başlık</string>
     <string name="X_lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
-    <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
     <string name="pt_scan_mode">Tarama modu</string>
     <string name="option_sync_deleted_book_records">Silinen kitapları senkronize edin</string>
     <string name="info_sites_active">Aktif siteler: %1$s</string>

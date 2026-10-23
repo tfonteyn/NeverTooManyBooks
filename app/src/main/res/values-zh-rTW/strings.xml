@@ -229,7 +229,6 @@
     <string name="error_book_search_failed">搜尋書本失敗。</string>
     <string name="error_search_failed_network">請開啟設定並檢查您的網路和搜尋網站首選項。</string>
     <string name="error_search_x_failed_y">搜尋 %1$s 失敗：%2$s</string>
-    <string name="error_site_access_blocked">被網站阻止存取。</string>
     <string name="error_site_authentication_failed">%1$s 驗證失敗</string>
     <string name="error_storage_not_accessible">請檢查儲存空間是否可以存取。</string>
     <string name="error_storage_not_writable">請檢查儲存空間是否可以寫入，並且有足夠的空間。</string>

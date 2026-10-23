@@ -799,7 +799,6 @@
     <string name="lbl_titles">Títulos</string>
     <string name="lbl_original_title">Título original</string>
     <string name="X_lbl_original_title_long">Título original si el libro es una traducción</string>
-    <string name="error_site_access_blocked">El acceso ha sido bloqueado por el sitio web.</string>
     <string name="pt_scan_mode">Modo de lectura</string>
     <string name="option_clear_deleted_book_records">Borrar el historial de los libros eliminados</string>
     <string name="info_maintenance_clear_deleted_book_records">Esto borrará el historial de libros borrados. No se borrará ningún libro.</string>

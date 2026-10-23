@@ -787,7 +787,6 @@
     <string name="error_network_please_connect">Lūdzu, izveidojiet savienojumu ar internetu.</string>
     <string name="error_network_site_access_failed">Piekļūstot %1$s, radās tīkla problēma. Lūdzu, pārbaudiet, vai vietne darbojas, un, ja problēma nepazūd, sazinieties ar atbalsta dienestu.</string>
     <string name="error_network_failed_try_again">Pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
-    <string name="error_site_access_blocked">Vietne ir bloķējusi piekļuvi.</string>
     <string name="error_http_401_authorization_failed">Autorizācija neizdevās</string>
     <string name="error_http_401_site_authorization_failed">Autorizācija vietnē %1$s neizdevās.</string>
     <string name="error_site_authentication_failed">Autentifikācija vietnē %1$s neizdevās</string>

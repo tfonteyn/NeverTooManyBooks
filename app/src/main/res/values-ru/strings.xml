@@ -814,7 +814,6 @@
     <string name="lbl_titles">Названия</string>
     <string name="lbl_original_title">Оригинальное название</string>
     <string name="X_lbl_original_title_long">Оригинальное название, если эта книга является переводом</string>
-    <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
     <string name="pt_scan_mode">Режим сканирования</string>
     <string name="option_sync_deleted_book_records">Синхронизация удаленных книг</string>
     <string name="info_sites_active">Активные сайты: %1$s</string>

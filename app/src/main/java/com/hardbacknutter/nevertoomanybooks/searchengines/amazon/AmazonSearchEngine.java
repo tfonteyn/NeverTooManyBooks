@@ -465,7 +465,8 @@ public class AmazonSearchEngine
 
             Site.Type.Data.getSite(getEngineId()).setActive(false);
             throw new SearchException(getEngineId(), "Amazon blocked url=" + url,
-                                      context.getString(R.string.error_site_access_blocked));
+                                      context.getString(R.string.error_http_403_site_forbidden,
+                                                        context.getString(R.string.site_amazon)));
         }
     }
 
@@ -884,7 +885,7 @@ public class AmazonSearchEngine
     private Optional<String> parseCover(@NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                            @IntRange(from = 0, to = 0) final int cIdx)
+                                        @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
         final Element img = document.selectFirst("img#landingImage");
@@ -995,7 +996,7 @@ public class AmazonSearchEngine
      * This implementation is a variation on {@link LocaleResolverMoneyDecimalPoint}.
      */
     private static final class LocaleResolverMoney
-        implements LocaleResolver {
+            implements LocaleResolver {
 
         static final LocaleResolver INSTANCE = new LocaleResolverMoney();
 

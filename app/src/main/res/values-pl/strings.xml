@@ -809,7 +809,6 @@
     <string name="lbl_titles">Tytuły</string>
     <string name="lbl_original_title">Tytuł oryginalny</string>
     <string name="X_lbl_original_title_long">Tytuł oryginalny, jeśli książka jest tłumaczeniem</string>
-    <string name="error_site_access_blocked">Dostęp został zablokowany przez stronę internetową.</string>
     <string name="pt_scan_mode">Tryb skanowania</string>
     <string name="option_sync_deleted_book_records">Synchronizacja usuniętych książek</string>
     <string name="info_sites_active">Aktywne witryny: %1$s</string>

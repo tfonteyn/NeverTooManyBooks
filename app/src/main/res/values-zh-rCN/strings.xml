@@ -230,7 +230,6 @@
     <string name="error_book_search_failed">搜索图书失败。</string>
     <string name="error_search_failed_network">请打开设置并检查您的网络和搜索站点首选项。\n并检查您的设备网络设置。</string>
     <string name="error_search_x_failed_y">搜索%1$s失败：%2$s</string>
-    <string name="error_site_access_blocked">访问被该网站阻止。</string>
     <string name="error_site_authentication_failed">%1$s 验证失败</string>
     <string name="error_storage_not_accessible">请检查应用存储权限。</string>
     <string name="error_storage_not_writable">请检查存储是否可写，并确认有足够的空间。</string>

@@ -264,8 +264,6 @@
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- [VERIFIED] -->
     <string name="error_network_failed_try_again">Check connection and try again.</string>
-    <!-- A website deliberately blocked us from accessing it. -->
-    <string name="error_site_access_blocked">Access was blocked by the website.</string>
     <!-- Generic Authorization failure. -->
     <string name="error_http_401_authorization_failed">Authorization failed</string>
     <!-- 'Site' Authorization failure. Param 1: the website name -->
@@ -275,6 +273,7 @@
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
     <!-- 'Site' Forbidden. Param 1: the website name -->
     <string name="error_http_403_site_forbidden">%1$s has blocked access.</string>
+    <!-- 'Site' Forbidden. -->
     <string name="error_http_403_forbidden">The website has blocked access.</string>
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
