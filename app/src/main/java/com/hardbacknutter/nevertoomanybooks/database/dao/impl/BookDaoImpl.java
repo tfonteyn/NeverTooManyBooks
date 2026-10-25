@@ -526,16 +526,15 @@ public class BookDaoImpl
                                       @Nullable final String[] selectionArgs,
                                       @Nullable final CharSequence orderByClause) {
 
-        final String sql = Sql.SELECT_BOOK
+        final String sql = SELECT_
+                           + Sql.BOOK_COLUMNS
+
                            // LEFT OUTER JOIN, COALESCE nulls to ""
                            + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
                            + _AS_ + DBKey.LOANEE_NAME
 
                            // LEFT OUTER JOIN, columns default to NULL
-                           + ',' + TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE.BOOK_ID,
-                                                           DBKey.CALIBRE.BOOK_UUID,
-                                                           DBKey.CALIBRE.BOOK_MAIN_FORMAT,
-                                                           DBKey.FK_CALIBRE_LIBRARY)
+                           + ',' + Sql.CALIBRE_COLUMNS
 
                            + _FROM_ + TBL_BOOKS.as()
                            + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
@@ -636,12 +635,9 @@ public class BookDaoImpl
                     SqlEncode.dateTime(sinceDateTime)};
         }
 
-        final String sql = Sql.SELECT_BOOK
-                           + ',' + TBL_CALIBRE_BOOKS
-                                   .dotAs(DBKey.CALIBRE.BOOK_ID,
-                                          DBKey.CALIBRE.BOOK_UUID,
-                                          DBKey.CALIBRE.BOOK_MAIN_FORMAT,
-                                          DBKey.FK_CALIBRE_LIBRARY)
+        final String sql = SELECT_
+                           + Sql.BOOK_COLUMNS
+                           + ',' + Sql.CALIBRE_COLUMNS
 
                            + _FROM_ + TBL_BOOKS.as()
                            + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
@@ -677,15 +673,12 @@ public class BookDaoImpl
             selectionArgs = new String[]{SqlEncode.dateTime(sinceDateTime)};
         }
 
-        final String sql = Sql.SELECT_BOOK
-                           + ',' + TBL_STRIPINFO_COLLECTION
-                                   .dotAs(DBKey.STRIP_INFO.BOOK_ID,
-                                          DBKey.STRIP_INFO.COLLECTION_ID,
-                                          DBKey.STRIP_INFO.OWNED,
-                                          DBKey.STRIP_INFO.DIGITAL,
-                                          DBKey.STRIP_INFO.WANTED,
-                                          DBKey.STRIP_INFO.AMOUNT,
-                                          DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC)
+        final String sql = SELECT_
+                           + Sql.BOOK_COLUMNS
+
+                           // LEFT OUTER JOIN, columns default to NULL
+                           + ',' + Sql.STRIPINFO_COLUMNS
+
                            + _FROM_ + TBL_BOOKS.as()
                            + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION)
                            + _WHERE_ + whereClause
@@ -975,7 +968,7 @@ public class BookDaoImpl
                 SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
 
         /**
-         * The SELECT clause for getting a book (list).
+         * The Book columns for a SELECT.
          * <p>
          * Note we could use TBL_BOOKS.dot("*")
          * We'd fetch the unneeded TITLE_OB field, but that would be OK.
@@ -983,8 +976,8 @@ public class BookDaoImpl
          * <p>
          * NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
          */
-        static final String SELECT_BOOK =
-                SELECT_ + TBL_BOOKS.dotAs(
+        static final String BOOK_COLUMNS =
+                TBL_BOOKS.dotAs(
                         DBKey.PK_ID, DBKey.BOOK_UUID,
                         DBKey.TITLE,
                         DBKey.TRANSLATION_ORIGINAL_TITLE,
@@ -1011,6 +1004,21 @@ public class BookDaoImpl
                         // added/updated
                         DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
                         DBKey.AUTO_UPDATE);
+
+        private static final String CALIBRE_COLUMNS =
+                TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE.BOOK_ID,
+                                        DBKey.CALIBRE.BOOK_UUID,
+                                        DBKey.CALIBRE.BOOK_MAIN_FORMAT,
+                                        DBKey.FK_CALIBRE_LIBRARY);
+
+        private static final String STRIPINFO_COLUMNS =
+                TBL_STRIPINFO_COLLECTION.dotAs(DBKey.STRIP_INFO.BOOK_ID,
+                                               DBKey.STRIP_INFO.COLLECTION_ID,
+                                               DBKey.STRIP_INFO.OWNED,
+                                               DBKey.STRIP_INFO.DIGITAL,
+                                               DBKey.STRIP_INFO.WANTED,
+                                               DBKey.STRIP_INFO.AMOUNT,
+                                               DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC);
 
         /** All Book titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
         private static final String OB_REBUILD_TITLES =
