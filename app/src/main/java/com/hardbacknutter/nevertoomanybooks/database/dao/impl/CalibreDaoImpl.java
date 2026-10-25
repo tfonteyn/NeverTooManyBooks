@@ -92,7 +92,7 @@ public class CalibreDaoImpl
         final Optional<CalibreBookData> oExisting = findByLocalBookId(book.getId());
         if (oExisting.isPresent()) {
             final CalibreBookData existing = oExisting.get();
-            if (existing.getCalibreBookId() == book.getLong(DBKey.CALIBRE.BOOK_ID)
+            if (existing.getCalibreBookId() == book.getInt(DBKey.CALIBRE.BOOK_ID)
                 && existing.getLibraryId() == book.getLong(DBKey.FK_CALIBRE_LIBRARY)
                 && Objects.equals(existing.getCalibreBookUuid(),
                                   book.getString(DBKey.CALIBRE.BOOK_UUID, null))

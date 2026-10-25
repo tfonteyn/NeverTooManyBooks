@@ -62,8 +62,15 @@ public class CalibreBookData
      */
     @IntRange(from = 1)
     private final long libraryId;
+
+    /**
+     * The remote Calibre book id is an {@code int}.
+     * Instead of our usual {@code long} usage for id's we stick to {@code int}
+     * for strict consistency with the Calibre server.
+     */
     @IntRange(from = 1)
-    private final long calibreBookId;
+    private final int calibreBookId;
+
     @NonNull
     private final String calibreBookUuid;
     @Nullable
@@ -71,8 +78,16 @@ public class CalibreBookData
     @Nullable
     private String fileFormat;
 
+    /**
+     * Constructor.
+     *
+     * @param libraryId       the raw Calibre library id
+     * @param calibreBookId   numeric Calibre book id
+     * @param calibreBookUuid Calibre book UUID
+     * @param fileFormat      (optional) the main file format
+     */
     public CalibreBookData(@IntRange(from = 1) final long libraryId,
-                           @IntRange(from = 1) final long calibreBookId,
+                           @IntRange(from = 1) final int calibreBookId,
                            @NonNull final String calibreBookUuid,
                            @Nullable final String fileFormat) {
         this.libraryId = libraryId;
@@ -83,15 +98,16 @@ public class CalibreBookData
 
     public CalibreBookData(@NonNull final DataHolder rowData) {
         libraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
-        calibreBookId = rowData.getLong(DBKey.CALIBRE.BOOK_ID);
+        calibreBookId = rowData.getInt(DBKey.CALIBRE.BOOK_ID);
         calibreBookUuid = rowData.getString(DBKey.CALIBRE.BOOK_UUID);
         fileFormat = rowData.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
     }
 
     private CalibreBookData(@NonNull final Parcel in) {
         libraryId = in.readLong();
+        //noinspection deprecation
         library = in.readParcelable(getClass().getClassLoader());
-        calibreBookId = in.readLong();
+        calibreBookId = in.readInt();
         //noinspection DataFlowIssue
         calibreBookUuid = in.readString();
         fileFormat = in.readString();
@@ -102,7 +118,7 @@ public class CalibreBookData
                               final int flags) {
         dest.writeLong(libraryId);
         dest.writeParcelable(library, flags);
-        dest.writeLong(calibreBookId);
+        dest.writeInt(calibreBookId);
         dest.writeString(calibreBookUuid);
         dest.writeString(fileFormat);
     }
@@ -112,11 +128,20 @@ public class CalibreBookData
         return 0;
     }
 
+    /**
+     * Get the unresolved library id.
+     *
+     * @return id
+     *
+     * @see #getCalibreLibrary()
+     */
+    @IntRange(from = 1)
     public long getLibraryId() {
         return libraryId;
     }
 
-    public long getCalibreBookId() {
+    @IntRange(from = 1)
+    public int getCalibreBookId() {
         return calibreBookId;
     }
 
@@ -135,6 +160,11 @@ public class CalibreBookData
         this.fileFormat = fileFormat;
     }
 
+    /**
+     * Get the resolved {@link CalibreLibrary}.
+     *
+     * @return library
+     */
     @NonNull
     public Optional<CalibreLibrary> getCalibreLibrary() {
         if (library != null) {

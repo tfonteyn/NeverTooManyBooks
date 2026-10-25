@@ -239,11 +239,11 @@ public class CalibreContentServerWriter
                     final Book localBook = books.get(calBookId);
                     // Sanity check, the book might have been deleted from the server
                     if (localBook != null) {
-                        // it's an int, but getJSONObject wants a string
-                        final String calibreBookId = localBook.getString(DBKey.CALIBRE.BOOK_ID);
+                        final int calibreBookId = localBook.getInt(DBKey.CALIBRE.BOOK_ID);
                         // Don't decode the full calibreBook!
                         // We only have/need the last-modified and the identifier fields.
-                        final JSONObject calibreBook = calibreBookData.getJSONObject(calibreBookId);
+                        final JSONObject calibreBook = calibreBookData
+                                .getJSONObject(String.valueOf(calibreBookId));
                         // If the local data is newer,
                         if (isLocalBookNewer(localBook, calibreBook)) {
                             // create and send the delta to the server
