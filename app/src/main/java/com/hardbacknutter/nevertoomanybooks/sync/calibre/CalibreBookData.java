@@ -149,12 +149,7 @@ public class CalibreBookData
                 // Paranoia: we should never get here
                 .orElse(null);
 
-        if (library != null) {
-            return Optional.of(library);
-        }
-
-        // we should never get here... flw
-        return Optional.empty();
+        return Optional.ofNullable(library);
     }
 
     @Override
