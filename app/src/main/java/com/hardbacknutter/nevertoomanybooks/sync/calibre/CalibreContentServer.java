@@ -1355,7 +1355,7 @@ public final class CalibreContentServer
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
 
         final int id = book.getInt(DBKey.CALIBRE.BOOK_ID);
-        final String format = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+        final String fileFormat = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
         final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
         final CalibreLibrary calibreLibrary = libraries
@@ -1366,7 +1366,8 @@ public final class CalibreContentServer
                         context.getString(R.string.error_file_not_found,
                                           String.valueOf(libraryId))));
 
-        final String url = String.format(Locale.ROOT, Endpoints.FETCH_FILE, serverUri, format, id,
+        final String url = String.format(Locale.ROOT, Endpoints.FETCH_FILE, serverUri,
+                                         fileFormat, id,
                                          calibreLibrary.getLibraryStringId());
 
         final Uri destUri = destFile.getUri();
@@ -1434,14 +1435,14 @@ public final class CalibreContentServer
         final DocumentFile authorFolder = getAuthorFolder(context, root, book, createIfMissing);
 
         final String fileName = createFilename(context, book);
-        final String fileExt = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+        final String fileFormat = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
 
-        DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileExt);
+        DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileFormat);
 
         if (bookFile == null && createIfMissing) {
             // when creating, we must NOT directly use the extension,
             // but deduce the mime type from the extension.
-            final String mimeType = FileUtils.getMimeTypeFromExtension(fileExt);
+            final String mimeType = FileUtils.getMimeTypeFromExtension(fileFormat);
             bookFile = authorFolder.createFile(mimeType, fileName);
         }
 
