@@ -152,6 +152,9 @@ public class CalibreBookData
         return Optional.ofNullable(library);
     }
 
+    /**
+     * Equality skips the potentially cached {@link #library}.
+     */
     @Override
     public boolean equals(@Nullable final Object o) {
         if (this == o) {
@@ -163,14 +166,13 @@ public class CalibreBookData
         final CalibreBookData that = (CalibreBookData) o;
         return libraryId == that.libraryId
                && calibreBookId == that.calibreBookId
-               && Objects.equals(library, that.library)
                && Objects.equals(calibreBookUuid, that.calibreBookUuid)
                && Objects.equals(fileFormat, that.fileFormat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(libraryId, library, calibreBookId, calibreBookUuid, fileFormat);
+        return Objects.hash(libraryId, calibreBookId, calibreBookUuid, fileFormat);
     }
 
     @Override
