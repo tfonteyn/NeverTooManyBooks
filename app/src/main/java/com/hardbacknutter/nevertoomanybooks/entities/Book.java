@@ -1559,38 +1559,39 @@ public class Book
      */
     @NonNull
     public Optional<StripInfoCollectionData> getStripInfoCollectionData() {
-        // Sanity check
+        // Sanity check: the Identifier must be present, or else this is NOT a StripInfo book
         if (getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty()) {
             return Optional.empty();
         }
 
-        // We MIGHT have it (probably not) ...
-        if (contains(StripInfoCollectionData.BKEY)) {
-            return Optional.ofNullable(getParcelable(StripInfoCollectionData.BKEY));
-        } else {
-            // but if not, go explicitly fetch/create it.
-            final Optional<StripInfoCollectionData> oData = ServiceLocator
-                    .getInstance()
-                    .getStripInfoDao()
-                    .findByLocalBookId(getId());
-            // store for reuse
-            oData.ifPresent(data -> putParcelable(StripInfoCollectionData.BKEY, data));
-            return oData;
+        // We MIGHT have the cached StripInfoCollectionData.
+        final StripInfoCollectionData collectionData = getParcelable(StripInfoCollectionData.BKEY);
+        if (collectionData != null) {
+            return Optional.of(collectionData);
         }
+
+        // but if not, go explicitly fetch it.
+        final Optional<StripInfoCollectionData> oData = ServiceLocator
+                .getInstance()
+                .getStripInfoDao()
+                .findByLocalBookId(getId());
+        // cache it for reuse
+        oData.ifPresent(data -> putParcelable(StripInfoCollectionData.BKEY, data));
+
+        return oData;
     }
 
     /**
      * Set or remove the StripInfo collection data.
      *
      * @param data to set; use {@code null} to remove.
-     *             This does NOT remove the {@link Identifier#SID_STRIP_INFO}
-     *             if there is one.
+     *             This will <strong>NOT</strong> remove the {@link Identifier#SID_STRIP_INFO}.
      */
     public void setStripInfoCollectionData(@Nullable final StripInfoCollectionData data) {
-        if (data == null) {
-            remove(StripInfoCollectionData.BKEY);
-        } else {
+        if (data != null) {
             putParcelable(StripInfoCollectionData.BKEY, data);
+        } else {
+            remove(StripInfoCollectionData.BKEY);
         }
     }
 
