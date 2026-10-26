@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,6 +88,8 @@ import static androidx.recyclerview.widget.RecyclerView.NO_ID;
  * <li>{@link RecyclerView.Adapter#onViewRecycled} we remove, save state, destroy the
  * {@link Fragment}.
  * </ul>
+ *
+ * @see <a href="https://issuetracker.google.com/issues/309593253">Google issue 309593253</a>
  */
 @SuppressWarnings("ALL")
 public abstract class ExtFragmentStateAdapter
