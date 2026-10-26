@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,10 +44,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ActivityRestarter;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ToolBarText;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
@@ -55,11 +54,12 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePi
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate.PartialDatePickerLauncher;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsInput;
+import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 
 public abstract class EditBookBaseFragment
@@ -177,7 +177,7 @@ public abstract class EditBookBaseFragment
         //noinspection DataFlowIssue
         ViewFocusOrder.fix(getView());
 
-        updateScreenTitle(book);
+        updateToolbarTitle(book);
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class EditBookBaseFragment
      *
      * @param book to use
      */
-    private void updateScreenTitle(@NonNull final Book book) {
+    private void updateToolbarTitle(@NonNull final Book book) {
         final Toolbar toolbar = getToolbar();
 
         if (book.isNew()) {
@@ -194,13 +194,10 @@ public abstract class EditBookBaseFragment
             toolbar.setSubtitle(null);
         } else {
             // Existing book
-            String title = book.getTitle();
-            if (BuildConfig.DEBUG /* always */) {
-                title = "[" + book.getId() + "] " + title;
-            }
-            toolbar.setTitle(title);
             //noinspection DataFlowIssue
-            toolbar.setSubtitle(Author.getLabel(getContext(), book.getAuthors()));
+            final Pair<String, String> text = ToolBarText.getText(getContext(), book);
+            toolbar.setTitle(text.first);
+            toolbar.setSubtitle(text.second);
         }
     }
 

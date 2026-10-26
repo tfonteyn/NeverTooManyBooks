@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.LocaleList;
 import android.view.View;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -98,6 +99,7 @@ public class ShowBookDetailsViewModel
      * Initially set from the args, but can be overwritten by {@link #displayBook(long)}
      * when we're in embedded mode.
      */
+    @IntRange(from = 1)
     private long bookId;
     @Nullable
     private Book book;
@@ -136,8 +138,8 @@ public class ShowBookDetailsViewModel
         // Always refresh these
         embedded = args.isEmbedded();
         bookId = args.getBookId();
+        // Sanity check
         if (bookId <= 0) {
-            // Sanity check, we should not get a new book here (id==0)
             throw new IllegalArgumentException(DBKey.FK_BOOK);
         }
     }
@@ -188,7 +190,7 @@ public class ShowBookDetailsViewModel
      *
      * @param bookId to display
      */
-    public void displayBook(final long bookId) {
+    public void displayBook(@IntRange(from = 1) final long bookId) {
         this.bookId = bookId;
         displayBook();
     }

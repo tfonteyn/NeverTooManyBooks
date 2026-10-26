@@ -48,6 +48,7 @@ public class ShowBookPagerInput {
     private final long bookId;
     @NonNull
     private final Bookshelf bookshelf;
+    @IntRange(from = 0)
     private final int position;
 
     @Nullable
@@ -111,9 +112,9 @@ public class ShowBookPagerInput {
         this(bookId, bookshelf, position, null, navTableName);
     }
 
-    private ShowBookPagerInput(final long bookId,
+    private ShowBookPagerInput(@IntRange(from = 1) final long bookId,
                                @NonNull final Bookshelf bookshelf,
-                               final int position,
+                               @IntRange(from = 0) final int position,
                                @Nullable final List<Long> bookIdList,
                                @Nullable final String navTableName) {
         this.bookId = bookId;
@@ -164,6 +165,7 @@ public class ShowBookPagerInput {
         return args;
     }
 
+    @IntRange(from = 1)
     long getBookId() {
         return bookId;
     }
@@ -173,6 +175,7 @@ public class ShowBookPagerInput {
         return bookshelf;
     }
 
+    @IntRange(from = 0)
     int getPosition() {
         return position;
     }
