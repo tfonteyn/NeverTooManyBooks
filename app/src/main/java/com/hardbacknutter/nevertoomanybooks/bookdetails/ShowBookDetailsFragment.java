@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,7 +58,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.ActivityRestarter;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
@@ -80,7 +80,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLa
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesSingleBookContract;
@@ -152,8 +151,6 @@ public class ShowBookDetailsFragment
     private ActivityResultLauncher<Book> updateBookLauncher;
     /** Handle the edit-lender dialog. */
     private EditLenderLauncher editLenderLauncher;
-    /** {@code true} we're running in tablet-landscape. */
-    private boolean embedded;
 
     /**
      * Constructor.
@@ -193,7 +190,8 @@ public class ShowBookDetailsFragment
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
         aVm.init(args.getBookshelf());
 
-        embedded = args.isEmbedded();
+        // {@code true} we're running in tablet-landscape
+        final boolean embedded = args.isEmbedded();
         if (embedded) {
             // Create the vm in the Activity scope allowing it to be accessed by
             // the BooksOnBookshelf activity.
@@ -299,7 +297,6 @@ public class ShowBookDetailsFragment
         vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onUpdateReadStatus);
 
         final TextView authorsView = view.findViewById(R.id.author);
-
         authorsView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 onAuthorClicked((TextView) v, event);
@@ -307,21 +304,17 @@ public class ShowBookDetailsFragment
             return true;
         });
 
+        @SuppressWarnings("DataFlowIssue")
+        @Nullable
+        final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
+        if (btnShowToc != null) {
+            btnShowToc.setOnClickListener(v -> onShowTocButtonClicked());
+        }
+
         // load the initial book data and trigger a UI update
         vm.displayBook();
-    }
 
-    private void onAuthorClicked(@NonNull final TextView v,
-                                 @NonNull final MotionEvent event) {
 
-        ClickableListFormatter.getIndex(v, event).ifPresent(index -> {
-            final List<Author> authors = vm.getBook().getAuthors();
-            if (index < authors.size()) {
-                authorWorksLauncher.launch(new AuthorWorksInput(
-                        authors.get(index).getId(),
-                        aVm.getBookshelf()));
-            }
-        });
     }
 
     /**
@@ -375,8 +368,8 @@ public class ShowBookDetailsFragment
     public void onResume() {
         super.onResume();
 
-        if (!embedded) {
-            updateToolbar(vm.getBook());
+        if (!vm.isEmbedded()) {
+            updateToolbarTitle();
         }
     }
 
@@ -419,6 +412,19 @@ public class ShowBookDetailsFragment
         }
     }
 
+    private void onAuthorClicked(@NonNull final TextView v,
+                                 @NonNull final MotionEvent event) {
+
+        ClickableListFormatter.getIndex(v, event).ifPresent(index -> {
+            final List<Author> authors = vm.getBook().getAuthors();
+            if (index < authors.size()) {
+                authorWorksLauncher.launch(new AuthorWorksInput(
+                        authors.get(index).getId(),
+                        aVm.getBookshelf()));
+            }
+        });
+    }
+
     private void onUpdateReadStatus(@NonNull final Boolean modified) {
         if (!modified) {
             return;
@@ -450,18 +456,28 @@ public class ShowBookDetailsFragment
         }
     }
 
+    private void onShowTocButtonClicked() {
+        final Fragment fragment = ShowTocFragment.create(vm.getBook(), false,
+                                                         aVm.getBookshelf());
+        // yes, it must be the Activity FragmentManager,
+        // as that is where the R.id.main_fragment View is located.
+        // This also means the ShowTocFragment is replacing the ViewPager!
+        //noinspection DataFlowIssue
+        final FragmentManager fm = getActivity().getSupportFragmentManager();
+        fm.beginTransaction()
+          .setReorderingAllowed(true)
+          .addToBackStack(ShowTocFragment.TAG)
+          .replace(R.id.content_frame, fragment, ShowTocFragment.TAG)
+          .commit();
+    }
+
     /**
      * Called when the ViewModel triggers an update.
-     * <p>
-     * Dev. note: this will get called FOR EACH fragment currently existing
-     * in the ViewPager ... so ALSO for the fragments off-screen.
-     * Note that in embedded mode, we also need to update the toolbar
-     * from {@link #onResume()}.
      *
      * @param book to display
      */
     private void onBindBook(@NonNull final Book book) {
-        updateToolbar(book);
+        updateToolbarMenu();
 
         final Collection<Field<?, ? extends View>> fields = vm.getFields();
 
@@ -510,10 +526,21 @@ public class ShowBookDetailsFragment
         ViewFocusOrder.fix(parentView);
     }
 
-    private void updateToolbar(@NonNull final Book book) {
-        // The menu is entirely dependent on the book we're displaying,
+    private void updateToolbarTitle() {
+        @SuppressWarnings("DataFlowIssue")
+        final Pair<String, String> text = ToolBarText.getText(getContext(), vm.getBook());
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(text.first);
+        toolbar.setSubtitle(text.second);
+    }
+
+    private void updateToolbarMenu() {
+        // The creation of the menu is entirely dependent on the book we're displaying,
         // so we need to remove the old menu if present,
         // and construct a new menu for each book we're binding.
+        // The ToolbarMenuProvider will get the book from the vm.
+        // TODO: the menu handlers do not need the book at creation time.
+        //  we can likely remove the recreation altogether.
         final Toolbar toolbar = getToolbar();
         if (toolbarMenuProvider != null) {
             toolbar.removeMenuProvider(toolbarMenuProvider);
@@ -522,17 +549,6 @@ public class ShowBookDetailsFragment
         // add it, but ONLY display it when THIS fragment is in RESUMED state.
         toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
-
-        if (!vm.isEmbedded()) {
-            //noinspection DataFlowIssue
-            toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
-
-            String bookTitle = book.getTitle();
-            if (BuildConfig.DEBUG /* always */) {
-                bookTitle = "[" + book.getId() + "] " + bookTitle;
-            }
-            toolbar.setSubtitle(bookTitle);
-        }
     }
 
     private void bindCoverImages() {
@@ -590,49 +606,24 @@ public class ShowBookDetailsFragment
                 break;
         }
 
+        // Show the TOC button/frame if the user enabled it, and if there actually is a TOC
+        final boolean showToc =
+                aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.FK_TOC_ENTRY)
+                && !book.getToc().isEmpty();
+
+        // Smaller displays have a button to show the TOC in the current Activity.
         final Button btnShowToc = parentView.findViewById(R.id.btn_show_toc);
+        if (btnShowToc != null) {
+            btnShowToc.setVisibility(showToc ? View.VISIBLE : View.GONE);
+        }
+
+        // Larger displays show the TOC in a child Fragment of this one.
         final FragmentContainerView tocFrame = parentView.findViewById(R.id.toc_frame);
-        if (aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.FK_TOC_ENTRY)) {
-            if (btnShowToc != null) {
-                bindTocButton(btnShowToc, book);
-            } else if (tocFrame != null) {
+        if (tocFrame != null) {
+            tocFrame.setVisibility(showToc ? View.VISIBLE : View.GONE);
+            if (showToc) {
                 bindTocFrame(tocFrame, book);
             }
-        } else {
-            if (btnShowToc != null) {
-                btnShowToc.setVisibility(View.GONE);
-            } else if (tocFrame != null) {
-                tocFrame.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    /**
-     * Smaller displays have a button to show the TOC in the current Activity.
-     *
-     * @param showTocBtn the "Show TOC" button view
-     * @param book       to load
-     */
-    private void bindTocButton(@NonNull final Button showTocBtn,
-                               @NonNull final Book book) {
-
-        if (book.getToc().isEmpty()) {
-            showTocBtn.setVisibility(View.GONE);
-        } else {
-            showTocBtn.setVisibility(View.VISIBLE);
-            showTocBtn.setOnClickListener(v -> {
-                final Fragment fragment = ShowTocFragment.create(book, false, aVm.getBookshelf());
-                // yes, it must be the Activity FragmentManager,
-                // as that is where the R.id.main_fragment View is located.
-                // This also means the ShowTocFragment is replacing the ViewPager!
-                //noinspection DataFlowIssue
-                final FragmentManager fm = getActivity().getSupportFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(ShowTocFragment.TAG)
-                  .replace(R.id.content_frame, fragment, ShowTocFragment.TAG)
-                  .commit();
-            });
         }
     }
 
@@ -644,27 +635,21 @@ public class ShowBookDetailsFragment
      */
     private void bindTocFrame(@NonNull final FragmentContainerView tocFrame,
                               @NonNull final Book book) {
-        final List<TocEntry> tocList = book.getToc();
-        if (tocList.isEmpty()) {
-            tocFrame.setVisibility(View.GONE);
-        } else {
-            tocFrame.setVisibility(View.VISIBLE);
-            final FragmentManager fm = getChildFragmentManager();
 
-            Fragment fragment = fm.findFragmentByTag(ShowTocFragment.TAG);
-            if (fragment == null) {
-                fragment = ShowTocFragment.create(book, true, aVm.getBookshelf());
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .replace(R.id.toc_frame, fragment, ShowTocFragment.TAG)
-                  .commit();
-            } else {
-                // The above ShowTocFragment will have created a vm in its
-                // parent-fragment (i.e. THIS fragment)  scope
-                final ShowTocViewModel childVm = new ViewModelProvider(this)
-                        .get(ShowTocViewModel.class);
-                childVm.reloadBook(book);
-            }
+        final FragmentManager fm = getChildFragmentManager();
+        Fragment fragment = fm.findFragmentByTag(ShowTocFragment.TAG);
+        if (fragment == null) {
+            fragment = ShowTocFragment.create(book, true, aVm.getBookshelf());
+            fm.beginTransaction()
+              .setReorderingAllowed(true)
+              .replace(tocFrame.getId(), fragment, ShowTocFragment.TAG)
+              .commit();
+        } else {
+            // The above ShowTocFragment will have created a vm in
+            // its parent-fragment (i.e. THIS fragment) scope
+            final ShowTocViewModel childVm = new ViewModelProvider(this)
+                    .get(ShowTocViewModel.class);
+            childVm.reloadBook(book);
         }
     }
 

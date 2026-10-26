@@ -20,13 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
@@ -108,13 +111,31 @@ public class ShowBookPagerFragment
         // allow 3 books to be preloaded, b-1, b, b+1
         viewPager.setOffscreenPageLimit(1);
 
+        final int currentPosition = vm.getCurrentPosition();
         // Don't animate/softscroll, always jump.
-        viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
+        viewPager.setCurrentItem(currentPosition, false);
+        updateToolbarTitle(currentPosition);
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(final int position) {
+                vm.setCurrentPosition(position);
+                updateToolbarTitle(position);
+            }
+        });
 
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
             TipManager.getInstance().show(getContext(), Tip.BOOK_DETAILS);
         }
+    }
+
+    private void updateToolbarTitle(@IntRange(from = 0) final int position) {
+        @SuppressWarnings("DataFlowIssue")
+        final Pair<String, String> text = ToolBarText.getText(getContext(), vm.getBook(position));
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(text.first);
+        toolbar.setSubtitle(text.second);
     }
 
     private class ShowBookPagerAdapter

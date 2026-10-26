@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -126,14 +125,5 @@ public class ShowTocViewModel
     @NonNull
     List<TocEntry> getWorks() {
         return works;
-    }
-
-    @NonNull
-    String getScreenSubtitle() {
-        if (BuildConfig.DEBUG /* always */) {
-            return "[" + book.getId() + "] " + book.getTitle();
-        } else {
-            return book.getTitle();
-        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.authorworks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -198,18 +198,19 @@ public class ShowTocFragment
 
         vm.onReloadBook().observe(getViewLifecycleOwner(), bookId -> {
             adapter.notifyDataSetChanged();
-            updateToolbar();
+            updateToolbarTitle();
         });
 
-        updateToolbar();
+        updateToolbarTitle();
     }
 
-    private void updateToolbar() {
+    private void updateToolbarTitle() {
         if (!vm.isEmbedded()) {
+            @SuppressWarnings("DataFlowIssue")
+            final Pair<String, String> text = ToolBarText.getText(getContext(), vm.getBook());
             final Toolbar toolbar = getToolbar();
-            //noinspection DataFlowIssue
-            toolbar.setTitle(Author.getLabel(getContext(), vm.getAuthors()));
-            toolbar.setSubtitle(vm.getScreenSubtitle());
+            toolbar.setTitle(text.first);
+            toolbar.setSubtitle(text.second);
         }
     }
 }

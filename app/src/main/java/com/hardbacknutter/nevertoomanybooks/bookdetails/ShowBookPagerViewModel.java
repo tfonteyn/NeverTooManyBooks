@@ -36,7 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.NavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.NavigatorList;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
+@SuppressWarnings("WeakerAccess")
 public class ShowBookPagerViewModel
         extends ViewModel {
 
@@ -45,13 +47,15 @@ public class ShowBookPagerViewModel
     private Navigator navHelper;
 
     /**
-     * The <strong>initial</strong> pager position being displayed.
-     * This is {@code 0} based as it's the recycler view list position.
+     * The <strong>initial</strong> book id to show.
+     * This is used when there is no Navigator.
      */
-    @IntRange(from = 0)
-    private int initialPagerPosition;
-    /** The <strong>initial</strong> book id to show. */
+    @IntRange(from = 1)
     private long initialBookId;
+
+    /** This is {@code 0} based as it's the recycler view list position. */
+    @IntRange(from = 0)
+    private int currentPosition;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
@@ -72,15 +76,15 @@ public class ShowBookPagerViewModel
      *
      * @throws IllegalArgumentException (debug) missing book id
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public boolean init(@NonNull final ShowBookPagerInput args) {
+    boolean init(@NonNull final ShowBookPagerInput args) {
         if (initialBookId == 0) {
             initialBookId = args.getBookId();
+            // Sanity check
             if (initialBookId <= 0) {
-                // Sanity check, we should not get a new book here (id==0)
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
-            initialPagerPosition = args.getPosition();
+
+            currentPosition = args.getPosition();
 
             // the navTable is optional
             // If present, the user can swipe to the next/previous book in the list.
@@ -123,15 +127,23 @@ public class ShowBookPagerViewModel
     }
 
     /**
-     * Get the initial position of the pager.
-     * <strong>Used only to set
-     * {@link androidx.viewpager2.widget.ViewPager2#setCurrentItem}</strong>
+     * Get the current position.
      *
      * @return pager position
      */
     @IntRange(from = 0)
-    int getInitialPagerPosition() {
-        return initialPagerPosition;
+    int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    /**
+     * Keep track of the current position, as we need it to survive
+     * a device rotation.
+     *
+     * @param currentPosition pager position
+     */
+    void setCurrentPosition(@IntRange(from = 0) final int currentPosition) {
+        this.currentPosition = currentPosition;
     }
 
     /**
@@ -162,5 +174,11 @@ public class ShowBookPagerViewModel
             return navHelper.getBookId(position);
         }
         return initialBookId;
+    }
+
+    @NonNull
+    Book getBook(@IntRange(from = 0) final int position) {
+        final long bookId = getBookIdAtPosition(position);
+        return Book.from(bookId);
     }
 }
