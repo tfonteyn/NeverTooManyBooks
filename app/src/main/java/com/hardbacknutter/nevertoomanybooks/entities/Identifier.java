@@ -83,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz._ALL;
  * </ul>
  *
  * @see <a href="https://www.wikidata.org/wiki/Wikidata:Database_reports/List_of_properties/all">
- *     All Wikidata claim number - WARNING: LONG LIST</a>
+ *         All Wikidata claim number - WARNING: LONG LIST</a>
  */
 public class Identifier
         implements Parcelable, Entity {
@@ -104,8 +104,21 @@ public class Identifier
     /** The original Goodreads "legacyId" which is in widespread use. */
     public static final String SID_GOODREADS = "goodreads";
     public static final String SID_GOOGLE = "google";
+
+    /**
+     * ISFDB.
+     * <ul>
+     *     <li>Book ("Publication Record")</li>
+     *     <li>Author ("Author Record")</li>
+     *     <li>Series ("Series Record")</li>
+     * </ul>
+     */
     public static final String SID_ISFDB = "isfdb";
+    /** ISFDB: Publisher series. */
     public static final String SID_ISFDB_PUB_SERIES = "isfdb-pubseries";
+    /** ISFDB "Title Record": A book title, of which there are one or more publications. */
+    public static final String SID_ISFDB_TITLE = "isfdb-title";
+
     public static final String SID_KBNL = "ppn";
     public static final String SID_KBR = "kbr";
     public static final String SID_LAST_DODO_NL = "lastdodo";
@@ -840,15 +853,6 @@ public class Identifier
         }
 
         /**
-         * Set the external website id (site-id, sid).
-         *
-         * @param sid value
-         */
-        public void setSid(@NonNull final String sid) {
-            this.sid = sid;
-        }
-
-        /**
          * Get the external website id (site-id, sid).
          *
          * @return sid
@@ -856,6 +860,15 @@ public class Identifier
         @NonNull
         public String getSid() {
             return sid;
+        }
+
+        /**
+         * Set the external website id (site-id, sid).
+         *
+         * @param sid value
+         */
+        public void setSid(@NonNull final String sid) {
+            this.sid = sid;
         }
 
         @Override
