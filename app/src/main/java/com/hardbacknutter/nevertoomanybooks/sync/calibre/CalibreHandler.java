@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultCaller;
@@ -187,13 +188,15 @@ public class CalibreHandler {
                 menu.findItem(R.id.MENU_CALIBRE_READ)
                     .setVisible(vm.existsLocally(context, book));
 
-                // always shown
-                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
-                    .setTitle(context.getString(
-                            R.string.option_download_ebook_format,
-                            book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT)))
-                    .setVisible(true);
-
+                final MenuItem item = menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD);
+                final String fileFormat = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null);
+                if (fileFormat != null && !fileFormat.isBlank()) {
+                    item.setTitle(context.getString(
+                            R.string.option_download_ebook_format, fileFormat));
+                    item.setVisible(true);
+                } else {
+                    item.setVisible(false);
+                }
                 // don't show
                 menu.findItem(R.id.MENU_CALIBRE_SETTINGS)
                     .setVisible(false);
@@ -241,9 +244,9 @@ public class CalibreHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(context);
-            if (optionalUri.isPresent()) {
-                vm.startDownload(book, optionalUri.get());
+            final Optional<Uri> oFolderUri = CalibreContentServer.getFolderUri(context);
+            if (oFolderUri.isPresent()) {
+                vm.startDownload(book, oFolderUri.get());
             } else {
                 // ask for a download folder
                 vm.setTempBook(book);
