@@ -96,11 +96,16 @@ public class CalibreBookData
         this.fileFormat = fileFormat;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param rowData with the data
+     */
     public CalibreBookData(@NonNull final DataHolder rowData) {
         libraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
         calibreBookId = rowData.getInt(DBKey.CALIBRE.BOOK_ID);
         calibreBookUuid = rowData.getString(DBKey.CALIBRE.BOOK_UUID);
-        fileFormat = rowData.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+        fileFormat = rowData.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null);
     }
 
     private CalibreBookData(@NonNull final Parcel in) {
@@ -140,17 +145,31 @@ public class CalibreBookData
         return libraryId;
     }
 
+    /**
+     * The Calibre numerical book id.
+     *
+     * @return id
+     */
     @IntRange(from = 1)
     public int getCalibreBookId() {
         return calibreBookId;
     }
 
+    /**
+     * The Calibre book UUID string.
+     *
+     * @return UUID
+     */
     @NonNull
     public String getCalibreBookUuid() {
         return calibreBookUuid;
     }
 
-    //URGENT/TEST: can we have a calibre book WITHOUT a file...
+    /**
+     * The file-format field is considered optional.
+     *
+     * @return file format (the extension); can be {@code null}.
+     */
     @Nullable
     public String getFileFormat() {
         return fileFormat;
@@ -183,7 +202,7 @@ public class CalibreBookData
     }
 
     /**
-     * Equality skips the potentially cached {@link #library}.
+     * Equality does <strong>not</strong> include the potentially cached {@link #library}.
      */
     @Override
     public boolean equals(@Nullable final Object o) {
