@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
+@SuppressWarnings("WeakerAccess")
 public class CalibreHandlerViewModel
         extends ViewModel {
 
@@ -63,6 +64,14 @@ public class CalibreHandlerViewModel
         }
     }
 
+    /**
+     * After picking a folder where to download a book,
+     * get the {@link #setTempBook(Book)} reference to do the actual download.
+     *
+     * @return book reference
+     *
+     * @see #setTempBook(Book)
+     */
     @NonNull
     Book getAndResetTempBook() {
         final Book book = Objects.requireNonNull(tmpBook, "tmpBook");
@@ -70,6 +79,14 @@ public class CalibreHandlerViewModel
         return book;
     }
 
+    /**
+     * Temporary keep a reference to the book the user wants to download
+     * while we ask the user for the folder WHERE they want it.
+     *
+     * @param book to track
+     *
+     * @see #getAndResetTempBook()
+     */
     void setTempBook(@NonNull final Book book) {
         tmpBook = book;
     }
