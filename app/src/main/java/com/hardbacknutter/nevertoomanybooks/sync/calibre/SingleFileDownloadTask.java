@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -69,12 +68,6 @@ class SingleFileDownloadTask
                          @NonNull final Uri folder) {
         this.book = book;
         this.folder = folder;
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (!CalibreHandler.isCalibreBook(book)) {
-                throw new IllegalArgumentException("Missing Calibre keys");
-            }
-        }
         execute();
     }
 
