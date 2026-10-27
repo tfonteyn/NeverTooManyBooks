@@ -51,7 +51,7 @@ jsoup = "1.23.2"
 re2j = "1.8"
 
 # https://github.com/square/okhttp
-okhttpAndroid = "5.5.0"
+okhttpAndroid = "5.5.1"
 
 # https://github.com/rburgst/okhttp-digest
 okhttpAuthenticationDiggest = "3.1.1"
