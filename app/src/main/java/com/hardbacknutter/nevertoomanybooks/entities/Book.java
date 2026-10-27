@@ -1602,38 +1602,47 @@ public class Book
      */
     @NonNull
     public Optional<CalibreLibrary> getCalibreLibrary() {
-        // We MIGHT have it (probably not) ...
-        if (contains(BKEY_CALIBRE_LIBRARY)) {
-            return Optional.ofNullable(getParcelable(BKEY_CALIBRE_LIBRARY));
-        } else {
-            // but if not, go explicitly fetch it.
-            final Optional<CalibreLibrary> oLibrary = ServiceLocator
-                    .getInstance()
-                    .getCalibreLibraryDao()
-                    .findById(getLong(DBKey.FK_CALIBRE_LIBRARY));
-            // store for reuse
-            oLibrary.ifPresent(library -> putParcelable(BKEY_CALIBRE_LIBRARY, library));
-            return oLibrary;
+        // The below could be replaced by a simple:
+        //    return getCalibreBookData().flatMap(CalibreBookData::getCalibreLibrary);
+        // but that is potentially TWO trips to the database.
+        // For now, we keep using the below optimized version
+
+        // Sanity check: the library id must be present, or else this is NOT a Calibre book
+        if (!contains(DBKey.FK_CALIBRE_LIBRARY)) {
+            return Optional.empty();
         }
+
+        // We MIGHT have the cached CalibreLibrary.
+        final CalibreLibrary library = getParcelable(BKEY_CALIBRE_LIBRARY);
+        if (library != null) {
+            return Optional.of(library);
+        }
+
+        // but if not, go explicitly fetch it.
+        final Optional<CalibreLibrary> oLibrary = ServiceLocator
+                .getInstance()
+                .getCalibreLibraryDao()
+                .findById(getLong(DBKey.FK_CALIBRE_LIBRARY));
+
+        // cache it for reuse
+        oLibrary.ifPresent(lib -> putParcelable(BKEY_CALIBRE_LIBRARY, lib));
+
+        return oLibrary;
     }
 
     /**
      * Set the {@link CalibreLibrary}.
      *
-     * @param library to set
+     * @param library to set; use {@code null} to remove.
      */
     public void setCalibreLibrary(@Nullable final CalibreLibrary library) {
         if (library != null) {
+            // Always add the ID separately
             putLong(DBKey.FK_CALIBRE_LIBRARY, library.getId());
+            // and cache the object itself
             putParcelable(BKEY_CALIBRE_LIBRARY, library);
         } else {
-            remove(BKEY_CALIBRE_LIBRARY);
-            remove(CalibreBookData.BKEY);
-
-            remove(DBKey.FK_CALIBRE_LIBRARY);
-            remove(DBKey.CALIBRE.BOOK_ID);
-            remove(DBKey.CALIBRE.BOOK_UUID);
-            remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+            removeCalibreData();
         }
     }
 
