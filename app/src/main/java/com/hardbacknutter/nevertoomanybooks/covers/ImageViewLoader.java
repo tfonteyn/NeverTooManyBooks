@@ -194,6 +194,8 @@ public class ImageViewLoader {
         final ImageReference imageReference = new ImageReference(uuid, cIdx, imageView);
 
         final Future<?>[] task = new Future<?>[1];
+        // FIXME: the code inspector claims this is not running in a background thread
+        //  Seems likely to be an inspector error
         task[0] = STask.execute(
                 executor,
                 () -> {

@@ -293,6 +293,7 @@ public class EditBookFragment
      */
     private void saveBook() {
         try {
+            //FIXME: saving should be done in a background thread
             //noinspection DataFlowIssue
             vm.saveBook(getContext());
             setResultsAndFinish();
