@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -175,7 +172,7 @@
     <string name="progress_msg_starting_up">Spúšťa sa…</string>
     <string name="progress_msg_optimizing">Optimalizuje sa…</string>
     <string name="progress_msg_authenticating_to_site">Overuje sa na %1$s</string>
-    <string name="progress_msg_searching_site">Vyhľadáva sa %1$s</string>
+    <string name="progress_msg_searching_site">Hľadá sa na %1$s</string>
     <string name="progress_msg_searching_editions">Vyhľadávajú sa ďalšie vydania…</string>
     <string name="progress_msg_downloading">Sťahuje sa…</string>
     <string name="progress_msg_skip_s">Vynecháva sa „%1$s“</string>
