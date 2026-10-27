@@ -1,3 +1,8 @@
+### 8.1.2
+
+- GitHub #259: fix titlebar updates when swiping between books
+
+---
 ### 8.1.1
 
 FIXES:
