@@ -1,0 +1,5 @@
+FIXES:
+
+- GitHub #259: fix titlebar book title when swiping between books
+
+This *should* fix the above
