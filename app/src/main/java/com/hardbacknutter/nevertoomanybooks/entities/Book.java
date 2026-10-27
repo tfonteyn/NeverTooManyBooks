@@ -1637,50 +1637,75 @@ public class Book
         }
     }
 
+    /**
+     * Check if this book has all the Calibre keys needed.
+     * <p>
+     * FIXME: for now {@code BookDaoImpl#getBookCursor} will always left-join
+     *  the calibre fields for a book. Hence, this simple test is fine for now.
+     *
+     * @return {@code true} is this book <strong>is</strong> a CalibreBook
+     */
+    public boolean isCalibreBook() {
+        // DBKey.CALIBRE.BOOK_MAIN_FORMAT is considered optional
+        return contains(DBKey.FK_CALIBRE_LIBRARY)
+               && contains(DBKey.CALIBRE.BOOK_ID)
+               && !getString(DBKey.CALIBRE.BOOK_UUID).isEmpty();
+    }
+
+    /**
+     * Get the {@link CalibreBookData}.
+     *
+     * @return data
+     */
     @NonNull
     public Optional<CalibreBookData> getCalibreBookData() {
-        // temp hack...
-        if (!contains(CalibreBookData.BKEY)
-            && contains(DBKey.FK_CALIBRE_LIBRARY)
-            && contains(DBKey.CALIBRE.BOOK_ID)) {
-
-            final CalibreBookData calibreBookData = new CalibreBookData(
-                    getLong(DBKey.FK_CALIBRE_LIBRARY),
-                    getLong(DBKey.CALIBRE.BOOK_ID),
-                    getString(DBKey.CALIBRE.BOOK_UUID),
-                    getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null));
-            putParcelable(CalibreBookData.BKEY, calibreBookData);
-            return Optional.of(calibreBookData);
+        // build from the separate keys if we have all of them
+        if (isCalibreBook()) {
+            return Optional.of(new CalibreBookData(this));
         }
 
-        // We MIGHT have it (probably not) ...
-        if (contains(CalibreBookData.BKEY)) {
-            final CalibreBookData calibreBookData = getParcelable(CalibreBookData.BKEY);
-            return Optional.ofNullable(calibreBookData);
+        // Otherwise try to find matching Calibre data in the database
+        final Optional<CalibreBookData> oCalibreBookData = ServiceLocator
+                .getInstance()
+                .getCalibreDao()
+                .findByLocalBookId(getId());
+
+        oCalibreBookData.ifPresent(this::setCalibreBookData);
+
+        return oCalibreBookData;
+    }
+
+    /**
+     * Set the {@link CalibreBookData}.
+     *
+     * @param data to set; use {@code null} to remove.
+     */
+    public void setCalibreBookData(@Nullable final CalibreBookData data) {
+        if (data != null) {
+            putLong(DBKey.FK_CALIBRE_LIBRARY, data.getLibraryId());
+            putInt(DBKey.CALIBRE.BOOK_ID, data.getCalibreBookId());
+            putString(DBKey.CALIBRE.BOOK_UUID, data.getCalibreBookUuid());
+
+            final String fileFormat = data.getFileFormat();
+            if (fileFormat != null && !fileFormat.isBlank()) {
+                putString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, fileFormat);
+            } else {
+                remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+            }
         } else {
-            // but if not, go explicitly fetch it.
-            final Optional<CalibreBookData> calibreBookData = ServiceLocator
-                    .getInstance()
-                    .getCalibreDao()
-                    .findByLocalBookId(getId());
-            // store for reuse
-            calibreBookData.ifPresent(bookData -> putParcelable(CalibreBookData.BKEY, bookData));
-            return calibreBookData;
+            removeCalibreData();
         }
     }
 
-    public void setCalibreBookData(@Nullable final CalibreBookData data) {
-        if (data != null) {
-            putParcelable(CalibreBookData.BKEY, data);
-        } else {
-            remove(BKEY_CALIBRE_LIBRARY);
-            remove(CalibreBookData.BKEY);
+    private void removeCalibreData() {
+        // Remove a potentially cached CalibreLibrary
+        remove(BKEY_CALIBRE_LIBRARY);
 
-            remove(DBKey.FK_CALIBRE_LIBRARY);
-            remove(DBKey.CALIBRE.BOOK_ID);
-            remove(DBKey.CALIBRE.BOOK_UUID);
-            remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
-        }
+        // Remove the CalibreBookData keys
+        remove(DBKey.FK_CALIBRE_LIBRARY);
+        remove(DBKey.CALIBRE.BOOK_ID);
+        remove(DBKey.CALIBRE.BOOK_UUID);
+        remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
     }
 
     /**

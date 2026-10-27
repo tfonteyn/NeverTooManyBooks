@@ -110,20 +110,6 @@ public class CalibreHandler {
         return ServiceLocator.getInstance().getSharedPreferences().getBoolean(PK_ENABLED, false);
     }
 
-    /**
-     * Check if the given book has all the Calibre keys needed.
-     *
-     * @param book to check
-     *
-     * @return {@code true} is this book <strong>is</strong> a CalibreBook
-     */
-    static boolean isCalibreBook(@NonNull final Book book) {
-        return book.contains(DBKey.CALIBRE.BOOK_ID)
-               && !book.getString(DBKey.CALIBRE.BOOK_UUID).isEmpty()
-               && !book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT).isEmpty()
-               && book.contains(DBKey.FK_CALIBRE_LIBRARY);
-    }
-
     @NonNull
     public CalibreHandler setProgressFrame(@NonNull final View progressFrame) {
         this.progressFrame = progressFrame;
@@ -181,7 +167,7 @@ public class CalibreHandler {
                               @NonNull final Menu menu,
                               @NonNull final Book book) {
 
-        if (isCalibreBook(book)) {
+        if (book.isCalibreBook()) {
             menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(true);
             if (CalibreContentServer.getFolderUri(context).isPresent()) {
                 // conditional
