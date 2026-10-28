@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -624,7 +621,7 @@
     <string name="progress_msg_searching">Hledání…</string>
     <string name="progress_msg_searching_editions">Hledání edicí…</string>
     <string name="progress_msg_authenticating_to_site">Ověřování na %1$s</string>
-    <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
+    <string name="progress_msg_searching_site">Hledá se na %1$s</string>
     <string name="progress_msg_skip_s">Vynechání „%1$s“</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
