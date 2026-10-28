@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -306,7 +303,7 @@
     <string name="lbl_author_role_cover_artist">Couverture</string>
     <string name="lbl_author_role_cover_colorist">Couleur de la couverture</string>
     <string name="lbl_author_role_cover_inking">Encrage de couverture</string>
-    <string name="lbl_author_role_editor">Éditeur</string>
+    <string name="lbl_author_role_editor">Anthologiste</string>
     <string name="lbl_author_role_inking">Encrage</string>
     <string name="lbl_author_role_intro">Introduction</string>
     <string name="lbl_author_role_afterword">Postface</string>
