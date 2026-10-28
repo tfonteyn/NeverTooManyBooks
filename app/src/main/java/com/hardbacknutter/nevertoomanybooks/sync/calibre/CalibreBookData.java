@@ -76,7 +76,7 @@ public class CalibreBookData
     @Nullable
     private CalibreLibrary library;
     @Nullable
-    private String fileFormat;
+    private final String fileFormat;
 
     /**
      * Constructor.
@@ -175,10 +175,6 @@ public class CalibreBookData
         return fileFormat;
     }
 
-    public void setFileFormat(@Nullable final String fileFormat) {
-        this.fileFormat = fileFormat;
-    }
-
     /**
      * Get the resolved {@link CalibreLibrary}.
      *
@@ -199,6 +195,18 @@ public class CalibreBookData
                 .orElse(null);
 
         return Optional.ofNullable(library);
+    }
+
+    public boolean equals(@Nullable final DataHolder dataHolder) {
+        if (dataHolder == null) {
+            return false;
+        }
+        return libraryId == dataHolder.getLong(DBKey.FK_CALIBRE_LIBRARY)
+               && calibreBookId == dataHolder.getInt(DBKey.CALIBRE.BOOK_ID)
+               && Objects.equals(calibreBookUuid,
+                                 dataHolder.getString(DBKey.CALIBRE.BOOK_UUID, null))
+               && Objects.equals(fileFormat,
+                                 dataHolder.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null));
     }
 
     /**

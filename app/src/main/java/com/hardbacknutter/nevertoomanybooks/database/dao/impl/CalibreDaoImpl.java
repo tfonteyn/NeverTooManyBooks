@@ -26,7 +26,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -91,13 +90,7 @@ public class CalibreDaoImpl
 
         final Optional<CalibreBookData> oExisting = findByLocalBookId(book.getId());
         if (oExisting.isPresent()) {
-            final CalibreBookData existing = oExisting.get();
-            if (existing.getCalibreBookId() == book.getInt(DBKey.CALIBRE.BOOK_ID)
-                && existing.getLibraryId() == book.getLong(DBKey.FK_CALIBRE_LIBRARY)
-                && Objects.equals(existing.getCalibreBookUuid(),
-                                  book.getString(DBKey.CALIBRE.BOOK_UUID, null))
-                && Objects.equals(existing.getFileFormat(),
-                                  book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null))) {
+            if (oExisting.get().equals(book)) {
                 return false;
             }
 
