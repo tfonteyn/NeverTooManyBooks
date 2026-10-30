@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -85,6 +86,7 @@ class BookTest
     private LoaneeDao loaneeDao;
 
     private DBTestHelper h;
+    private BookDao bookDao;
 
     /**
      * Clean the database.
@@ -102,6 +104,7 @@ class BookTest
 
         loaneeDao = serviceLocator.getLoaneeDao();
 
+        bookDao = serviceLocator.getBookDao();
         bookRepository = new BookRepository(context);
 
         coverStorage = serviceLocator.getCoverStorage();
@@ -168,7 +171,7 @@ class BookTest
 
         // Do the initial insert and test it
         final long bookId = prepareAndInsertBook(context, bookIdx);
-        Book book = Book.from(bookId);
+        Book book = bookDao.from(bookId);
         assertEquals(bookId, book.getId());
         assertBookMatchesInitialInsert(context, book, bookIdx);
 
@@ -190,7 +193,7 @@ class BookTest
         /*
          * test the updated book
          */
-        book = Book.from(bookId);
+        book = bookDao.from(bookId);
         assertEquals(bookId, book.getId());
 
         final String uuid = book.getString(DBKey.BOOK_UUID, null);
@@ -224,7 +227,7 @@ class BookTest
 
         loaneeDao.setLoanee(bookId, "TheAdversary");
 
-        final Book book = Book.from(bookId);
+        final Book book = bookDao.from(bookId);
         assertEquals("TheAdversary", book.getString(DBKey.LOANEE_NAME, null));
 
         book.putString(DBKey.LOANEE_NAME, "TheAdversary2");
@@ -251,7 +254,7 @@ class BookTest
         final File tempDir = coverStorage.getTempDir();
 
         final long bookId = prepareAndInsertBook(context, bookIdx);
-        Book book = Book.from(bookId);
+        Book book = bookDao.from(bookId);
 
         // Test Dirty mode
         book.setStage(EntityStage.Stage.Dirty);
@@ -264,7 +267,7 @@ class BookTest
         book.setStage(EntityStage.Stage.Clean);
 
         // reload
-        book = Book.from(bookId);
+        book = bookDao.from(bookId);
         final String uuid = book.getString(DBKey.BOOK_UUID, null);
 
         assertBookHasPersistedCover(context, book, 0);

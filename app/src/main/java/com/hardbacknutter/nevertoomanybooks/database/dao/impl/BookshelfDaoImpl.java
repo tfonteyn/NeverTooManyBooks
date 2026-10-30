@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -720,8 +721,11 @@ public class BookshelfDaoImpl
                 // manual labour...
                 final List<Long> bookIds = getBookIds(source.getId());
                 booksMoved = bookIds.size();
+
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
                 for (final long bookId : bookIds) {
-                    final Book book = Book.from(bookId);
+                    final Book book = bookDao.from(bookId);
 
                     final List<Bookshelf> fromBook = book.getBookshelves();
                     final List<Bookshelf> destList = new ArrayList<>();

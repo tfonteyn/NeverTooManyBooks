@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -492,8 +493,10 @@ public class TocEntryDaoImpl
                     txLock = db.beginTransaction(true);
                 }
 
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
                 for (final long bookId : bookIds) {
-                    final Book book = Book.from(bookId);
+                    final Book book = bookDao.from(bookId);
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     try {

@@ -1302,7 +1302,10 @@ public class BooksOnBookshelf
         final String dialogMessage = getString(R.string.info_bulk_set_bookshelves);
 
         // We simply grab the FIRST book to get the pre-selected bookshelves.
-        final List<Bookshelf> bookshelves = Book.from(bookIds.get(0)).getBookshelves();
+        final List<Bookshelf> bookshelves = ServiceLocator.getInstance()
+                                                          .getBookDao()
+                                                          .from(bookIds.get(0))
+                                                          .getBookshelves();
 
         // We're using the extras to pass the set of book ids
         final Bundle extras = new Bundle(1);
@@ -1343,7 +1346,10 @@ public class BooksOnBookshelf
         final String dialogMessage = getString(R.string.info_bulk_set_location);
 
         // We simply grab the FIRST book to get the pre-selected location.
-        final String currentLocation = Book.from(bookIds.get(0)).getString(DBKey.LOCATION);
+        final String currentLocation = ServiceLocator.getInstance()
+                                                     .getBookDao()
+                                                     .from(bookIds.get(0))
+                                                     .getString(DBKey.LOCATION);
 
         // We're using the extras to pass the set of book ids
         final Bundle extras = new Bundle(1);

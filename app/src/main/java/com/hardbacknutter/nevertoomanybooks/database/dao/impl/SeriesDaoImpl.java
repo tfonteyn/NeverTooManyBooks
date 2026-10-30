@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublicationFrequencyDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -523,8 +524,10 @@ public class SeriesDaoImpl
             final List<Long> bookIds = getBookIds(source.getId());
             booksMoved = bookIds.size();
 
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
             for (final long bookId : bookIds) {
-                final Book book = Book.from(bookId);
+                final Book book = bookDao.from(bookId);
 
                 final List<Series> fromBook = book.getSeries();
                 final List<Series> destList = new ArrayList<>();
@@ -616,8 +619,10 @@ public class SeriesDaoImpl
                     txLock = db.beginTransaction(true);
                 }
 
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
                 for (final long bookId : bookIds) {
-                    final Book book = Book.from(bookId);
+                    final Book book = bookDao.from(bookId);
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false,

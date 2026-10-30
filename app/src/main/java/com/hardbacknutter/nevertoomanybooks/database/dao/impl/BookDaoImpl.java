@@ -718,6 +718,23 @@ public class BookDaoImpl
         return getColumnAsStringArrayList(Sql.SELECT_ALL_UUID);
     }
 
+    @NonNull
+    @Override
+    public Book from(final long bookId) {
+        if (bookId <= 0) {
+            throw new IllegalArgumentException("bookId: " + bookId);
+        }
+
+        final Book book = new Book();
+        try (Cursor bookCursor = fetchById(bookId)) {
+            if (bookCursor.moveToFirst()) {
+                // micro optimization, we don't need to read the id from the cursor.
+                book.load(bookId, bookCursor);
+            }
+        }
+        return book;
+    }
+
     /**
      * Return the book UUID based on the id.
      *

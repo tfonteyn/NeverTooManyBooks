@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
@@ -849,8 +850,10 @@ public class AuthorDaoImpl
             final List<Long> bookIds = getBookIds(source.getId());
             booksMoved = bookIds.size();
 
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
             for (final long bookId : bookIds) {
-                final Book book = Book.from(bookId);
+                final Book book = bookDao.from(bookId);
 
                 final List<Author> fromBook = book.getAuthors();
                 final List<Author> destList = new ArrayList<>();
@@ -957,8 +960,10 @@ public class AuthorDaoImpl
                     txLock = db.beginTransaction(true);
                 }
 
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
                 for (final long bookId : bookIds) {
-                    final Book book = Book.from(bookId);
+                    final Book book = bookDao.from(bookId);
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     try {

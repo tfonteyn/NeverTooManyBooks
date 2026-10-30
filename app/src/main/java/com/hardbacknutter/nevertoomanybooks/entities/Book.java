@@ -269,32 +269,8 @@ public class Book
      */
     private Book(@NonNull final Parcel in) {
         super(in);
+        //noinspection deprecation
         stage = in.readParcelable(getClass().getClassLoader());
-    }
-
-    /**
-     * Constructor. Load the book details from the database.
-     *
-     * @param bookId of book
-     *
-     * @return new instance; can be empty but never {@code null}.
-     *
-     * @throws IllegalArgumentException if the book id is not valid
-     */
-    @NonNull
-    public static Book from(@IntRange(from = 1) final long bookId) {
-        if (bookId <= 0) {
-            throw new IllegalArgumentException(ERROR_INVALID_BOOK_ID);
-        }
-
-        final Book book = new Book();
-        try (Cursor bookCursor = ServiceLocator.getInstance().getBookDao().fetchById(bookId)) {
-            if (bookCursor.moveToFirst()) {
-                // micro optimization, we don't need to read the id from the cursor.
-                book.load(bookId, bookCursor);
-            }
-        }
-        return book;
     }
 
     /**
@@ -453,8 +429,10 @@ public class Book
         duplicate.setFirstPublicationDate(getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
         // Copy the price as components
-        duplicate.putBigDecimal(DBKey.PRICE_LISTED, getBigDecimal(DBKey.PRICE_LISTED, realNumberParser));
-        duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
+        duplicate.putBigDecimal(DBKey.PRICE_LISTED,
+                                getBigDecimal(DBKey.PRICE_LISTED, realNumberParser));
+        duplicate.putString(DBKey.PRICE_LISTED_CURRENCY,
+                            getString(DBKey.PRICE_LISTED_CURRENCY));
 
         duplicate.setFormat(getString(DBKey.FORMAT, null));
         duplicate.setColor(getString(DBKey.COLOR, null));
@@ -484,8 +462,10 @@ public class Book
         duplicate.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
 
         // Copy the price as components
-        duplicate.putBigDecimal(DBKey.PRICE_PAID, getBigDecimal(DBKey.PRICE_PAID, realNumberParser));
-        duplicate.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
+        duplicate.putBigDecimal(DBKey.PRICE_PAID,
+                                getBigDecimal(DBKey.PRICE_PAID, realNumberParser));
+        duplicate.putString(DBKey.PRICE_PAID_CURRENCY,
+                            getString(DBKey.PRICE_PAID_CURRENCY));
 
         duplicate.putInt(DBKey.CONDITION_BOOK, getInt(DBKey.CONDITION_BOOK));
         duplicate.putInt(DBKey.CONDITION_COVER, getInt(DBKey.CONDITION_COVER));

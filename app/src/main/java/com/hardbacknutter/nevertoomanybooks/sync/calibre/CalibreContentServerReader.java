@@ -132,6 +132,7 @@ public class CalibreContentServerReader
 
     private final DateParser<LocalDateTime> dateParser;
     private final RealNumberParser realNumberParser;
+    private final BookDao bookDao;
 
     /** The physical library from which we'll be importing. */
     @Nullable
@@ -170,6 +171,7 @@ public class CalibreContentServerReader
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
+        bookDao = serviceLocator.getBookDao();
 
         bookRepository = new BookRepository(context);
 
@@ -423,12 +425,12 @@ public class CalibreContentServerReader
                 // We have it; update according to the users choice
                 switch (updateOption) {
                     case Overwrite: {
-                        final Book book = Book.from(localBookId);
+                        final Book book = bookDao.from(localBookId);
                         updateBook(context, calibreBook, book);
                         break;
                     }
                     case OnlyNewer: {
-                        final Book book = Book.from(localBookId);
+                        final Book book = bookDao.from(localBookId);
                         if (isRemoteBookNewer(calibreBook, book)) {
                             updateBook(context, calibreBook, book);
 

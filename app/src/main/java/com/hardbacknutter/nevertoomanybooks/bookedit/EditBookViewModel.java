@@ -322,7 +322,7 @@ public class EditBookViewModel
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
                     final long bookId = args.getBookId();
                     if (bookId > 0) {
-                        book = Book.from(bookId);
+                        book = bookDao.from(bookId);
                     } else {
                         book = new Book();
                     }

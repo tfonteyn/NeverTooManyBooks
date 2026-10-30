@@ -379,8 +379,11 @@ public class TagDaoImpl
                 booksMoved = bookIds.size();
 
                 final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
                 for (final long bookId : bookIds) {
-                    final Book book = Book.from(bookId);
+                    final Book book = bookDao.from(bookId);
 
                     final List<Tag> fromBook = book.getTags();
                     final List<Tag> destList = new ArrayList<>();

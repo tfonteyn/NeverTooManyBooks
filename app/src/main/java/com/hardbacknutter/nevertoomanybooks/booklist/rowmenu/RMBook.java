@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -64,6 +65,7 @@ public class RMBook
     @Nullable
     private final CalibreHandler calibreHandler;
     private final List<MenuHandler<DataHolder>> menuHandlers;
+    private final BookDao bookDao;
 
     public RMBook(@NonNull final FragmentActivity activity,
                   @NonNull final ActivityResultCaller contractOwner,
@@ -75,6 +77,8 @@ public class RMBook
         this.editBookLauncher = editBookLauncher;
         this.updateBookLauncher = updateBookLauncher;
         this.calibreHandler = calibreHandler;
+
+        bookDao = ServiceLocator.getInstance().getBookDao();
 
         menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
                                new SiteSearchMenuHandler());
@@ -118,7 +122,7 @@ public class RMBook
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
         if (calibreHandler != null) {
-            final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
+            final Book book = bookDao.from(rowData.getLong(DBKey.FK_BOOK));
             calibreHandler.onPrepareMenu(context, menu, book);
         }
 
@@ -145,7 +149,7 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
-            final Book book = Book.from(bookId);
+            final Book book = bookDao.from(bookId);
             editBookLauncher.launch(new EditBookInput(book.duplicate(context),
                                                       vm.getStyle()));
             return true;
@@ -157,7 +161,7 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
-            final Book book = Book.from(bookId);
+            final Book book = bookDao.from(bookId);
             updateBookLauncher.launch(book);
             return true;
 
@@ -170,13 +174,13 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_SHARE) {
-            final Book book = Book.from(bookId);
+            final Book book = bookDao.from(bookId);
             context.startActivity(CitationFactory.getShareIntent(context, book, vm.getStyle()));
             return true;
         }
 
         if (calibreHandler != null) {
-            final Book book = Book.from(bookId);
+            final Book book = bookDao.from(bookId);
             return calibreHandler.onMenuItemSelected(context, menuItemId, book);
         }
 

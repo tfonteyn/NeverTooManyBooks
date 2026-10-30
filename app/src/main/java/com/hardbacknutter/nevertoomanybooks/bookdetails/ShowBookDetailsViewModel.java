@@ -173,14 +173,14 @@ public class ShowBookDetailsViewModel
      */
     @VisibleForTesting
     public void loadBook() {
-        book = Book.from(bookId);
+        book = bookDao.from(bookId);
     }
 
     /**
      * (Re)load the data for the current book and trigger a UI update.
      */
     void displayBook() {
-        book = Book.from(bookId);
+        book = bookDao.from(bookId);
         onBookLoaded.setValue(book);
         updateReadStatus(false);
     }

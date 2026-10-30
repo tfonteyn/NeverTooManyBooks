@@ -27,7 +27,9 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -52,6 +54,8 @@ public class ShowTocViewModel
     /** Whether the fragment is running in embedded mode. */
     private boolean embedded;
 
+    private BookDao bookDao;
+
     /**
      * Pseudo constructor.
      * <p>
@@ -73,7 +77,9 @@ public class ShowTocViewModel
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
 
-            book = Book.from(bookId);
+            bookDao = ServiceLocator.getInstance().getBookDao();
+
+            book = bookDao.from(bookId);
             works.addAll(book.getToc());
         }
     }
@@ -93,7 +99,7 @@ public class ShowTocViewModel
     }
 
     void reloadBook() {
-        reloadBook(Book.from(this.book.getId()));
+        reloadBook(bookDao.from(this.book.getId()));
     }
 
     void reloadBook(@NonNull final Book book) {
