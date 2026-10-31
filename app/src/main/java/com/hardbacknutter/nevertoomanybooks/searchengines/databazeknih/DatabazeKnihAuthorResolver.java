@@ -152,7 +152,7 @@ public final class DatabazeKnihAuthorResolver
                           .ifPresent(id -> realAuthor.setIdentifierValue(
                                   Identifier.SID_DATABAZE_KNIH, id));
                 }
-                if (author.isSameName(found) && !author.isIdenticalName(found)) {
+                if (author.isSameName(found) && !author.isExactSameName(found)) {
                     // correct diacritics difference
                     author.setName(found.getFamilyName(), found.getGivenNames());
                     modified = true;

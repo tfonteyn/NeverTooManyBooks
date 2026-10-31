@@ -133,7 +133,7 @@ public final class DnbAuthorResolver
             final Author found = parse(document);
             if (found != null) {
                 boolean modified = author.merge(found, true);
-                if (author.isSameName(found) && !author.isIdenticalName(found)) {
+                if (author.isSameName(found) && !author.isExactSameName(found)) {
                     // correct diacritics difference
                     author.setName(found.getFamilyName(), found.getGivenNames());
                     modified = true;

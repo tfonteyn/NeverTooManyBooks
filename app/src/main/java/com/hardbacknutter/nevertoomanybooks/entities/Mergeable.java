@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
-//FIXME: the use of 'name' is misleading and the isIdenticalName which is always
-// combined with isSameName should be simplified
 public interface Mergeable {
 
     /**
@@ -69,16 +67,16 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
-     * Convenience method to compare two Merge-ables.
+     * Compare the names of two Merge-ables.
      * <ol>
-     *     <li>Diacritics are normalised</li>
      *     <li>White-space is condensed to single-space</li>
+     *     <li>Diacritics are <strong>normalised</strong></li>
      *     <li><strong>Case-sensitive</strong></li>
      * </ol>
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if it's the same
+     * @return {@code true} if it's loosely the same
      *
      * @see #getNameFields()
      */
@@ -100,16 +98,19 @@ public interface Mergeable {
     }
 
     /**
-     * Convenience method to <strong>diacritics-sensitive</strong> compare two Merge-ables.
-     * Always <strong>case-sensitive</strong>.
+     * Compare the names of two Merge-ables.
+     * <ol>
+     *     <li><strong>Diacritics-sensitive</strong></li>
+     *     <li><strong>Case-sensitive</strong></li>
+     * </ol>
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if it's the same, including all diacritics
+     * @return {@code true} if it's the exact same
      *
      * @see #getNameFields()
      */
-    default boolean isIdenticalName(@NonNull final Mergeable that) {
+    default boolean isExactSameName(@NonNull final Mergeable that) {
         return Objects.hash(getNameFields())
                == Objects.hash(that.getNameFields());
     }
