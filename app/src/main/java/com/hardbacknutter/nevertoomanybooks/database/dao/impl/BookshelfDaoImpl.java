@@ -511,9 +511,10 @@ public class BookshelfDaoImpl
 
         // Fix IDs and remove duplicates; shelves don't use a Locale, hence no lookup done.
         pruneList(context, list);
+        // We simply use the userLocale instead.
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // Ensure all Bookshelves exist in DB so they all have a valid ID
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         for (final Bookshelf bookshelf : list) {
             if (bookshelf.getId() == 0) {
                 insert(context, bookshelf, userLocale);

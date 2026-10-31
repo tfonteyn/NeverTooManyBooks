@@ -78,6 +78,8 @@ public class EntityMergeHelper<T extends Mergeable> {
     protected boolean merge(@NonNull final Context context,
                             @NonNull final T previous,
                             @NonNull final T source) {
+
+        // overwrite the id unless we're 'new'
         if (source.getId() > 0) {
             previous.setId(source.getId());
         }

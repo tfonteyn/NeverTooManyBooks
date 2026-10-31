@@ -182,6 +182,7 @@ public class Tag
         if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
+        // The ids MAY be different, but at least one is != 0
 
         return Objects.equals(name, that.name);
     }
