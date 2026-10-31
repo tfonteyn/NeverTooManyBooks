@@ -154,13 +154,16 @@ public class Tag
         dest.writeString(name);
     }
 
-    @Override
-    @NonNull
-    public String toString() {
-        return "Tag{"
-               + "id=" + id
-               + ", tag='" + name + '\''
-               + '}';
+    /**
+     * Enhanced {@link #equals(Object)}.
+     *
+     * @param that to compare to
+     *
+     * @return {@code true} if equals
+     */
+    public boolean isIdentical(@Nullable final Tag that) {
+        // No other fields for now
+        return equals(that);
     }
 
     /**
@@ -195,5 +198,14 @@ public class Tag
     @Override
     public int compareTo(@NonNull final Tag o) {
         return name.compareToIgnoreCase(o.name);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Tag{"
+               + "id=" + id
+               + ", tag='" + name + '\''
+               + '}';
     }
 }

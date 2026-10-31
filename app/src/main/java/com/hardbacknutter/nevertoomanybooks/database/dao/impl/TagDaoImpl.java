@@ -245,7 +245,9 @@ public class TagDaoImpl
                 final Optional<Tag> oFound = findById(tag.getId());
                 if (oFound.isPresent()) {
                     final Tag found = oFound.get();
-                    if (!found.getName().equals(tag.getName())) {
+                    // There is nothing to merge
+                    // tag.merge(found);
+                    if (!found.isIdentical(tag)) {
                         update(tag);
                         changesMade = true;
                     }
