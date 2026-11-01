@@ -381,9 +381,16 @@ public class TocEntry
         return all;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, author);
+    /**
+     * Enhanced {@link #equals(Object)}.
+     *
+     * @param that to compare to
+     *
+     * @return {@code true} if equals
+     */
+    public boolean isIdentical(@Nullable final TocEntry that) {
+        return equals(that)
+               && firstPublicationDate.equals(that.firstPublicationDate);
     }
 
     /**
@@ -413,6 +420,11 @@ public class TocEntry
 
         return Objects.equals(author, that.author)
                && Objects.equals(title, that.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, author);
     }
 
     @Override

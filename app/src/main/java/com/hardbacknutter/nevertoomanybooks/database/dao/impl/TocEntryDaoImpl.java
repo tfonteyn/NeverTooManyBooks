@@ -340,17 +340,10 @@ public class TocEntryDaoImpl
                     final Optional<TocEntry> oFound = findById(tocEntry.getId());
                     if (oFound.isPresent()) {
                         final TocEntry found = oFound.get();
-
-                        // tocEntry.merge(found);
-                        // final boolean changed = found.isIdentical(tocEntry));
-                        // URGENT: use the below equals, or the above merge/isIdentical ????
-                        final boolean changed =
-                                !found.getTitle().equals(title)
-                                || !found.getFirstPublicationDate()
-                                         .getIsoString()
-                                         .equals(pubDateIso);
-
-                        if (changed) {
+                        // Always merge, but no need to check if modified or not
+                        tocEntry.merge(found);
+                        // Check for the title/author AND the publication data being different
+                        if (!found.isIdentical(tocEntry)) {
                             stmtUpdToc.bindString(1, title);
                             stmtUpdToc.bindString(2, normalisedObTitle);
                             stmtUpdToc.bindString(3, pubDateIso);
