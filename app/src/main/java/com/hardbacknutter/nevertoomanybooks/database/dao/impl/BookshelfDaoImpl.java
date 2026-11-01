@@ -520,6 +520,10 @@ public class BookshelfDaoImpl
                 insert(context, bookshelf, userLocale);
                 changesMade = true;
             }
+            // there is never anything to update.
+            // The Bookshelf's own fields are simply its name.
+            // The Style and positions are NOT considered relevant enough
+            // to warrant updating
         }
 
         // Fetch current link states (Bookshelf ID)
