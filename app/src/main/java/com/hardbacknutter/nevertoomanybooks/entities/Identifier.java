@@ -86,7 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz._ALL;
  *     All Wikidata claim number - WARNING: LONG LIST</a>
  */
 public class Identifier
-        implements Parcelable, Entity, Mergeable {
+        implements Parcelable, Entity {
 
     public static final String SID_ASIN = "asin";
     public static final String SID_AUDIBLE = "audible-asin";
@@ -392,14 +392,6 @@ public class Identifier
      */
     public void setKey(@NonNull final String key) {
         this.key = key;
-    }
-
-    @NonNull
-    @Override
-    public List<String> getNameFields() {
-        // The 'name' fields are the key and entity type,
-        // not the actual name which is a description only.
-        return List.of(key, String.valueOf(entityType.getId()));
     }
 
     /**

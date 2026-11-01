@@ -94,20 +94,21 @@ public class EditIdentifierViewModel
     @NonNull
     Optional<Identifier> saveIfUnique() {
 
-        // FIRST check if the name was changed
-        final boolean sameName = original.isSameName(currentEdit);
+        // FIRST check if the key/type was changed
+        final boolean sameKeyAndType = original.getKey().equals(currentEdit.getKey())
+                && original.getType() == currentEdit.getType();
 
-        // now copy changes, including the name and any other attributes
+        // now copy changes, including the key/type and any other attributes
         original.copyFrom(currentEdit);
 
-        // It's an existing one and the name was not changed;
+        // It's an existing one and the key/type was not changed;
         // just update the other attributes
-        if (original.getId() != 0 && sameName) {
+        if (original.getId() != 0 && sameKeyAndType) {
             dao.update(original);
             return Optional.empty();
         }
 
-        // Check if there is another one with the same new key and entity type.
+        // Check if there is another one with the same new key/type.
         final Optional<Identifier> existingEntity = dao.find(original.getKey(),
                                                              original.getEntityType());
         if (existingEntity.isPresent()) {
