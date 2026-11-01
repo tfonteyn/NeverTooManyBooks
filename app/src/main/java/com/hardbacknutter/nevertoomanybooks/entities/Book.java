@@ -27,6 +27,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Discouraged;
+import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -153,8 +154,7 @@ public class Book
      * <item>@string/lbl_condition_fine</item>
      * </string-array>
      */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    public static final int CONDITION_AS_NEW = 5;
+    private static final int CONDITION_AS_NEW = 5;
 
     /** Log tag. */
     private static final String TAG = "Book";
@@ -316,7 +316,6 @@ public class Book
      */
     @NonNull
     public Book duplicate(@NonNull final Context context) {
-        final Book duplicate = new Book();
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
         final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
@@ -340,85 +339,105 @@ public class Book
         // BOOK_DATE_ADDED
         // DATE_LAST_UPDATED
         //
-        // Note we use the getString method to ensure we detect null values
-        // and do NOT accidentally insert empty strings instead.
-        //
         // //NEWTHINGS: new fields
+        final Book duplicate = new Book();
 
         duplicate.setTitle(getString(DBKey.TITLE, null));
         duplicate.setRawProductCode(getString(DBKey.ISBN, null));
 
-        if (duplicate.contains(Bookshelf.BKEY_LIST)) {
+        if (contains(Bookshelf.BKEY_LIST)) {
             duplicate.setBookshelves(getBookshelves());
         }
-        if (duplicate.contains(Author.BKEY_LIST)) {
+        if (contains(Author.BKEY_LIST)) {
             duplicate.setAuthors(getAuthors());
         }
-        if (duplicate.contains(Series.BKEY_LIST)) {
+        if (contains(Series.BKEY_LIST)) {
             duplicate.setSeries(getSeries());
         }
-        if (duplicate.contains(Publisher.BKEY_LIST)) {
+        if (contains(Publisher.BKEY_LIST)) {
             duplicate.setPublishers(getPublishers());
         }
-        if (duplicate.contains(TocEntry.BKEY_LIST)) {
+        if (contains(TocEntry.BKEY_LIST)) {
             duplicate.setToc(getToc());
         }
-        if (duplicate.contains(Tag.BKEY_LIST)) {
+        if (contains(Tag.BKEY_LIST)) {
             duplicate.setTags(getTags());
         }
 
         duplicate.setTranslatedFromTitle(getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         duplicate.setTranslatedFromLanguage(getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
 
-        // publication data
         duplicate.setPrintRun(getString(DBKey.PRINT_RUN, null));
         duplicate.setContentType(getContentType());
         duplicate.setPublicationDate(getString(DBKey.PUBLICATION_DATE, null));
         duplicate.setFirstPublicationDate(getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        // Copy the price as components
-        duplicate.putBigDecimal(DBKey.PRICE_LISTED,
-                                getBigDecimal(DBKey.PRICE_LISTED, realNumberParser));
-        duplicate.putString(DBKey.PRICE_LISTED_CURRENCY,
-                            getString(DBKey.PRICE_LISTED_CURRENCY));
+        copyMoneyIfSet(DBKey.PRICE_LISTED, duplicate, realNumberParser);
 
         duplicate.setFormat(getString(DBKey.FORMAT, null));
         duplicate.setColor(getString(DBKey.COLOR, null));
         duplicate.setLanguage(getString(DBKey.LANGUAGE, null));
         duplicate.setPages(getString(DBKey.PAGES, null));
-        // common blurb
         duplicate.setDescription(getString(DBKey.DESCRIPTION, null));
 
         // edition info: partially user data
-        duplicate.setEditionFlags(getEditionFlags());
-        duplicate.putString(DBKey.EDITION_INFO, getString(DBKey.EDITION_INFO));
+        if (contains(DBKey.EDITION_FLAGS)) {
+            duplicate.setEditionFlags(getEditionFlags());
+        }
+        duplicate.setEditionInfo(getString(DBKey.EDITION_INFO, null));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        duplicate.putLong(DBKey.SIGNED__BOOL, getLong(DBKey.SIGNED__BOOL));
+        copyLongIfSet(DBKey.SIGNED__BOOL, duplicate);
 
-        duplicate.setRating(getFloat(DBKey.RATING, realNumberParser));
-        duplicate.putString(DBKey.PERSONAL_NOTES, getString(DBKey.PERSONAL_NOTES));
+        duplicate.setRating(getRating(realNumberParser));
+        duplicate.setNotes(getString(DBKey.PERSONAL_NOTES, null));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        duplicate.putLong(DBKey.READ__BOOL, getLong(DBKey.READ__BOOL));
-        duplicate.putString(DBKey.READ_PROGRESS, getString(DBKey.READ_PROGRESS));
-        duplicate.putString(DBKey.READ_START__DATE, getString(DBKey.READ_START__DATE));
-        duplicate.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
+        copyLongIfSet(DBKey.READ__BOOL, duplicate);
+        copyStringIfSet(DBKey.READ_PROGRESS, duplicate);
+        copyStringIfSet(DBKey.READ_START__DATE, duplicate);
+        copyStringIfSet(DBKey.READ_END__DATE, duplicate);
 
-        duplicate.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
+        copyStringIfSet(DBKey.DATE_ACQUIRED, duplicate);
 
-        // Copy the price as components
-        duplicate.putBigDecimal(DBKey.PRICE_PAID,
-                                getBigDecimal(DBKey.PRICE_PAID, realNumberParser));
-        duplicate.putString(DBKey.PRICE_PAID_CURRENCY,
-                            getString(DBKey.PRICE_PAID_CURRENCY));
+        copyMoneyIfSet(DBKey.PRICE_PAID, duplicate, realNumberParser);
 
-        duplicate.putInt(DBKey.CONDITION_BOOK, getInt(DBKey.CONDITION_BOOK));
-        duplicate.putInt(DBKey.CONDITION_COVER, getInt(DBKey.CONDITION_COVER));
+        copyIntIfSet(DBKey.CONDITION_BOOK, duplicate);
+        copyIntIfSet(DBKey.CONDITION_COVER, duplicate);
 
         return duplicate;
+    }
+
+    private void copyMoneyIfSet(@NonNull final String key,
+                                @NonNull final Book duplicate,
+                                @NonNull final RealNumberParser realNumberParser) {
+        if (contains(key)) {
+            duplicate.putBigDecimal(key, getBigDecimal(key, realNumberParser));
+        }
+        copyStringIfSet(key + DBKey.CURRENCY_SUFFIX, duplicate);
+    }
+
+    private void copyIntIfSet(@NonNull final String key,
+                              @NonNull final Book duplicate) {
+        if (contains(key)) {
+            duplicate.putInt(key, getInt(key));
+        }
+    }
+
+    private void copyLongIfSet(@NonNull final String key,
+                               @NonNull final Book duplicate) {
+        if (contains(key)) {
+            duplicate.putLong(key, getLong(key));
+        }
+    }
+
+    private void copyStringIfSet(@NonNull final String key,
+                                 @NonNull final Book duplicate) {
+        if (contains(key)) {
+            duplicate.putString(key, getString(key));
+        }
     }
 
     /**
@@ -1254,19 +1273,6 @@ public class Book
     }
 
     /**
-     * Set the rating.
-     *
-     * @param rating to set; a {@code 0} or negative number will remove the field
-     */
-    public void setRating(final float rating) {
-        if (rating > 0) {
-            putFloat(DBKey.RATING, rating);
-        } else {
-            remove(DBKey.RATING);
-        }
-    }
-
-    /**
      * Add a single {@link Bookshelf}.
      *
      * @param bookshelf to add
@@ -1477,6 +1483,31 @@ public class Book
             putString(DBKey.EDITION_INFO, notes);
         } else {
             remove(DBKey.EDITION_INFO);
+        }
+    }
+
+    /**
+     * Get the rating.
+     *
+     * @param parser to use for number parsing
+     *
+     * @return rating
+     */
+    @FloatRange(from = 0, to = 5)
+    public float getRating(@NonNull final RealNumberParser parser) {
+        return getFloat(DBKey.RATING, parser);
+    }
+
+    /**
+     * Set the rating.
+     *
+     * @param rating to set; a {@code 0} or negative number will remove the field
+     */
+    public void setRating(@FloatRange(from = 0, to = 5) final float rating) {
+        if (rating > 0) {
+            putFloat(DBKey.RATING, rating);
+        } else {
+            remove(DBKey.RATING);
         }
     }
 
@@ -1705,10 +1736,6 @@ public class Book
         if (!contains(DBKey.DATE_ACQUIRED)) {
             putLocalDateTime(DBKey.DATE_ACQUIRED, LocalDateTime.now());
         }
-    }
-
-    public float getRating(@NonNull final RealNumberParser parser) {
-        return getFloat(DBKey.RATING, parser);
     }
 
     /**
