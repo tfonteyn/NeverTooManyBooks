@@ -255,12 +255,12 @@ public class EditBookFragment
             }
         }
 
-        // Now validate the book data
-        if (!book.validate(context)) {
+        // Validate the book data
+        if (!vm.validateBook(context)) {
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.vldt_failure)
-                    .setMessage(book.getValidationExceptionMessage(context))
+                    .setMessage(vm.getValidationExceptionMessage(context))
                     .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();

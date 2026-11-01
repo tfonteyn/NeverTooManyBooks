@@ -82,6 +82,14 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
+import com.hardbacknutter.nevertoomanybooks.datamanager.ValidatorConfig;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BigDecimalValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -164,6 +172,11 @@ public class EditBookViewModel
      * It will never be {@code null} after being loaded in {@link #init(Context, EditBookInput)}.
      */
     private Book book;
+
+    /** Validator and validator results. */
+    @Nullable
+    private ValidatorConfig validatorConfig;
+
     /**
      * Field drop down lists.
      * Lists in database so far, we cache them for performance but only load
@@ -336,12 +349,93 @@ public class EditBookViewModel
                 book.setStage(EntityStage.Stage.WriteAble);
             }
 
-            book.addValidators(context);
+            initValidators();
+
             book.ensureBookshelf();
             book.ensureLanguage(userLocale);
 
             initialBookshelfList = book.getBookshelves();
         }
+    }
+
+    private void initValidators() {
+
+        validatorConfig = new ValidatorConfig();
+
+        final DataValidator priceValidator = new OrValidator(
+                new BlankValidator(),
+                new BigDecimalValidator(realNumberParser));
+        final DataValidator longValidator = new LongValidator();
+        final DataValidator nonBlankValidator = new NonBlankValidator();
+
+        validatorConfig.addValidator(DBKey.TITLE,
+                                     nonBlankValidator, R.string.lbl_title);
+        validatorConfig.addValidator(Author.BKEY_LIST,
+                                     nonBlankValidator, R.string.lbl_author);
+        //URGENT: force a bookshelf te be entered?
+        // 2024-11-28: up to now, no-shelf automatically adds the book
+        // to the default shell, which we presume is ok for the large majority of users.
+        // We came across this situation when manually edit the bookshelves list
+        // and deliberately removing all.
+        //validatorConfig.addValidator(BKEY_BOOKSHELF_LIST,
+        //                             nonBlankValidator, R.string.lbl_bookshelf);
+
+        validatorConfig.addValidator(DBKey.LANGUAGE,
+                                     nonBlankValidator, R.string.lbl_language);
+
+        // URGENT: do we really need a validator on EDITION_FLAGS ?
+        validatorConfig.addValidator(DBKey.EDITION_FLAGS,
+                                     longValidator, R.string.lbl_edition);
+        // URGENT: do we really need a validator on CONTENT_TYPE ?
+        validatorConfig.addValidator(DBKey.CONTENT_TYPE,
+                                     longValidator, R.string.lbl_table_of_content);
+
+        validatorConfig.addValidator(DBKey.PRICE_LISTED,
+                                     priceValidator, R.string.lbl_price_listed);
+        validatorConfig.addValidator(DBKey.PRICE_PAID,
+                                     priceValidator, R.string.lbl_price_paid);
+
+        validatorConfig.addCrossValidator((c, book) -> {
+            final String start = book.getString(DBKey.READ_START__DATE);
+            if (start.isEmpty()) {
+                return;
+            }
+            final String end = book.getString(DBKey.READ_END__DATE);
+            if (end.isEmpty()) {
+                return;
+            }
+            if (start.compareToIgnoreCase(end) > 0) {
+                throw new ValidatorException(c.getString(R.string.vldt_read_start_after_end));
+            }
+        });
+    }
+
+    /**
+     * Run all validators.
+     * <p>
+     * If this method returns {@code false}
+     * call {@link #getValidationExceptionMessage} for the failure message.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if all validations passed
+     */
+    boolean validateBook(@NonNull final Context context) {
+        //noinspection DataFlowIssue
+        return validatorConfig.validate(context, book);
+    }
+
+    /**
+     * Retrieve the text message associated with the {@link #validateBook} exceptions (if any).
+     *
+     * @param context Current context
+     *
+     * @return a user displayable list of error messages, or {@code null} if none present
+     */
+    @Nullable
+    String getValidationExceptionMessage(@NonNull final Context context) {
+        //noinspection DataFlowIssue
+        return validatorConfig.getValidationExceptionMessage(context);
     }
 
     @NonNull
