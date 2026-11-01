@@ -1606,6 +1606,19 @@ public class Book
     }
 
     /**
+     * Set the {@link CalibreLibrary}.
+     *
+     * @param libraryId to set; use {@code 0} to remove.
+     */
+    public void setCalibreLibrary(final long libraryId) {
+        if (libraryId > 0) {
+            putLong(DBKey.FK_CALIBRE_LIBRARY, libraryId);
+        } else {
+            removeCalibreData();
+        }
+    }
+
+    /**
      * Check if this book has all the Calibre keys needed.
      * <p>
      * FIXME: for now {@code BookDaoImpl#getBookCursor} will always left-join

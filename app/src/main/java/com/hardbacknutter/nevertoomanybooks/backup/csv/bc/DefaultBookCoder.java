@@ -558,13 +558,9 @@ public class DefaultBookCoder
                         library -> calibreLibraryStr2IdMap.put(
                                       library.getLibraryStringId(), library.getId()));
             }
-            final Long id = calibreLibraryStr2IdMap.get(stringId);
-            if (id != null) {
-                book.putLong(DBKey.FK_CALIBRE_LIBRARY, id);
-            } else {
-                // Don't try to recover; just remove all calibre keys from this book.
-                book.setCalibreLibrary(null);
-            }
+            @SuppressWarnings("DataFlowIssue")
+            final long id = calibreLibraryStr2IdMap.getOrDefault(stringId, 0L);
+            book.setCalibreLibrary(id);
 
             // and discard the string-id
             book.remove(DBKey.CALIBRE.LIBRARY_STRING_ID);
