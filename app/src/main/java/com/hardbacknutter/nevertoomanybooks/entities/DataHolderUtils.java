@@ -45,8 +45,8 @@ public final class DataHolderUtils {
      * @return {@code true} if an {@link Author} can be extracted from the {@link DataHolder}.
      */
     public static boolean hasAuthor(@NonNull final DataHolder dataHolder) {
-        if (dataHolder.contains(Book.BKEY_AUTHOR_LIST)) {
-            final List<Author> list = dataHolder.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        if (dataHolder.contains(Author.BKEY_LIST)) {
+            final List<Author> list = dataHolder.getParcelableArrayList(Author.BKEY_LIST);
             return !list.isEmpty();
         } else if (dataHolder.contains(DBKey.FK_AUTHOR)) {
             return dataHolder.getLong(DBKey.FK_AUTHOR) > 0;
@@ -63,8 +63,8 @@ public final class DataHolderUtils {
      * @return {@code true} if an {@link Series} can be extracted from the {@link DataHolder}.
      */
     public static boolean hasSeries(@NonNull final DataHolder dataHolder) {
-        if (dataHolder.contains(Book.BKEY_SERIES_LIST)) {
-            final List<Series> list = dataHolder.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        if (dataHolder.contains(Series.BKEY_LIST)) {
+            final List<Series> list = dataHolder.getParcelableArrayList(Series.BKEY_LIST);
             return !list.isEmpty();
         } else if (dataHolder.contains(DBKey.FK_SERIES)) {
             return dataHolder.getLong(DBKey.FK_SERIES) > 0;
@@ -87,9 +87,9 @@ public final class DataHolderUtils {
             throws IllegalArgumentException {
         Author author = null;
 
-        if (dataHolder.contains(Book.BKEY_AUTHOR_LIST)) {
+        if (dataHolder.contains(Author.BKEY_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Author> list = dataHolder.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            final List<Author> list = dataHolder.getParcelableArrayList(Author.BKEY_LIST);
             if (!list.isEmpty()) {
                 author = list.get(0);
             }
@@ -131,9 +131,9 @@ public final class DataHolderUtils {
             throws IllegalArgumentException {
         Series series = null;
 
-        if (dataHolder.contains(Book.BKEY_SERIES_LIST)) {
+        if (dataHolder.contains(Series.BKEY_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Series> list = dataHolder.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final List<Series> list = dataHolder.getParcelableArrayList(Series.BKEY_LIST);
             if (!list.isEmpty()) {
                 series = list.get(0);
             }
@@ -175,10 +175,10 @@ public final class DataHolderUtils {
             throws IllegalArgumentException {
         Bookshelf bookshelf = null;
 
-        if (dataHolder.contains(Book.BKEY_BOOKSHELF_LIST)) {
+        if (dataHolder.contains(Bookshelf.BKEY_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
             final List<Bookshelf> list = dataHolder.getParcelableArrayList(
-                    Book.BKEY_BOOKSHELF_LIST);
+                    Bookshelf.BKEY_LIST);
             if (!list.isEmpty()) {
                 bookshelf = list.get(0);
             }
@@ -221,10 +221,10 @@ public final class DataHolderUtils {
             throws IllegalArgumentException {
         Publisher result = null;
 
-        if (dataHolder.contains(Book.BKEY_PUBLISHER_LIST)) {
+        if (dataHolder.contains(Publisher.BKEY_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
             final List<Publisher> list = dataHolder.getParcelableArrayList(
-                    Book.BKEY_PUBLISHER_LIST);
+                    Publisher.BKEY_LIST);
             if (!list.isEmpty()) {
                 result = list.get(0);
             }
@@ -266,9 +266,9 @@ public final class DataHolderUtils {
             throws IllegalArgumentException {
         Tag result = null;
 
-        if (dataHolder.contains(Book.BKEY_TAG_LIST)) {
+        if (dataHolder.contains(Tag.BKEY_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Tag> list = dataHolder.getParcelableArrayList(Book.BKEY_TAG_LIST);
+            final List<Tag> list = dataHolder.getParcelableArrayList(Tag.BKEY_LIST);
             if (!list.isEmpty()) {
                 result = list.get(0);
             }

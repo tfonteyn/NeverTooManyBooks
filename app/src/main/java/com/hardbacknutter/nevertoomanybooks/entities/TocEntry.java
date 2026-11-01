@@ -78,6 +78,13 @@ public class TocEntry
             return new TocEntry[size];
         }
     };
+
+    /**
+     * Bundle key for {@code ParcelableArrayList<TocEntry>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "toc_list";
+
     /**
      * Number of books this TocEntry appears in.
      * This value is calculated at SELECT time from the database.

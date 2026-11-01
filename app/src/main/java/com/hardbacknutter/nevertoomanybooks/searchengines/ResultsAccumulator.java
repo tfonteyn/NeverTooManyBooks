@@ -48,8 +48,14 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
@@ -63,13 +69,13 @@ class ResultsAccumulator {
     private static final String TAG = "ResultsAccumulator";
 
     private static final Set<String> LIST_KEYS = Set.of(
-            Book.BKEY_AUTHOR_LIST,
-            Book.BKEY_BOOKSHELF_LIST,
+            Author.BKEY_LIST,
+            Bookshelf.BKEY_LIST,
             Identifier.Value.BKEY_LIST,
-            Book.BKEY_PUBLISHER_LIST,
-            Book.BKEY_SERIES_LIST,
-            Book.BKEY_TAG_LIST,
-            Book.BKEY_TOC_LIST,
+            Publisher.BKEY_LIST,
+            Series.BKEY_LIST,
+            Tag.BKEY_LIST,
+            TocEntry.BKEY_LIST,
             CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
             CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 

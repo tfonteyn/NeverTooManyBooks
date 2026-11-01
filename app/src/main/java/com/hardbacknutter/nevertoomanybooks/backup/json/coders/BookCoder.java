@@ -123,7 +123,7 @@ public class BookCoder
         }
 
         switch (key) {
-            case Book.BKEY_BOOKSHELF_LIST: {
+            case Bookshelf.BKEY_LIST: {
                 final List<Bookshelf> list = book.getBookshelves();
                 if (!list.isEmpty()) {
                     // FK as it's a reference
@@ -131,35 +131,35 @@ public class BookCoder
                 }
                 return;
             }
-            case Book.BKEY_AUTHOR_LIST: {
+            case Author.BKEY_LIST: {
                 final List<Author> list = book.getAuthors();
                 if (!list.isEmpty()) {
                     out.put(key, authorCoder.encode(list));
                 }
                 return;
             }
-            case Book.BKEY_PUBLISHER_LIST: {
+            case Publisher.BKEY_LIST: {
                 final List<Publisher> list = book.getPublishers();
                 if (!list.isEmpty()) {
                     out.put(key, publisherCoder.encode(list));
                 }
                 return;
             }
-            case Book.BKEY_SERIES_LIST: {
+            case Series.BKEY_LIST: {
                 final List<Series> list = book.getSeries();
                 if (!list.isEmpty()) {
                     out.put(key, seriesCoder.encode(list));
                 }
                 return;
             }
-            case Book.BKEY_TOC_LIST: {
+            case TocEntry.BKEY_LIST: {
                 final List<TocEntry> list = book.getToc();
                 if (!list.isEmpty()) {
                     out.put(key, tocEntryCoder.encode(list));
                 }
                 return;
             }
-            case Book.BKEY_TAG_LIST: {
+            case Tag.BKEY_LIST: {
                 final List<Tag> list = book.getTags();
                 if (!list.isEmpty()) {
                     out.put(key, tagCoder.encode(list));
@@ -231,7 +231,7 @@ public class BookCoder
             }
 
             switch (key) {
-                case Book.BKEY_AUTHOR_LIST: {
+                case Author.BKEY_LIST: {
                     book.setAuthors(authorCoder.decode(data.getJSONArray(key)));
                     break;
                 }
@@ -246,19 +246,19 @@ public class BookCoder
                     book.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_PUBLISHER_LIST: {
+                case Publisher.BKEY_LIST: {
                     book.setPublishers(publisherCoder.decode(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_SERIES_LIST: {
+                case Series.BKEY_LIST: {
                     book.setSeries(seriesCoder.decode(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_TAG_LIST: {
+                case Tag.BKEY_LIST: {
                     book.setTags(tagCoder.decode(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_TOC_LIST: {
+                case TocEntry.BKEY_LIST: {
                     book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
                     break;
                 }

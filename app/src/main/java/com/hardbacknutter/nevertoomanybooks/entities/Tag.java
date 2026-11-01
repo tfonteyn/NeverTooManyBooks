@@ -51,6 +51,12 @@ public class Tag
         }
     };
 
+    /**
+     * Bundle key for {@code ArrayList<Tag>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "tag_list";
+
     private long id;
     @NonNull
     private String name;

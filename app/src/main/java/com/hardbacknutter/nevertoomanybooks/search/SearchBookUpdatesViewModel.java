@@ -59,6 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -248,24 +251,24 @@ public class SearchBookUpdatesViewModel
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.TRANSLATION_ORIGINAL_TITLE));
 
         map.put(context.getString(R.string.lbl_authors),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Author.BKEY_LIST,
                                  DBKey.FK_AUTHOR));
         map.put(context.getString(R.string.lbl_identifiers),
                 new SyncFieldDef(SyncField.Type.LIST, Identifier.Value.BKEY_LIST,
                                  DBKey.FK_IDENTIFIER));
         map.put(context.getString(R.string.lbl_publishers),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Publisher.BKEY_LIST,
                                  DBKey.FK_PUBLISHER));
         map.put(context.getString(R.string.lbl_series_multiple),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_SERIES_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Series.BKEY_LIST,
                                  DBKey.FK_SERIES));
         map.put(context.getString(R.string.a_bracket_b_bracket,
                                   context.getString(R.string.lbl_tags),
                                   context.getString(R.string.lbl_genre)),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TAG_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Tag.BKEY_LIST,
                                  DBKey.FK_TAG));
         map.put(context.getString(R.string.lbl_table_of_content),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TOC_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, TocEntry.BKEY_LIST,
                                  DBKey.CONTENT_TYPE));
 
 

@@ -907,25 +907,25 @@ public class EditBookViewModel
     void updateAuthors(@NonNull final List<Author> list) {
         // Update BOTH the book and the field
         book.setAuthors(list);
-        requireField(Book.BKEY_AUTHOR_LIST).setValue(list);
+        requireField(Author.BKEY_LIST).setValue(list);
     }
 
     void updateSeries(@NonNull final List<Series> list) {
         // Update BOTH the book and the field
         book.setSeries(list);
-        requireField(Book.BKEY_SERIES_LIST).setValue(list);
+        requireField(Series.BKEY_LIST).setValue(list);
     }
 
     void updatePublishers(@NonNull final List<Publisher> list) {
         // Update BOTH the book and the field
         book.setPublishers(list);
-        requireField(Book.BKEY_PUBLISHER_LIST).setValue(list);
+        requireField(Publisher.BKEY_LIST).setValue(list);
     }
 
     void updateTags(@NonNull final List<Tag> list) {
         // Update BOTH the book and the field
         book.setTags(list);
-        requireField(Book.BKEY_TAG_LIST).setValue(list);
+        requireField(Tag.BKEY_LIST).setValue(list);
     }
 
     /**
@@ -944,7 +944,7 @@ public class EditBookViewModel
             return;
         }
 
-        final Field<List<Bookshelf>, TextView> field = requireField(Book.BKEY_BOOKSHELF_LIST);
+        final Field<List<Bookshelf>, TextView> field = requireField(Bookshelf.BKEY_LIST);
         final List<Bookshelf> previous = field.getValue();
 
         final List<Bookshelf> selected =
@@ -966,7 +966,7 @@ public class EditBookViewModel
         // Reload, so any renames/deleted are updated.
         final List<Bookshelf> dbList = bookshelfDao.getByBookId(book.getId());
 
-        final Field<List<Bookshelf>, TextView> field = requireField(Book.BKEY_BOOKSHELF_LIST);
+        final Field<List<Bookshelf>, TextView> field = requireField(Bookshelf.BKEY_LIST);
         final List<Bookshelf> previous = field.getValue();
 
         final List<Bookshelf> currentList;
@@ -1162,14 +1162,14 @@ public class EditBookViewModel
         }
         initFieldsMain = true;
 
-        addField(fragmentId, new TextViewField<>(R.id.author, Book.BKEY_AUTHOR_LIST,
+        addField(fragmentId, new TextViewField<>(R.id.author, Author.BKEY_LIST,
                                                  DBKey.FK_AUTHOR,
                                                  listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_author)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
-        addField(fragmentId, new TextViewField<>(R.id.series_title, Book.BKEY_SERIES_LIST,
+        addField(fragmentId, new TextViewField<>(R.id.series_title, Series.BKEY_LIST,
                                                  DBKey.FK_SERIES,
                                                  listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_series));
@@ -1211,12 +1211,12 @@ public class EditBookViewModel
                                    errStrNonBlankRequired)));
 
         // Personal fields
-        addField(fragmentId, new TextViewField<>(R.id.tags, Book.BKEY_TAG_LIST,
+        addField(fragmentId, new TextViewField<>(R.id.tags, Tag.BKEY_LIST,
                                                  DBKey.FK_TAG,
                                                  listFormatterNormalDetails)
                            .addRelatedViews(R.id.lbl_tags));
 
-        addField(fragmentId, new TextViewField<>(R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+        addField(fragmentId, new TextViewField<>(R.id.bookshelves, Bookshelf.BKEY_LIST,
                                                  DBKey.FK_BOOKSHELF,
                                                  listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_bookshelves)
@@ -1239,7 +1239,7 @@ public class EditBookViewModel
                                                        this::getAllColors)
                            .setTextInputLayoutId(R.id.lbl_color));
 
-        addField(fragmentId, new TextViewField<>(R.id.publisher, Book.BKEY_PUBLISHER_LIST,
+        addField(fragmentId, new TextViewField<>(R.id.publisher, Publisher.BKEY_LIST,
                                                  DBKey.FK_PUBLISHER,
                                                  listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_publisher));

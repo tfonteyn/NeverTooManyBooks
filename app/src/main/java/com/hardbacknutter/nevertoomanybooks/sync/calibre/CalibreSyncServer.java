@@ -43,8 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
@@ -161,19 +165,19 @@ public class CalibreSyncServer
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.TITLE));
 
         map.put(context.getString(R.string.lbl_authors),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Author.BKEY_LIST,
                                  DBKey.FK_AUTHOR));
         map.put(context.getString(R.string.lbl_identifiers),
                 new SyncFieldDef(SyncField.Type.LIST, Identifier.Value.BKEY_LIST,
                                  DBKey.FK_IDENTIFIER));
         map.put(context.getString(R.string.lbl_publishers),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Publisher.BKEY_LIST,
                                  DBKey.FK_PUBLISHER));
         map.put(context.getString(R.string.lbl_series_multiple),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_SERIES_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Series.BKEY_LIST,
                                  DBKey.FK_SERIES));
         map.put(context.getString(R.string.lbl_tags),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TAG_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Tag.BKEY_LIST,
                                  DBKey.FK_TAG));
 
         // The site specific fields

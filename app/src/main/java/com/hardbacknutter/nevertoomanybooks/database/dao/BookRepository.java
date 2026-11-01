@@ -48,9 +48,14 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageIOException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -255,7 +260,7 @@ public class BookRepository {
 
         final ServiceLocator sl = ServiceLocator.getInstance();
 
-        if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
+        if (book.contains(Bookshelf.BKEY_LIST)) {
             // Bookshelves will be inserted if new, but never updated
             //noinspection ConstantValue
             changesMade = sl.getBookshelfDao().insertOrUpdate(context, book.getId(),
@@ -263,7 +268,7 @@ public class BookRepository {
                           || changesMade;
         }
 
-        if (book.contains(Book.BKEY_AUTHOR_LIST)) {
+        if (book.contains(Author.BKEY_LIST)) {
             // Insert new entries AND update existing ones as needed.
             changesMade = sl.getAuthorDao().insertOrUpdate(context, book.getId(), true,
                                                            book.getAuthors(),
@@ -271,7 +276,7 @@ public class BookRepository {
                           || changesMade;
         }
 
-        if (book.contains(Book.BKEY_SERIES_LIST)) {
+        if (book.contains(Series.BKEY_LIST)) {
             final Function<Series, Locale> localeSupplier = series -> {
                 if (lookupLocale) {
                     return series.getLocale(userLocale).orElse(bookLocale);
@@ -286,7 +291,7 @@ public class BookRepository {
                           || changesMade;
         }
 
-        if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
+        if (book.contains(Publisher.BKEY_LIST)) {
             // Insert new entries AND update existing ones as needed.
             changesMade = sl.getPublisherDao().insertOrUpdate(context, book.getId(), true,
                                                               book.getPublishers(),
@@ -294,7 +299,7 @@ public class BookRepository {
                           || changesMade;
         }
 
-        if (book.contains(Book.BKEY_TOC_LIST)) {
+        if (book.contains(TocEntry.BKEY_LIST)) {
             // TOC entries are two steps away; they can exist in other books.
             // Insert new entries AND update existing ones as needed.
             changesMade = sl.getTocEntryDao().insertOrUpdate(context, book.getId(), true,
@@ -303,7 +308,7 @@ public class BookRepository {
                           || changesMade;
         }
 
-        if (book.contains(Book.BKEY_TAG_LIST)) {
+        if (book.contains(Tag.BKEY_LIST)) {
             // These are two steps away; they can exist in other books.
             // Insert new entries AND update existing ones as needed.
             changesMade = sl.getTagDao().insertOrUpdate(context, book.getId(), true,

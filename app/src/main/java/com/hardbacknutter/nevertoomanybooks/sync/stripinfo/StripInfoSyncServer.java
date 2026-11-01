@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -140,7 +141,7 @@ public class StripInfoSyncServer
 
         // the wishlist
         map.put(context.getString(R.string.lbl_bookshelves),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_BOOKSHELF_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Bookshelf.BKEY_LIST,
                                  DBKey.FK_BOOKSHELF));
         map.put(context.getString(R.string.lbl_date_acquired),
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.DATE_ACQUIRED));

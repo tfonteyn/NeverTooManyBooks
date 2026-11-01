@@ -105,11 +105,11 @@ public class CalibreDaoImpl
                                               @NonNull final Book book) {
         final CalibreLibrary library;
 
-        if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
+        if (book.contains(CalibreLibrary.BKEY_LIST)) {
             //reminder: do not use book.getCalibreLibrary();
             // There is no point in trying to find the library when we're actively
             // only now going to insert it.
-            library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
+            library = book.getParcelable(CalibreLibrary.BKEY_LIST);
 
             //noinspection DataFlowIssue
             calibreLibraryDao.fixId(context, library);

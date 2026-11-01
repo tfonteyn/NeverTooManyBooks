@@ -144,44 +144,6 @@ public class Book
     };
 
     /**
-     * Bundle key for {@code ParcelableArrayList<Author>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_AUTHOR_LIST = "author_list";
-    /**
-     * Bundle key for {@code ParcelableArrayList<Series>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_SERIES_LIST = "series_list";
-    /**
-     * Bundle key for {@code ParcelableArrayList<Publisher>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_PUBLISHER_LIST = "publisher_list";
-    /**
-     * Bundle key for {@code ParcelableArrayList<TocEntry>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_TOC_LIST = "toc_list";
-    /**
-     * Bundle key for {@code ParcelableArrayList<Bookshelf>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_BOOKSHELF_LIST = "bookshelf_list";
-
-    /**
-     * Bundle key for {@code ArrayList<Tag>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_TAG_LIST = "tag_list";
-
-    /**
-     * Bundle key for {@code CalibreLibrary (Parcelable)}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_CALIBRE_LIBRARY = "calibre_library";
-
-    /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
@@ -400,22 +362,22 @@ public class Book
         duplicate.setTitle(getString(DBKey.TITLE, null));
         duplicate.setRawProductCode(getString(DBKey.ISBN, null));
 
-        if (duplicate.contains(BKEY_BOOKSHELF_LIST)) {
+        if (duplicate.contains(Bookshelf.BKEY_LIST)) {
             duplicate.setBookshelves(getBookshelves());
         }
-        if (duplicate.contains(BKEY_AUTHOR_LIST)) {
+        if (duplicate.contains(Author.BKEY_LIST)) {
             duplicate.setAuthors(getAuthors());
         }
-        if (duplicate.contains(BKEY_SERIES_LIST)) {
+        if (duplicate.contains(Series.BKEY_LIST)) {
             duplicate.setSeries(getSeries());
         }
-        if (duplicate.contains(BKEY_PUBLISHER_LIST)) {
+        if (duplicate.contains(Publisher.BKEY_LIST)) {
             duplicate.setPublishers(getPublishers());
         }
-        if (duplicate.contains(BKEY_TOC_LIST)) {
+        if (duplicate.contains(TocEntry.BKEY_LIST)) {
             duplicate.setToc(getToc());
         }
-        if (duplicate.contains(BKEY_TAG_LIST)) {
+        if (duplicate.contains(Tag.BKEY_LIST)) {
             duplicate.setTags(getTags());
         }
 
@@ -1038,7 +1000,7 @@ public class Book
     @Override
     @NonNull
     public List<Author> getAuthors() {
-        return getParcelableArrayList(BKEY_AUTHOR_LIST);
+        return getParcelableArrayList(Author.BKEY_LIST);
     }
 
     /**
@@ -1047,7 +1009,7 @@ public class Book
      * @param authors list
      */
     public void setAuthors(@NonNull final Collection<Author> authors) {
-        putParcelableCollection(BKEY_AUTHOR_LIST, authors);
+        putParcelableCollection(Author.BKEY_LIST, authors);
     }
 
     /**
@@ -1067,7 +1029,7 @@ public class Book
      * @param context Current context
      */
     public void refreshAuthors(@NonNull final Context context) {
-        if (contains(BKEY_AUTHOR_LIST)) {
+        if (contains(Author.BKEY_LIST)) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
@@ -1123,7 +1085,7 @@ public class Book
      */
     @NonNull
     public List<Series> getSeries() {
-        return getParcelableArrayList(BKEY_SERIES_LIST);
+        return getParcelableArrayList(Series.BKEY_LIST);
     }
 
     /**
@@ -1132,7 +1094,7 @@ public class Book
      * @param series list
      */
     public void setSeries(@NonNull final Collection<Series> series) {
-        putParcelableCollection(BKEY_SERIES_LIST, series);
+        putParcelableCollection(Series.BKEY_LIST, series);
     }
 
     /**
@@ -1161,7 +1123,7 @@ public class Book
      * @param context Current context
      */
     public void refreshSeries(@NonNull final Context context) {
-        if (contains(BKEY_SERIES_LIST)) {
+        if (contains(Series.BKEY_LIST)) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
@@ -1220,7 +1182,7 @@ public class Book
      */
     @NonNull
     public List<Publisher> getPublishers() {
-        return getParcelableArrayList(BKEY_PUBLISHER_LIST);
+        return getParcelableArrayList(Publisher.BKEY_LIST);
     }
 
     /**
@@ -1229,7 +1191,7 @@ public class Book
      * @param publishers list
      */
     public void setPublishers(@NonNull final Collection<Publisher> publishers) {
-        putParcelableCollection(BKEY_PUBLISHER_LIST, publishers);
+        putParcelableCollection(Publisher.BKEY_LIST, publishers);
     }
 
     /**
@@ -1247,7 +1209,7 @@ public class Book
      * @param context Current context
      */
     public void refreshPublishers(@NonNull final Context context) {
-        if (contains(BKEY_PUBLISHER_LIST)) {
+        if (contains(Publisher.BKEY_LIST)) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
@@ -1293,7 +1255,7 @@ public class Book
      */
     @NonNull
     public List<Bookshelf> getBookshelves() {
-        return getParcelableArrayList(BKEY_BOOKSHELF_LIST);
+        return getParcelableArrayList(Bookshelf.BKEY_LIST);
     }
 
     /**
@@ -1302,7 +1264,7 @@ public class Book
      * @param bookShelves list
      */
     public void setBookshelves(@NonNull final Collection<Bookshelf> bookShelves) {
-        putParcelableCollection(BKEY_BOOKSHELF_LIST, bookShelves);
+        putParcelableCollection(Bookshelf.BKEY_LIST, bookShelves);
     }
 
     /**
@@ -1349,7 +1311,7 @@ public class Book
      */
     @NonNull
     public List<TocEntry> getToc() {
-        return getParcelableArrayList(BKEY_TOC_LIST);
+        return getParcelableArrayList(TocEntry.BKEY_LIST);
     }
 
     /**
@@ -1358,7 +1320,7 @@ public class Book
      * @param tocEntries list
      */
     public void setToc(@NonNull final Collection<TocEntry> tocEntries) {
-        putParcelableCollection(BKEY_TOC_LIST, tocEntries);
+        putParcelableCollection(TocEntry.BKEY_LIST, tocEntries);
     }
 
     /**
@@ -1385,7 +1347,7 @@ public class Book
      */
     @NonNull
     public List<Tag> getTags() {
-        return getParcelableArrayList(BKEY_TAG_LIST);
+        return getParcelableArrayList(Tag.BKEY_LIST);
     }
 
     /**
@@ -1394,7 +1356,7 @@ public class Book
      * @param tags list
      */
     public void setTags(@NonNull final Collection<Tag> tags) {
-        putParcelableCollection(BKEY_TAG_LIST, tags);
+        putParcelableCollection(Tag.BKEY_LIST, tags);
     }
 
     /**
@@ -1404,13 +1366,13 @@ public class Book
      * @param tags to add
      */
     public void addTags(@NonNull final Collection<Tag> tags) {
-        List<Tag> bt = getParcelableArrayList(BKEY_TAG_LIST);
+        List<Tag> bt = getParcelableArrayList(Tag.BKEY_LIST);
         bt.addAll(tags);
         bt = bt.stream()
                .filter(t -> !t.getName().isBlank())
                .distinct()
                .collect(Collectors.toList());
-        putParcelableCollection(BKEY_TAG_LIST, bt);
+        putParcelableCollection(Tag.BKEY_LIST, bt);
     }
 
     /**
@@ -1593,7 +1555,7 @@ public class Book
         }
 
         // We MIGHT have the cached CalibreLibrary.
-        final CalibreLibrary library = getParcelable(BKEY_CALIBRE_LIBRARY);
+        final CalibreLibrary library = getParcelable(CalibreLibrary.BKEY_LIST);
         if (library != null) {
             return Optional.of(library);
         }
@@ -1605,7 +1567,7 @@ public class Book
                 .findById(getLong(DBKey.FK_CALIBRE_LIBRARY));
 
         // cache it for reuse
-        oLibrary.ifPresent(lib -> putParcelable(BKEY_CALIBRE_LIBRARY, lib));
+        oLibrary.ifPresent(lib -> putParcelable(CalibreLibrary.BKEY_LIST, lib));
 
         return oLibrary;
     }
@@ -1620,7 +1582,7 @@ public class Book
             // Always add the ID separately
             putLong(DBKey.FK_CALIBRE_LIBRARY, library.getId());
             // and cache the object itself
-            putParcelable(BKEY_CALIBRE_LIBRARY, library);
+            putParcelable(CalibreLibrary.BKEY_LIST, library);
         } else {
             removeCalibreData();
         }
@@ -1688,7 +1650,7 @@ public class Book
 
     private void removeCalibreData() {
         // Remove a potentially cached CalibreLibrary
-        remove(BKEY_CALIBRE_LIBRARY);
+        remove(CalibreLibrary.BKEY_LIST);
 
         // Remove the CalibreBookData keys
         remove(DBKey.FK_CALIBRE_LIBRARY);
@@ -1702,7 +1664,7 @@ public class Book
      * If the book is not on any Bookshelf, adds the current/default bookshelf
      */
     public void ensureBookshelf() {
-        final List<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
+        final List<Bookshelf> list = getParcelableArrayList(Bookshelf.BKEY_LIST);
         if (list.isEmpty()) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
             Bookshelf bookshelf = bookshelfDao.getCurrent().orElseGet(bookshelfDao::getDefault);
@@ -2174,7 +2136,7 @@ public class Book
 
         validatorConfig.addValidator(DBKey.TITLE,
                                      nonBlankValidator, R.string.lbl_title);
-        validatorConfig.addValidator(BKEY_AUTHOR_LIST,
+        validatorConfig.addValidator(Author.BKEY_LIST,
                                      nonBlankValidator, R.string.lbl_author);
         //URGENT: force a bookshelf te be entered?
         // 2024-11-28: up to now, no-shelf automatically adds the book

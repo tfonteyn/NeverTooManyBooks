@@ -76,6 +76,12 @@ public class Bookshelf
      */
     public static final int ALL_BOOKS = -1;
 
+    /**
+     * Bundle key for {@code ParcelableArrayList<Bookshelf>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "bookshelf_list";
+
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();
 

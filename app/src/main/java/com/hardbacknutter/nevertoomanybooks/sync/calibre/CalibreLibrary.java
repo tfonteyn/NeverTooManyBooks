@@ -56,6 +56,12 @@ public class CalibreLibrary
         }
     };
 
+    /**
+     * Bundle key for {@code CalibreLibrary (Parcelable)}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "calibre_library";
+
     private static final CalibreCustomField[] Z_CALIBRE_CUSTOM_FIELD = new CalibreCustomField[0];
 
     /** The physical Calibre library STRING id. */

@@ -105,6 +105,12 @@ public class Author
         }
     };
 
+    /**
+     * Bundle key for {@code ParcelableArrayList<Author>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "author_list";
+
     private static final String TAG = "Author";
 
     /**

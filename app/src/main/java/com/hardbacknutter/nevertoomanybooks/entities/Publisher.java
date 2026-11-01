@@ -57,6 +57,12 @@ public class Publisher
         }
     };
 
+    /**
+     * Bundle key for {@code ParcelableArrayList<Publisher>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "publisher_list";
+
     /** Row ID. */
     private long id;
     /** Publisher name. */

@@ -677,7 +677,7 @@ public class EditBookTocFragment
                         args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                         DialogLauncher.BKEY_REQUEST_KEY);
                 final List<TocEntry> tocEntries = Objects.requireNonNull(
-                        args.getParcelableArrayList(Book.BKEY_TOC_LIST), Book.BKEY_TOC_LIST);
+                        args.getParcelableArrayList(TocEntry.BKEY_LIST), TocEntry.BKEY_LIST);
 
                 final Book.ContentType bookContentType = Objects.requireNonNull(
                         args.getParcelable(DBKey.CONTENT_TYPE), DBKey.CONTENT_TYPE);
@@ -690,7 +690,7 @@ public class EditBookTocFragment
             Bundle toBundle() {
                 final Bundle args = new Bundle(4);
                 args.putString(DialogLauncher.BKEY_REQUEST_KEY, requestKey);
-                args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
+                args.putParcelableArrayList(TocEntry.BKEY_LIST, new ArrayList<>(toc));
                 args.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
@@ -811,7 +811,7 @@ public class EditBookTocFragment
                     final Book.ContentType contentType =
                             args.getParcelable(DBKey.CONTENT_TYPE);
                     final ArrayList<TocEntry> tocList =
-                            args.getParcelableArrayList(Book.BKEY_TOC_LIST);
+                            args.getParcelableArrayList(TocEntry.BKEY_LIST);
                     final boolean fetchNextEditions = args.getBoolean(SEARCH_NEXT_EDITION);
                     return new Output(contentType, tocList, fetchNextEditions);
                 }
@@ -835,7 +835,7 @@ public class EditBookTocFragment
                         args.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
                     }
                     if (tocEntries != null) {
-                        args.putParcelableArrayList(Book.BKEY_TOC_LIST,
+                        args.putParcelableArrayList(TocEntry.BKEY_LIST,
                                                     new ArrayList<>(tocEntries));
                     }
                     args.putBoolean(SEARCH_NEXT_EDITION, fetchNextEditions);

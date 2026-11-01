@@ -422,7 +422,7 @@ public class SyncReaderProcessor {
         // Note the local data/list must be inserted BEFORE the remote data/list,
         // so we properly 'append' the new data.
         switch (key) {
-            case Book.BKEY_AUTHOR_LIST: {
+            case Author.BKEY_LIST: {
                 final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getAuthors());
@@ -430,7 +430,7 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            case Book.BKEY_BOOKSHELF_LIST: {
+            case Bookshelf.BKEY_LIST: {
                 final List<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getBookshelves());
@@ -446,7 +446,7 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            case Book.BKEY_PUBLISHER_LIST: {
+            case Publisher.BKEY_LIST: {
                 final List<Publisher> list = remoteBook.getPublishers();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getPublishers());
@@ -454,7 +454,7 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            case Book.BKEY_SERIES_LIST: {
+            case Series.BKEY_LIST: {
                 final List<Series> list = remoteBook.getSeries();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getSeries());
@@ -462,7 +462,7 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            case Book.BKEY_TAG_LIST: {
+            case Tag.BKEY_LIST: {
                 final List<Tag> list = remoteBook.getTags();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getTags());
@@ -470,7 +470,7 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            case Book.BKEY_TOC_LIST: {
+            case TocEntry.BKEY_LIST: {
                 final List<TocEntry> list = remoteBook.getToc();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getToc());

@@ -91,6 +91,12 @@ public class Series
     };
 
     /**
+     * Bundle key for {@code ParcelableArrayList<Series>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_LIST = "series_list";
+
+    /**
      * Parse "some text (some more text)" into "some text" and "some more text".
      * Look for "some text" that does not START with a bracket!
      * <p>

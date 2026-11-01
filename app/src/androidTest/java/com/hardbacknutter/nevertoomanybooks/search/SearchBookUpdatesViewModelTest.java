@@ -129,11 +129,11 @@ class SearchBookUpdatesViewModelTest
         final Collection<SyncField> syncFields = vm.getSyncFields();
 
         syncFields.stream()
-                  .filter(syncField -> Book.BKEY_AUTHOR_LIST.equals(syncField.getKey()))
+                  .filter(syncField -> Author.BKEY_LIST.equals(syncField.getKey()))
                   .forEach(f -> f.setAction(SyncAction.Append));
 
         syncFields.stream()
-                  .filter(syncField -> Book.BKEY_PUBLISHER_LIST.equals(syncField.getKey()))
+                  .filter(syncField -> Publisher.BKEY_LIST.equals(syncField.getKey()))
                   .forEach(f -> f.setAction(SyncAction.Overwrite));
 
         syncFields.stream()

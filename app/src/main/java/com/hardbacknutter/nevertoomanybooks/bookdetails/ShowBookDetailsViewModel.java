@@ -52,9 +52,13 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.fields.BooleanIndicatorField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.RatingBarField;
@@ -324,14 +328,14 @@ public class ShowBookDetailsViewModel
                                        DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
                                        languageFormatter));
 
-        addField(new TextViewField<>(R.id.author, Book.BKEY_AUTHOR_LIST,
-                                       DBKey.FK_AUTHOR,
-                                       new ClickableListFormatter<Author>(context, (c, author) ->
+        addField(new TextViewField<>(R.id.author, Author.BKEY_LIST,
+                                     DBKey.FK_AUTHOR,
+                                     new ClickableListFormatter<Author>(context, (c, author) ->
                                                author.getLabel(c, Details.Full, style))));
 
-        addField(new TextViewField<>(R.id.series_title, Book.BKEY_SERIES_LIST,
-                                       DBKey.FK_SERIES,
-                                       fullDetailListFormatter)
+        addField(new TextViewField<>(R.id.series_title, Series.BKEY_LIST,
+                                     DBKey.FK_SERIES,
+                                     fullDetailListFormatter)
                            .addRelatedViews(R.id.lbl_series));
 
         addField(new TextViewField<>(R.id.isbn, DBKey.ISBN)
@@ -353,9 +357,9 @@ public class ShowBookDetailsViewModel
         addField(new TextViewField<>(R.id.format, DBKey.FORMAT));
         addField(new TextViewField<>(R.id.color, DBKey.COLOR));
 
-        addField(new TextViewField<>(R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                       DBKey.FK_PUBLISHER,
-                                       normalDetailListFormatter));
+        addField(new TextViewField<>(R.id.publisher, Publisher.BKEY_LIST,
+                                     DBKey.FK_PUBLISHER,
+                                     normalDetailListFormatter));
 
         addField(new TextViewField<>(R.id.date_published,
                                        DBKey.PUBLICATION_DATE,
@@ -382,14 +386,14 @@ public class ShowBookDetailsViewModel
 
         // Personal fields
 
-        addField(new TextViewField<>(R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                       DBKey.FK_BOOKSHELF,
-                                       normalDetailListFormatter)
+        addField(new TextViewField<>(R.id.bookshelves, Bookshelf.BKEY_LIST,
+                                     DBKey.FK_BOOKSHELF,
+                                     normalDetailListFormatter)
                            .addRelatedViews(R.id.lbl_bookshelves));
 
-        addField(new TextViewField<>(R.id.tags, Book.BKEY_TAG_LIST,
-                                       DBKey.FK_TAG,
-                                       normalDetailListFormatter)
+        addField(new TextViewField<>(R.id.tags, Tag.BKEY_LIST,
+                                     DBKey.FK_TAG,
+                                     normalDetailListFormatter)
                            .addRelatedViews(R.id.lbl_tags));
 
         addField(new TextViewField<>(R.id.date_acquired,
