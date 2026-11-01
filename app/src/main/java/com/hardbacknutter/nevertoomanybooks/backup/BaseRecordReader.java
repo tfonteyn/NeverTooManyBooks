@@ -111,7 +111,7 @@ public abstract class BaseRecordReader
             if (localId > 0) {
                 // The book UUID exists in our database.
                 // Explicitly set the EXISTING id on the book.
-                book.putLong(DBKey.PK_ID, localId);
+                book.setId(localId);
                 // and update/skip using the DataReader.Updates#updateOptions.
                 // As we have both a matching UUID and ID, this is 100% safe to do.
                 updateOrSkipExistingBook(context, book);

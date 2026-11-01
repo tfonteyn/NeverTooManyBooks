@@ -438,10 +438,7 @@ public class CsvRecordReader
         if (idStr != null && !idStr.isEmpty()) {
             // convert it to the expected "long" type
             try {
-                final long id = Long.parseLong(idStr);
-                // Add it back to the book as a long
-                book.putLong(DBKey.PK_ID, id);
-
+                book.setId(Long.parseLong(idStr));
             } catch (@NonNull final NumberFormatException ignore) {
                 // don't log, we'll continue without an id
             }

@@ -63,7 +63,7 @@ class BookDaoHelperTest
         final List<Locale> userLocales = List.of(Locale.US);
 
         final Book book = new Book();
-        book.putLong(DBKey.PK_ID, 1);
+        book.setId(1);
         book.setDescription("Six million years ago");
         book.setPages(516);
         book.setLanguage("eng");

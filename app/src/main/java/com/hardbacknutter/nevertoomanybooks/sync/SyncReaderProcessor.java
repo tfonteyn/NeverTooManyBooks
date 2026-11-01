@@ -251,7 +251,7 @@ public class SyncReaderProcessor {
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
             final Book delta = Book.from(remoteBook, realNumberParser);
-            delta.putLong(DBKey.PK_ID, bookId);
+            delta.setId(bookId);
             return delta;
         }
 
