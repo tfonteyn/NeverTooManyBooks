@@ -178,6 +178,11 @@ class DuplicateRowCleaner {
     }
 
     private void removeDuplicateAuthors() {
+        final String[] equalityColumns = {
+                DBKey.AUTHOR.FAMILY_NAME,
+                DBKey.AUTHOR.GIVEN_NAMES
+        };
+
         final int instanceId = ID_COUNTER.incrementAndGet();
 
         @SuppressWarnings("StringConcatenationMissingWhitespace")
@@ -190,11 +195,6 @@ class DuplicateRowCleaner {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
-
-            final String[] equalityColumns = {
-                    DBKey.AUTHOR.FAMILY_NAME,
-                    DBKey.AUTHOR.GIVEN_NAMES
-            };
 
             createKeepTable(tblKeep, TBL_AUTHORS, equalityColumns);
             createRemovalTable(tblKeep, tblRemove, TBL_AUTHORS, equalityColumns);
@@ -227,42 +227,13 @@ class DuplicateRowCleaner {
      * and remove them from {@link DBDefinitions#TBL_SERIES}.
      */
     private void removeDuplicateSeries() {
-        final int instanceId = ID_COUNTER.incrementAndGet();
+        // Ignore DBKey.SERIES_IS_COMPLETE; "keep" row wins.
+        final String[] equalityColumns = {
+                DBKey.SERIES.TITLE
+        };
 
-        @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tblKeep = TBL_KEEP_BASE_NAME + instanceId;
-        @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tblRemove = TBL_REMOVE_BASE_NAME + instanceId;
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-            // Ignore DBKey.SERIES_IS_COMPLETE; "keep" row wins.
-            final String[] equalityColumns = {
-                    DBKey.SERIES.TITLE
-            };
-
-            createKeepTable(tblKeep, TBL_SERIES, equalityColumns);
-            createRemovalTable(tblKeep, tblRemove, TBL_SERIES, equalityColumns);
-
-            insertReplacementRows(tblRemove, TBL_BOOK_SERIES, DBKey.FK_SERIES);
-            deleteRemovedIds(tblRemove, TBL_BOOK_SERIES, DBKey.FK_SERIES);
-
-            deleteRemovedIds(tblRemove, TBL_SERIES, DBKey.PK_ID);
-
-            db.execSQL(DROP_TABLE_ + tblKeep);
-            db.execSQL(DROP_TABLE_ + tblRemove);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
+        removeDuplicates(TBL_SERIES, TBL_BOOK_SERIES, DBKey.FK_SERIES,
+                         equalityColumns);
     }
 
     /**
@@ -271,42 +242,12 @@ class DuplicateRowCleaner {
      * and remove them from {@link DBDefinitions#TBL_PUBLISHERS}.
      */
     private void removeDuplicatePublishers() {
-        final int instanceId = ID_COUNTER.incrementAndGet();
+        final String[] equalityColumns = {
+                DBKey.PUBLISHER.NAME
+        };
 
-        @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tblKeep = TBL_KEEP_BASE_NAME + instanceId;
-        @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tblRemove = TBL_REMOVE_BASE_NAME + instanceId;
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            final String[] equalityColumns = {
-                    DBKey.PUBLISHER.NAME
-            };
-
-            createKeepTable(tblKeep, TBL_PUBLISHERS, equalityColumns);
-            createRemovalTable(tblKeep, tblRemove, TBL_PUBLISHERS, equalityColumns);
-
-            insertReplacementRows(tblRemove, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
-            deleteRemovedIds(tblRemove, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
-
-            deleteRemovedIds(tblRemove, TBL_PUBLISHERS, DBKey.PK_ID);
-
-            db.execSQL(DROP_TABLE_ + tblKeep);
-            db.execSQL(DROP_TABLE_ + tblRemove);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
+        removeDuplicates(TBL_PUBLISHERS, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER,
+                         equalityColumns);
     }
 
     /**
@@ -319,6 +260,29 @@ class DuplicateRowCleaner {
      * and remove them from {@link DBDefinitions#TBL_TOC_ENTRIES}.
      */
     private void removeDuplicateTocEntries() {
+        // Ignore DBKey.FIRST_PUBLICATION_DATE; "keep" row wins.
+        final String[] equalityColumns = {
+                DBKey.FK_AUTHOR,
+                DBKey.TITLE
+        };
+
+        removeDuplicates(TBL_TOC_ENTRIES, TBL_BOOK_TOC_ENTRIES, DBKey.FK_TOC_ENTRY,
+                         equalityColumns);
+    }
+
+    /**
+     * Find duplicate entries in the {@code entityTable} table.
+     * Dedup the {@code linkTable} and remove them from {@code entityTable}.
+     *
+     * @param entityTable     where to look for duplicates
+     * @param linkTable       in which to insert replacements and/or remove duplicates
+     * @param fk              foreign key between the two tables
+     * @param equalityColumns to use for the duplicate check
+     */
+    private void removeDuplicates(@NonNull final TableDefinition entityTable,
+                                  @NonNull final TableDefinition linkTable,
+                                  @NonNull final String fk,
+                                  @NonNull final String[] equalityColumns) {
         final int instanceId = ID_COUNTER.incrementAndGet();
 
         @SuppressWarnings("StringConcatenationMissingWhitespace")
@@ -332,19 +296,13 @@ class DuplicateRowCleaner {
                 txLock = db.beginTransaction(true);
             }
 
-            // Ignore DBKey.FIRST_PUBLICATION_DATE; "keep" row wins.
-            final String[] equalityColumns = {
-                    DBKey.FK_AUTHOR,
-                    DBKey.TITLE
-            };
+            createKeepTable(tblKeep, entityTable, equalityColumns);
+            createRemovalTable(tblKeep, tblRemove, entityTable, equalityColumns);
 
-            createKeepTable(tblKeep, TBL_TOC_ENTRIES, equalityColumns);
-            createRemovalTable(tblKeep, tblRemove, TBL_TOC_ENTRIES, equalityColumns);
+            insertReplacementRows(tblRemove, linkTable, fk);
+            deleteRemovedIds(tblRemove, linkTable, fk);
 
-            insertReplacementRows(tblRemove, TBL_BOOK_TOC_ENTRIES, DBKey.FK_TOC_ENTRY);
-            deleteRemovedIds(tblRemove, TBL_BOOK_TOC_ENTRIES, DBKey.FK_TOC_ENTRY);
-
-            deleteRemovedIds(tblRemove, TBL_TOC_ENTRIES, DBKey.PK_ID);
+            deleteRemovedIds(tblRemove, entityTable, DBKey.PK_ID);
 
             db.execSQL(DROP_TABLE_ + tblKeep);
             db.execSQL(DROP_TABLE_ + tblRemove);
