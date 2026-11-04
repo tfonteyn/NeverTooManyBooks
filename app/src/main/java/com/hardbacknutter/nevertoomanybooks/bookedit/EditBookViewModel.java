@@ -648,6 +648,11 @@ public class EditBookViewModel
         book.setStage(EntityStage.Stage.Clean);
     }
 
+    /**
+     * Final check when leaving the edit screen: was the book modified AND saved.
+     *
+     * @return flag
+     */
     public boolean isModified() {
         return modified;
     }
@@ -964,8 +969,9 @@ public class EditBookViewModel
                           @NonNull final Series series) {
         if (series.getId() == 0) {
             final Locale userLocale = userLocales.get(0);
-            seriesDao.fixId(context, series, series.getLocale(userLocale).orElseGet(
-                    () -> book.getLocale(userLocale).orElse(userLocale)));
+            final Locale seriesLocale = series.getLocale(userLocale).orElseGet(
+                    () -> book.getLocale(userLocale).orElse(userLocale));
+            seriesDao.fixId(context, series, seriesLocale);
             if (series.getId() == 0) {
                 return true;
             }
