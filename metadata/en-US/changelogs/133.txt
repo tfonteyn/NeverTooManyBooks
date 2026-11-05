@@ -1,0 +1,3 @@
+FIXES:
+
+- GitHub #260: price validation was failing with comma as decimal separator
