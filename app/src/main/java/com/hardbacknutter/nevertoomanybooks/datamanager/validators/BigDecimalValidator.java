@@ -72,12 +72,11 @@ public class BigDecimalValidator
         } else if (obj instanceof BigDecimal) {
             value = (BigDecimal) obj;
         } else {
-            final String stringValue = obj.toString().strip();
-            if (stringValue.isEmpty()) {
+            if (obj.toString().isBlank()) {
                 value = defaultValue;
             } else {
                 try {
-                    value = realNumberParser.toBigDecimal(stringValue);
+                    value = realNumberParser.toBigDecimal(obj);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(
