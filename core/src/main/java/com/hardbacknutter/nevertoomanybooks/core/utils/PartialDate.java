@@ -328,6 +328,17 @@ public class PartialDate
         }
     }
 
+    /**
+     * Checks if this date is before the specified date.
+     *
+     * @param other the other date to compare to, not null
+     *
+     * @return {@code true} if this date is before the specified date
+     */
+    public boolean isBefore(@NonNull final PartialDate other) {
+        return localDate.isBefore(other.localDate);
+    }
+
     @Override
     public boolean equals(@Nullable final Object o) {
         if (this == o) {
