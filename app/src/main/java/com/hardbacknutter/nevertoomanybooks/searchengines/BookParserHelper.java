@@ -42,20 +42,20 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class BookParserHelper {
 
     private final SearchEngineConfig config;
-    private final IdentifierDao identifierDao;
 
     private final ISODateParser isoDateParser;
+    private final IdentifierValuePruner identifierValuePruner;
 
     @NonNull
     private LocaleResolver dateParserLocaleResolver = LocaleResolverDefault.INSTANCE;
@@ -65,7 +65,7 @@ public class BookParserHelper {
     BookParserHelper(@NonNull final SearchEngineConfig config) {
         this.config = config;
 
-        identifierDao = ServiceLocator.getInstance().getIdentifierDao();
+        identifierValuePruner = new IdentifierValuePruner();
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         isoDateParser = new ISODateParser(systemLocale);
@@ -143,7 +143,7 @@ public class BookParserHelper {
                 all.addAll(currentAuthor.getIdentifiers());
                 // We could have duplicate identifiers. Not supported,
                 // Simply let the first id "win"
-                identifierDao.pruneList(all);
+                identifierValuePruner.prune(all);
                 author.setIdentifiers(all);
 
                 add = false;

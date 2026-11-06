@@ -41,7 +41,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -56,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.jsoup.nodes.Document;
@@ -107,6 +107,7 @@ class DnbBookParser {
     @NonNull
     private final Locale userLocale;
     private final DnbParser dnbParser;
+    private final IdentifierValuePruner identifierValuePruner;
 
     /**
      * Constructor.
@@ -122,7 +123,8 @@ class DnbBookParser {
         this.document = document;
         this.book = book;
 
-        dnbParser = new DnbParser(document);
+        identifierValuePruner = new IdentifierValuePruner();
+        dnbParser = new DnbParser(document, identifierValuePruner);
 
         userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
@@ -469,7 +471,7 @@ class DnbBookParser {
      *                     if the the latter was not retrieved during the search
      */
     void finish(@Nullable final String searchedCode) {
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        identifierValuePruner.prune(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
@@ -482,8 +484,9 @@ class DnbBookParser {
         SearchEngineUtils.ensurePeriodicalEditor(book);
     }
 
-
-    // the core parser logic, which will return values.
+    /**
+     * The core parser logic, which will return values.
+     */
     static class DnbParser {
 
         // Last updated 2026-06-21.
@@ -567,14 +570,18 @@ class DnbBookParser {
         private final Document document;
 
         private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+        private final IdentifierValuePruner identifierValuePruner;
 
         /**
          * Constructor.
          *
-         * @param document to parse
+         * @param document              to parse
+         * @param identifierValuePruner to use
          */
-        DnbParser(@NonNull final Document document) {
+        DnbParser(@NonNull final Document document,
+                  @NonNull final IdentifierValuePruner identifierValuePruner) {
             this.document = document;
+            this.identifierValuePruner = identifierValuePruner;
         }
 
         /**
@@ -828,7 +835,7 @@ class DnbBookParser {
 
                     final List<Identifier.Value> ivs = parseAuthorIdentifiers(tag);
                     if (!ivs.isEmpty()) {
-                        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+                        identifierValuePruner.prune(ivs);
                         author.setIdentifiers(ivs);
                     }
 
@@ -1008,7 +1015,7 @@ class DnbBookParser {
                             ivs.add(new Identifier.Value(Identifier.SID_ISSN, normalise(x)));
                         }
 
-                        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+                        identifierValuePruner.prune(ivs);
                         if (!ivs.isEmpty()) {
                             series.setIdentifiers(ivs);
                         }
@@ -1252,7 +1259,7 @@ class DnbBookParser {
                         final Author realAuthor = normaliseAuthor(a);
                         final List<Identifier.Value> ivs = parseAuthorIdentifiers(tag);
                         if (!ivs.isEmpty()) {
-                            ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+                            identifierValuePruner.prune(ivs);
                             realAuthor.setIdentifiers(ivs);
                         }
                         final Pair<String, String> dates = parseAuthorDates(tag);

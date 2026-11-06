@@ -23,25 +23,24 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface SeriesDao
-        extends Purgeable, Positional {
+        extends Purgeable, Positional, IdFixer<Series> {
 
     /**
      * Get a unique list of all {@link Series} titles.
@@ -72,61 +71,6 @@ public interface SeriesDao
      */
     void setComplete(@NonNull Series series,
                      boolean complete);
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<Series> list,
-                              @NonNull final Function<Series, Locale> localeSupplier) {
-        final boolean normalise = ReorderHelper.isTryReorderingDuringDeduplication();
-        return pruneList(context, list, normalise, localeSupplier);
-    }
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param normalise      flag, whether to normalise the title
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<Series> list,
-                              final boolean normalise,
-                              @NonNull final Function<Series, Locale> localeSupplier) {
-        return pruneList(context, list, normalise, localeSupplier,
-                         (series, locale) -> fixId(context, series, locale));
-    }
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     * <p>
-     * <strong>Tests only.</strong>
-     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param normalise      flag, whether to normalise the title
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     * @param idFixer        how to call {@link #fixId(Context, Series, Locale)}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    @VisibleForTesting
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<Series> list,
-                      boolean normalise,
-                      @NonNull Function<Series, Locale> localeSupplier,
-                      @NonNull BiConsumer<Series, Locale> idFixer);
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.
@@ -242,20 +186,6 @@ public interface SeriesDao
      * @return count
      */
     int count();
-
-    /**
-     * Find a {@link Series} by using the <strong>name</strong> fields.
-     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
-     * <p>
-     * If the item has child items, then implementations must propagate the call.
-     *
-     * @param context Current context
-     * @param item    to update
-     * @param locale  Current Locale
-     */
-    void fixId(@NonNull Context context,
-               @NonNull Series item,
-               @NonNull Locale locale);
 
     /**
      * Refresh the passed {@link Series} from the database, if present.

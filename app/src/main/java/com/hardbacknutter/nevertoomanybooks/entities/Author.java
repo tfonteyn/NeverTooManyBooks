@@ -57,15 +57,20 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Mergeable;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -88,7 +93,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * ENHANCE: The Author Locale should be based on the main language the author writes in.
  */
 public class Author
-        implements Parcelable, Entity, Mergeable, IdentifierOwner, ImageOwner {
+        implements Parcelable, Entity, Mergeable<Author>,
+                   IdentifierOwner, ImageOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<>() {
@@ -195,7 +201,16 @@ public class Author
 
     @NonNull
     private final List<Identifier.Value> identifiers = new ArrayList<>();
-
+    /**
+     * If this Author is a pseudonym, then 'realAuthorId' points to that author.
+     * When {@code null} this IS a real author.
+     */
+    @VisibleForTesting
+    @Nullable
+    public Author realAuthor;
+    /** can be {@code 0}. Should be a {@code Long} but we need parcelling ... */
+    @VisibleForTesting
+    public long realAuthorId;
     /** Row ID. */
     private long id;
     /** Family name(s). (NotNullFieldNotInitialized: see copy-constructor). */
@@ -219,7 +234,6 @@ public class Author
      */
     @Nullable
     private String tmpPictureFileSpec;
-
     /**
      * Stored file uuid.
      *
@@ -227,20 +241,8 @@ public class Author
      */
     @Nullable
     private String imageUuid;
-
     /** whether we have all we want from this Author. */
     private boolean complete;
-    /**
-     * If this Author is a pseudonym, then 'realAuthorId' points to that author.
-     * When {@code null} this IS a real author.
-     */
-    @VisibleForTesting
-    @Nullable
-    public Author realAuthor;
-    /** can be {@code 0}. Should be a {@code Long} but we need parcelling ... */
-    @VisibleForTesting
-    public long realAuthorId;
-
     /** Bitmask. */
     @AuthorRole.Role
     private int role = AuthorRole.UNKNOWN;
@@ -316,6 +318,7 @@ public class Author
         complete = in.readByte() != 0;
         role = in.readInt();
         realAuthorId = in.readLong();
+        //noinspection deprecation
         realAuthor = in.readParcelable(getClass().getClassLoader());
         ParcelUtils.readParcelableList(in, identifiers, getClass().getClassLoader());
     }
@@ -1303,16 +1306,26 @@ public class Author
         }
     }
 
+    @Override
+    public boolean merge(@NonNull final Context context,
+                         @NonNull final Author source) {
+        return merge(context, source, true);
+    }
+
     /**
      * <strong>Merge</strong> local details with those from the given Author.
      * The <em>family</em> and <em>given</em> names are never merged.
      *
+     * @param context           Current context
      * @param source            to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well
      *
      * @return {@code true} if this Author was modified in any way
+     *
+     * @see #merge(Context, Author)
      */
-    public boolean merge(@NonNull final Author source,
+    public boolean merge(@NonNull final Context context,
+                         @NonNull final Author source,
                          final boolean includeBookFields) {
 
         // Make sure to resolve both!
@@ -1341,8 +1354,9 @@ public class Author
             setRealAuthor(sourceRealAuthor);
         }
 
-        mergeDates(this::getBirthDate, source::getBirthDate, this::setBirthDate);
-        mergeDates(this::getDeathDate, source::getDeathDate, this::setDeathDate);
+        final DateParser<PartialDate> parser = new PartialDateParser();
+        mergeDates(this::getBirthDate, source::getBirthDate, parser, this::setBirthDate);
+        mergeDates(this::getDeathDate, source::getDeathDate, parser, this::setDeathDate);
 
         if (getImageUuid().isEmpty()) {
             source.getImageUuid().ifPresent(this::setImageUuid);
@@ -1356,34 +1370,47 @@ public class Author
         }
 
         identifiers.addAll(source.getIdentifiers());
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
+        new IdentifierValuePruner().prune(identifiers);
 
         return true;
     }
 
     /**
-     * Merge two dates. If both are present, use the longest date string.
+     * Merge two dates. If both are present, the older date is used.
      *
      * @param myDate     this object
      * @param sourceDate the object we're merging
+     * @param parser     to use
      * @param setDate    method to set the final date
      */
     private void mergeDates(@NonNull final Supplier<Optional<String>> myDate,
                             @NonNull final Supplier<Optional<String>> sourceDate,
+                            @NonNull final DateParser<PartialDate> parser,
                             @NonNull final Consumer<String> setDate) {
-        final Optional<String> oDate1 = myDate.get();
-        final Optional<String> oDate2 = sourceDate.get();
+        final Optional<String> oMyDate = myDate.get();
+        final Optional<String> oSourceDate = sourceDate.get();
 
-        if (oDate1.isEmpty()) {
-            // We don't have a value, copy from them if they have a value
-            oDate2.ifPresent(setDate);
-        } else if (oDate2.isPresent()) {
-            // Both have values
-            final String bd1 = oDate1.get();
-            final String bd2 = oDate2.get();
-            // longest string wins
-            if (bd2.length() > bd1.length()) {
-                setDate.accept(bd2);
+        if (oMyDate.isEmpty()) {
+            // We don't have a value ourselves, copy from the source if they have a value
+            oSourceDate.ifPresent(setDate);
+
+        } else if (oSourceDate.isPresent()) {
+            // Both have values.
+            final Optional<PartialDate> oMyParsedDate = parser.parse(oMyDate.get());
+            final Optional<PartialDate> oSourceParsedDate = parser.parse(oSourceDate.get());
+            if (oMyParsedDate.isEmpty() || oSourceParsedDate.isEmpty()) {
+                // we should never get here.
+                LoggerFactory.getLogger().e(TAG, "mergeDates failure:"
+                                                 + " mine=" + oMyDate.get()
+                                                 + ", source=" + oSourceDate.get());
+                // just abandon the data merge, keep what we have
+                return;
+            }
+
+            final PartialDate d2 = oSourceParsedDate.get();
+            // oldest date wins
+            if (d2.isBefore(oMyParsedDate.get())) {
+                setDate.accept(d2.getIsoString());
             }
         }
     }

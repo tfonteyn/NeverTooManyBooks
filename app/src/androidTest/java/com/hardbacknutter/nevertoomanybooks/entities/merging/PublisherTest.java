@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
 import android.content.Context;
 
@@ -26,11 +26,8 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,15 +42,6 @@ class PublisherTest
     private static final String PUBLISHER_THE = "publisher, The";
     private static final String JOSE_PUBLISHER = "José publisher";
     private static final String JOSE_PUBLISHER_VARIANT = "Jose publisher";
-    private PublisherDao publisherDao;
-
-    @BeforeEach
-    protected void setup()
-            throws Exception {
-        super.setup();
-
-        publisherDao = ServiceLocator.getInstance().getPublisherDao();
-    }
 
     @Test
     void bidi() {
@@ -85,10 +73,9 @@ class PublisherTest
 
         assertNotEquals(p2, p3);
 
-        final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        item -> bookLocale,
-                                                        (p, l) -> {
-                                                        });
+        // NO normalisation and NO idFixer
+        final Pruner<Publisher> publisherPruner = PublisherPruner.forTest(false);
+        final boolean modified = publisherPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -128,11 +115,9 @@ class PublisherTest
         publisher.setId(1002);
         list.add(publisher);
 
-        // Explicit: NO normalisation and NO idFixer
-        final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        item -> bookLocale,
-                                                        (p, l) -> {
-                                                        });
+        // NO normalisation and NO idFixer
+        final Pruner<Publisher> publisherPruner = PublisherPruner.forTest(false);
+        final boolean modified = publisherPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -170,11 +155,9 @@ class PublisherTest
         publisher.setId(1002);
         list.add(publisher);
 
-        // Explicit: NO normalisation
-        final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        item -> bookLocale,
-                                                        (p, l) -> {
-                                                        });
+        // NO normalisation and NO idFixer
+        final Pruner<Publisher> publisherPruner = PublisherPruner.forTest(false);
+        final boolean modified = publisherPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -222,11 +205,9 @@ class PublisherTest
         publisher.setId(1003);
         list.add(publisher);
 
-        // Explicit: NO normalisation
-        final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        item -> bookLocale,
-                                                        (p, l) -> {
-                                                        });
+        // NO normalisation and NO idFixer
+        final Pruner<Publisher> publisherPruner = PublisherPruner.forTest(false);
+        final boolean modified = publisherPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(3, list.size(), list.toString());
@@ -269,10 +250,9 @@ class PublisherTest
         list.add(p3);
 
         // FORCE normalisation - this is the test for it... duh...
-        final boolean modified = publisherDao.pruneList(context, list, true,
-                                                        item -> bookLocale,
-                                                        (p, l) -> {
-                                                        });
+        // NO idFixer
+        final Pruner<Publisher> publisherPruner = PublisherPruner.forTest(true);
+        final boolean modified = publisherPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size());

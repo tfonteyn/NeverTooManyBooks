@@ -32,6 +32,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Mergeable;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -40,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * ENHANCE: The Publisher Locale should be based on the country where they are.
  */
 public class Publisher
-        implements Parcelable, Entity, Mergeable {
+        implements Parcelable, Entity, Mergeable<Publisher> {
 
     /** {@link Parcelable}. */
     public static final Creator<Publisher> CREATOR = new Creator<>() {
@@ -67,7 +68,7 @@ public class Publisher
     private long id;
     /** Publisher name. */
     @NonNull
-    private String name;
+    private String name = "";
 
     /**
      * Copy constructor.
@@ -187,19 +188,6 @@ public class Publisher
      */
     public void copyFrom(@NonNull final Publisher source) {
         name = source.name;
-    }
-
-    /**
-     * <strong>Merge</strong> local details with those from the given Publisher.
-     * The <em>name</em> is never merged.
-     *
-     * @param source to copy from
-     *
-     * @return {@code true} if this Publisher was modified in any way
-     */
-    public boolean merge(@NonNull final Publisher source) {
-        // placeholder method, there is nothing to merge for now.
-        return false;
     }
 
     @NonNull

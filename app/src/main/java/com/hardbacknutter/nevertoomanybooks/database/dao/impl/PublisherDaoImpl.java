@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,8 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.PublisherPruner;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
@@ -158,32 +157,6 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<Publisher> list,
-                             final boolean normalise,
-                             @NonNull final Function<Publisher, Locale> localeSupplier,
-                             @NonNull final BiConsumer<Publisher, Locale> idFixer) {
-        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        if (normalise) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-            final ReorderHelper reorderHelper = new ReorderHelper(allLocales);
-            list.forEach(publisher -> {
-                final String name = reorderHelper.reverse(context, publisher.getName(),
-                                                          localeSupplier.apply(publisher));
-                publisher.setName(name);
-            });
-        }
-
-        final EntityMergeHelper<Publisher> mergeHelper = new EntityMergeHelper<>();
-        return mergeHelper.merge(context, list, localeSupplier, idFixer);
-    }
-
-    @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher,
                       @NonNull final Locale locale) {
@@ -232,7 +205,8 @@ public class PublisherDaoImpl
 
         boolean changesMade = false;
 
-        pruneList(context, list, localeSupplier);
+        final Pruner<Publisher> publisherPruner = new PublisherPruner();
+        publisherPruner.prune(context, list, localeSupplier);
 
         // Ensure all Publishers exist in DB so they all have a valid ID
         for (final Publisher publisher : list) {
@@ -247,7 +221,8 @@ public class PublisherDaoImpl
                 final Optional<Publisher> oFound = findById(publisher.getId());
                 if (oFound.isPresent()) {
                     final Publisher found = oFound.get();
-                    publisher.merge(found);
+                    // Always merge, but no need to check if modified or not
+                    publisher.merge(context, found);
                     if (!found.isIdentical(publisher)) {
                         update(context, publisher, locale);
                         changesMade = true;

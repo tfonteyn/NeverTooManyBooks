@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
 import android.content.Context;
 
@@ -29,12 +29,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,97 +60,85 @@ class AuthorTest
     private static final long FAKE_ID_2 = 2_000_300;
     private static final long FAKE_ID_3 = 2_000_400;
 
-    private AuthorDao authorDao;
-
-    @BeforeEach
-    protected void setup()
-            throws Exception {
-        super.setup();
-
-        authorDao = ServiceLocator.getInstance().getAuthorDao();
-    }
-
     @Test
     void pruneAuthorList01() {
         final Context context = createContext();
 
         final Locale bookLocale = Locale.getDefault();
 
-        final List<Author> list = new ArrayList<>();
+        final List<Author> authorList = new ArrayList<>();
         Author author;
 
         // Keep, position 0
         author = Author.from(ISAAC_ASIMOV);
         author.setId(FAKE_ID_0);
         author.setComplete(false);
-        list.add(author);
+        authorList.add(author);
 
         // same name, with a 0 id: merge with position 0
         author = Author.from(ISAAC_ASIMOV);
         author.setId(0);
         author.setComplete(true);
-        list.add(author);
+        authorList.add(author);
 
         // discard
         author = Author.from(ISAAC_ASIMOV);
         author.setId(FAKE_ID_0);
-        list.add(author);
+        authorList.add(author);
 
         // keep, position 1
         final Author author2 = Author.from(PAUL_FRENCH);
         author2.setId(FAKE_ID_3);
         author2.setRealAuthor(author);
-        list.add(author2);
+        authorList.add(author2);
 
         // keep, position 2
         author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(FAKE_ID_1);
-        list.add(author);
+        authorList.add(author);
 
         // discard
         author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(FAKE_ID_1);
-        list.add(author);
+        authorList.add(author);
 
         // discard
         author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(FAKE_ID_1);
-        list.add(author);
+        authorList.add(author);
 
         // keep, position 3
         author = Author.from(PHILIP_DICK);
         author.setId(FAKE_ID_2);
         author.setRole(AuthorRole.WRITER);
-        list.add(author);
+        authorList.add(author);
 
         // discard
         author = Author.from(PHILIP_DICK);
         author.setId(FAKE_ID_2);
         author.setRole(AuthorRole.UNKNOWN);
-        list.add(author);
+        authorList.add(author);
 
         // discard, but add role to existing author in position 3
         author = Author.from(PHILIP_DICK);
         author.setId(FAKE_ID_2);
         author.setRole(AuthorRole.CONTRIBUTOR);
-        list.add(author);
+        authorList.add(author);
 
-        final boolean modified = authorDao.pruneList(context, list,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
 
-        assertTrue(modified, list.toString());
-        assertEquals(4, list.size(), list.toString());
+        assertTrue(modified, authorList.toString());
+        assertEquals(4, authorList.size(), authorList.toString());
 
-        author = list.get(0);
+        author = authorList.get(0);
         assertEquals(FAKE_ID_0, author.getId());
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
         assertTrue(author.isComplete());
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
-        author = list.get(1);
+        author = authorList.get(1);
         assertEquals(FAKE_ID_3, author.getId());
         assertEquals("French", author.getFamilyName());
         assertEquals("Paul", author.getGivenNames());
@@ -162,13 +147,13 @@ class AuthorTest
         assertEquals("Isaac", author.getRealAuthor().getGivenNames());
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
-        author = list.get(2);
+        author = authorList.get(2);
         assertEquals(FAKE_ID_1, author.getId());
         assertEquals("Farmer", author.getFamilyName());
         assertEquals("Philip Jose", author.getGivenNames());
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
-        author = list.get(3);
+        author = authorList.get(3);
         assertEquals(FAKE_ID_2, author.getId());
         assertEquals("Dick", author.getFamilyName());
         assertEquals("Philip K.", author.getGivenNames());
@@ -202,10 +187,8 @@ class AuthorTest
         author.setRole(AuthorRole.AFTERWORD);
         authorList.add(author);
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
 
         assertTrue(modified);
         assertEquals(1, authorList.size());
@@ -238,10 +221,8 @@ class AuthorTest
         // to be removed
         authorList.add(Author.createUnknownAuthor(context));
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
 
         assertTrue(modified);
         assertEquals(1, authorList.size());
@@ -263,10 +244,8 @@ class AuthorTest
         authorList.add(Author.createUnknownAuthor(context));
         authorList.add(Author.createUnknownAuthor(context));
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
         assertTrue(modified);
         assertEquals(1, authorList.size());
 
@@ -298,10 +277,8 @@ class AuthorTest
         author = Author.from("ალექსანდრე ამილახვარი");
         authorList.add(author);
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
         assertFalse(modified);
     }
 
@@ -320,10 +297,8 @@ class AuthorTest
         author = Author.from(GERMAN_GROSS_2);
         authorList.add(author);
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
         assertTrue(modified);
 
         assertEquals(1, authorList.size());
@@ -345,10 +320,8 @@ class AuthorTest
         authorList.add(new Author(familyName, dashAbsent));
         authorList.add(new Author(familyName, dashPresent));
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
         assertTrue(modified);
 
         assertEquals(1, authorList.size());
@@ -371,10 +344,8 @@ class AuthorTest
         authorList.add(new Author(familyName, dashAbsent));
         authorList.add(new Author(familyName, dashPresent));
 
-        final boolean modified = authorDao.pruneList(context, authorList,
-                                                     item -> bookLocale,
-                                                     (a, locale) -> {
-                                                     });
+        final Pruner<Author> authorPruner = AuthorPruner.forTest();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
         assertTrue(modified);
 
         assertEquals(1, authorList.size());

@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Mergeable;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -62,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  *  setting for the TocEntry itself, or on the Locale of the primary book.
  */
 public class TocEntry
-        implements Parcelable, Entity, Mergeable, AuthorWork {
+        implements Parcelable, Entity, Mergeable<TocEntry>, AuthorWork {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<>() {
@@ -248,11 +249,14 @@ public class TocEntry
      * <strong>Merge</strong> local details with those from the given TocEntry.
      * The <em>title</em> is never merged.
      *
-     * @param source to copy from
+     * @param context Current context
+     * @param source  to copy from
      *
      * @return {@code true} if this TocEntry was modified in any way
      */
-    public boolean merge(@NonNull final TocEntry source) {
+    @Override
+    public boolean merge(@NonNull final Context context,
+                         @NonNull final TocEntry source) {
 
         // If both have a date set, and they are different,
         // abort, we can't merge.
@@ -261,8 +265,8 @@ public class TocEntry
             return false;
         }
 
-        // attempt to merge; hardcode includeBookFields=false
-        if (!getPrimaryAuthor().merge(source.getPrimaryAuthor(), false)) {
+        // attempt to merge; do NOT merge the book-fields!
+        if (!getPrimaryAuthor().merge(context, source.getPrimaryAuthor(), false)) {
             return false;
         }
 

@@ -45,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Mergeable;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -73,7 +75,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * <a href="https://www.wikidata.org/wiki/Property:P10318">P10318: Douban</a>
  */
 public class Series
-        implements Parcelable, Entity, Mergeable, IdentifierOwner {
+        implements Parcelable, Entity, Mergeable<Series>,
+                   IdentifierOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<>() {
@@ -659,16 +662,24 @@ public class Series
         }
     }
 
+    @Override
+    public boolean merge(@NonNull final Context context,
+                         @NonNull final Series source) {
+        return merge(context, source, true);
+    }
+
     /**
      * <strong>Merge</strong> local details with those from the given Series.
      * The <em>title</em> is never merged.
      *
+     * @param context           Current context
      * @param source            to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well
      *
      * @return {@code true} if this Series was modified in any way
      */
-    public boolean merge(@NonNull final Series source,
+    public boolean merge(@NonNull final Context context,
+                         @NonNull final Series source,
                          final boolean includeBookFields) {
 
         // If both have a number set, and they are different,
@@ -696,7 +707,7 @@ public class Series
         }
 
         identifiers.addAll(source.getIdentifiers());
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
+        new IdentifierValuePruner().prune(identifiers);
 
         return true;
     }

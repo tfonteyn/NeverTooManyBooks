@@ -24,7 +24,6 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
@@ -33,7 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
@@ -124,42 +122,6 @@ public interface TagDao {
      * @return the number of books
      */
     int countBooks(@NonNull Tag tag);
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<Tag> list,
-                              @NonNull final Function<Tag, Locale> localeSupplier) {
-        return pruneList(context, list, localeSupplier,
-                         // Don't look up the locale a 2nd time.
-                         (current, locale) -> fixId(current));
-    }
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     * <p>
-     * <strong>Tests only.</strong>
-     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     * @param idFixer        how to call {@link #fixId(Tag)}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    @VisibleForTesting
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<Tag> list,
-                      @NonNull Function<Tag, Locale> localeSupplier,
-                      @NonNull BiConsumer<Tag, Locale> idFixer);
 
     /**
      * Delete orphaned records.

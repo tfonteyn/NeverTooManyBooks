@@ -32,9 +32,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Mergeable;
 
 public class Tag
-        implements Parcelable, Entity, Mergeable, Comparable<Tag> {
+        implements Parcelable, Entity, Mergeable<Tag>, Comparable<Tag> {
 
     /** {@link Parcelable}. */
     public static final Creator<Tag> CREATOR = new Creator<>() {

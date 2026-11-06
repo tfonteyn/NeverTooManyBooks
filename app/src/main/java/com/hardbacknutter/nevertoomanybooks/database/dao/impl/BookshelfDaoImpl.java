@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -60,8 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.BookshelfPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -445,20 +445,6 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<Bookshelf> list,
-                             @NonNull final BiConsumer<Bookshelf, Locale> idFixer) {
-        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final EntityMergeHelper<Bookshelf> mergeHelper = new EntityMergeHelper<>();
-        return mergeHelper.merge(context, list, current -> userLocale, idFixer);
-    }
-
-    @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Bookshelf bookshelf,
                       @NonNull final Locale locale) {
@@ -497,8 +483,8 @@ public class BookshelfDaoImpl
 
     @Override
     public boolean insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               @NonNull final Collection<Bookshelf> list)
+                                  @IntRange(from = 1) final long bookId,
+                                  @NonNull final Collection<Bookshelf> list)
             throws SQLException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -509,10 +495,11 @@ public class BookshelfDaoImpl
 
         boolean changesMade = false;
 
-        // Fix IDs and remove duplicates; shelves don't use a Locale, hence no lookup done.
-        pruneList(context, list);
-        // We simply use the userLocale instead.
+        // Fix IDs and remove duplicates.
+        // Shelves don't have a Locale, use the userLocale instead.
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Pruner<Bookshelf> bookshelfPruner = new BookshelfPruner();
+        bookshelfPruner.prune(context, list, bookshelf -> userLocale);
 
         // Ensure all Bookshelves exist in DB so they all have a valid ID
         for (final Bookshelf bookshelf : list) {

@@ -41,7 +41,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,8 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.TagPruner;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -161,20 +161,6 @@ public class TagDaoImpl
     }
 
     @Override
-    public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<Tag> list,
-                             @NonNull final Function<Tag, Locale> localeSupplier,
-                             @NonNull final BiConsumer<Tag, Locale> idFixer) {
-        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final EntityMergeHelper<Tag> mergeHelper = new EntityMergeHelper<>();
-        return mergeHelper.merge(context, list, localeSupplier, idFixer);
-    }
-
-    @Override
     @IntRange(from = 0)
     public int purge() {
         final List<String> inUse = getColumnAsStringArrayList(
@@ -231,7 +217,8 @@ public class TagDaoImpl
 
         boolean changesMade = false;
 
-        pruneList(context, list, localeSupplier);
+        final Pruner<Tag> tagPruner = new TagPruner();
+        tagPruner.prune(context, list, localeSupplier);
 
         // Ensure all Tags exist in DB so they all have a valid ID
         for (final Tag tag : list) {

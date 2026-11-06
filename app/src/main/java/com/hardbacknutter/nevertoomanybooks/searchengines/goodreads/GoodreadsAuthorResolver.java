@@ -157,7 +157,7 @@ public final class GoodreadsAuthorResolver
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);
             if (found != null) {
-                boolean modified = author.merge(found, true);
+                boolean modified = author.merge(context, found);
                 if (author.isSameName(found) && !author.isExactSameName(found)) {
                     // correct diacritics difference
                     author.setName(found.getFamilyName(), found.getGivenNames());

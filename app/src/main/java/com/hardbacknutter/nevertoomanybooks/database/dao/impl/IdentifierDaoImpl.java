@@ -32,12 +32,9 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
@@ -319,34 +316,6 @@ public class IdentifierDaoImpl
             }
         }
         return list;
-    }
-
-    @Override
-    public boolean pruneList(@NonNull final Collection<Identifier.Value> list) {
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final Set<String> keysFound = new HashSet<>(list.size());
-        final Iterator<Identifier.Value> iterator = list.iterator();
-        boolean modified = false;
-
-        while (iterator.hasNext()) {
-            final Identifier.Value iv = iterator.next();
-            if (!isValidIdentifier(iv) || !keysFound.add(iv.getKey().toLowerCase(Locale.ENGLISH))) {
-                iterator.remove();
-                modified = true;
-            }
-        }
-
-        return modified;
-    }
-
-    private boolean isValidIdentifier(@NonNull final Identifier.Value iv) {
-        final String sid = iv.getSid();
-        // Not just a sanity check: we MUST check for null!
-        //noinspection ConstantValue
-        return sid != null && !sid.isEmpty() && !"0".equals(sid);
     }
 
     @Override

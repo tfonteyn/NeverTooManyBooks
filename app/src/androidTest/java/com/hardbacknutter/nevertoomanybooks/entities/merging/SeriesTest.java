@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
 import android.content.Context;
 
@@ -26,11 +26,8 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,16 +38,6 @@ class SeriesTest
 
     private static final String THE_TITLE = "The title";
     private static final String TITLE_THE = "title, The";
-
-    private SeriesDao seriesDao;
-
-    @BeforeEach
-    protected void setup()
-            throws Exception {
-        super.setup();
-
-        seriesDao = ServiceLocator.getInstance().getSeriesDao();
-    }
 
     /**
      * Fairly generic and 'normally' sorted names and numbers.
@@ -103,10 +90,8 @@ class SeriesTest
         list.add(series);
 
         // Explicit: NO normalisation
-        final boolean modified = seriesDao.pruneList(context, list, false,
-                                                     item -> bookLocale,
-                                                     (p, l) -> {
-                                                     });
+        final Pruner<Series> seriesPruner = SeriesPruner.forTest(false);
+        final boolean modified = seriesPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(3, list.size(), list.toString());
@@ -154,15 +139,13 @@ class SeriesTest
         list.add(series2);
 
         // FORCE normalisation - this is the test for it... duh...
-        final boolean modified = seriesDao.pruneList(context, list, true,
-                                                     item -> bookLocale,
-                                                     (p, l) -> {
-                                                     });
+        final Pruner<Series> seriesPruner = SeriesPruner.forTest(true);
+        final boolean modified = seriesPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(1, list.size());
 
-        Series series;
+        final Series series;
 
         series = list.get(0);
         assertEquals(100, series.getId());

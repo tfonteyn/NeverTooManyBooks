@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
 import android.content.Context;
 
@@ -27,13 +27,10 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,15 +40,6 @@ class TocEntryTest
         extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
-    private TocEntryDao tocEntryDao;
-
-    @BeforeEach
-    protected void setup()
-            throws Exception {
-        super.setup();
-
-        tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
-    }
 
     @Test
     void pruneTocEntries01() {
@@ -85,10 +73,8 @@ class TocEntryTest
         tocEntry.setId(0);
         list.add(tocEntry);
 
-        final boolean modified = tocEntryDao.pruneList(context, list, false,
-                                                       item -> bookLocale,
-                                                       (p, l) -> {
-                                                       });
+        final Pruner<TocEntry> tocEntryPruner = TocEntryPruner.forTest(false);
+        final boolean modified = tocEntryPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -136,10 +122,8 @@ class TocEntryTest
         tocEntry = new TocEntry(2, author0, "title 2", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
 
-        final boolean modified = tocEntryDao.pruneList(context, list, false,
-                                                       item -> bookLocale,
-                                                       (p, l) -> {
-                                                       });
+        final Pruner<TocEntry> tocEntryPruner = TocEntryPruner.forTest(false);
+        final boolean modified = tocEntryPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -209,10 +193,8 @@ class TocEntryTest
         tocEntry = new TocEntry(5, author0, "title 3", new PartialDate(1975, 0, 0), 0);
         list.add(tocEntry);
 
-        final boolean modified = tocEntryDao.pruneList(context, list, false,
-                                                       item -> bookLocale,
-                                                       (p, l) -> {
-                                                       });
+        final Pruner<TocEntry> tocEntryPruner = TocEntryPruner.forTest(false);
+        final boolean modified = tocEntryPruner.prune(context, list, item -> bookLocale);
 
         assertTrue(modified, list.toString());
         assertEquals(6, list.size(), list.toString());

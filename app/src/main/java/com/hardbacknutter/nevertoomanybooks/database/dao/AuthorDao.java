@@ -25,7 +25,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.lang.annotation.Retention;
@@ -34,7 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -45,10 +43,11 @@ import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdFixer;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface AuthorDao
-        extends Purgeable, Positional {
+        extends Purgeable, Positional, IdFixer<Author> {
 
     /**
      * Get a unique list of {@link Author} names in the specified format.
@@ -94,42 +93,6 @@ public interface AuthorDao
      */
     void setComplete(@NonNull Author author,
                      boolean complete);
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<Author> list,
-                              @NonNull final Function<Author, Locale> localeSupplier) {
-        return pruneList(context, list, localeSupplier,
-                         // Don't look up the locale a 2nd time.
-                         (current, locale) -> fixId(context, current, locale));
-    }
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     * <p>
-     * <strong>Tests only.</strong>
-     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     * @param idFixer        how to call {@link #fixId(Context, Author, Locale)}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    @VisibleForTesting
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<Author> list,
-                      @NonNull Function<Author, Locale> localeSupplier,
-                      @NonNull BiConsumer<Author, Locale> idFixer);
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.
@@ -209,22 +172,6 @@ public interface AuthorDao
      * @return count
      */
     int count();
-
-    /**
-     * Find a {@link Author} by using the <strong>name</strong> fields.
-     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
-     * <p>
-     * If the item has child items, then implementations must propagate the call.
-     * <p>
-     * URGENT: fixId should be able to merge the given item with the database data
-     *
-     * @param context Current context
-     * @param item    to update
-     * @param locale  Current Locale
-     */
-    void fixId(@NonNull Context context,
-               @NonNull Author item,
-               @NonNull Locale locale);
 
     /**
      * Refresh the passed {@link Author} from the database, if present.

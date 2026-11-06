@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -55,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.SeriesPruner;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -118,7 +119,6 @@ public class LastDodoSearchEngine
 
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     private final AuthorResolverHelper authorResolverHelper;
-    private final SeriesDao seriesDao;
 
     /**
      * Constructor.
@@ -136,7 +136,6 @@ public class LastDodoSearchEngine
                                 @NonNull final SearchEngineConfig config) {
         super(context, config);
 
-        seriesDao = ServiceLocator.getInstance().getSeriesDao();
         authorResolverHelper = new AuthorResolverHelper();
     }
 
@@ -792,13 +791,14 @@ public class LastDodoSearchEngine
         }
 
         // Force normalization!
-        seriesDao.pruneList(context, seriesList, true, series -> locale);
+        final Pruner<Series> seriesPruner = new SeriesPruner(true);
+        seriesPruner.prune(context, seriesList, series -> locale);
     }
 
     /**
      * Found an Author.
      * <p>
-     * The site uses a format of "family-name, givennames" but puts the typical
+     * The site uses a format of "family-name, given-names" but puts the typical
      * "Van", "De", ... family name prefixes in the given names part.
      * So we TRY to get around that before calling {@link Author#from(String)}.
      * <pre>

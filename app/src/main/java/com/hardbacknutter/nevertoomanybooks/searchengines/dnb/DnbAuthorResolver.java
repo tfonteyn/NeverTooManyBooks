@@ -32,11 +32,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -61,6 +61,7 @@ public final class DnbAuthorResolver
                                           + "&query=%1$s"
                                           + "&recordSchema=MARC21-xml"
                                           + "&maximumRecords=1";
+    private final IdentifierValuePruner identifierValuePruner;
 
     /**
      * Private Constructor.
@@ -70,6 +71,7 @@ public final class DnbAuthorResolver
     @VisibleForTesting
     DnbAuthorResolver(@NonNull final DnbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
+        identifierValuePruner = new IdentifierValuePruner();
     }
 
     /**
@@ -132,7 +134,7 @@ public final class DnbAuthorResolver
         if (!searchEngine.isCancelled()) {
             final Author found = parse(document);
             if (found != null) {
-                boolean modified = author.merge(found, true);
+                boolean modified = author.merge(context, found);
                 if (author.isSameName(found) && !author.isExactSameName(found)) {
                     // correct diacritics difference
                     author.setName(found.getFamilyName(), found.getGivenNames());
@@ -149,7 +151,7 @@ public final class DnbAuthorResolver
     @Nullable
     Author parse(@NonNull final Document document) {
 
-        final DnbBookParser.DnbParser parser = new DnbBookParser.DnbParser(document);
+        final DnbBookParser.DnbParser parser = new DnbBookParser.DnbParser(document, identifierValuePruner);
 
         // There will only be one or none
         final List<Author> authors = parser.authors("100");
@@ -167,7 +169,7 @@ public final class DnbAuthorResolver
             ivs.add(0, value);
         }
 
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        identifierValuePruner.prune(ivs);
         if (!ivs.isEmpty()) {
             author.setIdentifiers(ivs);
         }

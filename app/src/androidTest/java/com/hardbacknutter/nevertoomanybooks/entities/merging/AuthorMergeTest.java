@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
 import android.content.Context;
 
@@ -27,7 +27,11 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,13 +49,12 @@ class AuthorMergeTest {
     private static void checksResult(@NonNull final Context context,
                                      @NonNull final Author author1,
                                      @NonNull final Author author2) {
-        final AuthorMergeHelper h = new AuthorMergeHelper();
-        final boolean merged = h.merge(context, author1, author2);
+        final boolean merged = author1.merge(context, author2);
         assertTrue(merged);
         assertEquals("Asimov", author1.getFamilyName());
         assertEquals("Isaac", author1.getGivenNames());
-        assertEquals(AuthorRole.EDITOR | AuthorRole.WRITER,
-                     author1.getRole());
+        Assertions.assertEquals(AuthorRole.EDITOR | AuthorRole.WRITER,
+                                author1.getRole());
 
         assertEquals("1920-01-02", author1.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author1.getDeathDate().orElse(null));
@@ -154,8 +157,7 @@ class AuthorMergeTest {
                 new Identifier.Value(Identifier.SID_GOODREADS, 153852));
         author2.setIdentifiers(ivs);
 
-        final AuthorMergeHelper h = new AuthorMergeHelper();
-        final boolean merged = h.merge(context, author1, author2);
+        final boolean merged = author1.merge(context, author2);
         assertTrue(merged);
         assertEquals("Pelt", author1.getFamilyName());
         assertEquals("JeanMarie", author1.getGivenNames());
@@ -179,8 +181,7 @@ class AuthorMergeTest {
         author2.setIdentifiers(List.of(
                 new Identifier.Value(Identifier.SID_GOODREADS, 415035)));
 
-        final AuthorMergeHelper h = new AuthorMergeHelper();
-        final boolean merged = h.merge(context, author1, author2);
+        final boolean merged = author1.merge(context, author2);
         assertTrue(merged);
         assertEquals("Monod", author1.getFamilyName());
         assertEquals("Thedore", author1.getGivenNames());

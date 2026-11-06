@@ -231,8 +231,9 @@ public final class AuthorResolverHelper {
                     // Check if we already know this author, and merge its data if possible
                     authorDao.fixId(context, author, locale);
                     if (author.getId() > 0) {
+                        // do NOT merge the book-fields!
                         authorDao.findById(author.getId())
-                                 .ifPresent(value -> author.merge(value, false));
+                                 .ifPresent(found -> author.merge(context, found, false));
                     }
                 }
 

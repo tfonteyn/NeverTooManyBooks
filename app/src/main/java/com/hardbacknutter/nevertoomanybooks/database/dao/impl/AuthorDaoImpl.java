@@ -39,11 +39,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -61,15 +59,15 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.AuthorPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -363,48 +361,6 @@ public class AuthorDaoImpl
         author.setComplete(complete);
     }
 
-    /**
-     * Remove duplicates.
-     * Consolidates author/- and author/role.
-     * <p>
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<Author> list,
-                             @NonNull final Function<Author, Locale> localeSupplier,
-                             @NonNull final BiConsumer<Author, Locale> idFixer) {
-        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        boolean modified = false;
-
-        // Remove 'unknown' authors if there are other 'known' authors.
-        if (list.size() > 1) {
-            final String unknown = context.getString(R.string.unknown_author);
-            // remove ALL unknown author entries.
-            // Note we check on exact equality as the incoming name
-            // would have come from the same resource string
-            modified = list.removeIf(author -> author.getFamilyName().equals(unknown));
-            if (list.isEmpty()) {
-                // All authors were unknown and hence removed,
-                // re-add a single unknown author.
-                final Author unknownAuthor = Author.createUnknownAuthor(context);
-                // shortcut: no need to drop through and engage the AuthorMergeHelper,
-                // just fix the id manually here
-                fixId(context, unknownAuthor, localeSupplier.apply(unknownAuthor));
-                list.add(unknownAuthor);
-                return true;
-            }
-        }
-
-        final EntityMergeHelper<Author> mergeHelper = new AuthorMergeHelper();
-        return mergeHelper.merge(context, list, localeSupplier, idFixer)
-               || modified;
-    }
-
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Author author,
@@ -459,7 +415,8 @@ public class AuthorDaoImpl
 
         boolean changesMade = false;
 
-        pruneList(context, list, localeSupplier);
+        final Pruner<Author> authorPruner = new AuthorPruner();
+        authorPruner.prune(context, list, localeSupplier);
 
         // Ensure all Authors exist in DB so they all have a valid ID
         for (final Author author : list) {
@@ -475,7 +432,7 @@ public class AuthorDaoImpl
                 if (oFound.isPresent()) {
                     final Author found = oFound.get();
                     // Always merge, but no need to check if modified or not
-                    author.merge(found, true);
+                    author.merge(context, found);
                     // Check for the name AND user fields being different.
                     if (!found.isIdentical(author)) {
                         update(context, author, locale);

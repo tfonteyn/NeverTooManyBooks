@@ -23,7 +23,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -34,7 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -58,9 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.TocEntryPruner;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -99,32 +97,6 @@ public class TocEntryDaoImpl
                 return Optional.empty();
             }
         }
-    }
-
-    @Override
-    public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<TocEntry> list,
-                             final boolean normalise,
-                             @NonNull final Function<TocEntry, Locale> localeSupplier,
-                             @NonNull final BiConsumer<TocEntry, Locale> idFixer) {
-        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        if (normalise) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-            final ReorderHelper reorderHelper = new ReorderHelper(allLocales);
-            list.forEach(tocEntry -> {
-                final String title = reorderHelper.reverse(context, tocEntry.getTitle(),
-                                                           localeSupplier.apply(tocEntry));
-                tocEntry.setTitle(title);
-            });
-        }
-
-        final EntityMergeHelper<TocEntry> mergeHelper = new TocEntryMergeHelper();
-        return mergeHelper.merge(context, list, localeSupplier, idFixer);
     }
 
     @Override
@@ -297,7 +269,8 @@ public class TocEntryDaoImpl
         final ReorderHelper reorderHelper = new ReorderHelper(LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales()));
 
-        pruneList(context, list, localeSupplier);
+        final Pruner<TocEntry> tocEntryPruner = new TocEntryPruner();
+        tocEntryPruner.prune(context, list, localeSupplier);
 
         // Track inserted entries for reversing in case of error
         final List<TocEntry> actualInserts = new ArrayList<>();
@@ -341,7 +314,7 @@ public class TocEntryDaoImpl
                     if (oFound.isPresent()) {
                         final TocEntry found = oFound.get();
                         // Always merge, but no need to check if modified or not
-                        tocEntry.merge(found);
+                        tocEntry.merge(context, found);
                         // Check for the title/author AND the publication data being different
                         if (!found.isIdentical(tocEntry)) {
                             stmtUpdToc.bindString(1, title);

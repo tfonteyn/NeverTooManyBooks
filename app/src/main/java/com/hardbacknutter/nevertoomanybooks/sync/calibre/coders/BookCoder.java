@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreIdentifiers;
@@ -319,6 +320,7 @@ public final class BookCoder {
     private final RealNumberParser realNumberParser;
     private final CalibreCustomFieldCoder customFieldCoder;
     private final RatingParser ratingParser;
+    private final IdentifierValuePruner identifierValuePruner;
 
     /**
      * Constructor.
@@ -334,6 +336,7 @@ public final class BookCoder {
         ratingParser = new RatingParser(realNumberParser, 5);
         customFieldCoder = new CalibreCustomFieldCoder(dateParser, ratingParser, realNumberParser);
 
+        identifierValuePruner = new IdentifierValuePruner();
         bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
     }
 
@@ -594,7 +597,7 @@ public final class BookCoder {
                 }
             }
         }
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        identifierValuePruner.prune(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
@@ -882,7 +885,7 @@ public final class BookCoder {
      * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
      *                               book as <strong>fetched from the Calibre server</strong>.
      *                               We need to send a full/combined set as the server does
-     *                               not support delta values for indentifiers.
+     *                               not support delta values for identifiers.
      * @param localBook              the Book to encode
      *
      * @return the JSON data to send to the Calibre server

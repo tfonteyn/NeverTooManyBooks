@@ -143,7 +143,7 @@ public final class DatabazeKnihAuthorResolver
         if (oIv.isPresent()) {
             found = searchBySid(context, oIv.get());
             if (found != null) {
-                boolean modified = author.merge(found, true);
+                boolean modified = author.merge(context, found);
                 // DatabaseKnih uses the same id for pseudonym names.
                 // force the real-author to have the same id
                 final Author realAuthor = author.getRealAuthor();

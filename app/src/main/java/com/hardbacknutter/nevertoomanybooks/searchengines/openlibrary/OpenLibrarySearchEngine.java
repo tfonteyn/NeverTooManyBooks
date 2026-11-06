@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -1345,7 +1346,7 @@ public class OpenLibrarySearchEngine
         parseIdentifier(document, "lccn").ifPresent(ivs::add);
         parseIdentifier(document, "oclc_numbers").ifPresent(ivs::add);
 
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        new IdentifierValuePruner().prune(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }

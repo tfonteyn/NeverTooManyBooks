@@ -135,7 +135,7 @@ public final class OpenLibraryAuthorResolver
         if (oIv.isPresent()) {
             found = searchBySid(oIv.get());
             if (found != null) {
-                boolean modified = author.merge(found, true);
+                boolean modified = author.merge(context, found);
                 if (author.isSameName(found) && !author.isExactSameName(found)) {
                     // correct diacritics difference
                     author.setName(found.getFamilyName(), found.getGivenNames());
@@ -148,7 +148,7 @@ public final class OpenLibraryAuthorResolver
             // 2025-05-10: insist on case-sensitive name equality for now.
             // If this proves problematic, we'll change it later...
             if (found != null && author.isSameName(found)) {
-                return author.merge(found, true);
+                return author.merge(context, found);
             }
         }
 

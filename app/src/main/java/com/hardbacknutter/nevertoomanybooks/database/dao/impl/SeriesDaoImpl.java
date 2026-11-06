@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -36,7 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -53,10 +51,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublicationFrequencyDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.SeriesPruner;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -190,52 +188,6 @@ public class SeriesDaoImpl
         series.setComplete(complete);
     }
 
-    /**
-     * Remove duplicates.
-     * Consolidates series/- and series/number.
-     * <p>
-     * Remove Series from the list where the titles are the same, but one entry has a
-     * {@code null} or empty number.
-     * e.g. the following list should be processed as indicated:
-     * <ul>
-     * <li>foo(5)</li>
-     * <li>foo <-- delete</li>
-     * <li>bar <-- delete</li>
-     * <li>bar <-- delete</li>
-     * <li>bar(1)</li>
-     * <li>foo(5) <-- delete</li>
-     * <li>foo(6)</li>
-     * </ul>
-     * Note we keep BOTH foo(5) + foo(6)
-     * <p>
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<Series> list,
-                             final boolean normalise,
-                             @NonNull final Function<Series, Locale> localeSupplier,
-                             @NonNull final BiConsumer<Series, Locale> idFixer) {
-        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        if (normalise) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-            final ReorderHelper reorderHelper = new ReorderHelper(allLocales);
-            list.forEach(series -> {
-                final String title = reorderHelper.reverse(context, series.getTitle(),
-                                                           localeSupplier.apply(series));
-                series.setTitle(title);
-            });
-        }
-
-        final EntityMergeHelper<Series> mergeHelper = new SeriesMergeHelper();
-        return mergeHelper.merge(context, list, localeSupplier, idFixer);
-    }
-
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Series series,
@@ -285,7 +237,8 @@ public class SeriesDaoImpl
 
         boolean changesMade = false;
 
-        pruneList(context, list, localeSupplier);
+        final Pruner<Series> seriesPruner = new SeriesPruner();
+        seriesPruner.prune(context, list, localeSupplier);
 
         // Ensure all Series exist in DB so they all have a valid ID
         for (final Series series : list) {
@@ -301,7 +254,7 @@ public class SeriesDaoImpl
                 if (oFound.isPresent()) {
                     final Series found = oFound.get();
                     // Always merge, but no need to check if modified or not
-                    series.merge(found, true);
+                    series.merge(context, found);
                     // Check for the name AND user fields being equal.
                     if (!found.isIdentical(series)) {
                         update(context, series, locale);

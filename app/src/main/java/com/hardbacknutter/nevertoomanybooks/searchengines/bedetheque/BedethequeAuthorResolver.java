@@ -183,7 +183,7 @@ public class BedethequeAuthorResolver
                     // Overwrite the original name to correct any diacritics
                     author.setName(found.getFamilyName(), found.getGivenNames());
                     // and merge as normal
-                    author.merge(found, true);
+                    author.merge(context, found);
 
                     updateCache(author, bdtAuthor);
 

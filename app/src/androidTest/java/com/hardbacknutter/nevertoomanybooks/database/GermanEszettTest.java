@@ -32,6 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.AuthorPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,7 +103,8 @@ class GermanEszettTest
         final Author author3 = Author.from(GERMAN_GROSS_2);
         authorList.add(author3);
 
-        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+        final Pruner<Author> authorPruner = new AuthorPruner();
+        final boolean modified = authorPruner.prune(context, authorList, item -> bookLocale);
         assertTrue(modified);
 
         assertEquals(1, authorList.size());

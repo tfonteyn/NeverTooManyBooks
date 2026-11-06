@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,10 +32,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.TagPruner;
 
 /**
  * Maps tags case-insensitive to a set of other tags as defined by the user.
@@ -49,7 +49,7 @@ public class TagMapper
     @NonNull
     private final Locale locale;
     @NonNull
-    private final TagDao tagDao;
+    private final TagPruner tagPruner;
 
     /**
      * Constructor.
@@ -58,7 +58,7 @@ public class TagMapper
      */
     public TagMapper(@NonNull final Locale locale) {
         this.locale = locale;
-        tagDao = ServiceLocator.getInstance().getTagDao();
+        tagPruner = new TagPruner();
         allMappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
     }
 
@@ -72,7 +72,7 @@ public class TagMapper
     public TagMapper(@NonNull final Locale locale,
                      @NonNull final List<TagMapping> mappings) {
         this.locale = locale;
-        tagDao = ServiceLocator.getInstance().getTagDao();
+        tagPruner = new TagPruner();
         allMappings = mappings;
     }
 
@@ -99,7 +99,7 @@ public class TagMapper
         }
 
         final List<Tag> result = new ArrayList<>();
-        source.forEach(tag -> {
+        for (final Tag tag : source) {
             boolean delete = false;
             final Collection<Tag> replacement = new ArrayList<>();
             // loop the mappings until we have a match (or no more mappings)
@@ -114,7 +114,7 @@ public class TagMapper
                                      .map(Tag::new)
                                      .forEach(replacement::add);
                     }
-                    // We can quit the for-loop when we had a match
+                    // Quit the 'allMappings' loop when we had a match
                     break;
                 }
             }
@@ -126,9 +126,9 @@ public class TagMapper
                     result.addAll(replacement);
                 }
             }
-        });
+        }
 
-        tagDao.pruneList(context, result, tag -> locale);
+        tagPruner.prune(context, result, tag -> locale);
         return result;
     }
 }

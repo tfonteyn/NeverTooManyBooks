@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
@@ -55,6 +56,7 @@ public class IdentifierValueDaoImpl
     private static final String TAG = "IdentifierValueDaoImpl";
     @NonNull
     private final Sql sql;
+    private final IdentifierValuePruner identifierValuePruner;
 
     /**
      * Constructor.
@@ -68,6 +70,7 @@ public class IdentifierValueDaoImpl
                                   @NonNull final String fk) {
         super(db, TAG);
         sql = new Sql(linkTable, fk);
+        identifierValuePruner = new IdentifierValuePruner();
     }
 
     @Override
@@ -84,7 +87,7 @@ public class IdentifierValueDaoImpl
 
         boolean changesMade = false;
 
-        pruneList(list);
+        identifierValuePruner.prune(list);
 
         // Ensure all Identifiers exist in DB so they all have a valid ID
         final Map<Long, String> targetLinkStates = new HashMap<>(list.size());

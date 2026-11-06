@@ -17,8 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
+import android.content.Context;
+
+import androidx.annotation.EmptySuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +32,15 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
-public interface Mergeable {
+/**
+ * Entities which can appear in a list, and are (semi) duplicates are considered mergeable.
+ * This interface contains the method the checks for sameness, and the merge method itself.
+ *
+ * @param <T> entity
+ *
+ * @see Pruner
+ */
+public interface Mergeable<T extends Mergeable<T>> {
 
     /**
      * Get the database row id of the Entity.
@@ -54,17 +65,41 @@ public interface Mergeable {
      * <p>
      * Examples:
      * <ul>
-     *     <li>{@link Author}: the family AND given-names</li>
-     *     <li>{@link Bookshelf}: the name</li>
-     *     <li>{@link Publisher}: the name</li>
-     *     <li>{@link Series}: the title</li>
-     *     <li>{@link TocEntry}: the title, the {@link Author} name-fields</li>
+     *     <li>{@code Author}: the family AND given-names</li>
+     *     <li>{@code Bookshelf}: the name</li>
+     *     <li>{@code Publisher}: the name</li>
+     *     <li>{@code Series}: the title</li>
+     *     <li>{@code TocEntry}: the title, the {@code Author} name-fields</li>
      * </ul>
      *
      * @return list
      */
     @NonNull
     List<String> getNameFields();
+
+    /**
+     * This method is called after we determined that the "name" fields of the object are
+     * matching. This method should try to merge the non-name fields and the id if possible.
+     * <p>
+     * <strong>The default implementation ONLY handles the id. You MUST override
+     * if there are more attributes to consider.</strong>
+     *
+     * @param context  Current context
+     * @param source   to copy from
+     *
+     * @return {@code true} if the merge was successful.
+     *         <br>{@code false} if merging is not possible.
+     */
+    @EmptySuper
+    default boolean merge(@NonNull final Context context,
+                          @NonNull final T source) {
+        // overwrite the id unless we're 'new'
+        if (source.getId() > 0) {
+            setId(source.getId());
+        }
+
+        return true;
+    }
 
     /**
      * Compare the names of two Merge-ables.
@@ -76,11 +111,11 @@ public interface Mergeable {
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if it's loosely the same
+     * @return {@code true} if it's the same after normalisation.
      *
      * @see #getNameFields()
      */
-    default boolean isSameName(@Nullable final Mergeable that) {
+    default boolean isSameName(@Nullable final T that) {
         if (that == null) {
             return false;
         }
@@ -110,7 +145,7 @@ public interface Mergeable {
      *
      * @see #getNameFields()
      */
-    default boolean isExactSameName(@NonNull final Mergeable that) {
+    default boolean isExactSameName(@NonNull final T that) {
         return Objects.hash(getNameFields())
                == Objects.hash(that.getNameFields());
     }

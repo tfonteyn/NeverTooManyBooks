@@ -25,7 +25,6 @@ import android.content.Context;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,18 +39,6 @@ public interface IdentifierDao {
      * @param identifier to update
      */
     void fixId(@NonNull Identifier identifier);
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     * <p>
-     * Dev note: the {@code sid} value is actually handled here, but in a pure-data way.
-     * i.o.w. not as a linked piece of key.
-     *
-     * @param list List to clean up
-     *
-     * @return {@code true} if the list was modified.
-     */
-    boolean pruneList(@NonNull Collection<Identifier.Value> list);
 
     /**
      * Find the {@link Identifier} for the given id.

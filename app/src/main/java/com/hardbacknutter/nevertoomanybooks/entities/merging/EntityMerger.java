@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.entities.merging;
 
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,16 +34,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
-public class EntityMergeHelper<T extends Mergeable> {
+class EntityMerger<T extends Mergeable<T>> {
 
-    private static final String TAG = "EntityMergeHelper";
+    private static final String TAG = "EntityMerger";
 
     /** Keep track of id. */
     private final Map<Long, T> idCodes = new HashMap<>();
@@ -54,38 +53,8 @@ public class EntityMergeHelper<T extends Mergeable> {
     /**
      * Constructor.
      */
-    public EntityMergeHelper() {
+    EntityMerger() {
         textNormaliser = new TextNormaliser();
-    }
-
-    /**
-     * Called from {@link #merge(Context, Collection, Function, BiConsumer)}
-     * to do the actual merging for each element in the list.
-     * <p>
-     * This method is called after we determined that the "name" fields of the object are
-     * matching. This method should try to merge the non-name fields and the id if possible.
-     * <p>
-     * <strong>The default implementation ONLY handles the id. You MUST override
-     * if the {@link Mergeable} has more attributes to consider.</strong>
-     *
-     * @param context  Current context
-     * @param previous element to copy into
-     * @param source   to copy from
-     *
-     * @return {@code true} if the <em>previous</em> was modified in any way
-     */
-    @EmptySuper
-    protected boolean merge(@NonNull final Context context,
-                            @NonNull final T previous,
-                            @NonNull final T source) {
-
-        // overwrite the id unless we're 'new'
-        if (source.getId() > 0) {
-            previous.setId(source.getId());
-        }
-
-        // no other attributes, so we can always merge
-        return true;
     }
 
     /**
@@ -99,7 +68,7 @@ public class EntityMergeHelper<T extends Mergeable> {
      * @param context        Current context
      * @param list           to process
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
-     * @param idFixer        a consumer which should attempt to fix the id of
+     * @param idFixer        (optional) a consumer which should attempt to fix the id of
      *                       the item passed in
      *
      * @return {@code true} if the list was modified.
@@ -109,7 +78,7 @@ public class EntityMergeHelper<T extends Mergeable> {
     public final boolean merge(@NonNull final Context context,
                                @NonNull final Collection<T> list,
                                @NonNull final Function<T, Locale> localeSupplier,
-                               @NonNull final BiConsumer<T, Locale> idFixer) {
+                               @Nullable final IdFixer<T> idFixer) {
 
         boolean listModified = false;
         final Iterator<T> iterator = list.iterator();
@@ -118,7 +87,9 @@ public class EntityMergeHelper<T extends Mergeable> {
             final Locale currentLocale = localeSupplier.apply(current);
 
             // 2026-04-11: fixId/findByName uses the full name
-            idFixer.accept(current, currentLocale);
+            if (idFixer != null) {
+                idFixer.fixId(context, current, currentLocale);
+            }
 
             // 2026-04-11: Use strict normalisation as we want maximum de-duplication.
             final List<String> fields = current
@@ -149,7 +120,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             } else {
                 // There is a previous one with the same "name" as the current one.
                 // Try merging the "non-name" attributes from the current into the previous.
-                if (merge(context, previous, current)) {
+                if (previous.merge(context, current)) {
                     // merged successfully, remove the current, we're keeping the previous one.
                     iterator.remove();
 
@@ -176,7 +147,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             // TODO / TEST: when do we see duplicates and when are they allowed.
             final Set<Long> seen = new HashSet<>();
             final boolean hasDuplicateIds = list.stream()
-                                                .map(Mergeable::getId)
+                                                .map(T::getId)
                                                 .filter(id -> id != 0)
                                                 .anyMatch(id -> !seen.add(id));
 

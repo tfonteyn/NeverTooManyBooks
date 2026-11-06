@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -39,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -76,12 +76,14 @@ class WikidataBookParser {
     private final JSONObject document;
     @NonNull
     private final Book book;
+    private final IdentifierValuePruner identifierValuePruner;
 
     WikidataBookParser(@NonNull final JSONObject document,
                               @NonNull final ProductCode searchedCode,
                               @NonNull final Book book) {
         this.document = document;
         this.book = book;
+        identifierValuePruner = new IdentifierValuePruner();
 
         // we don't get it from the site, just add it
         book.setRawProductCode(searchedCode.asText());
@@ -156,7 +158,7 @@ class WikidataBookParser {
             parseIdentifiers(o, ivs);
         }
 
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        identifierValuePruner.prune(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }

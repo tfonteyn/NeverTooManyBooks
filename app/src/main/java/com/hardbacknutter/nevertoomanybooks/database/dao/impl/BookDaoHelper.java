@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -75,6 +76,7 @@ public class BookDaoHelper {
     @NonNull
     private final List<String> dateTimeDomainNames;
     private final Map<String, Domain> tableDomains;
+    private final IdentifierValuePruner identifierValuePruner;
 
     /**
      * Constructor.
@@ -88,6 +90,7 @@ public class BookDaoHelper {
         this.userLocales = userLocales;
 
         this.textNormaliser = new TextNormaliser();
+        identifierValuePruner = new IdentifierValuePruner();
 
         final List<Domain> domains = DBDefinitions.TBL_BOOKS.getDomains();
         tableDomains = new LinkedHashMap<>(domains.size());
@@ -358,7 +361,7 @@ public class BookDaoHelper {
         final List<Identifier.Value> ivsIn = book.getIdentifiers();
 
         // Weed out duplicates, nulls, empties and "0"s.
-        identifierDao.pruneList(ivsIn);
+        identifierValuePruner.prune(ivsIn);
 
         ivsIn.stream()
              // Identifier.Type.Number identifiers MUST exist

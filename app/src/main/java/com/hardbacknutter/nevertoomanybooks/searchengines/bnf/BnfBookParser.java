@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookParserHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
@@ -148,6 +148,7 @@ class BnfBookParser {
     private final Book book;
 
     private final PartialDateParser partialDateParser;
+    private final IdentifierValuePruner identifierValuePruner;
 
     BnfBookParser(@NonNull final Context context,
                   @NonNull final BookParserHelper bookParserHelper,
@@ -159,6 +160,7 @@ class BnfBookParser {
         this.book = book;
 
         partialDateParser = new PartialDateParser();
+        identifierValuePruner = new IdentifierValuePruner();
     }
 
     /**
@@ -760,7 +762,7 @@ class BnfBookParser {
      *                     if the the latter was not retrieved during the search
      */
     public void finish(@Nullable final String searchedCode) {
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        identifierValuePruner.prune(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }

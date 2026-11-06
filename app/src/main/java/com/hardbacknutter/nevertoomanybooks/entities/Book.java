@@ -72,16 +72,21 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.AuthorPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.BookshelfPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdentifierValuePruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Pruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.PublisherPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.SeriesPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.TagPruner;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.TocEntryPruner;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -1051,11 +1056,11 @@ public class Book
     public void pruneAuthors(@NonNull final Context context) {
         final List<Author> list = getAuthors();
         if (!list.isEmpty()) {
-            final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
+            final Pruner<Author> authorPruner = new AuthorPruner();
             // Author's always use the book Locale
-            if (authorDao.pruneList(context, list, author -> bookLocale)) {
+            if (authorPruner.prune(context, list, author -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1146,12 +1151,12 @@ public class Book
     public void pruneSeries(@NonNull final Context context) {
         final List<Series> list = getSeries();
         if (!list.isEmpty()) {
-            final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Series have their own Locale with fallback to the book-locale
-            if (seriesDao.pruneList(context, list,
-                                    series -> series.getLocale(userLocale).orElse(bookLocale))) {
+            final Pruner<Series> seriesPruner = new SeriesPruner();
+            if (seriesPruner.prune(context, list,
+                                   series -> series.getLocale(userLocale).orElse(bookLocale))) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1232,11 +1237,11 @@ public class Book
     public void prunePublishers(@NonNull final Context context) {
         final List<Publisher> list = getPublishers();
         if (!list.isEmpty()) {
-            final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
+            final Pruner<Publisher> publisherPruner = new PublisherPruner();
             // Publisher's always use the book Locale
-            if (publisherDao.pruneList(context, list, publisher -> bookLocale)) {
+            if (publisherPruner.prune(context, list, publisher -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1289,8 +1294,10 @@ public class Book
     public void pruneBookshelves(@NonNull final Context context) {
         final List<Bookshelf> list = getBookshelves();
         if (!list.isEmpty()) {
-            final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
-            if (dao.pruneList(context, list)) {
+            final Pruner<Bookshelf> bookshelfPruner = new BookshelfPruner();
+            // The user-locale! Not the book-locale.
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            if (bookshelfPruner.prune(context, list, bookshelf -> userLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1323,10 +1330,11 @@ public class Book
     public void pruneToc(@NonNull final Context context) {
         final List<TocEntry> list = getToc();
         if (!list.isEmpty()) {
-            final TocEntryDao dao = ServiceLocator.getInstance().getTocEntryDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
-            if (dao.pruneList(context, list, tocEntry -> bookLocale)) {
+            final Pruner<TocEntry> tocEntryPruner = new TocEntryPruner();
+            // TocEntry's always use the book Locale
+            if (tocEntryPruner.prune(context, list, tocEntry -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1375,10 +1383,11 @@ public class Book
     public void pruneTags(@NonNull final Context context) {
         final List<Tag> list = getTags();
         if (!list.isEmpty()) {
-            final TagDao dao = ServiceLocator.getInstance().getTagDao();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
-            if (dao.pruneList(context, list, tocEntry -> bookLocale)) {
+            final Pruner<Tag> tagPruner = new TagPruner();
+            // Debatable whether it should be the user-locale...
+            if (tagPruner.prune(context, list, tocEntry -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1403,8 +1412,7 @@ public class Book
     public void pruneIdentifiers(@NonNull final Context context) {
         final List<Identifier.Value> list = getIdentifiers();
         if (!list.isEmpty()) {
-            final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
-            if (dao.pruneList(list)) {
+            if (new IdentifierValuePruner().prune(list)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }

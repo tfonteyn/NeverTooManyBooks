@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.Mergeable;
 
 /**
  * Represents a Bookshelf.
@@ -49,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
  * See {@link #getStyle()}.
  */
 public class Bookshelf
-        implements Parcelable, Entity, Mergeable {
+        implements Parcelable, Entity, Mergeable<Bookshelf> {
 
     /** Log tag. */
     public static final String TAG = "Bookshelf";

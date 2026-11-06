@@ -23,14 +23,12 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -42,10 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.merging.IdFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface TocEntryDao
-        extends Purgeable, Positional {
+        extends Purgeable, Positional, IdFixer<TocEntry> {
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
@@ -121,60 +120,6 @@ public interface TocEntryDao
             throws StorageException, ImageIOException;
 
     /**
-     * Passed a list of Objects, remove duplicates.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<TocEntry> list,
-                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        final boolean normalise = ReorderHelper.isTryReorderingDuringDeduplication();
-        return pruneList(context, list, normalise, localeSupplier);
-    }
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param normalise      flag, whether to normalise the title
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<TocEntry> list,
-                              final boolean normalise,
-                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        return pruneList(context, list, normalise, localeSupplier,
-                         (entry, locale) -> fixId(context, entry, locale));
-    }
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     * <p>
-     * <strong>Tests only.</strong>
-     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param normalise      flag, whether to normalise the title
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     * @param idFixer        how to call {@link #fixId(Context, TocEntry, Locale)}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    @VisibleForTesting
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<TocEntry> list,
-                      boolean normalise,
-                      @NonNull Function<TocEntry, Locale> localeSupplier,
-                      @NonNull BiConsumer<TocEntry, Locale> idFixer);
-    /**
      * Rebuild the OB columns for the table(s) of this dao.
      *
      * @param context       Current context
@@ -229,20 +174,6 @@ public interface TocEntryDao
      * @return the number of books
      */
     int countBooks(@NonNull TocEntry tocEntry);
-
-    /**
-     * Find a {@link TocEntry} by using the <strong>name</strong> fields.
-     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
-     * <p>
-     * If the item has child items, then implementations must propagate the call.
-     *
-     * @param context Current context
-     * @param item    to update
-     * @param locale  Current Locale
-     */
-    void fixId(@NonNull Context context,
-               @NonNull TocEntry item,
-               @NonNull Locale locale);
 
     /**
      * Refresh the passed {@link TocEntry} from the database, if present.
