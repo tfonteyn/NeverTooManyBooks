@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -48,23 +48,5 @@
     <dimen name="partial_date_picker_year_horizontal_padding">8dp</dimen>
     <dimen name="partial_date_picker_year_vertical_padding">8dp</dimen>
     <dimen name="partial_date_picker_year_width">88dp</dimen>
-
-    <!-- material_emphasis_disabled etc...  -->
-    <item format="float"
-          name="alpha_emphasis_disabled"
-          type="dimen">0.38
-    </item>
-    <item format="float"
-          name="alpha_emphasis_disabled_background"
-          type="dimen">0.12
-    </item>
-    <item format="float"
-          name="alpha_emphasis_high_type"
-          type="dimen">0.87
-    </item>
-    <item format="float"
-          name="alpha_emphasis_medium"
-          type="dimen">0.6
-    </item>
 
 </resources>

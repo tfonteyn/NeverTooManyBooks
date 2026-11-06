@@ -98,6 +98,23 @@
     <!-- generic padding for progress title/message/bar views. -->
     <dimen name="progress_padding">4dp</dimen>
 
+    <!-- material_emphasis_disabled etc...  -->
+    <item format="float"
+          name="alpha_emphasis_disabled"
+          type="dimen">0.38
+    </item>
+    <item format="float"
+          name="alpha_emphasis_disabled_background"
+          type="dimen">0.12
+    </item>
+    <item format="float"
+          name="alpha_emphasis_high_type"
+          type="dimen">0.87
+    </item>
+    <item format="float"
+          name="alpha_emphasis_medium"
+          type="dimen">0.6
+    </item>
 
     <!-- ExtMenuPopupWindow:
          The indentation for a dropdown -->

@@ -107,11 +107,11 @@
     </style>
 
     <!-- We're not switching to the LoadingIndicator. Other than that it warps... no benefit and
-         the "Contained" version cannot be styles using an attribute. -->
+         the "Contained" version cannot be styled using an attribute. -->
     <style name="Widget.App.CircularProgressIndicator"
            parent="Widget.Material3Expressive.CircularProgressIndicator">
         <item name="android:clickable">true</item>
-        <item name="android:alpha">0.8</item>
+        <item name="android:alpha">@dimen/alpha_emphasis_high_type</item>
         <item name="android:elevation">@dimen/progress_z</item>
         <item name="android:indeterminate">true</item>
         <item name="indicatorSize">44dp</item>
