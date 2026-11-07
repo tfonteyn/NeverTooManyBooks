@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,18 +24,22 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 /**
- * FieldFormatter for 'Number' fields with the value being a 'double'
+ * FieldFormatter for 'Number' fields with the value being a {@code BigDecimal}.
  * This includes the {@link Money} class when editing.
  *
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong> but sharing the same Locale.</li>
  * </ul>
  */
-public class DoubleNumberFormatter
+public class BigDecimalFormatter
         implements EditFieldFormatter<Number> {
 
     @NonNull
@@ -46,7 +50,7 @@ public class DoubleNumberFormatter
      *
      * @param realNumberParser to use
      */
-    public DoubleNumberFormatter(@NonNull final RealNumberParser realNumberParser) {
+    public BigDecimalFormatter(@NonNull final RealNumberParser realNumberParser) {
         this.realNumberParser = realNumberParser;
     }
 
@@ -59,31 +63,26 @@ public class DoubleNumberFormatter
             return "";
         }
 
-        final double value = rawValue.doubleValue();
-        if (value == 0.0d) {
+        final BigDecimal value = realNumberParser.toBigDecimal(rawValue);
+        if (BigDecimal.ZERO.compareTo(value) == 0) {
             return "";
         }
 
-        final String formatted = String.valueOf(value);
-        if (formatted.endsWith(".00")) {
-            return formatted.substring(0, formatted.length() - 3);
-        } else if (formatted.endsWith(".0")) {
-            return formatted.substring(0, formatted.length() - 2);
-        } else {
-            return formatted;
-        }
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
+        return nf.format(value);
     }
 
     @Override
     @NonNull
     public Number extract(@NonNull final Context context,
                           @NonNull final String text) {
-        if (text.isEmpty()) {
+        if (text.isBlank()) {
             return 0;
         }
 
         try {
-            return realNumberParser.toDouble(text);
+            return realNumberParser.toBigDecimal(text);
 
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw

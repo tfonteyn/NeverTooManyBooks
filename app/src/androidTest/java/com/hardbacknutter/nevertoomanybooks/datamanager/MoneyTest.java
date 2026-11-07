@@ -83,11 +83,9 @@ class MoneyTest
                                 @NonNull final BigDecimal expectedValue,
                                 @Nullable final String expectedCurrency) {
 
-        // Low level checks!
         final Object v = dataManager.get(key);
         assertNotNull(v);
 
-        // Mimic what dataManager.getBigDecimal does
         final BigDecimal value;
         if (v instanceof String) {
             value = new BigDecimal((String) v);

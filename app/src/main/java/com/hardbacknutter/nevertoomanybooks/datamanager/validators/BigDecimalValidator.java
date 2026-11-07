@@ -63,28 +63,21 @@ public class BigDecimalValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final BigDecimal value;
-
-        // We don't care about Money here. Value/Currency are treated as BigDecimal/String
+        // specific check on null/empty and replace it with the default value
         final Object obj = dataManager.get(key);
-        if (obj == null) {
-            value = defaultValue;
-        } else if (obj instanceof BigDecimal) {
-            value = (BigDecimal) obj;
-        } else {
-            if (obj.toString().isBlank()) {
-                value = defaultValue;
-            } else {
-                try {
-                    value = realNumberParser.toBigDecimal(obj);
-
-                } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(
-                            context.getString(R.string.vldt_real_expected_for_x,
-                                              context.getString(errorLabelResId)));
-                }
-            }
+        if (obj == null || String.valueOf(obj).isBlank()) {
+            dataManager.putBigDecimal(key, defaultValue);
+            return;
         }
-        dataManager.putBigDecimal(key, value);
+
+        try {
+            final BigDecimal value = dataManager.getBigDecimal(key, realNumberParser);
+            // The value might have been a different type, store/overwrite as a safeguard
+            dataManager.putBigDecimal(key, value);
+        } catch (@NonNull final NumberFormatException e) {
+            throw new ValidatorException(
+                    context.getString(R.string.vldt_real_expected_for_x,
+                                      context.getString(errorLabelResId)));
+        }
     }
 }
