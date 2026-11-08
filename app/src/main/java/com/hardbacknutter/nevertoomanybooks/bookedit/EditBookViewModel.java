@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -1378,16 +1379,23 @@ public class EditBookViewModel
                .addOnFocusChangeListener((view, hasFocus) -> {
                    if (!hasFocus) {
                        getField(DBKey.PRICE_PAID).ifPresent(destField -> {
-                           if (destField.isUsed() && destField.isEmpty()) {
-                               // Paranoia... try parsing it to a BigDecimal.
-                               final Object source = requireField(DBKey.PRICE_LISTED).getValue();
-                               try {
-                                   final BigDecimal value = moneyParser.toBigDecimal(source);
-                                   // Update BOTH the book and the field
-                                   getBook().putBigDecimal(DBKey.PRICE_PAID, value);
-                                   destField.setValue(value);
-                               } catch (@NonNull final NumberFormatException ignore) {
-                                   // ignore
+                           if (destField.isUsed()) {
+                               // Test the value from the book!
+                               // The field might not have been loaded yet if the
+                               // fragment containing it has not been shown yet
+                               final String pps = getBook().getString(DBKey.PRICE_PAID, null);
+                               if (NumberParser.isZero(pps)) {
+                                   // Paranoia... parse it.
+                                   final Object source =
+                                           requireField(DBKey.PRICE_LISTED).getValue();
+                                   try {
+                                       final BigDecimal value = moneyParser.toBigDecimal(source);
+                                       // Update BOTH the book and the field
+                                       getBook().putBigDecimal(DBKey.PRICE_PAID, value);
+                                       destField.setValue(value);
+                                   } catch (@NonNull final NumberFormatException ignore) {
+                                       // ignore
+                                   }
                                }
                            }
                        });
@@ -1409,13 +1417,18 @@ public class EditBookViewModel
                 .addOnFocusChangeListener((v, hasFocus) -> {
                     if (!hasFocus) {
                         getField(DBKey.PRICE_PAID_CURRENCY).ifPresent(destField -> {
-                            if (destField.isUsed() && destField.isEmpty()) {
-                                final String source = (String)
-                                        requireField(DBKey.PRICE_LISTED_CURRENCY).getValue();
-                                if (source != null) {
-                                    // Update BOTH the book and the field
-                                    getBook().putString(DBKey.PRICE_PAID_CURRENCY, source);
-                                    destField.setValue(source);
+                            if (destField.isUsed()) {
+                                // Test the value from the book!
+                                // The field might not have been loaded yet if the
+                                // fragment containing it has not been shown yet
+                                if (getBook().getString(DBKey.PRICE_PAID_CURRENCY).isBlank()) {
+                                    final String source = (String)
+                                            requireField(DBKey.PRICE_LISTED_CURRENCY).getValue();
+                                    if (source != null) {
+                                        // Update BOTH the book and the field
+                                        getBook().putString(DBKey.PRICE_PAID_CURRENCY, source);
+                                        destField.setValue(source);
+                                    }
                                 }
                             }
                         });
