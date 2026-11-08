@@ -1,3 +1,11 @@
+### 8.1.4
+
+FIXES:
+
+- GitHub #260: price validation was failing with comma as decimal separator
+- modifying the price-listed no longer overwrites the price-paid when the latter is not empty
+
+---
 ### 8.1.2
 
 - GitHub #259: fix titlebar updates when swiping between books
