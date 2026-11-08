@@ -1,0 +1,4 @@
+FIXES:
+
+- GitHub #260: (part 2) price validation was failing with comma as decimal separator
+- modifying the price-listed no longer overwrites the price-paid when the latter is not empty
