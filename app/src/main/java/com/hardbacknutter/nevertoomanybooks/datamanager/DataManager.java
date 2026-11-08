@@ -208,12 +208,6 @@ public class DataManager
         for (int i = 0; i < cursor.getColumnCount(); i++) {
             final String key = cursor.getColumnName(i);
 
-            if (moneyKeys.contains(key)) {
-                // Money is a BigDecimal, stored as a String
-                rawData.putString(key, cursor.getString(i));
-                continue;
-            }
-
             switch (cursor.getType(i)) {
                 case Cursor.FIELD_TYPE_STRING:
                     rawData.putString(key, cursor.getString(i));
@@ -226,7 +220,14 @@ public class DataManager
 
                 case Cursor.FIELD_TYPE_FLOAT:
                     // a null becomes 0.0
-                    rawData.putDouble(key, cursor.getDouble(i));
+                    final double v = cursor.getDouble(i);
+                    if (moneyKeys.contains(key)) {
+                        // Money is stored as a double in the database,
+                        // and must be converted to BigDecimal
+                        putBigDecimal(key, new BigDecimal(v));
+                    } else {
+                        rawData.putDouble(key, v);
+                    }
                     break;
 
                 case Cursor.FIELD_TYPE_BLOB:
@@ -442,23 +443,24 @@ public class DataManager
     public BigDecimal getBigDecimal(@NonNull final String key,
                                     @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-        // The type should be a String, as used by putBigDecimal;
-        final Object source = rawData.get(key);
-        if (source instanceof String) {
-            try {
-                return new BigDecimal((String) source);
-            } catch (@NonNull final NumberFormatException e) {
-                LoggerFactory.getLogger()
-                             .e(TAG, "key='" + key + "' new BigDecimal() failed for: " + source);
+
+        Object source = rawData.get(key);
+
+        // Sanity checks before simply casting
+        if (source instanceof Serializable) {
+            //noinspection deprecation
+            source = rawData.getSerializable(key);
+            if (source instanceof BigDecimal) {
+                return (BigDecimal) source;
             }
         }
 
-        // fallback to parsing
+        // fallback to parsing; this includes Money
         return parser.toBigDecimal(source);
     }
 
     /**
-     * Store a BigDecimal value. It is written as a String with '.' as the decimal separator.
+     * Store a BigDecimal value.
      *
      * @param key   Key of data object
      * @param value to store
@@ -467,8 +469,7 @@ public class DataManager
      */
     public void putBigDecimal(@NonNull final String key,
                               @NonNull final BigDecimal value) {
-        //noinspection CallToNumericToString
-        rawData.putString(key, value.toString());
+        rawData.putSerializable(key, value);
     }
 
     @Override

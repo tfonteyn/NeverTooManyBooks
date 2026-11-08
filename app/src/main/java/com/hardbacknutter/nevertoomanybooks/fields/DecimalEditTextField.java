@@ -33,15 +33,11 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
- * See class docs: {@link StringCoder}.
- * <p>
- * A {@code null} or {@code 0} value is always displayed as an empty {@code String}.
+ * A {@code null} or any variation of {@code 0} is displayed as an empty {@code String}.
  */
 public class DecimalEditTextField
         extends EditTextField<Number, EditText> {
@@ -56,6 +52,20 @@ public class DecimalEditTextField
     public DecimalEditTextField(@IdRes final int fieldViewId,
                                 @NonNull final String fieldKey) {
         super(fieldViewId, fieldKey);
+    }
+
+    /**
+     * Derive the decimal separator from the user Locale (context).
+     *
+     * @param context to use
+     *
+     * @return separator char
+     */
+    public static char getDecimalSeparator(@NonNull final Context context) {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
+        final DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
+        return symbols.getDecimalSeparator();
     }
 
     @Override
@@ -85,11 +95,7 @@ public class DecimalEditTextField
 
         DecimalTextWatcher(@NonNull final EditText view) {
             editText = view;
-            final Context context = editText.getContext();
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
-            final DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
-            decimalSeparator = Character.toString(symbols.getDecimalSeparator());
+            decimalSeparator = Character.toString(getDecimalSeparator(editText.getContext()));
 
             enableListener(editText.getText());
         }

@@ -34,6 +34,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+
 /**
  * Tested with Device running in US Locale, app in Dutch.
  * A price field with content "10.45".
@@ -402,6 +404,10 @@ public class RealNumberParser {
 
         if (source == null) {
             return BigDecimal.ZERO;
+        }
+
+        if (source instanceof Money) {
+            return ((Money) source).getValue();
         }
 
         if (source instanceof BigDecimal) {
