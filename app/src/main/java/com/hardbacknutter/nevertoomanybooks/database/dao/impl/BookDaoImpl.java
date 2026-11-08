@@ -720,16 +720,16 @@ public class BookDaoImpl
 
     @NonNull
     @Override
-    public Book from(final long bookId) {
-        if (bookId <= 0) {
-            throw new IllegalArgumentException("bookId: " + bookId);
+    public Book findById(final long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("bookId: " + id);
         }
 
         final Book book = new Book();
-        try (Cursor bookCursor = fetchById(bookId)) {
+        try (Cursor bookCursor = fetchById(id)) {
             if (bookCursor.moveToFirst()) {
                 // micro optimization, we don't need to read the id from the cursor.
-                book.load(bookId, bookCursor);
+                book.load(id, bookCursor);
             }
         }
         return book;

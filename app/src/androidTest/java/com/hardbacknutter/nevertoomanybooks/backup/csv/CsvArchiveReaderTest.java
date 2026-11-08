@@ -243,7 +243,7 @@ class CsvArchiveReaderTest
     private void checkBook1() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        final Book book = bookDao.from(BOOK_ID_01);
+        final Book book = bookDao.findById(BOOK_ID_01);
         assertEquals(BOOK_ID_01, book.getId());
         assertEquals("Myths and Folk Tales of Ireland", book.getString(DBKey.TITLE, null));
         assertEquals("0486224309", book.getString(DBKey.ISBN, null));
@@ -299,7 +299,7 @@ class CsvArchiveReaderTest
     private void checkBook2() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        final Book book = bookDao.from(BOOK_ID_02);
+        final Book book = bookDao.findById(BOOK_ID_02);
         assertEquals(BOOK_ID_02, book.getId());
         assertEquals("Dracula", book.getString(DBKey.TITLE, null));
         assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
@@ -361,7 +361,7 @@ class CsvArchiveReaderTest
     private void checkBook3Rating() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        final Book book = bookDao.from(BOOK_ID_03);
+        final Book book = bookDao.findById(BOOK_ID_03);
         // "3,55"
         assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
     }

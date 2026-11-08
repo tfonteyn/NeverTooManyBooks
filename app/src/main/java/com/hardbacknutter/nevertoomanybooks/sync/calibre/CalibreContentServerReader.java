@@ -425,12 +425,12 @@ public class CalibreContentServerReader
                 // We have it; update according to the users choice
                 switch (updateOption) {
                     case Overwrite: {
-                        final Book book = bookDao.from(localBookId);
+                        final Book book = bookDao.findById(localBookId);
                         updateBook(context, calibreBook, book);
                         break;
                     }
                     case OnlyNewer: {
-                        final Book book = bookDao.from(localBookId);
+                        final Book book = bookDao.findById(localBookId);
                         if (isRemoteBookNewer(calibreBook, book)) {
                             updateBook(context, calibreBook, book);
 

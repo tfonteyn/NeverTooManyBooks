@@ -1304,7 +1304,7 @@ public class BooksOnBookshelf
         // We simply grab the FIRST book to get the pre-selected bookshelves.
         final List<Bookshelf> bookshelves = ServiceLocator.getInstance()
                                                           .getBookDao()
-                                                          .from(bookIds.get(0))
+                                                          .findById(bookIds.get(0))
                                                           .getBookshelves();
 
         // We're using the extras to pass the set of book ids
@@ -1348,7 +1348,7 @@ public class BooksOnBookshelf
         // We simply grab the FIRST book to get the pre-selected location.
         final String currentLocation = ServiceLocator.getInstance()
                                                      .getBookDao()
-                                                     .from(bookIds.get(0))
+                                                     .findById(bookIds.get(0))
                                                      .getString(DBKey.LOCATION);
 
         // We're using the extras to pass the set of book ids

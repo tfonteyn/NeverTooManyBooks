@@ -179,6 +179,6 @@ public class ShowBookPagerViewModel
     @NonNull
     Book getBook(@IntRange(from = 0) final int position) {
         final long bookId = getBookIdAtPosition(position);
-        return ServiceLocator.getInstance().getBookDao().from(bookId);
+        return ServiceLocator.getInstance().getBookDao().findById(bookId);
     }
 }

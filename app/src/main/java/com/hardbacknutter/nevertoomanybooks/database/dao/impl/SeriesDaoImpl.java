@@ -480,7 +480,7 @@ public class SeriesDaoImpl
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
             for (final long bookId : bookIds) {
-                final Book book = bookDao.from(bookId);
+                final Book book = bookDao.findById(bookId);
 
                 final List<Series> fromBook = book.getSeries();
                 final List<Series> destList = new ArrayList<>();
@@ -575,7 +575,7 @@ public class SeriesDaoImpl
                 final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
                 for (final long bookId : bookIds) {
-                    final Book book = bookDao.from(bookId);
+                    final Book book = bookDao.findById(bookId);
                     final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false,

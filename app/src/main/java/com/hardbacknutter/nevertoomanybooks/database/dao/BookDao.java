@@ -313,19 +313,18 @@ public interface BookDao {
      */
     @NonNull
     List<String> getBookUuidList();
-
-
+    
     /**
-     * Load a book.
+     * Find the {@link Book} for the given id.
      *
-     * @param bookId of book
+     * @param id of the {@link Book}
      *
-     * @return new instance; can be empty when the id is not found
+     * @return a populated Book instance / a new/empty Book when the id is not found
      *
-     * @throws IllegalArgumentException if the book id is invalid
+     * @throws IllegalArgumentException (debug) if the book id is negative or {@code 0}
      */
     @NonNull
-    Book from(@IntRange(from = 1) long bookId);
+    Book findById(@IntRange(from = 1) long id);
 
     /**
      * Check that a book with the passed UUID exists and return the id of the book, or zero.

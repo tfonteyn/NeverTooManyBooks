@@ -79,7 +79,7 @@ public class ShowTocViewModel
 
             bookDao = ServiceLocator.getInstance().getBookDao();
 
-            book = bookDao.from(bookId);
+            book = bookDao.findById(bookId);
             works.addAll(book.getToc());
         }
     }
@@ -99,7 +99,7 @@ public class ShowTocViewModel
     }
 
     void reloadBook() {
-        reloadBook(bookDao.from(this.book.getId()));
+        reloadBook(bookDao.findById(this.book.getId()));
     }
 
     void reloadBook(@NonNull final Book book) {

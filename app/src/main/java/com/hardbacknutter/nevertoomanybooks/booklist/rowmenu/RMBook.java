@@ -122,7 +122,7 @@ public class RMBook
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
         if (calibreHandler != null) {
-            final Book book = bookDao.from(rowData.getLong(DBKey.FK_BOOK));
+            final Book book = bookDao.findById(rowData.getLong(DBKey.FK_BOOK));
             calibreHandler.onPrepareMenu(context, menu, book);
         }
 
@@ -149,7 +149,7 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
-            final Book book = bookDao.from(bookId);
+            final Book book = bookDao.findById(bookId);
             editBookLauncher.launch(new EditBookInput(book.duplicate(context),
                                                       vm.getStyle()));
             return true;
@@ -161,7 +161,7 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
-            final Book book = bookDao.from(bookId);
+            final Book book = bookDao.findById(bookId);
             updateBookLauncher.launch(book);
             return true;
 
@@ -174,13 +174,13 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_SHARE) {
-            final Book book = bookDao.from(bookId);
+            final Book book = bookDao.findById(bookId);
             context.startActivity(CitationFactory.getShareIntent(context, book, vm.getStyle()));
             return true;
         }
 
         if (calibreHandler != null) {
-            final Book book = bookDao.from(bookId);
+            final Book book = bookDao.findById(bookId);
             return calibreHandler.onMenuItemSelected(context, menuItemId, book);
         }
 
