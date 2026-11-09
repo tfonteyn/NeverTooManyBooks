@@ -33,6 +33,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -49,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -82,6 +82,8 @@ public class SearchBookUpdatesViewModel
     private static final String TAG = "SearchBookUpdatesViewModel";
     /** Ask confirmation if the number of covers to download exceeds this number. */
     private static final int WARN_FOR_NUMBER_OF_COVERS = 10;
+
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
 
     private final MutableLiveData<LiveDataEvent<BookSearchResult>> listFinished =
             new MutableLiveData<>();
@@ -546,33 +548,46 @@ public class SearchBookUpdatesViewModel
 
         // Background task safe context.
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    // paranoia... remoteBook is never null at this point (see above),
-                    // but we want to guard against future code changes elsewhere.
-                    //noinspection ConstantValue
-                    if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-                        //noinspection DataFlowIssue
-                        final Book delta = syncProcessor
-                                .process(context, currentBookId, currentBook, remoteBook,
-                                         currentFieldsWanted);
-                        if (delta != null) {
-                            bookRepository.update(context, delta, Set.of());
-                        }
+
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection OverlyBroadCatchBlock,CheckStyle
+            try {
+                if (isCancelled() || Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+
+                if (!remoteBook.isEmpty()) {
+                    //noinspection DataFlowIssue
+                    final Book delta = syncProcessor
+                            .process(context, currentBookId, currentBook, remoteBook,
+                                     currentFieldsWanted);
+                    if (delta != null) {
+                        bookRepository.update(context, delta, Set.of());
                     }
-                    return (Void) null;
-                },
-                aVoid -> {
+                }
+
+                if (isCancelled() || Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+
+                UI_HANDLER.post(() -> {
                     bookDoneUpdateProgress();
                     nextBook(context);
-                },
-                this::postSearch);
+                });
+
+            } catch (@NonNull final UncheckedIOException e) {
+                //noinspection DataFlowIssue
+                UI_HANDLER.post(() -> postSearch(e.getCause()));
+            } catch (@NonNull final Throwable t) {
+                UI_HANDLER.post(() -> postSearch(t));
+            }
+        });
 
         // Trigger a UI update if needed
         retriggerSearchFinished();
     }
 
+    @UiThread
     private void bookDoneUpdateProgress() {
         //update the counter, another one done.
         final TaskProgress taskProgress = new TaskProgress(
