@@ -553,10 +553,10 @@ public class SearchBookUpdatesViewModel
                     // but we want to guard against future code changes elsewhere.
                     //noinspection ConstantValue
                     if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-                        final Book delta;
                         //noinspection DataFlowIssue
-                        delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                          remoteBook, currentFieldsWanted);
+                        final Book delta = syncProcessor
+                                .process(context, currentBookId, currentBook, remoteBook,
+                                         currentFieldsWanted);
                         if (delta != null) {
                             bookRepository.update(context, delta, Set.of());
                         }
@@ -564,21 +564,23 @@ public class SearchBookUpdatesViewModel
                     return (Void) null;
                 },
                 aVoid -> {
-                    //update the counter, another one done.
-                    final TaskProgress taskProgress = new TaskProgress(
-                            R.id.TASK_ID_UPDATE_FIELDS, null,
-                            currentProgressCounter, currentCursorCount, null);
-                    synchronized (searchCoordinatorProgress) {
-                        searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
-                    }
-
-                    // On to the next book in the list.
+                    bookDoneUpdateProgress();
                     nextBook(context);
                 },
                 this::postSearch);
 
         // Trigger a UI update if needed
         retriggerSearchFinished();
+    }
+
+    private void bookDoneUpdateProgress() {
+        //update the counter, another one done.
+        final TaskProgress taskProgress = new TaskProgress(
+                R.id.TASK_ID_UPDATE_FIELDS, null,
+                currentProgressCounter, currentCursorCount, null);
+        synchronized (searchCoordinatorProgress) {
+            searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
+        }
     }
 
     /**
