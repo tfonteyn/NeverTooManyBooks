@@ -180,7 +180,7 @@ public final class ImageHandler {
 
         imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                           ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.ApplySizing.Constrained,
+                                          ApplySizing.Constrained,
                                           builder.maxWidth, builder.maxHeight);
 
         attachOnClickListeners();

@@ -38,6 +38,7 @@ import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.covers.ApplySizing;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -161,7 +162,7 @@ public class ZoomedImageDialogFragment
         // load and resize as needed.
         new ImageViewLoader(ASyncExecutor.IMAGES,
                             ImageView.ScaleType.FIT_CENTER,
-                            ImageViewLoader.ApplySizing.Constrained,
+                            ApplySizing.Constrained,
                             maxWidth, maxHeight)
                 .fromFile(null, 0, imageFile, imageView, null);
     }

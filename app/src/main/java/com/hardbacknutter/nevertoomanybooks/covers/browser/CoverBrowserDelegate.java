@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
+import com.hardbacknutter.nevertoomanybooks.covers.ApplySizing;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -207,7 +208,7 @@ class CoverBrowserDelegate
                                      imageFileInfo -> setSelectedImage(imageFileInfo, false));
         previewLoader = new ImageViewLoader(vm.getPreviewDisplayExecutor(),
                                             ImageView.ScaleType.FIT_START,
-                                            ImageViewLoader.ApplySizing.Constrained,
+                                            ApplySizing.Constrained,
                                             previewMaxWidth, previewMaxHeight);
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
@@ -506,7 +507,7 @@ class CoverBrowserDelegate
 
             imageLoader = new ImageViewLoader(executor,
                                               ImageView.ScaleType.FIT_START,
-                                              ImageViewLoader.ApplySizing.Constrained,
+                                              ApplySizing.Constrained,
                                               maxWidth, maxHeight);
         }
 

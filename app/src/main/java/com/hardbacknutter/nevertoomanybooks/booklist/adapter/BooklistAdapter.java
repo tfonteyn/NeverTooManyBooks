@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.ApplySizing;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -157,14 +158,14 @@ public class BooklistAdapter
             case List: {
                 imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                                   ImageView.ScaleType.FIT_START,
-                                                  ImageViewLoader.ApplySizing.None,
+                                                  ApplySizing.None,
                                                   imageViewSize.width, imageViewSize.height);
                 break;
             }
             case Grid: {
                 imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                                   ImageView.ScaleType.FIT_CENTER,
-                                                  ImageViewLoader.ApplySizing.None,
+                                                  ApplySizing.None,
                                                   imageViewSize.width, imageViewSize.height);
                 break;
             }

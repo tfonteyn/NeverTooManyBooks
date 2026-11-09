@@ -256,13 +256,4 @@ public class ImageViewLoader {
                 e -> runningTasks.remove(imageView, task[0]));
         runningTasks.put(imageView, task[0]);
     }
-
-    public enum ApplySizing {
-        /** Use constraint settings. */
-        Constrained,
-        /** Use a fixed width and height. */
-        Enforce,
-        /** Don't apply any (avoids {@code null}-usage). */
-        None
-    }
 }
