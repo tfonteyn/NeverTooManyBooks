@@ -45,6 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 
 /**
  * Load & scale a Bitmap from a file; and populate the view.
+ * <p>
+ * URGENT: this class is used in fragment/delegates.
+ *  It SHOULD be rewritten as a ViewModel.
+ *  Instead of passing in the View, it should send the bitmap/placeholder
+ *  to observables.
  */
 public class ImageViewLoader {
 
@@ -194,8 +199,6 @@ public class ImageViewLoader {
         final ImageReference imageReference = new ImageReference(uuid, cIdx, imageView);
 
         final Future<?>[] task = new Future<?>[1];
-        // FIXME: the code inspector claims this is not running in a background thread
-        //  Seems likely to be an inspector error
         task[0] = STask.execute(
                 executor,
                 () -> {
