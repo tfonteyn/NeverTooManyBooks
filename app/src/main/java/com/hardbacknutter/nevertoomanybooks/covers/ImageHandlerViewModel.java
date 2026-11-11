@@ -32,6 +32,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.HasDefaultViewModelProviderFactory;
 import androidx.lifecycle.LiveData;
@@ -46,6 +47,7 @@ import androidx.lifecycle.viewmodel.CreationExtras;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -56,11 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageExt
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "OverlyBroadCatchBlock"})
 public class ImageHandlerViewModel
         extends ViewModel {
 
@@ -108,6 +109,7 @@ public class ImageHandlerViewModel
         savedStateTempDestFilePath = TAG + ":tdfp:" + cIdx;
     }
 
+
     @NonNull
     LiveData<LiveDataEvent<TransformationResult>> onTransformationResult() {
         return transformationResult;
@@ -148,13 +150,11 @@ public class ImageHandlerViewModel
         return onReloadImage;
     }
 
-    private void setInvalidImage(@Nullable final Throwable e) {
-        if (e == null) {
-            onInvalidImage.setValue(LiveDataEvent.ofNullable(null));
-        } else if (e.getCause() != null) {
-            onInvalidImage.setValue(LiveDataEvent.ofNullable(e.getCause()));
+    private void postInvalidImage(@Nullable final Throwable e) {
+        if (e instanceof UncheckedIOException) {
+            onInvalidImage.postValue(LiveDataEvent.ofNullable(e.getCause()));
         } else {
-            onInvalidImage.setValue(LiveDataEvent.ofNullable(e));
+            onInvalidImage.postValue(LiveDataEvent.ofNullable(e));
         }
     }
 
@@ -162,97 +162,121 @@ public class ImageHandlerViewModel
      * Prepare to start the external editor.
      * <p>
      * When completed, triggers {@link #onStartExternalEditor()}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
      */
     void prepareExternalEditor(@NonNull final ImageOwner imageOwner) {
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    final File srcFile = createSourceTempImageFile(context, imageOwner);
-                    final File dstFile = createDestinationTempImageFile();
-                    return EditImageExternalContract.Input.create(srcFile, dstFile);
-                },
-                input -> onStartExternalEditor.setValue(LiveDataEvent.of(input)),
-                this::setInvalidImage);
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                final File srcFile = createSourceTempImageFile(context, imageOwner);
+                final File dstFile = createDestinationTempImageFile();
+                final EditImageExternalContract.Input result = EditImageExternalContract.Input
+                        .create(srcFile, dstFile);
+
+                onStartExternalEditor.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
      * Prepare to start the external editor.
      * <p>
      * When completed, triggers {@link #onStartExternalEditor()}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param srcFile to edit
      */
     void prepareExternalEditor(@NonNull final File srcFile) {
-        STask.execute(
-                ASyncExecutor.PARALLEL,
-                () -> {
-                    final File dstFile = createDestinationTempImageFile();
-                    return EditImageExternalContract.Input.create(srcFile, dstFile);
-                },
-                input -> onStartExternalEditor.setValue(LiveDataEvent.of(input)),
-                this::setInvalidImage);
+        ASyncExecutor.PARALLEL.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final File dstFile = createDestinationTempImageFile();
+                final EditImageExternalContract.Input result = EditImageExternalContract.Input
+                        .create(srcFile, dstFile);
+
+                onStartExternalEditor.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
      * Prepare to start the internal editor.
      * <p>
      * When completed, triggers {@link #onStartExternalEditor()}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
      */
     void prepareInternalEditor(@NonNull final ImageOwner imageOwner) {
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    final File srcFile = createSourceTempImageFile(context, imageOwner);
-                    final File dstFile = createDestinationTempImageFile();
-                    return EditImageContract.Input.create(srcFile, dstFile);
-                },
-                input -> onStartEditor.setValue(LiveDataEvent.of(input)),
-                this::setInvalidImage);
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                final File srcFile = createSourceTempImageFile(context, imageOwner);
+                final File dstFile = createDestinationTempImageFile();
+                final EditImageContract.Input result = EditImageContract.Input
+                        .create(srcFile, dstFile);
+
+                onStartEditor.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
      * Prepare to start the internal editor.
      * <p>
      * When completed, triggers {@link #onStartExternalEditor()}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param srcFile to edit
      */
     void prepareInternalEditor(@NonNull final File srcFile) {
-        STask.execute(
-                ASyncExecutor.PARALLEL,
-                () -> {
-                    final File dstFile = createDestinationTempImageFile();
-                    return EditImageContract.Input.create(srcFile, dstFile);
-                },
-                input -> onStartEditor.setValue(LiveDataEvent.of(input)),
-                this::setInvalidImage);
+        ASyncExecutor.PARALLEL.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final File dstFile = createDestinationTempImageFile();
+                final EditImageContract.Input result = EditImageContract.Input
+                        .create(srcFile, dstFile);
+
+                onStartEditor.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
      * Prepare to start the camera.
      * <p>
      * When completed, triggers {@link #onStartTakePicture()}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      */
     void prepareTakePicture() {
-        STask.execute(
-                ASyncExecutor.PARALLEL,
-                () -> {
-                    final File tempFile = createDestinationTempImageFile();
-                    return TakePictureContract.Input.create(tempFile);
-                },
-                input -> onStartTakePicture.setValue(LiveDataEvent.of(input)),
-                this::setInvalidImage);
+        ASyncExecutor.PARALLEL.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final File tempFile = createDestinationTempImageFile();
+                final TakePictureContract.Input result = TakePictureContract.Input.create(tempFile);
+
+                onStartTakePicture.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
 
     }
 
@@ -260,41 +284,39 @@ public class ImageHandlerViewModel
      * Start a rotation.
      * <p>
      * Triggers {@link #onTransformationResult()} with the result.
-     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
      * @param angle      to rotate
      */
     void startRotation(@NonNull final ImageOwner imageOwner,
                        final int angle) {
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    final File srcFile = createSourceTempImageFile(context, imageOwner);
-                    return transform(new Transformation()
-                                             .setSource(srcFile)
-                                             .setRotation(angle),
-                                     srcFile,
-                                     NextAction.Done);
-                },
-                result -> {
-                    if (result == null) {
-                        setInvalidImage(null);
-                    } else {
-                        transformationResult.setValue(LiveDataEvent.of(result));
-                    }
-                },
-                this::setInvalidImage);
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                final File srcFile = createSourceTempImageFile(context, imageOwner);
+                final TransformationResult result = transform(
+                        new Transformation()
+                                .setSource(srcFile)
+                                .setRotation(angle),
+                        srcFile,
+                        NextAction.Done);
+
+                transformationResult.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
      * Process the image received from a camera (or other scanner-like device).
      * <p>
      * Triggers {@link #onTransformationResult()} with the result.
-     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * If the file is not acceptable, triggers {@link #postInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param context Current context.
      */
@@ -308,34 +330,32 @@ public class ImageHandlerViewModel
                 ServiceLocator.getInstance().getSharedPreferences()
                               .getIntFromString(PK_CAMERA_IMAGE_AUTOROTATE, 0);
 
-        // What action (if any) should we take after we're done?
-        final NextAction action = NextAction.getAction();
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
+                    postInvalidImage(null);
+                    return;
+                }
 
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-                        return null;
-                    }
+                final TransformationResult result = transform(
+                        new Transformation()
+                                .setSource(file)
+                                .setScale(true)
+                                .setSurfaceRotation(surfaceRotation)
+                                .setRotation(explicitRotation),
+                        file,
+                        NextAction.getAction());
 
-                    return transform(new Transformation()
-                                             .setSource(file)
-                                             .setScale(true)
-                                             .setSurfaceRotation(surfaceRotation)
-                                             .setRotation(explicitRotation),
-                                     file,
-                                     action);
-                },
-                result -> {
-                    if (result == null) {
-                        setInvalidImage(null);
-                    } else {
-                        transformationResult.setValue(LiveDataEvent.of(result));
-                    }
-                },
-                this::setInvalidImage);
+                transformationResult.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
+    @UiThread
     private int getSurfaceRotation(@NonNull final Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return context.getDisplay().getRotation();
@@ -350,91 +370,91 @@ public class ImageHandlerViewModel
      * Process the image after the user edited it.
      * <p>
      * Triggers {@link #onTransformationResult()} with the result.
-     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * If the file is not acceptable, triggers {@link #postInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      */
     void onPictureResult() {
 
         final File file = getDestinationImageFile();
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-                        return null;
-                    }
 
-                    return transform(new Transformation()
-                                             .setSource(file)
-                                             .setScale(true),
-                                     file,
-                                     NextAction.Done);
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
+                    postInvalidImage(null);
+                    return;
+                }
 
-                },
-                result -> {
-                    if (result == null) {
-                        setInvalidImage(null);
-                    } else {
-                        transformationResult.setValue(LiveDataEvent.of(result));
-                    }
-                },
-                // N/A as no Exceptions are thrown.
-                this::setInvalidImage);
+                final TransformationResult result = transform(
+                        new Transformation()
+                                .setSource(file)
+                                .setScale(true),
+                        file,
+                        NextAction.Done);
+
+                transformationResult.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
      * Process the image picked by the user from storage.
      * <p>
      * Triggers {@link #onTransformationResult()} with the result.
-     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
-     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     * If the file is not acceptable, triggers {@link #postInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #postInvalidImage(Throwable)}.
      *
      * @param uri image to process
      */
     void onPictureResult(@NonNull final Uri uri) {
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    /*
-                     2025-11-05: bug report #197:
-                     java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
-                      at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
-                      at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
-                      at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
-                      at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
-                      at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
-                      at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
+        /*
+         2025-11-05: bug report #197:
+         java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
+          at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
+          at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
+          at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
+          at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
+          at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
+          at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
 
-                     So the user picked a file from storage, and we get the Uri.
-                     When we open the Uri, the systems tells us
-                     the file does not exist ¯\_(ツ)_/¯
-                    */
-                    final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-                    try (InputStream is = serviceLocator.getAppContext()
-                                                        .getContentResolver()
-                                                        .openInputStream(uri)) {
+         So the user picked a file from storage, and we get the Uri.
+         When we open the Uri, the systems tells us
+         the file does not exist ¯\_(ツ)_/¯
+        */
+        // copy the data to a temporary file
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
 
-                        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
-                        // copy the data to a temporary file
-                        final File file = coverStorage.writeTempFile(is);
-                        if (!coverStorage.isAcceptableSize(file)) {
-                            return null;
-                        }
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            //noinspection CheckStyle
+            try (InputStream is = serviceLocator.getAppContext()
+                                                .getContentResolver()
+                                                .openInputStream(uri)) {
 
-                        return transform(new Transformation()
-                                                 .setSource(file)
-                                                 .setScale(true),
-                                         file,
-                                         NextAction.Done);
-                    }
-                },
-                result -> {
-                    if (result == null) {
-                        setInvalidImage(null);
-                    } else {
-                        transformationResult.setValue(LiveDataEvent.of(result));
-                    }
-                },
-                this::setInvalidImage);
+                final CoverStorage coverStorage = serviceLocator.getCoverStorage();
+                // copy the data to a temporary file
+                final File file = coverStorage.writeTempFile(is);
+
+                if (!coverStorage.isAcceptableSize(file)) {
+                    postInvalidImage(null);
+                    return;
+                }
+
+                final TransformationResult result = transform(
+                        new Transformation()
+                                .setSource(file)
+                                .setScale(true),
+                        file,
+                        NextAction.Done);
+
+                transformationResult.postValue(LiveDataEvent.of(result));
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     /**
@@ -451,60 +471,67 @@ public class ImageHandlerViewModel
             throw new IllegalArgumentException("fileSpec.isEmpty()");
         }
 
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    final File file = new File(fileSpec);
-                    if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-                        imageOwner.setImage(context, cIdx, file);
-                    } else {
-                        imageOwner.removeImage(context, cIdx);
-                        onInvalidImage.postValue(LiveDataEvent.ofNullable(null));
-                    }
-                    return (Void) null;
-                },
-                aVoid -> onReloadImage.setValue(null),
-                e -> onInvalidImage.setValue(LiveDataEvent.of(e)));
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                final File file = new File(fileSpec);
+
+                if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
+                    imageOwner.removeImage(context, cIdx);
+                    postInvalidImage(null);
+                    return;
+                }
+
+                imageOwner.setImage(context, cIdx, file);
+                onReloadImage.postValue(null);
+
+            } catch (@NonNull final Throwable t) {
+                postInvalidImage(t);
+            }
+        });
     }
 
     void setImage(@NonNull final ImageOwner imageOwner,
                   @NonNull final File file) {
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    imageOwner.setImage(context, cIdx, file);
-                    return (Void) null;
-                },
-                aVoid -> onReloadImage.setValue(null),
-                e -> onError.setValue(LiveDataEvent.of(e)));
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                imageOwner.setImage(context, cIdx, file);
+                onReloadImage.postValue(null);
+
+            } catch (@NonNull final Throwable t) {
+                onError.postValue(LiveDataEvent.of(t));
+            }
+        });
     }
 
     void removeImage(@NonNull final ImageOwner imageOwner) {
-        STask.execute(
-                ASyncExecutor.STORAGE_WRITES,
-                () -> {
-                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-                    imageOwner.removeImage(context, cIdx);
-                    return (Void) null;
-                },
-                result -> onReloadImage.setValue(null),
-                e -> onError.setValue(LiveDataEvent.of(e)));
+        ASyncExecutor.STORAGE_WRITES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                imageOwner.removeImage(context, cIdx);
+                onReloadImage.postValue(null);
+
+            } catch (@NonNull final Throwable t) {
+                onError.postValue(LiveDataEvent.of(t));
+            }
+        });
     }
 
     void restore(@NonNull final String uuid) {
-        STask.execute(
-                ASyncExecutor.IMAGES,
-                () -> ServiceLocator.getInstance()
-                                .getCoverStorage()
-                                .restore(uuid, cIdx),
-                restored -> {
-                    if (restored) {
-                        onRestore.setValue(LiveDataEvent.of(true));
-                    }
-                },
-                e -> onError.setValue(LiveDataEvent.of(e)));
+        ASyncExecutor.IMAGES.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                if (ServiceLocator.getInstance().getCoverStorage().restore(uuid, cIdx)) {
+                    onRestore.postValue(LiveDataEvent.of(true));
+                }
+            } catch (@NonNull final Throwable t) {
+                onError.postValue(LiveDataEvent.of(t));
+            }
+        });
     }
 
     /**
@@ -625,6 +652,7 @@ public class ImageHandlerViewModel
 
         return new TransformationResult(null, NextAction.Done);
     }
+
 
     public static final class Factory
             implements ViewModelProvider.Factory {
