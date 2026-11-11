@@ -20,6 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -30,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.util.Collections;
@@ -41,7 +44,6 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 
 /**
  * Load & scale a Bitmap from a file; and populate the view.
@@ -52,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
  *  to observables.
  */
 public class ImageViewLoader {
+
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
 
     @NonNull
     private final ExecutorService executor;
@@ -199,64 +203,90 @@ public class ImageViewLoader {
         final ImageReference imageReference = new ImageReference(uuid, cIdx, imageView);
 
         final Future<?>[] task = new Future<?>[1];
-        task[0] = STask.execute(
-                executor,
-                () -> {
-                    // Initial check, as this thread might have been started after a small delay
-                    // or even cancelled.
-                    if (imageReference.getView() == null
-                        || Thread.currentThread().isInterrupted()) {
-                        return null;
-                    }
+        task[0] = executor.submit(() -> {
+            //noinspection CheckStyle
+            try {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
 
-                    final Optional<Bitmap> oBitmap = new Transformation()
-                            .setScale(this.width, this.height)
-                            .setSource(file)
-                            .transform();
+                final Bitmap result = loadFile(file, imageReference);
 
-                    if (imageReference.getView() == null
-                        || Thread.currentThread().isInterrupted()) {
-                        // We're not sending the bitmap (if we have one) as the result,
-                        // instead we just recycle it.
-                        // If we send it back, we'd be sending it to the file-based caching.
-                        // But if we're scrolling too fast to stay associated, then
-                        // we can assume the cache-writer is already busy anyhow,
-                        // so the returned bitmap would get dropped anyhow, and NOT recycled.
-                        // i.e. a worse situation we must avoid.
-                        oBitmap.ifPresent(Bitmap::recycle);
-                        return null;
-                    }
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+                UI_HANDLER.post(() -> fileLoaded(imageReference, task[0], result, onDisplayed));
 
-                    return oBitmap.orElse(null);
-                },
-                bitmap -> {
-                    final ImageView view = imageReference.getView();
-                    try {
-                        // Check if the view is still there and still wants THIS bitmap
-                        // Double check via runningTasks to ensure no newer task has started.
-                        if (view == null || runningTasks.get(imageView) != task[0]) {
-                            if (bitmap != null) {
-                                bitmap.recycle();
-                            }
-                            return;
-                        }
+            } catch (@NonNull final Throwable t) {
+                UI_HANDLER.post(() -> runningTasks.remove(imageView, task[0]));
+            }
+        });
 
-                        if (bitmap != null) {
-                            // Finally, load it into the View
-                            fromBitmap(bitmap, view);
-                            if (onDisplayed != null) {
-                                onDisplayed.accept(bitmap);
-                            }
-                        } else {
-                            // Found the image-file, but failed to load/decode it.
-                            // Use 'broken-image' icon and preserve the space.
-                            placeholder(view, R.drawable.broken_image_24px);
-                        }
-                    } finally {
-                        runningTasks.remove(imageView, task[0]);
-                    }
-                },
-                e -> runningTasks.remove(imageView, task[0]));
         runningTasks.put(imageView, task[0]);
+    }
+
+    @WorkerThread
+    @Nullable
+    private Bitmap loadFile(@NonNull final File file,
+                            @NonNull final ImageReference imageReference) {
+        // Initial check, as this thread might have been started after a small delay
+        // or even cancelled.
+        if (imageReference.getView() == null
+            || Thread.currentThread().isInterrupted()) {
+            return null;
+        }
+
+        final Optional<Bitmap> oBitmap = new Transformation()
+                .setScale(this.width, this.height)
+                .setSource(file)
+                .transform();
+
+        if (imageReference.getView() == null
+            || Thread.currentThread().isInterrupted()) {
+            // We're not sending the bitmap (if we have one) as the result,
+            // instead we just recycle it.
+            // If we send it back, we'd be sending it to the file-based caching.
+            // But if we're scrolling too fast to stay associated, then
+            // we can assume the cache-writer is already busy anyhow,
+            // so the returned bitmap would get dropped anyhow, and NOT recycled.
+            // i.e. a worse situation we must avoid.
+            oBitmap.ifPresent(Bitmap::recycle);
+            return null;
+        }
+
+        return oBitmap.orElse(null);
+    }
+
+    @UiThread
+    private void fileLoaded(@NonNull final ImageReference imageReference,
+                            @NonNull final Future<?> task,
+                            @Nullable final Bitmap bitmap,
+                            @Nullable final Consumer<Bitmap> onDisplayed) {
+        final ImageView view = imageReference.getView();
+        try {
+            // Check if the view is still there and still wants THIS bitmap
+            // Double check via runningTasks to ensure no newer task has started.
+            if (view == null || runningTasks.get(view) != task) {
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+                return;
+            }
+
+            if (bitmap != null) {
+                // Finally, load it into the View
+                fromBitmap(bitmap, view);
+                if (onDisplayed != null) {
+                    onDisplayed.accept(bitmap);
+                }
+            } else {
+                // Found the image-file, but failed to load/decode it.
+                // Use 'broken-image' icon and preserve the space.
+                placeholder(view, R.drawable.broken_image_24px);
+            }
+
+        } finally {
+            runningTasks.remove(view, task);
+        }
     }
 }
