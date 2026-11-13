@@ -1,3 +1,10 @@
+### 8.1.5
+
+FIXES:
+
+- StripInfo.be: fix website redirects introduced lately
+
+---
 ### 8.1.4
 
 FIXES:
