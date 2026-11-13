@@ -1,0 +1,3 @@
+FIXES:
+
+- StripInfo.be: fix website redirects introduced lately
