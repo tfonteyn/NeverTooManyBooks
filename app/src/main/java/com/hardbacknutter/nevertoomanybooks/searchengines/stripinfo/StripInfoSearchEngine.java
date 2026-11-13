@@ -113,7 +113,7 @@ public class StripInfoSearchEngine
                    SearchEngine.Login {
 
     /** {@link SearchEngineConfig#getHostUrl()}. */
-    private static final String HOST_URL = "https://www.stripinfo.be";
+    private static final String HOST_URL = "https://stripinfo.be";
     /** {@link EngineId#getDefaultLocale()}. */
     @SuppressWarnings("deprecation")
     private static final Locale HOST_LOCALE = new Locale("nl", "BE");
