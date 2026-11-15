@@ -397,7 +397,7 @@ class CoverBrowserDelegate
         if (imageFileInfo != null) {
             final Optional<File> file = imageFileInfo.getFile();
             if (file.isPresent()) {
-                previewLoader.fromFile(null, 0, file.get(), vb.preview, bitmap -> {
+                previewLoader.fromFile(file.get(), vb.preview, bitmap -> {
                     // Paranoia.
                     // If the gallery has been able to display an image,
                     // and the user tapped it to get the larger preview,
@@ -543,7 +543,7 @@ class CoverBrowserDelegate
                 final Optional<File> file = imageFileInfo.getFile();
                 if (file.isPresent()) {
                     // YES, load it into the view.
-                    imageLoader.fromFile(null, position, file.get(), holder.vb.coverImage0, null);
+                    imageLoader.fromFile(file.get(), holder.vb.coverImage0, null);
 
                     holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
                     holder.vb.coverImage0.setOnClickListener(

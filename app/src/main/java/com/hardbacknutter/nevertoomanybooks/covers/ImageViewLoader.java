@@ -27,7 +27,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -35,12 +34,12 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -59,6 +58,8 @@ public class ImageViewLoader {
 
     @NonNull
     private final ExecutorService executor;
+    private final AtomicInteger taskIdGenerator = new AtomicInteger();
+    private final Map<Integer, Future<?>> runningTasks = new ConcurrentHashMap<>();
 
     @Px
     private final int width;
@@ -70,9 +71,6 @@ public class ImageViewLoader {
 
     @NonNull
     private final ApplySizing applySizing;
-
-    private final Map<ImageView, Future<?>> runningTasks =
-            Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructor.
@@ -180,50 +178,43 @@ public class ImageViewLoader {
     /**
      * Load the file in a background thread and display it in the given view.
      *
-     * @param uuid        of the book
-     * @param cIdx        0..n image index
      * @param file        to load, must be valid
      * @param imageView   to populate
      * @param onDisplayed (optional) Consumer to execute after successfully displaying the image
      */
     @UiThread
-    public void fromFile(@Nullable final String uuid,
-                         @IntRange(from = 0, to = 3) final int cIdx,
-                         @NonNull final File file,
+    public void fromFile(@NonNull final File file,
                          @NonNull final ImageView imageView,
                          @Nullable final Consumer<Bitmap> onDisplayed) {
 
-        // CANCEL any previous task still trying to use this ImageView
-        final Future<?> oldTask = runningTasks.remove(imageView);
-        if (oldTask != null) {
-            oldTask.cancel(true);
+        // cancel ANY previous task associated with this ImageView
+        final Object oldTag = imageView.getTag(R.id.TAG_THUMBNAIL_TASK);
+        if (oldTag != null) {
+            final Future<?> oldTask = runningTasks.remove((Integer) oldTag);
+            if (oldTask != null) {
+                oldTask.cancel(true);
+            }
         }
 
-        // CREATE the unique reference for THIS specific book+cover+view combo
-        final ImageReference imageReference = new ImageReference(uuid, cIdx, imageView);
+        final int taskId = taskIdGenerator.incrementAndGet();
+        final ImageReference imageReference = new ImageReference(taskId, imageView);
 
         final Future<?>[] task = new Future<?>[1];
         task[0] = executor.submit(() -> {
             //noinspection CheckStyle
             try {
-                if (Thread.currentThread().isInterrupted()) {
-                    return;
-                }
+                final Bitmap bitmap = loadFile(file, imageReference);
 
-                final Bitmap result = loadFile(file, imageReference);
-
-                if (Thread.currentThread().isInterrupted()) {
-                    return;
-                }
-                UI_HANDLER.post(() -> fileLoaded(imageReference, task[0], result, onDisplayed));
-
+                UI_HANDLER.post(() -> fileLoaded(imageReference, taskId, task[0],
+                                                 bitmap, onDisplayed));
             } catch (@NonNull final Throwable t) {
-                UI_HANDLER.post(() -> runningTasks.remove(imageView, task[0]));
+                UI_HANDLER.post(() -> runningTasks.remove(taskId, task[0]));
             }
         });
 
-        runningTasks.put(imageView, task[0]);
+        runningTasks.put(taskId, task[0]);
     }
+
 
     @WorkerThread
     @Nullable
@@ -259,34 +250,38 @@ public class ImageViewLoader {
 
     @UiThread
     private void fileLoaded(@NonNull final ImageReference imageReference,
+                            final int taskId,
                             @NonNull final Future<?> task,
                             @Nullable final Bitmap bitmap,
                             @Nullable final Consumer<Bitmap> onDisplayed) {
-        final ImageView view = imageReference.getView();
         try {
-            // Check if the view is still there and still wants THIS bitmap
-            // Double check via runningTasks to ensure no newer task has started.
-            if (view == null || runningTasks.get(view) != task) {
+            final ImageView view = imageReference.getView();
+            // Check if the view is still there and still wants THIS bitmap.
+            // Double check via runningTasks to ensure there
+            // is no newer task associated with the view.
+            if (view == null || runningTasks.get(taskId) != task) {
+                // clean up any now unneeded bitmap NOW.
                 if (bitmap != null) {
                     bitmap.recycle();
                 }
                 return;
             }
 
-            if (bitmap != null) {
-                // Finally, load it into the View
-                fromBitmap(bitmap, view);
-                if (onDisplayed != null) {
-                    onDisplayed.accept(bitmap);
-                }
-            } else {
-                // Found the image-file, but failed to load/decode it.
-                // Use 'broken-image' icon and preserve the space.
+            if (bitmap == null) {
+                // The image-file was found, but loading/decoding it failed.
+                // Set 'broken-image' icon and preserve the space.
                 placeholder(view, R.drawable.broken_image_24px);
+                return;
             }
 
+            // Finally, load it into the View
+            fromBitmap(bitmap, view);
+            // and optionally hand it over for further processing
+            if (onDisplayed != null) {
+                onDisplayed.accept(bitmap);
+            }
         } finally {
-            runningTasks.remove(view, task);
+            runningTasks.remove(taskId, task);
         }
     }
 }

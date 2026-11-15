@@ -290,7 +290,7 @@ public final class ImageHandler {
     public void onBindView() {
         final Optional<File> file = imageSupplier.get().getImage(imageView.getContext(), cIdx);
         if (file.isPresent()) {
-            imageLoader.fromFile(null, cIdx, file.get(), imageView, null);
+            imageLoader.fromFile(file.get(), imageView, null);
             imageView.setBackground(null);
         } else {
             imageLoader.placeholder(imageView, placeholderDrawable);

@@ -27,22 +27,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Wraps an {@code ImageView} in a {@code WeakReference}
+ * and provides book/task/view association.
+ */
 class ImageReference {
 
     @NonNull
     private final WeakReference<ImageView> viewReference;
-    @NonNull
-    private final String taskUuid;
+    private final int taskId;
 
-    ImageReference(@Nullable final String uuid,
-                   final int cIdx,
+    ImageReference(final int taskId,
                    @NonNull final ImageView view) {
-        taskUuid = uuid != null ? uuid + '_' + cIdx : String.valueOf(cIdx);
-        view.setTag(R.id.TAG_THUMBNAIL_TASK, taskUuid);
+        this.taskId = taskId;
+        view.setTag(R.id.TAG_THUMBNAIL_TASK, taskId);
         this.viewReference = new WeakReference<>(view);
     }
 
@@ -54,16 +55,25 @@ class ImageReference {
     @Nullable
     ImageView getView() {
         final ImageView view = viewReference.get();
-        if (view == null || !Objects.equals(taskUuid, crap(view))) {
+        if (view == null || !isAssociated(view)) {
             return null;
         }
         return view;
     }
 
-    // Use this isolated method to avoid Android Studio bringing up a false positive...
-    // Fighting Google every single day is getting really tiresome.
+    /**
+     * Use this isolated method to avoid Android Studio bringing up a false positive.
+     * Read-only tag check used exclusively for early-exit background cancellation.
+     * This is SAFE!
+     *
+     * @param view to check
+     *
+     * @return {@code true} if task and view are still associated.
+     */
     @SuppressLint("ThreadConstraint")
-    private Object crap(final ImageView view) {
-        return view.getTag(R.id.TAG_THUMBNAIL_TASK);
+    private boolean isAssociated(@NonNull final ImageView view) {
+        final Object tag = view.getTag(R.id.TAG_THUMBNAIL_TASK);
+        return tag instanceof Integer && (int) tag == taskId;
     }
+
 }
