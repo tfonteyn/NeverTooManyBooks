@@ -30,13 +30,17 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,7 +66,8 @@ import org.jsoup.select.Elements;
 
 public class KitapsecSearchEngine
         extends SearchEngineBase
-        implements SearchEngine.ByIsbn {
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText {
 
     /** {@link SearchEngineConfig#getHostUrl()}. */
     private static final String HOST_URL = "https://www.kitapsec.com";
@@ -150,6 +155,40 @@ public class KitapsecSearchEngine
         return book;
     }
 
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final BookSearchCriteria criteria)
+            throws StorageException, SearchException, CredentialsException {
+
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = criteria.concatTextCriteria(" ");
+
+        final ProductCode productCode = criteria.getProductCode();
+        if (productCode != null) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
+                words.add(codeStr);
+            }
+        }
+
+        final Book book = new Book();
+
+        // Sanity check
+        if (words.length() == 0) {
+            return book;
+        }
+
+        final String encQuery = URLEncoder.encode(words.toString(), StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
+        final String url = SEARCH_URL + encQuery;
+        final Document document = loadHtml(context, url, null);
+        if (!isCancelled()) {
+            multiResult(context, document, criteria.getFetchCovers(), book, productCode);
+        }
+        return book;
+    }
+
     /**
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retrieved.
@@ -159,7 +198,7 @@ public class KitapsecSearchEngine
      * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book         to update
-     * @param searchedIsbn ISBN from user-search
+     * @param searchedCode (optional) product-code from user-search
      *
      * @throws SearchException  on generic exceptions (wrapped) during search
      * @throws StorageException on image storage failures
@@ -169,9 +208,9 @@ public class KitapsecSearchEngine
                              @NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book,
-                             @NonNull final ProductCode searchedIsbn)
+                             @Nullable final ProductCode searchedCode)
             throws SearchException, StorageException {
-        final String url = parseMultiResult(document, searchedIsbn);
+        final String url = parseMultiResult(document, searchedCode);
         if (url == null) {
             return;
         }
@@ -186,14 +225,14 @@ public class KitapsecSearchEngine
      * Parse the initial search page. Grab the first matching url.
      *
      * @param document     to parse
-     * @param searchedIsbn ISBN from user-search
+     * @param searchedCode (optional) product-code from user-search
      *
      * @return url to redirect to
      */
     @VisibleForTesting
     @Nullable
     public String parseMultiResult(@NonNull final Document document,
-                                   @NonNull final ProductCode searchedIsbn) {
+                                   @Nullable final ProductCode searchedCode) {
         // The list of ALL results
         for (final Element item : document.select(".urunListeleDiv .Ks_UrunSatir")) {
             // The ISBN
@@ -203,19 +242,23 @@ public class KitapsecSearchEngine
 
             if (sku != null && url != null) {
                 final String codeStr = sku.attr("content");
-                //  Only accept matching ISBN's
-                if (!codeStr.isBlank() && ISBN.parse(codeStr).equals(searchedIsbn)) {
-                    try {
-                        final String redirect = URI.create(HOST_URL + "/")
-                                                   .resolve(url.attr("content"))
-                                                   .toString();
+                if (!codeStr.isBlank()) {
+                    // If the user searched without a product-code, grab the first result.
+                    // Otherwise, only accept matching product-code.
+                    if (searchedCode == null
+                        || ISBN.parse(codeStr).equals(searchedCode)) {
+                        try {
+                            final String redirect = URI.create(HOST_URL + "/")
+                                                       .resolve(url.attr("content"))
+                                                       .toString();
 
-                        // only accept links on the site itself
-                        if (KITAPSEC_PRODUCT_PATTERN.matcher(redirect).matches()) {
-                            return redirect;
+                            // only accept links on the site itself
+                            if (KITAPSEC_PRODUCT_PATTERN.matcher(redirect).matches()) {
+                                return redirect;
+                            }
+                        } catch (@NonNull final IllegalArgumentException ignored) {
+                            // A malformed url must not stop us checking later matches.
                         }
-                    } catch (@NonNull final IllegalArgumentException ignored) {
-                        // A malformed url must not stop us checking later matches.
                     }
                 }
             }
