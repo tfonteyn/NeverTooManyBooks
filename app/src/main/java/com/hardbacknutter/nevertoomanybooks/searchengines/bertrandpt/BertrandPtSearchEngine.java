@@ -187,7 +187,9 @@ public class BertrandPtSearchEngine
             return book;
         }
 
-        final String url = SEARCH_URL + words;
+        final String encQuery = URLEncoder.encode(words.toString(), StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
+        final String url = SEARCH_URL + encQuery;
         final Document document = loadHtml(context, url, extraRequestProperties);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.

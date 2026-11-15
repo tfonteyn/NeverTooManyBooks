@@ -511,10 +511,11 @@ public class IsfdbSearchEngine
             return book;
         }
 
-        final String urlStr = CGI_ADV_SEARCH_PREFIX
-                              + URLEncoder.encode(sb.toString(), CHARSET_ENCODE_URL);
+        final String encQuery = URLEncoder.encode(sb.toString(), CHARSET_ENCODE_URL)
+                                          .replace("+", "%20");
+        final String url = CGI_ADV_SEARCH_PREFIX + encQuery;
 
-        final List<AltEditionIsfdb> editions = fetchEditions(context, urlStr, productCode);
+        final List<AltEditionIsfdb> editions = fetchEditions(context, url, productCode);
         if (!editions.isEmpty()) {
             fetchByEdition(context, editions.get(0), criteria.getFetchCovers(), book);
         }

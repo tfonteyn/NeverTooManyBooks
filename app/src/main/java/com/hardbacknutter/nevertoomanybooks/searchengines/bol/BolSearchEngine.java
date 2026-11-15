@@ -298,7 +298,9 @@ public class BolSearchEngine
         }
 
         final String country = getCountry();
-        final String url = String.format(BY_TEXT, country, words);
+        final String encQuery = URLEncoder.encode(words.toString(), StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
+        final String url = String.format(BY_TEXT, country, encQuery);
         final Document document = loadHtml(context, url, Map.of(
                 HttpConstants.REFERER, String.format(ROOT_REFERER, country)));
         if (!isCancelled()) {

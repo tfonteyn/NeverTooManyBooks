@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -284,16 +286,18 @@ public class DatabazeKnihSearchEngine
 
     @NonNull
     private Book search(@NonNull final Context context,
-                        @NonNull final CharSequence queryParams,
+                        @NonNull final String queryString,
                         @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, StorageException {
         final Book book = new Book();
         // Sanity check
-        if (queryParams.length() == 0) {
+        if (queryString.isBlank()) {
             return book;
         }
 
-        final String url = String.format(SEARCH_URL, queryParams);
+        final String encQuery = URLEncoder.encode(queryString, StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
+        final String url = String.format(SEARCH_URL, encQuery);
         final Document document = loadHtml(context, url, null);
 
         if (!isCancelled()) {

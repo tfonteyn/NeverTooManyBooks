@@ -29,6 +29,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -305,15 +307,17 @@ public class GoodreadsSearchEngine
 
     @NonNull
     private Book search(@NonNull final Context context,
-                        @NonNull final CharSequence queryParams,
+                        @NonNull final String queryString,
                         @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, StorageException {
         final Book book = new Book();
         // Sanity check
-        if (queryParams.length() == 0) {
+        if (queryString.isBlank()) {
             return book;
         }
-        final String url = String.format(BY_TEXT, queryParams);
+        final String encQuery = URLEncoder.encode(queryString, StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
+        final String url = String.format(BY_TEXT, encQuery);
         final Document document = loadHtml(context, url, null);
 
         if (!isCancelled()) {

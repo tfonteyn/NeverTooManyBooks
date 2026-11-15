@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -378,8 +380,10 @@ public class OpenLibrarySearchEngine
             return book;
         }
 
+        final String encQuery = URLEncoder.encode(words.toString(), StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
         // Limit the result to a single book for performance.
-        final String url = String.format(BASE_BOOK_URL, words) + "&limit=1";
+        final String url = String.format(BASE_BOOK_URL, encQuery) + "&limit=1";
 
         fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;

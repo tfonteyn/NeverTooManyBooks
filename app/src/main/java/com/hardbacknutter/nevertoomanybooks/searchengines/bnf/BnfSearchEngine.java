@@ -185,9 +185,9 @@ public class BnfSearchEngine
     private String createSearchUrl(@NonNull final String index,
                                    @NonNull final String query) {
         final String queryString = String.format(index, query);
-        return String.format(SEARCH_URL,
-                             URLEncoder.encode(queryString, StandardCharsets.UTF_8)
-                                       .replace("+", "%20"));
+        final String encQuery = URLEncoder.encode(queryString, StandardCharsets.UTF_8)
+                                          .replace("+", "%20");
+        return String.format(SEARCH_URL, encQuery);
     }
 
     @NonNull
