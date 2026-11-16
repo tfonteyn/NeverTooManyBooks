@@ -2,7 +2,7 @@
 
 FIXES:
 
-- StripInfo.be: fix website redirects introduced lately
+- GitHub #258: StripInfo.be: fix website redirects introduced lately
 
 ---
 ### 8.1.4
