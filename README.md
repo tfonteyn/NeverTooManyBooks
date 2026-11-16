@@ -109,7 +109,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)
-- **LastDodo** (Dutch and more; Catalogue; European Comics)
+- ~~**LastDodo** (Dutch and more; Catalogue; European Comics)~~ is blocking access... a site build by the community is raising corporate walls...
 - **OpenLibrary** (English and more; Catalogue)
 - **StripInfo** (Dutch and more; Catalogue; European Comics)
 - **StripWeb** (Dutch/French; Shop; European Comics)
