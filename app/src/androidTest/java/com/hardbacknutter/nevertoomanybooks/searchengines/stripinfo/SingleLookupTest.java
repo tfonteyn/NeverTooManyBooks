@@ -23,13 +23,11 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 import android.content.Context;
 import android.util.Log;
 
-import java.net.CookieManager;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -38,6 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class SingleLookupTest
         extends BaseDBTest {
 
@@ -45,14 +45,12 @@ public class SingleLookupTest
 
     private StripInfoSearchEngine searchEngine;
     private Context context;
-    private CookieManager cookieManager;
 
     @Override
     @BeforeEach
     protected void setup()
             throws Exception {
         super.setup();
-        cookieManager = ServiceLocator.getInstance().getCookieManager();
         context = createContext();
 
         EngineId.StripInfoBe.getConfig().setHttpLoggingEnabled(true);
@@ -69,5 +67,8 @@ public class SingleLookupTest
 
         final Book book = searchEngine.searchByIsbn(context, criteria);
         Log.d(TAG, book.toString());
+
+        assertEquals("Tijdloze intelligentie", book.getString(DBKey.TITLE, null));
+
     }
 }

@@ -175,6 +175,8 @@ public class BaseDBTest {
 
         // Bootstrap the database
         serviceLocator.getDb();
+        // and the cookie manager
+        serviceLocator.getCookieManager();
 
         // Ensure we have a user-style for our tests
         if (getUserStyle().isEmpty()) {
