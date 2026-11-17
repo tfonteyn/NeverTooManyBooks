@@ -69,7 +69,7 @@ public class ImageRequestFactoryDefault
         final Request.Builder builder = new Request.Builder()
                 .url(urlStr)
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.USER_AGENT_FIREFOX)
+                        HttpConstants.getUserAgent())
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE)
                 .header(HttpConstants.ACCEPT_LANGUAGE,

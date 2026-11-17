@@ -712,7 +712,7 @@ public class HttpCall {
                 .url(url)
                 .method(method, body)
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.USER_AGENT_FIREFOX)
+                        HttpConstants.getUserAgent())
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,

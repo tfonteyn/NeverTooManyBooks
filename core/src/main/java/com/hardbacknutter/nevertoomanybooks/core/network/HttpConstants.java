@@ -19,20 +19,34 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
+import androidx.annotation.NonNull;
+
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class HttpConstants {
 
     /**
-     * RELEASE: USER_AGENT_FIREFOX: Last updated: 2026-10-15.
+     * RELEASE: USER_AGENT_FIREFOX: Last updated: 2026-11-17.
      *
      * @see <a href="https://www.whatismybrowser.com/guides/the-latest-user-agent/">
      *     whatismybrowser</a>
+     *
+     * @return agent string
      */
-    public static final String USER_AGENT_FIREFOX =
-            // Windows 11
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0";
+    @NonNull
+    public static String getUserAgent() {
+        // Taken from Chrome on a modern and up-to-date android phone.
+        // Chrome seems to obfuscate the android version and device model
+        // as neither matches the actual phone.
+        return "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36";
 
-            // "Mozilla/5.0 (Android 16; Mobile; rv:157.0) Gecko/152.0 Firefox/157.0"
+        // Previously used:
+
+        // Firefox on Windows 11
+        //"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:160.0) Gecko/20100101 Firefox/160.0";
+
+        // Firefox on Android:
+        // "Mozilla/5.0 (Android 14; Mobile; rv:159.0) Gecko/157.0 Firefox/159.0";
+    }
 
     /**
      * HTTP Request Header.

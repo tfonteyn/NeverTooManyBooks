@@ -1674,7 +1674,7 @@ public final class CalibreContentServer
         return new Request.Builder()
                 .url(urlStr)
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.USER_AGENT_FIREFOX)
+                        HttpConstants.getUserAgent())
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE).build();
     }

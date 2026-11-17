@@ -786,7 +786,7 @@ public class FutureHttp<R> {
 
         request.setRequestProperty(HttpConstants.HOST, url.getHost());
         request.setRequestProperty(HttpConstants.USER_AGENT,
-                                   HttpConstants.USER_AGENT_FIREFOX);
+                                   HttpConstants.getUserAgent());
 
         requestProperties.forEach(request::setRequestProperty);
 
