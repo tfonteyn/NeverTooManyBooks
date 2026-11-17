@@ -144,13 +144,14 @@ public enum EngineId
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
     Dnb(DnbSearchEngine.class, true),
     Douban(DoubanSearchEngine.class, true),
-    // 2026-08-18: switched off due to AWS WAF blocks
+    // 2026-08-18: GitHub #249: blocked; switching off for now
     Goodreads(GoodreadsSearchEngine.class, false),
     GoogleBooks(GoogleBooksSearchEngine.class, true),
     Isfdb(IsfdbSearchEngine.class, true),
     KbNl(KbNlHtmlSearchEngine.class, true),
     Kitapsec(KitapsecSearchEngine.class, true),
-    LastDodoNl(LastDodoSearchEngine.class, true),
+    // 2026-11-17: GitHub #262: blocked; switching off for now
+    LastDodoNl(LastDodoSearchEngine.class, false),
     LibraryThing(LibraryThingSearchEngine.class, true),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
     StripInfoBe(StripInfoSearchEngine.class, true),
