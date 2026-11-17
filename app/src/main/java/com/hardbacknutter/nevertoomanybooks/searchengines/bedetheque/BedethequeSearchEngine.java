@@ -344,6 +344,7 @@ public class BedethequeSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String externalId = criteria.requireSid(getEngineId());
+        // For direct links with the sid, we do NOT need a cookie.
         final String url = String.format(BY_SID, externalId);
         final Document document = loadHtml(context, url, extraRequestProperties);
 
