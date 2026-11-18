@@ -465,7 +465,7 @@ public class KitapsecSearchEngine
     }
 
     /**
-     * Remove the training {@code text} from the book title if applicable.
+     * Remove the trailing {@code text} from the book title if applicable.
      *
      * @param text to remove
      * @param book to update
