@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.core.network.UserAgent;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -62,6 +63,8 @@ public class HttpFutureFactory {
     private final String acceptLanguageHeader;
     @Nullable
     private final String charSetName;
+    @NonNull
+    private final UserAgent userAgent;
 
     /** Lazy created in {@link #getJsoupLoader()}. */
     @Nullable
@@ -71,12 +74,14 @@ public class HttpFutureFactory {
                              @Nullable final SSLContext sslContext,
                              @NonNull final CookieStore cookieStore,
                              @NonNull final String acceptLanguageHeader,
-                             @Nullable final String charSetName) {
+                             @Nullable final String charSetName,
+                             @NonNull final UserAgent userAgent) {
         this.config = config;
         this.sslContext = sslContext;
         this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
         this.charSetName = charSetName;
+        this.userAgent = userAgent;
     }
 
     public boolean isLogEnabled() {
@@ -111,6 +116,7 @@ public class HttpFutureFactory {
                 new FutureHttp<>(Objects.requireNonNull(config.getThrottler()),
                                  config.getLogStringRes(),
                                  config.isHttpLoggingEnabled(),
+                                 userAgent,
                                  cookieStore);
 
         request.setConnectTimeout(config.getConnectTimeoutInMs())

@@ -56,9 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.UserAgent;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.searchengines.ImageRequestFactoryDefault;
 import com.hardbacknutter.nevertoomanybooks.searchengines.RequestFactory;
@@ -87,6 +88,8 @@ public final class HttpCallFactory {
     @Nullable
     private final String charSetName;
     @NonNull
+    private final UserAgent userAgent;
+    @NonNull
     private final String imageFilenamePrefix;
 
     /** Lazy created in {@link #getHttpClient()}. */
@@ -114,12 +117,14 @@ public final class HttpCallFactory {
                            @NonNull final CookieStore cookieStore,
                            @NonNull final String acceptLanguageHeader,
                            @Nullable final String charSetName,
+                           @NonNull final UserAgent userAgent,
                            @NonNull final String imageFilenamePrefix) {
         this.config = config;
         this.sslContext = sslContext;
         this.cookieStore = cookieStore;
         this.acceptLanguageHeader = acceptLanguageHeader;
         this.charSetName = charSetName;
+        this.userAgent = userAgent;
 
         this.imageFilenamePrefix = imageFilenamePrefix;
     }
@@ -157,6 +162,7 @@ public final class HttpCallFactory {
     @NonNull
     public HttpCall createCall(@NonNull final OkHttpClient httpClient) {
         return new HttpCall(httpClient,
+                            userAgent,
                             acceptLanguageHeader,
                             config.getLogStringRes(),
                             config.isHttpLoggingEnabled(), cookieStore
@@ -358,7 +364,7 @@ public final class HttpCallFactory {
             synchronized (this) {
                 instance = imageRequestFactory;
                 if (instance == null) {
-                    instance = new ImageRequestFactoryDefault(acceptLanguageHeader);
+                    instance = new ImageRequestFactoryDefault(userAgent, acceptLanguageHeader);
                     imageRequestFactory = instance;
                 }
             }

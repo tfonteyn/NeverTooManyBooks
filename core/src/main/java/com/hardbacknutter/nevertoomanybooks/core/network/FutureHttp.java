@@ -110,6 +110,8 @@ public class FutureHttp<R> {
     @Nullable
     private final RateLimitInterceptor rateLimiter;
     @NonNull
+    private final UserAgent userAgent;
+    @NonNull
     private final CookieStore cookieStore;
     /** Log {@code GET} and {@code HEAD} related url,responseCode and redirects. */
     private final boolean enableLog;
@@ -139,18 +141,21 @@ public class FutureHttp<R> {
      *
      * @param throttler   to use
      * @param siteResId   string resource representing the caller
-     *                    Used for exceptions, and read from the
+     *                    Used for exceptions, and read by the
      *                    exception-to-usermessage convertor.
      * @param enableLog   flag
+     * @param userAgent   to use
      * @param cookieStore for logging <strong>all</strong> cookies as desired
      */
     public FutureHttp(@NonNull final Throttler throttler,
                       @StringRes final int siteResId,
                       final boolean enableLog,
+                      @NonNull final UserAgent userAgent,
                       @NonNull final CookieStore cookieStore) {
         this.siteResId = siteResId;
         this.throttler = throttler;
         this.enableLog = enableLog;
+        this.userAgent = userAgent;
         this.cookieStore = cookieStore;
 
         rateLimiter = new RateLimitInterceptor(throttler, enableLog);
@@ -785,8 +790,7 @@ public class FutureHttp<R> {
         }
 
         request.setRequestProperty(HttpConstants.HOST, url.getHost());
-        request.setRequestProperty(HttpConstants.USER_AGENT,
-                                   HttpConstants.getUserAgent());
+        request.setRequestProperty(HttpConstants.USER_AGENT, userAgent.asString());
 
         requestProperties.forEach(request::setRequestProperty);
 

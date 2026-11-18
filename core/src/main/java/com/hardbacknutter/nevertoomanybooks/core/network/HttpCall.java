@@ -79,6 +79,8 @@ public class HttpCall {
     private final OkHttpClient httpClient;
     private final boolean logEnabled;
     @NonNull
+    private final UserAgent userAgent;
+    @NonNull
     private final String acceptLanguageHeader;
     @StringRes
     private final int siteResId;
@@ -96,20 +98,23 @@ public class HttpCall {
      * Constructor.
      *
      * @param httpClient           the one
+     * @param userAgent            to use
      * @param acceptLanguageHeader to use
      * @param siteResId            string resource representing the caller
-     *                             Used for exceptions, and read from the
+     *                             Used for exceptions, and read by the
      *                             exception-to-usermessage convertor.
      * @param logEnabled           flag
      * @param cookieStore          for logging <strong>all</strong> cookies as desired
      */
     public HttpCall(@NonNull final OkHttpClient httpClient,
+                    @NonNull final UserAgent userAgent,
                     @NonNull final String acceptLanguageHeader,
                     @StringRes final int siteResId,
                     final boolean logEnabled,
                     @NonNull final CookieStore cookieStore) {
 
         this.httpClient = httpClient;
+        this.userAgent = userAgent;
         this.acceptLanguageHeader = acceptLanguageHeader;
         this.siteResId = siteResId;
         this.logEnabled = logEnabled;
@@ -712,7 +717,7 @@ public class HttpCall {
                 .url(url)
                 .method(method, body)
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.getUserAgent())
+                        userAgent.asString())
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,

@@ -42,8 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpFutureFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -91,10 +91,12 @@ public class SearchEngineBase
         final String charSetName = engineId.getCharSetName();
 
         httpFutureFactory = new HttpFutureFactory(
-                config, null, cookieStore, languageHeader, charSetName);
+                config, null, cookieStore, languageHeader, charSetName,
+                engineId.getUserAgent());
 
         httpCallFactory = new HttpCallFactory(
                 config, null, cookieStore, languageHeader, charSetName,
+                engineId.getUserAgent(),
                 engineId.getPreferenceKey());
     }
 

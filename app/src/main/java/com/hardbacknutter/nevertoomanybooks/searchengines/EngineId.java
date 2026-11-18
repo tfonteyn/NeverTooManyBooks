@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.UserAgent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
@@ -212,6 +213,8 @@ public enum EngineId
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private final BiFunction<Context, SearchEngine, List<AuthorResolver>> authorResolverSupplier;
+    @NonNull
+    private final UserAgent userAgent;
     // Don't add to toString(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -247,6 +250,7 @@ public enum EngineId
         this.infoResIdList = builder.infoResIdList;
         this.defaultUrl = builder.defaultSearchUrl;
         this.defaultLocale = builder.defaultLocale;
+        this.userAgent = builder.userAgent;
         this.charSetName = builder.charSetName;
 
         this.identifierKeys = builder.identifierKeys;
@@ -561,6 +565,16 @@ public enum EngineId
     }
 
     /**
+     * Get the user-agent string for requests.
+     *
+     * @return userAgent to use for all site requests
+     */
+    @NonNull
+    public UserAgent getUserAgent() {
+        return userAgent;
+    }
+
+    /**
      * Get the {@link Identifier} key for the given type.
      *
      * @param type of key to get
@@ -672,6 +686,7 @@ public enum EngineId
                + ", enabled=" + enabled
                + ", defaultUrl=" + defaultUrl
                + ", charSetName=" + charSetName
+               + ", userAgent=" + userAgent
                + ", locale=" + defaultLocale
                + ", multipleCoverSizes=" + multipleCoverSizes
                + ", identifierKeys=" + identifierKeys
@@ -702,6 +717,9 @@ public enum EngineId
 
         private final Map<Identifier.EntityType, String> identifierKeys =
                 new EnumMap<>(Identifier.EntityType.class);
+
+        @NonNull
+        private UserAgent userAgent = UserAgent.DEFAULT;
 
         @Nullable
         private String charSetName;
@@ -737,12 +755,30 @@ public enum EngineId
         }
 
         /**
+         * Override the user-agent string for requests.
+         * This <strong>must</strong> match the expected html response.
+         * Some sites will return different html/pages depending on the user-agent.
+         * <p>
+         * Default: {@link UserAgent#DesktopWindowsFirefox}.
+         *
+         * @param userAgent to use for all site requests
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setUserAgent(@NonNull final UserAgent userAgent) {
+            this.userAgent = userAgent;
+            return this;
+        }
+
+        /**
          * Set the class which will allow the user to see/edit the Settings.
          *
          * @param clazz a Fragment
          *
          * @return {@code this} (for chaining)
          */
+        @NonNull
         public Builder setPreferenceFragmentClazz(@NonNull final Class<? extends Fragment> clazz) {
             preferenceFragmentClazz = clazz;
             return this;

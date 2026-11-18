@@ -92,6 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
+import com.hardbacknutter.nevertoomanybooks.core.network.UserAgent;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
@@ -323,6 +324,8 @@ public final class CalibreContentServer
     /** The RequestBody media type. */
     private static final MediaType MEDIA_TYPE_JSON = MediaType
             .parse("application/json; charset=utf-8");
+
+    private static final UserAgent USER_AGENT = UserAgent.DesktopWindowsFirefox;
 
     @NonNull
     private final Uri serverUri;
@@ -1297,6 +1300,7 @@ public final class CalibreContentServer
         final RequestBody body = RequestBody.create(jsonBody, MEDIA_TYPE_JSON);
 
         postCall = new HttpCall(httpClient,
+                                USER_AGENT,
                                 ACCEPT_LANGUAGE_HEADER,
                                 R.string.site_calibre,
                                 networkConfig.isHttpLoggingEnabled(),
@@ -1373,6 +1377,7 @@ public final class CalibreContentServer
         final Uri destUri = destFile.getUri();
 
         fileFetchCall = new HttpCall(httpClient,
+                                     USER_AGENT,
                                      ACCEPT_LANGUAGE_HEADER,
                                      R.string.site_calibre,
                                      networkConfig.isHttpLoggingEnabled(),
@@ -1674,7 +1679,7 @@ public final class CalibreContentServer
         return new Request.Builder()
                 .url(urlStr)
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.getUserAgent())
+                        USER_AGENT.asString())
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE).build();
     }
@@ -1707,6 +1712,7 @@ public final class CalibreContentServer
             throws IOException, CancellationException {
 
         jsonFetchCall = new HttpCall(httpClient,
+                                     USER_AGENT,
                                      ACCEPT_LANGUAGE_HEADER,
                                      R.string.site_calibre,
                                      networkConfig.isHttpLoggingEnabled(),

@@ -39,6 +39,7 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.UserAgent;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -454,7 +455,7 @@ public class DnbSearchEngine
             // Host, Connection, Accept-Encoding are added by OkHttp
             return new Request.Builder()
                     .url(urlStr)
-                    .header(HttpConstants.USER_AGENT, "Wget/1.25.0")
+                    .header(HttpConstants.USER_AGENT, UserAgent.Wget.asString())
                     .header(HttpConstants.ACCEPT, "*/*")
                     .build();
         }

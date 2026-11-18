@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.UserAgent;
 
 import okhttp3.Request;
 
@@ -34,14 +35,19 @@ public class ImageRequestFactoryDefault
         implements RequestFactory {
 
     @NonNull
+    private final UserAgent userAgent;
+    @NonNull
     private final String acceptLanguageHeader;
 
     /**
      * Constructor.
      *
+     * @param userAgent            to use
      * @param acceptLanguageHeader to use
      */
-    public ImageRequestFactoryDefault(@NonNull final String acceptLanguageHeader) {
+    public ImageRequestFactoryDefault(@NonNull final UserAgent userAgent,
+                                      @NonNull final String acceptLanguageHeader) {
+        this.userAgent = userAgent;
         this.acceptLanguageHeader = acceptLanguageHeader;
     }
 
@@ -69,7 +75,7 @@ public class ImageRequestFactoryDefault
         final Request.Builder builder = new Request.Builder()
                 .url(urlStr)
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.getUserAgent())
+                        userAgent.asString())
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
