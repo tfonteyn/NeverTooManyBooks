@@ -27,6 +27,12 @@ public final class HttpConstants {
     /**
      * RELEASE: USER_AGENT_FIREFOX: Last updated: 2026-11-17.
      *
+     * FIXME: depending on the user agent, some sites
+     *  will return different html and parsing can fail
+     *  2028-11-18: all parsers have ONLY been tested with the desktop/firefox agent string/
+     *  We will need to add a config to EngineId to select a desktop or mobile agent string
+     *  on a site-by-site basis.
+     *
      * @see <a href="https://www.whatismybrowser.com/guides/the-latest-user-agent/">
      *     whatismybrowser</a>
      *
@@ -34,15 +40,16 @@ public final class HttpConstants {
      */
     @NonNull
     public static String getUserAgent() {
+        // Firefox on Windows 11
+        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:160.0) Gecko/20100101 Firefox/160.0";
+
         // Taken from Chrome on a modern and up-to-date android phone.
         // Chrome seems to obfuscate the android version and device model
         // as neither matches the actual phone.
-        return "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36";
+        //return "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36";
 
         // Previously used:
 
-        // Firefox on Windows 11
-        //"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:160.0) Gecko/20100101 Firefox/160.0";
 
         // Firefox on Android:
         // "Mozilla/5.0 (Android 14; Mobile; rv:159.0) Gecko/157.0 Firefox/159.0";
