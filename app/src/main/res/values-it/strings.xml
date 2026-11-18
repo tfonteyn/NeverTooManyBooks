@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|«|»|‘|’)
@@ -156,7 +153,7 @@
     <string name="book_format_digest">Piccolo</string>
     <string name="book_format_dimensions">Dimensioni</string>
     <string name="book_format_ebook">e-book</string>
-    <string name="book_format_hardcover">Rilegato</string>
+    <string name="book_format_hardcover">Copertina rigida</string>
     <string name="book_format_paperback">Brossura</string>
     <string name="book_format_paperback_large">Grande tascabile</string>
     <string name="book_format_softcover">Copertina morbida</string>
@@ -792,7 +789,7 @@
     <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro “%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tutti i libri sotto questa riga hanno copertine. Cercare di nuovo dall’alto?</string>
     <string name="info_all_books_have_covers">Tutti i libri su questa libreria hanno copertine</string>
-    <string name="book_format_hardcover_oblong">Rilegato - oblunga</string>
+    <string name="book_format_hardcover_oblong">Copertina rigida - oblungo</string>
     <string name="book_format_softcover_oblong">Copertina morbida - oblunga</string>
     <string name="lbl_purge_blns">Cancella lo stato del nodo</string>
     <string name="info_purge_blns_all">Cancella lo stato del nodo da tutti gli elenchi</string>
