@@ -32,6 +32,7 @@ import androidx.annotation.WorkerThread;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -97,7 +99,25 @@ public class BertrandPtSearchEngine
     /** Search url. Just concat whatever 'words' (or isbn) we're searching for. */
     private static final String SEARCH_URL = HOST_URL + "/pesquisa/";
 
+    private static final Map<String, String> PORTUGUESE_MONTHS = new HashMap<>();
+    static {
+        PORTUGUESE_MONTHS.put("janeiro", "01");
+        PORTUGUESE_MONTHS.put("fevereiro", "02");
+        PORTUGUESE_MONTHS.put("março", "03");
+        PORTUGUESE_MONTHS.put("abril", "04");
+        PORTUGUESE_MONTHS.put("maio", "05");
+        PORTUGUESE_MONTHS.put("junho", "06");
+        PORTUGUESE_MONTHS.put("julho", "07");
+        PORTUGUESE_MONTHS.put("agosto", "08");
+        PORTUGUESE_MONTHS.put("setembro", "09");
+        PORTUGUESE_MONTHS.put("outubro", "10");
+        PORTUGUESE_MONTHS.put("novembro", "11");
+        PORTUGUESE_MONTHS.put("dezembro", "12");
+    }
+
     private final Map<String, String> extraRequestProperties;
+
+    private final RatingParser ratingParser = new RatingParser(5);
 
     /**
      * Constructor.
@@ -202,11 +222,11 @@ public class BertrandPtSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retrieved.
      *
-     * @param context      Current context
-     * @param document     to parse
-     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
-     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param book         to update
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on image storage failures
@@ -242,18 +262,15 @@ public class BertrandPtSearchEngine
     String parseMultiResult(@NonNull final Document document) {
 
         final Element urlElement = document.selectFirst(
-                "div[data-product-position='1'] div.product-info a.title-lnk");
+                "div[data-product-position='1'] p.pch__title a");
         if (urlElement == null) {
             return null;
         }
-        String url = urlElement.attr("href");
+        final String url = urlElement.absUrl("href");
         if (url.isBlank()) {
             return null;
         }
-        // sanity check - it normally does NOT have the protocol/site part
-        if (url.startsWith("/")) {
-            url = HOST_URL + url;
-        }
+
         return url;
     }
 
@@ -280,36 +297,31 @@ public class BertrandPtSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Element bookInfo = document.selectFirst(
-                "div#productPageSectionDetails-collapseDetalhes-content");
-        if (bookInfo == null) {
-            LoggerFactory.getLogger().w(TAG, "parse", "no bookInfo?");
+        final Element productCardTitle = document.selectFirst("section#product_card_title");
+        if (productCardTitle == null) {
+            LoggerFactory.getLogger().w(TAG, "parse", "no productCardTitle?");
             return;
         }
 
-        final Element titleElement = bookInfo.selectFirst(
-                "div#productPageSectionDetails-collapseDetalhes-content-title");
+        final Element titleElement = productCardTitle.selectFirst("div.product-title-header");
         if (titleElement == null) {
-            // If we find no title, we assume parsing is broken
-            LoggerFactory.getLogger().w(TAG, "parse", "no title?");
             return;
         }
-
-        final String title = SearchEngineUtils.cleanText(titleElement);
+        // grab the combined text of all subelements. The title is split over two elements.
+        final String title = SearchEngineUtils.cleanText(titleElement.text());
         if (title.isBlank()) {
             return;
         }
         book.setTitle(title);
 
-        // sibling to the title:  class="right-title-details subtitle"
+        // final Element subTitle = productCardTitle.selectFirst(
+        //         "h2#productPageRightSectionTop-subtitle-h2");
         // ==> *can* contain Series with number
         // see Asimov foundation:  Fundação - Livro 3
         // BUT https://www.bertrand.pt/ebook/galaxy-s-isaac-asimov-collection-volume-2-isaac-asimov/19866052
-        //==> NOT the series...
+        //==> It is NOT always the series... sometimes it's a real sub-title.
 
-        // The author is often missing when the book is not a 'standard' portuguese book.
-        final Elements authorElements = bookInfo.select(
-                "div#productPageSectionDetails-collapseDetalhes-content-author > a");
+        final Elements authorElements = productCardTitle.select("div.product-author > a");
         authorElements.stream()
                       .map(SearchEngineUtils::cleanName)
                       .filter(name -> !name.isBlank())
@@ -317,46 +329,81 @@ public class BertrandPtSearchEngine
                       .forEach(author -> bookParserHelper
                               .addAuthor(author, AuthorRole.UNKNOWN, book, false));
 
+        parseRating(productCardTitle, book);
+
+        final Element priceElement = document.selectFirst(
+                "div#productPageRightSectionTop-saleAction-price-current");
+        if (priceElement != null) {
+            bookParserHelper.addPriceListed(context, getLocale(context),
+                                            priceElement.text(), MoneyParser.EUR,
+                                            book);
+        }
+
+        // TAB 1: Conheça o livro
+        final Element description = document.selectFirst("div#aboutBookSinopseContainer");
+        if (description != null) {
+            book.setDescription(description.html().strip());
+        }
+
+        // TAB 2: Detalhes
+        parseBookInfo(document, book);
+
+        if (isCancelled()) {
+            return;
+        }
+
+        if (fetchCovers[0]) {
+            parseCovers(document, book.getRawProductCode(), 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private void parseRating(@NonNull final Element root,
+                             @NonNull final Book book) {
+        final Element ratingElement = root.selectFirst("span.rating-value");
+        if (ratingElement == null) {
+            return;
+        }
+
+        ratingParser.parse(ratingElement.text()).ifPresent(book::setRating);
+    }
+
+    private void parseBookInfo(@NonNull final Element document,
+                               @NonNull final Book book) {
+        final Element bookInfo = document.selectFirst(
+                "div#productPageSectionDetails-collapseDetalhes-content");
+        if (bookInfo == null) {
+            LoggerFactory.getLogger().w(TAG, "parse", "no bookInfo?");
+            return;
+        }
+
         Element element;
 
         element = bookInfo.selectFirst(
-                "div#productPageSectionDetails-collapseDetalhes-content-isbn > div.info");
+                "div#productPageSectionDetails-collapseDetalhes-content-nrPages > div.info");
         if (element != null) {
-            final String isbn = ISBN.cleanText(element.text().strip());
-            if (!isbn.isBlank()) {
-                book.setRawProductCode(isbn);
-            }
+            book.setPages(element.text().strip());
         }
 
-        element = bookInfo.selectFirst(
-                "div#productPageSectionDetails-collapseDetalhes-content-year > div.info");
-        if (element != null) {
-            final String s = element.text().strip();
-            if (!s.isBlank()) {
-                final String[] split = s.split("-");
-                if (split.length == 1) {
-                    // not seen during testing, but assumed to be year only;
-                    book.setPublicationDate(s);
-                } else if (split.length == 2) {
-                    // as seen in testing: MM-YYYY, convert to YYYY-MM
-                    book.setPublicationDate(split[1] + "-" + split[0]);
-                }
-            }
-        }
-
-        // The "Editor", i.e. the publisher is a pain... it does not have an easy div id
-        element = bookInfo.selectFirst(":containsOwn(Editor:) > div.info");
-        if (element != null) {
-            final String s = SearchEngineUtils.cleanName(element);
-            if (!s.isBlank()) {
-                book.add(Publisher.from(s));
-            }
-        }
+        parsePublisher(bookInfo, book);
+        parsePublicationDate(bookInfo, book);
+        parseIsbn(bookInfo, book);
 
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-language > div.info");
         if (element != null) {
             book.setLanguage(element.text().strip());
+        }
+
+        // Classificação  Temática
+        element = bookInfo.selectFirst(
+                "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
+        if (element != null) {
+            final List<String> tagNames = element.select("a")
+                                                 .stream()
+                                                 .map(Element::text)
+                                                 .collect(Collectors.toList());
+            bookParserHelper.setTags(tagNames, book);
         }
 
         // Encadernação.
@@ -377,12 +424,6 @@ public class BertrandPtSearchEngine
             }
         }
 
-        element = bookInfo.selectFirst(
-                "div#productPageSectionDetails-collapseDetalhes-content-nrPages > div.info");
-        if (element != null) {
-            book.setPages(element.text().strip());
-        }
-
         // Coleção -> can be Series or Collection. Just use it as Series and leave it to the user.
         // The number is usually added to the title and cannot be parsed.
         element = bookInfo.selectFirst(
@@ -393,58 +434,76 @@ public class BertrandPtSearchEngine
                 book.add(Series.from(s));
             }
         }
+    }
 
-        // Classificação  Temática
-        element = bookInfo.selectFirst(
-                "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
+    private void parsePublisher(@NonNull final Element root,
+                                @NonNull final Book book) {
+        // The "Editor", i.e. the publisher is a pain... it does not have an easy div id
+        final Element element = root.selectFirst(":containsOwn(Editor) > div.info");
         if (element != null) {
-            final List<String> tagNames = element.select("a")
-                                                 .stream()
-                                                 .map(Element::text)
-                                                 .collect(Collectors.toList());
-            bookParserHelper.setTags(tagNames, book);
-        }
-
-        final Element priceElement = document.selectFirst(
-                "div#productPageRightSectionTop-saleAction-price-current");
-        if (priceElement != null) {
-            bookParserHelper.addPriceListed(context, getLocale(context),
-                                            priceElement.text(), MoneyParser.EUR,
-                                            book);
-        }
-
-        // First try for the readers rating
-        Element ratingElement = document.selectFirst(
-                "div#productPageRightSectionTop-rating-evaluation");
-        if (ratingElement == null) {
-            // If no reader-rating found, then try the seller rating
-            ratingElement = document.selectFirst(
-                    "div#productPageRightSectionTop-libraries-rating-evaluation");
-        }
-        if (ratingElement != null) {
-            // The nest sibling should be the ""div.stars"
-            ratingElement = ratingElement.nextElementSibling();
-            if (ratingElement != null) {
-                // count the 'active' stars
-                final Elements stars = ratingElement.select("span.active");
-                book.setRating(stars.size());
+            final String s = SearchEngineUtils.cleanName(element);
+            if (!s.isBlank()) {
+                book.add(Publisher.from(s));
             }
         }
+    }
 
-        final Element description = document.selectFirst(
-                "div#productPageSectionAboutBook-sinopse > p");
-        if (description != null) {
-            book.setDescription(description.html().strip());
+    private void parsePublicationDate(@NonNull final Element root,
+                                      @NonNull final Book book) {
+        final Element element = root.selectFirst(
+                "div#productPageSectionDetails-collapseDetalhes-content-year > div.info");
+        if (element == null) {
+            return;
         }
-
-        if (isCancelled()) {
+        final String dateStr = element.text().strip();
+        if (dateStr.isBlank()) {
             return;
         }
 
-        if (fetchCovers[0]) {
-            parseCovers(document, book.getRawProductCode(), 0).ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        // janeiro de 2023
+        // junho de 2020
+
+        // Raw parsing, no need for a regex
+        int firstDigitIdx = -1;
+        for (int i = 0; i < dateStr.length(); i++) {
+            if (Character.isDigit(dateStr.charAt(i))) {
+                firstDigitIdx = i;
+                break;
+            }
         }
+        if (firstDigitIdx == -1) {
+            LoggerFactory.getLogger().w(TAG, "parsePublicationDate", "Failed dateStr=" + dateStr);
+            return;
+        }
+
+        final String yearStr = dateStr.substring(firstDigitIdx).trim();
+        if (yearStr.length() != 4) {
+            LoggerFactory.getLogger().w(TAG, "parsePublicationDate", "Failed dateStr=" + dateStr);
+            return;
+        }
+
+        final String monthName = dateStr.substring(0, firstDigitIdx)
+                                        .toLowerCase(HOST_LOCALE)
+                                        .replace("de", "")
+                                        .trim();
+        @Nullable
+        final String numMonth = PORTUGUESE_MONTHS.get(monthName);
+
+        book.setPublicationDate(yearStr + (numMonth != null ? '-' + numMonth : ""));
+    }
+
+    private void parseIsbn(@NonNull final Element root,
+                           @NonNull final Book book) {
+        final Element element = root.selectFirst(
+                "div#productPageSectionDetails-collapseDetalhes-content-isbn > div.info");
+        if (element == null) {
+            return;
+        }
+        final String isbn = ISBN.cleanText(element.text().strip());
+        if (isbn.isBlank()) {
+            return;
+        }
+        book.setRawProductCode(isbn);
     }
 
     /**
@@ -465,10 +524,11 @@ public class BertrandPtSearchEngine
     private Optional<String> parseCovers(@NonNull final Document document,
                                          @Nullable final String bookId,
                                          @SuppressWarnings("SameParameterValue")
-                                             @IntRange(from = 0, to = 0) final int cIdx)
+                                         @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
-        final Element img = document.selectFirst("div.cover > picture > img");
+//        final Element img = document.selectFirst("div#productMainCoverContainer > picture > img");
+        final Element img = document.selectFirst("img#mainCoverImg");
         if (img == null) {
             return Optional.empty();
         }

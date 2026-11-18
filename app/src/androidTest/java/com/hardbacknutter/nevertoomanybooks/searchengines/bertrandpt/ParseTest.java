@@ -93,7 +93,7 @@ class ParseTest
             throws SearchException, IOException, CredentialsException, StorageException {
         final Context context = createContext();
 
-        final String locationHeader = "https://www.bertrand.pt/pesquisa/9789895812899";
+        final String locationHeader = "https://www.bertrand.pt/livro/a-livraria-cinnamon-bun-laurie-gilmore/30923903";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_9789895812899;
 
@@ -110,6 +110,8 @@ class ParseTest
         assertEquals("320", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("<p>Da mesma autora de <i>O Café Pumpkin Spice</i>, chega"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -158,7 +160,7 @@ class ParseTest
         final Context context = createContext();
 
         final String locationHeader =
-                "https://www.bertrand.pt/pesquisa/9789897734939";
+                "https://www.bertrand.pt/livro/fundacao-e-terra-isaac-asimov/27980329";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_9789897734939;
 
@@ -178,6 +180,8 @@ class ParseTest
 
         // test is a dynamic download, can fail / needs updating
         assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
+
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("<p>Golan Trevize escolheu o futuro"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
