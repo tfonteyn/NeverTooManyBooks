@@ -389,10 +389,10 @@ public class EditBookViewModel
         validatorConfig.addValidator(DBKey.LANGUAGE,
                                      nonBlankValidator, R.string.lbl_language);
 
-        // URGENT: do we really need a validator on EDITION_FLAGS ?
+        // FIXME: do we really need a validator on EDITION_FLAGS ?
         validatorConfig.addValidator(DBKey.EDITION_FLAGS,
                                      longValidator, R.string.lbl_edition);
-        // URGENT: do we really need a validator on CONTENT_TYPE ?
+        // FIXME: do we really need a validator on CONTENT_TYPE ?
         validatorConfig.addValidator(DBKey.CONTENT_TYPE,
                                      longValidator, R.string.lbl_table_of_content);
 
