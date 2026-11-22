@@ -224,7 +224,11 @@ public class SearchEngineBase
                              @Nullable final Map<String, String> headers)
             throws SearchException {
         try {
-            return httpFutureFactory.loadHtml(context, url, headers);
+            if (config.getEngineId().isUseOkHttp()) {
+                return httpCallFactory.loadHtml(context, url, headers);
+            } else {
+                return httpFutureFactory.loadHtml(context, url, headers);
+            }
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -248,7 +252,11 @@ public class SearchEngineBase
                             @Nullable final Map<String, String> headers)
             throws SearchException {
         try {
-            return httpFutureFactory.loadXml(context, url, headers);
+            if (config.getEngineId().isUseOkHttp()) {
+                return httpCallFactory.loadXml(context, url, headers);
+            } else {
+                return httpFutureFactory.loadXml(context, url, headers);
+            }
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }

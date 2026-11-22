@@ -215,6 +215,9 @@ public enum EngineId
     private final BiFunction<Context, SearchEngine, List<AuthorResolver>> authorResolverSupplier;
     @NonNull
     private final UserAgent userAgent;
+
+    private final boolean useOkHttp;
+
     // Don't add to toString(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -252,6 +255,7 @@ public enum EngineId
         this.defaultLocale = builder.defaultLocale;
         this.userAgent = builder.userAgent;
         this.charSetName = builder.charSetName;
+        this.useOkHttp = builder.useOkHttp;
 
         this.identifierKeys = builder.identifierKeys;
         this.multipleCoverSizes = builder.multipleCoverSizes;
@@ -575,6 +579,17 @@ public enum EngineId
     }
 
     /**
+     * Whether the {@code OkHttp} or the {@code Future} client be used
+     * for network calls.
+     *
+     * @return {@code true} for {@code OkHttp},
+     *         {@code false} for {@code Future}
+     */
+    public boolean isUseOkHttp() {
+        return useOkHttp;
+    }
+
+    /**
      * Get the {@link Identifier} key for the given type.
      *
      * @param type of key to get
@@ -721,6 +736,8 @@ public enum EngineId
         @NonNull
         private UserAgent userAgent = UserAgent.DEFAULT;
 
+        private boolean useOkHttp;
+
         @Nullable
         private String charSetName;
 
@@ -768,6 +785,21 @@ public enum EngineId
         @NonNull
         public Builder setUserAgent(@NonNull final UserAgent userAgent) {
             this.userAgent = userAgent;
+            return this;
+        }
+
+        /**
+         * Force using {@code OkHttp} html/xml call factory.
+         * <p>
+         * Default is {@code false} using the traditional {@code Future} based factory.
+         *
+         * @param useOkHttp flag
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setUseOkHttp(final boolean useOkHttp) {
+            this.useOkHttp = useOkHttp;
             return this;
         }
 
