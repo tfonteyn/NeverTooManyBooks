@@ -104,7 +104,7 @@ class CalibreNetworkConfig
     @NonNull
     @Override
     public String getLogTag() {
-        return "CalibreContentServer";
+        return CalibreContentServer.TAG;
     }
 
     @Override

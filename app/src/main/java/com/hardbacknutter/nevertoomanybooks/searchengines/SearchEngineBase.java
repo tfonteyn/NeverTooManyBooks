@@ -178,7 +178,7 @@ public class SearchEngineBase
                 final Optional<Locale> locale = ServiceLocator.getInstance().getAppLocale()
                                                               .getLocale(root, userLocale);
                 if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger().d(config.getEngineId().name(),
+                    LoggerFactory.getLogger().d(config.getLogTag(),
                                                 "baseUrl=" + baseUrl, "getLocale=" + locale);
                 }
                 return locale.orElse(Locale.US);

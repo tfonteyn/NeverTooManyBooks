@@ -176,7 +176,7 @@ public final class CalibreContentServer
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
     /** Log tag. */
-    private static final String TAG = "CalibreContentServer";
+    static final String TAG = "CalibreContentServer";
 
     /** Custom field for {@link SyncReaderMetaData}. */
     public static final String BKEY_LIBRARY = TAG + ":defLib";
@@ -455,7 +455,7 @@ public final class CalibreContentServer
         }
 
         if (networkConfig.isHttpLoggingEnabled()) {
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(networkConfig.getLogTag()));
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(TAG));
         }
 
         httpClient = builder.build();
