@@ -170,6 +170,20 @@ public final class HttpCallFactory {
     }
 
     /**
+     * Send a {@code HEAD} request.
+     *
+     * @param url     to fetch
+     * @param headers (optional) extra headers to add/override
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    public void head(@NonNull final String url,
+                     @Nullable final Map<String, String> headers)
+            throws IOException {
+        createCall().head(url, headers);
+    }
+
+    /**
      * Convenience method to save an image using the engines specific network configuration.
      *
      * @param url     Image file URL
