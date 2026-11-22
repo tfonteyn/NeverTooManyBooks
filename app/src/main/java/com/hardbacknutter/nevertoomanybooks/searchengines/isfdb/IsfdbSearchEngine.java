@@ -339,7 +339,7 @@ public class IsfdbSearchEngine
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_ISFDB)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_ISFDB)
                 .setAuthorResolverSupplier(IsfdbAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         // default timeouts based on limited testing
                         .setConnectTimeoutMs(20_000)
                         .setReadTimeoutMs(60_000)

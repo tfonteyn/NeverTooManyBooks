@@ -160,7 +160,7 @@ public class BiblionetGrSearchEngine
                                     HOST_LOCALE)
                 .setPreferenceFragmentClazz(BiblionetGrPreferencesFragment.class)
                 .setAuthorResolverSupplier(BiblionetGrAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         .build(SearchEngineConfig::new));
     }
 

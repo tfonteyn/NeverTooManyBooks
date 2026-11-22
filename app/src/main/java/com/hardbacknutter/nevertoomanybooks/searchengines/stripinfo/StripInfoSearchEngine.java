@@ -227,7 +227,7 @@ public class StripInfoSearchEngine
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_STRIP_INFO)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_STRIP_INFO)
                 .setAuthorResolverSupplier(StripInfoAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         // default timeouts based on limited testing
                         .setConnectTimeoutMs(7_000)
                         .setReadTimeoutMs(60_000)

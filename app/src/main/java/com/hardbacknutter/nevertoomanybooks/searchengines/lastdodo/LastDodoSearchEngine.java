@@ -163,7 +163,7 @@ public class LastDodoSearchEngine
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_LAST_DODO_NL)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_LAST_DODO_NL)
                 .setAuthorResolverSupplier(LastdodoAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         .build(SearchEngineConfig::new));
     }
 

@@ -158,7 +158,7 @@ public class BertrandPtSearchEngine
                                     HOST_URL,
                                     HOST_LOCALE)
                 .setPreferenceFragmentClazz(BertrandPtPreferencesFragment.class)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
                         .build(SearchEngineConfig::new));
     }

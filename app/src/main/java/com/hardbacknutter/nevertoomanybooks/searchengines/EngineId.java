@@ -852,7 +852,7 @@ public enum EngineId
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setConfig(
+        public Builder configure(
                 @NonNull final Function<SearchEngineConfig.Builder, SearchEngineConfig>
                         configConsumer) {
             this.configConsumer = configConsumer;

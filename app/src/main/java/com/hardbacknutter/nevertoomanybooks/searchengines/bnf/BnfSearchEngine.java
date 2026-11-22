@@ -144,7 +144,7 @@ public class BnfSearchEngine
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BNF)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BNF)
                 .setAuthorResolverSupplier(BnfAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         .build(SearchEngineConfig::new));
     }
 

@@ -189,7 +189,7 @@ public class BolSearchEngine
                                     HOST_URL,
                                     HOST_LOCALE)
                 .setPreferenceFragmentClazz(BolPreferencesFragment.class)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         .setTagsToIgnore(Set.of("Boeken", "Livres"))
                         .build(SearchEngineConfig::new));
     }

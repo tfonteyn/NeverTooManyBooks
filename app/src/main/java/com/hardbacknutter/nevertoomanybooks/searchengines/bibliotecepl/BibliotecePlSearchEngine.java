@@ -193,7 +193,7 @@ public class BibliotecePlSearchEngine
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BIBLIOTECE_PL)
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BIBLIOTECE_PL)
                 .setAuthorResolverSupplier(BibliotecePlAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         // "books"
                         .setTagsToIgnore(Set.of("książki"))
                         .build(SearchEngineConfig::new));

@@ -227,7 +227,7 @@ public class OpenLibrarySearchEngine
                 .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_OPEN_LIBRARY)
                 .setMultipleCoverSizes(true)
                 .setAuthorResolverSupplier(OpenLibraryAuthorResolver::create)
-                .setConfig(cb -> cb
+                .configure(cb -> cb
                         // default timeouts based on limited testing
                         .setConnectTimeoutMs(15_000)
                         .setReadTimeoutMs(30_000)
