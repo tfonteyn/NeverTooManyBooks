@@ -36,8 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.network.NetworkConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
- * This class provides the <strong>mutable</strong> configuration
- * data for a {@link SearchEngine}.
+ * This class provides the <strong>user configuration</strong> data for a {@link SearchEngine}.
  * <p>
  * There is a 1:1 relation with the {@link EngineId}.
  *
