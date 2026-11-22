@@ -229,8 +229,8 @@ public class KbNlSearchEngine
     private void ensureCookie()
             throws SearchException {
         try {
-            httpFutureFactory.head(HOST_URL + "/cbs/");
-        } catch (@NonNull final StorageException | IOException e) {
+            httpFutureFactory.head(HOST_URL + "/cbs/", null);
+        } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
     }

@@ -325,15 +325,17 @@ public class FutureHttp<R> {
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws StorageException       on image storage failures
      */
     public void head(@NonNull final String url)
-            throws StorageException,
-                   CancellationException,
+            throws CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        doGet(url, HEAD, null);
+        try {
+            doGet(url, HEAD, null);
+        } catch (@NonNull final StorageException ignore) {
+            // ignore, can never happen during a HEAD request
+        }
     }
 
     /**

@@ -289,13 +289,14 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (sessionCookie == null || sessionCookie.hasExpired()) {
             try {
-                httpFutureFactory.head(SEARCH_URL);
-            } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
+                httpFutureFactory.head(SEARCH_URL, null);
+            } catch (@NonNull final IOException | UncheckedIOException e) {
                 throw new SearchException(getEngineId(), e);
             }
         }
 
-        sessionCookie = ServiceLocator.getInstance().getCookieManager()
+        sessionCookie = ServiceLocator.getInstance()
+                                      .getCookieManager()
                                       .getCookieStore()
                                       .getCookies()
                                       .stream()

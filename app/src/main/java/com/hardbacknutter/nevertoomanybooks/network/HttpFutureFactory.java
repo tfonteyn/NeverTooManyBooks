@@ -105,8 +105,7 @@ public class HttpFutureFactory {
      * Create a {@link FutureHttp}.
      *
      * @param headers (optional) extra headers to add/override
-     *
-     * @param <RR> the type of the return value for the request
+     * @param <RR>    the type of the return value for the request
      *
      * @return new instance
      */
@@ -190,15 +189,16 @@ public class HttpFutureFactory {
     /**
      * Convenience method to send a suitable {@code HEAD} request.
      *
-     * @param url to send the request to.
+     * @param url     to send the request to.
+     * @param headers (optional) extra headers to add/override
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws StorageException N/A
+     * @throws IOException on generic/other IO failures
      */
-    public void head(@NonNull final String url)
-            throws IOException, StorageException {
+    public void head(@NonNull final String url,
+                     @Nullable final Map<String, String> headers)
+            throws IOException {
 
-        final FutureHttp<Void> request = createRequest(null);
+        final FutureHttp<Void> request = createRequest(headers);
         request.head(url);
     }
 
@@ -302,7 +302,7 @@ public class HttpFutureFactory {
          * Constructor.
          *
          * @param httpCallFactory to use
-         * @param charSetName (optional) for the parser to use; or {@code null} to auto-select.
+         * @param charSetName     (optional) for the parser to use; or {@code null} to auto-select.
          */
         JsoupLoader(@NonNull final HttpFutureFactory httpCallFactory,
                     @Nullable final String charSetName) {
@@ -323,10 +323,10 @@ public class HttpFutureFactory {
          * Will silently return if it has downloaded the document before.
          * Call {@link #reset()} before to force a clean/new download.
          *
-         * @param context     Current context
-         * @param parser      to use
-         * @param url         to fetch
-         * @param headers     optional
+         * @param context Current context
+         * @param parser  to use
+         * @param url     to fetch
+         * @param headers optional
          *
          * @return the parsed Document
          *
