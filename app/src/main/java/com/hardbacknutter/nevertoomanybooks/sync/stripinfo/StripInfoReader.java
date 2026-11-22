@@ -162,7 +162,10 @@ public class StripInfoReader
         final HttpFutureFactory httpCallFactory = searchEngine.getHttpFutureFactory();
 
         final SiteAuthModule siteAuthModule = new StripInfoAuth(httpCallFactory);
+        // Perform login first, can throw.
         final String userId = siteAuthModule.login(context);
+
+        // Login successful
         searchEngine.setAuthModule(siteAuthModule);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
