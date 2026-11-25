@@ -34,7 +34,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 - [Goodreads CSV files](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-goodreads)
 - Calibre CSV files import, or full [synchronization with a Calibre Server](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Calibre)
 
-### Download the latest release: 8.1.5
+### Download the latest release: 8.2.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" 
@@ -109,12 +109,14 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)
-- ~~**LastDodo** (Dutch and more; Catalogue; European Comics)~~ is blocking access... a site build by the community is raising corporate walls...
+- **kitapsec.com** (Turkish; Shop)
 - **OpenLibrary** (English and more; Catalogue)
 - **StripInfo** (Dutch and more; Catalogue; European Comics)
 - **StripWeb** (Dutch/French; Shop; European Comics)
 - **WikiData** *ISSN search only* (English and more; Catalogue)
-- Supports synchronizing with a [Calibre](https://calibre-ebook.com/) Content Server.
+
+Other:
+- Supports synchronizing with a [Calibre Content Server](https://manual.calibre-ebook.com/server.html/).
 
 ## Device support:
 

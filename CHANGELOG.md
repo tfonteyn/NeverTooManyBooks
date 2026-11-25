@@ -1,3 +1,18 @@
+### 8.2.0
+
+NEW:
+
+- #254: Add Kitapseç.com for Turkish books
+
+FIXES:
+
+- #263: update bertrandpt parsing
+
+REMOVED:
+
+- #262: LastDodo removed. They now use Bunny/shield blocking.
+
+---
 ### 8.1.5
 
 FIXES:
