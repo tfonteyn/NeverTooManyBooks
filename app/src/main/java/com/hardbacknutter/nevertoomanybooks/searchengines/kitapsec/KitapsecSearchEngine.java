@@ -305,10 +305,18 @@ public class KitapsecSearchEngine
         title = parseSeries(title, book);
         book.setTitle(title);
 
-        final Elements labels = details.select(".detayBilgiDivIc .baslikText");
-        final Elements values = details.select(".detayBilgiDivIc .sonucText");
+        // Labels and values can have a set of different class names
+        final Elements labels = details.select(".detayBilgiDivIc .baslikText, .detayBilgiDivIc .baslikText1, .detayBilgiDivIc .baslikText2");
+        final Elements values = details.select(".detayBilgiDivIc .sonucText, .detayBilgiDivIc .sonucText1, .detayBilgiDivIc .sonucText2");
 
         for (int i = 0; i < labels.size(); i++) {
+            // Sanity check: if the site adds/changes the classes for the labels/values
+            // we don't want to crash here.
+            if (i >= values.size()) {
+                // quit the for-loop
+                break;
+            }
+
             final Element value = values.get(i);
             switch (labels.get(i).text()) {
                 case LABEL_ISBN: {
