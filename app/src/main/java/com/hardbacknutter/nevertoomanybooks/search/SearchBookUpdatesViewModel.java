@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -97,14 +97,14 @@ public class SearchBookUpdatesViewModel
     private final Book currentBook = new Book();
 
     /** The configuration on which fields to update and how. */
-    private SyncReaderProcessor.Builder syncProcessorBuilder;
+    private SyncProcessor.Builder syncProcessorBuilder;
 
     /**
      * The final configuration build from {@link #syncProcessorBuilder},
      * ready to start processing.
      */
     @Nullable
-    private SyncReaderProcessor syncProcessor;
+    private SyncProcessor syncProcessor;
 
     /** Used inside the loop. Global to avoid recreating a new object in each iteration. */
     private BookSearchCriteria searchCriteria;
@@ -192,21 +192,21 @@ public class SearchBookUpdatesViewModel
     }
 
     /**
-     * Create the default {@link SyncReaderProcessor.Builder}.
+     * Create the default {@link SyncProcessor.Builder}.
      * <p>
      * Simple fields are set to {@link SyncAction#CopyIfBlank}.
      * List fields are set to {@link SyncAction#Append}.
      *
      * @param context Current context
      *
-     * @return a {@link SyncReaderProcessor.Builder}
+     * @return a {@link SyncProcessor.Builder}
      */
     @NonNull
-    private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
+    private SyncProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(SYNC_PREFERENCE_PREFIX, allLocales);
+        final SyncProcessor.Builder builder =
+                new SyncProcessor.Builder(SYNC_PREFERENCE_PREFIX, allLocales);
 
         // Image fields will be at the top of the list.
         final String[] coverDesc = context.getResources()
@@ -288,7 +288,7 @@ public class SearchBookUpdatesViewModel
 
     @VisibleForTesting
     @NonNull
-    SyncReaderProcessor.Builder getSyncProcessorBuilder() {
+    SyncProcessor.Builder getSyncProcessorBuilder() {
         if (syncProcessor != null) {
             throw new IllegalStateException("syncProcessor already exists");
         }

@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +81,7 @@ class SearchBookUpdatesViewModelTest
                   .filter(syncField -> Identifier.Value.BKEY_LIST.equals(syncField.getKey()))
                   .forEach(f -> f.setAction(SyncAction.CopyIfBlank));
 
-        final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build(context);
+        final SyncProcessor processor = vm.getSyncProcessorBuilder().build(context);
 
         final Map<String, SyncField> fieldsWanted = processor.filter(localBook);
         Log.d(TAG, fieldsWanted.toString());
@@ -140,7 +140,7 @@ class SearchBookUpdatesViewModelTest
                   .filter(syncField -> Identifier.Value.BKEY_LIST.equals(syncField.getKey()))
                   .forEach(f -> f.setAction(SyncAction.CopyIfBlank));
 
-        final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build(context);
+        final SyncProcessor processor = vm.getSyncProcessorBuilder().build(context);
 
         final Map<String, SyncField> fieldsWanted = processor.filter(localBook);
         Log.d(TAG, fieldsWanted.toString());

@@ -67,8 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -99,7 +99,7 @@ public class StripInfoReader
 
     /** Which fields and how to process them for existing books. */
     @NonNull
-    private final SyncReaderProcessor syncProcessor;
+    private final SyncProcessor syncProcessor;
 
     @NonNull
     private final BookDao bookDao;
@@ -119,7 +119,7 @@ public class StripInfoReader
      */
     StripInfoReader(@NonNull final Context context,
                     @NonNull final Set<RecordType> recordTypes,
-                    @NonNull final SyncReaderProcessor syncProcessor,
+                    @NonNull final SyncProcessor syncProcessor,
                     @NonNull final Updates updateOption) {
 
         this.updateOption = updateOption;

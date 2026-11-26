@@ -217,7 +217,7 @@ public final class SyncField
         )),
         /**
          * A {@code String} for which we support {@link SyncAction#Append}.
-         * Add the key to {@link SyncReaderProcessor}#processAppend
+         * Add the key to {@link SyncProcessor}#processAppend
          * if you use this type!
          */
         APPENDABLE_STRING(SyncAction.CopyIfBlank, List.of(

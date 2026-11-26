@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServerId;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
@@ -97,18 +97,18 @@ public class StripInfoSyncServer
     public DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context,
             @NonNull final Set<RecordType> recordTypes,
-            @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder,
+            @Nullable final SyncProcessor.Builder syncProcessorBuilder,
             @Nullable final LocalDateTime syncDate,
             @NonNull final DataReader.Updates updateOption,
             @NonNull final Bundle extraArgs)
             throws DataReaderException, CertificateException, CredentialsException, IOException {
 
         // Use either the custom passed-in, or the built-in default.
-        final SyncReaderProcessor syncProcessor =
+        final SyncProcessor syncProcessor =
                 Objects.requireNonNullElseGet(
                                syncProcessorBuilder,
                                () -> createSyncProcessorBuilder(context))
-                       .build(builder -> new StripInfoSyncReaderProcessor(context, builder));
+                       .build(builder -> new StripInfoSyncProcessor(context, builder));
 
         final DataReader<SyncReaderMetaData, ReaderResults> reader =
                 new StripInfoReader(context, recordTypes, syncProcessor, updateOption);
@@ -122,12 +122,12 @@ public class StripInfoSyncServer
 
     @NonNull
     @Override
-    public SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
+    public SyncProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-        final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
+        final SyncProcessor.Builder builder =
+                new SyncProcessor.Builder(getSyncPreferencePrefix(), allLocales);
 
         // Cover fields will be at the top of the list.
         // There are only 2 images supported by this site.
@@ -154,7 +154,7 @@ public class StripInfoSyncServer
         map.put(context.getString(R.string.lbl_price_paid),
                 new SyncFieldDef(SyncField.Type.OTHER, DBKey.PRICE_PAID));
 
-        // The collection-data: see StripInfoSyncReaderProcessor
+        // The collection-data: see StripInfoSyncProcessor
         map.put(context.getString(R.string.site_stripinfo_be),
                 new SyncFieldDef(SyncField.Type.OTHER, StripInfoCollectionData.BKEY));
 

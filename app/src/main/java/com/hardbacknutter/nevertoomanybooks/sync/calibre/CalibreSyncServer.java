@@ -56,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServerId;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
@@ -108,13 +108,13 @@ public class CalibreSyncServer
     public DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context,
             @NonNull final Set<RecordType> recordTypes,
-            @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder,
+            @Nullable final SyncProcessor.Builder syncProcessorBuilder,
             @Nullable final LocalDateTime syncDate,
             @NonNull final DataReader.Updates updateOption,
             @NonNull final Bundle extraArgs)
             throws DataReaderException, CertificateException, CredentialsException, IOException {
         // Use either the custom passed-in, or the built-in default.
-        final SyncReaderProcessor syncProcessor =
+        final SyncProcessor syncProcessor =
                 Objects.requireNonNullElseGet(
                                syncProcessorBuilder,
                                () -> createSyncProcessorBuilder(context))
@@ -135,11 +135,11 @@ public class CalibreSyncServer
 
     @NonNull
     @Override
-    public SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
+    public SyncProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
+        final SyncProcessor.Builder builder =
+                new SyncProcessor.Builder(getSyncPreferencePrefix(), allLocales);
 
         // NEWTHINGS: Calibre adding a field, or a custom field
 

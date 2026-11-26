@@ -122,7 +122,7 @@ public interface SyncServer {
     DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull Context context,
             @NonNull Set<RecordType> recordTypes,
-            @Nullable SyncReaderProcessor.Builder syncProcessorBuilder,
+            @Nullable SyncProcessor.Builder syncProcessorBuilder,
             @Nullable LocalDateTime syncDate,
             @NonNull DataReader.Updates updateOption,
             @NonNull Bundle extraArgs)
@@ -132,15 +132,15 @@ public interface SyncServer {
                    IOException;
 
     /**
-     * Create the default {@link SyncReaderProcessor.Builder}.
+     * Create the default {@link SyncProcessor.Builder}.
      * <p>
      * Simple fields are set to {@link SyncAction#CopyIfBlank}.
      * List fields are set to {@link SyncAction#Append}.
      *
      * @param context Current context
      *
-     * @return a {@link SyncReaderProcessor.Builder}
+     * @return a {@link SyncProcessor.Builder}
      */
     @NonNull
-    SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull Context context);
+    SyncProcessor.Builder createSyncProcessorBuilder(@NonNull Context context);
 }

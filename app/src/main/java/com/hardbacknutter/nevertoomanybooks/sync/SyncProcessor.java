@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.EmptySuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,9 +60,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Handles importing data with each field controlled by a {@link SyncAction}.
+ * Handles synchronizing each field controlled by a {@link SyncAction}.
+ * <p>
+ * {@code currentData} represents the the baseline data and will never be modified.
+ * {@code incomingData} represents the data we need to merge/add.
+ * It can/will be modified as needed.
+ * <p>
+ * The final delta to apply to {@code currentData} will be returned by
+ * {@link #process(Context, long, Book, Book, Map)}.
  */
-public class SyncReaderProcessor {
+public class SyncProcessor {
 
     private static final String TAG = "SyncProcessor";
     /** See {@link #ensureLanguage(Book, Book)} and {@link BookDaoHelper}#process. */
@@ -78,8 +86,8 @@ public class SyncReaderProcessor {
     private final Collection<Mapper> mappers;
 
     @AnyThread
-    protected SyncReaderProcessor(@NonNull final Context context,
-                                  @NonNull final Builder builder) {
+    protected SyncProcessor(@NonNull final Context context,
+                            @NonNull final Builder builder) {
         this.fields = builder.fields;
         this.realNumberParser = builder.realNumberParser;
 
@@ -108,28 +116,37 @@ public class SyncReaderProcessor {
     /**
      * Filter the fields we want versus the fields we actually need for the given book data.
      * <p>
-     * This method is normally called <strong>before</strong> a website is contacted,
-     * as (theoretically) it allows the code to download more or less data depending on
+     * This method is normally called <strong>before</strong> a website/syncserver is contacted,
+     * as (theoretically) it allows the code to get more or less data depending on
      * the fields wanted. Prime example is of course the cover images.
+     * <p>
+     * Override {@link #filter(SyncField, Book)} for custom filtering.
      *
-     * @param localBook to filter
+     * @param currentData to check for wanted fields
      *
      * @return the filtered SyncField's as a map
      */
     @NonNull
-    public final Map<String, SyncField> filter(@NonNull final Book localBook) {
+    public final Map<String, SyncField> filter(@NonNull final Book currentData) {
 
         final Map<String, SyncField> filteredMap = new LinkedHashMap<>();
 
         for (final SyncField field : fields.values()) {
-            final FilterResult result = filter(field, localBook);
-            if (result == FilterResult.Add) {
-                filteredMap.put(field.getKey(), field);
-
-            } else if (result == FilterResult.ApplyDefault) {
-                if (doDefaultFiltering(localBook, field)) {
+            final FilterResult result = filter(field, currentData);
+            switch (result) {
+                case Add: {
                     filteredMap.put(field.getKey(), field);
+                    break;
                 }
+                case ApplyDefault: {
+                    if (doDefaultFiltering(field, currentData)) {
+                        filteredMap.put(field.getKey(), field);
+                    }
+                    break;
+                }
+                case Skip:
+                default:
+                    break;
             }
         }
 
@@ -139,44 +156,45 @@ public class SyncReaderProcessor {
     /**
      * Overridable for custom filtering.
      *
-     * @param field     to handle
-     * @param localBook to handle
+     * @param field       to handle
+     * @param currentData to check for wanted fields
      *
      * @return {@link FilterResult}
      */
+    @EmptySuper
     @NonNull
     protected FilterResult filter(@NonNull final SyncField field,
-                                  @NonNull final Book localBook) {
+                                  @NonNull final Book currentData) {
         return FilterResult.ApplyDefault;
     }
 
     /**
      * Apply the default filtering specific to the given field.
      *
-     * @param localBook to filter
-     * @param field     to process
+     * @param field       to process
+     * @param currentData to check for wanted fields
      *
      * @return {@code true} if the field needs to be added, otherwise skip it.
      */
-    private boolean doDefaultFiltering(@NonNull final Book localBook,
-                                       @NonNull final SyncField field) {
+    private boolean doDefaultFiltering(@NonNull final SyncField field,
+                                       @NonNull final Book currentData) {
         switch (field.getAction()) {
             case CopyIfBlank: {
-                // If our local book does not have this data, add the field as 'wanted'
+                // If our currentData does not have this field, add it as 'wanted'
                 if (field.getType() == SyncField.Type.LIST) {
-                    return localBook.getParcelableArrayList(field.getKey()).isEmpty();
+                    return currentData.getParcelableArrayList(field.getKey()).isEmpty();
                 }
 
                 for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
                     if (Book.BKEY_TMP_FILE_SPEC[cIdx].equals(field.getKey())) {
                         // check if we have a valid image
                         return ServiceLocator.getInstance().getCoverStorage()
-                                             .getPersistedFile(localBook.getUuid(), cIdx)
+                                             .getPersistedFile(currentData.getUuid(), cIdx)
                                              .isEmpty();
                     }
                 }
 
-                return isEmptyOrZero(localBook.get(field.getKey(), realNumberParser));
+                return isEmptyOrZero(currentData.get(field.getKey(), realNumberParser));
 
             }
             case Append:
@@ -197,12 +215,14 @@ public class SyncReaderProcessor {
      * This method should be called <strong>after</strong> we got the info/covers from the website.
      * <p>
      * Exceptions related to storing cover files are ignored.
+     * <p>
+     * Override {@link #process(Context, Book, Book, SyncField)} for custom  processing.
      *
      * @param context      Current context
      * @param bookId       to use for updating the database.
      *                     Must be passed separately, as 'book' can be all-new data.
-     * @param localBook    the local book
-     * @param remoteBook   the data to merge with the local-book
+     * @param currentData  the book with the base data for the sync; will NOT be modified.
+     * @param incomingData the data to merge with #currentData
      * @param fieldsWanted The (subset) of fields relevant to the current book.
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
@@ -211,46 +231,47 @@ public class SyncReaderProcessor {
      *
      * @throws IOException on <strong>very serious</strong> io issues.
      *                     Less serious io issues are swallowed/ignored
+     * @see #process(Context, Book, Book, SyncField)
      */
     @WorkerThread
     @Nullable
     public final Book process(@NonNull final Context context,
                               final long bookId,
-                              @NonNull final Book localBook,
-                              @NonNull final Book remoteBook,
+                              @NonNull final Book currentData,
+                              @NonNull final Book incomingData,
                               @NonNull final Map<String, SyncField> fieldsWanted)
             throws IOException {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
-        for (final String key : remoteBook.keySet()) {
+        for (final String key : incomingData.keySet()) {
             final SyncField field = fieldsWanted.get(key);
             if (field == null || field.getAction() == SyncAction.Skip) {
                 toRemove.add(key);
             }
         }
 
-        toRemove.forEach(remoteBook::remove);
+        toRemove.forEach(incomingData::remove);
 
         // For each field, process it according the SyncAction set.
         for (final SyncField field : fieldsWanted.values()) {
-            if (remoteBook.contains(field.getKey())) {
-                if (!process(context, localBook, remoteBook, field)) {
-                    doDefaultProcessing(context, localBook, remoteBook, field);
+            if (incomingData.contains(field.getKey())) {
+                if (!process(context, currentData, incomingData, field)) {
+                    doDefaultProcessing(context, currentData, incomingData, field);
                 }
             }
         }
 
         // run the mappers
-        mappers.forEach(mapper -> mapper.map(context, remoteBook));
+        mappers.forEach(mapper -> mapper.map(context, incomingData));
 
         // Commit the new data
-        if (!remoteBook.isEmpty()) {
-            ensureLanguage(localBook, remoteBook);
+        if (!incomingData.isEmpty()) {
+            ensureLanguage(currentData, incomingData);
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
-            final Book delta = Book.from(remoteBook, realNumberParser);
+            final Book delta = Book.from(incomingData, realNumberParser);
             delta.setId(bookId);
             return delta;
         }
@@ -258,16 +279,16 @@ public class SyncReaderProcessor {
         return null;
     }
 
-    private void ensureLanguage(@NonNull final Book localBook,
-                                @NonNull final Book remoteBook) {
+    private void ensureLanguage(@NonNull final Book currentData,
+                                @NonNull final Book incomingData) {
         // Get the language, if there was one requested for updating.
-        String bookLang = remoteBook.getLanguage();
+        String bookLang = incomingData.getLanguage();
         if (bookLang.isEmpty()) {
             // Otherwise add the original one but use a special key.
             // We do this because the BookDaoHelper#process needs it to handle the OB's.
-            bookLang = localBook.getLanguage();
+            bookLang = currentData.getLanguage();
             if (!bookLang.isEmpty()) {
-                remoteBook.putString(LANGUAGE, bookLang);
+                incomingData.putString(LANGUAGE, bookLang);
             }
         }
     }
@@ -275,10 +296,10 @@ public class SyncReaderProcessor {
     /**
      * Overridable for custom processing.
      *
-     * @param context    Current context
-     * @param localBook  the local book
-     * @param remoteBook the data to merge with the local-book
-     * @param field      to process
+     * @param context      Current context
+     * @param currentData  the book with the base data for the sync; will NOT be modified.
+     * @param incomingData the data to merge with #currentData
+     * @param field        to process
      *
      * @return {@code true} when handled, {@code false} to apply default processing
      *
@@ -286,9 +307,10 @@ public class SyncReaderProcessor {
      *                     Less serious io issues are swallowed/ignored
      */
     @WorkerThread
+    @EmptySuper
     protected boolean process(@NonNull final Context context,
-                              @NonNull final Book localBook,
-                              @NonNull final Book remoteBook,
+                              @NonNull final Book currentData,
+                              @NonNull final Book incomingData,
                               @NonNull final SyncField field)
             throws IOException {
         return false;
@@ -297,52 +319,50 @@ public class SyncReaderProcessor {
     /**
      * Process the given book image.
      *
-     * @param context    Current context
-     * @param localBook  the Book we're syncing
-     * @param remoteBook the data to merge with the book;
-     * @param field      to process
+     * @param context      Current context
+     * @param currentData  the book with the base data for the sync; will NOT be modified.
+     * @param incomingData the data to merge with #currentData
+     * @param field        to process
      *
      * @throws IOException on disk-full; other exceptions are logged but ignored
      */
     @WorkerThread
     private void doDefaultProcessing(@NonNull final Context context,
-                                     @NonNull final Book localBook,
-                                     @NonNull final Book remoteBook,
+                                     @NonNull final Book currentData,
+                                     @NonNull final Book incomingData,
                                      @NonNull final SyncField field)
             throws IOException {
 
         for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
             if (Book.BKEY_TMP_FILE_SPEC[cIdx].equals(field.getKey())) {
-                processCover(localBook, remoteBook, cIdx);
+                processCover(currentData, incomingData, cIdx);
                 return;
             }
         }
 
         switch (field.getAction()) {
             case CopyIfBlank:
-                // If our local book already has this data,
-                // remove the unneeded field from the delta (remote book)
+                // If currentData already has this field, remove it from the incomingData
                 final boolean hasData;
                 if (field.getType() == SyncField.Type.LIST) {
-                    hasData = !localBook.getParcelableArrayList(field.getKey()).isEmpty();
+                    hasData = !currentData.getParcelableArrayList(field.getKey()).isEmpty();
                 } else {
-                    hasData = !isEmptyOrZero(localBook.get(field.getKey(), realNumberParser));
+                    hasData = !isEmptyOrZero(currentData.get(field.getKey(), realNumberParser));
                 }
 
                 if (hasData) {
-                    remoteBook.remove(field.getKey());
+                    incomingData.remove(field.getKey());
                 }
                 break;
 
             case Append:
-                processAppend(context, localBook, remoteBook, field.getKey());
+                processAppend(context, currentData, incomingData, field.getKey());
                 break;
 
             case Overwrite:
-                // no action needed, the data in 'remoteBook' will overwrite
-                // our local data.
-                // At this moment, empty/zero data in the remote book is kept.
-                // It will be removed once we process it in the BookDaoHelper
+                // no action needed, the incomingData will overwrite our currentData.
+                // At this moment, empty/zero fields in the incomingData are kept.
+                // They will be removed once we process it in the BookDaoHelper
                 break;
 
             case Skip:
@@ -355,31 +375,31 @@ public class SyncReaderProcessor {
     /**
      * Process the given book image.
      *
-     * @param localBook  the Book we're syncing
-     * @param remoteBook the data to merge with the book;
-     * @param cIdx       0..n image index
+     * @param currentData  the book with the base data for the sync; will NOT be modified.
+     * @param incomingData the data to merge with #currentData
+     * @param cIdx         0..n image index
      *
      * @throws IOException on disk-full; other exceptions are logged but ignored
      */
     @WorkerThread
-    private void processCover(@NonNull final Book localBook,
-                              @NonNull final Book remoteBook,
+    private void processCover(@NonNull final Book currentData,
+                              @NonNull final Book incomingData,
                               @IntRange(from = 0, to = 3) final int cIdx)
             throws IOException {
 
-        final String fileSpec = remoteBook.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
+        final String fileSpec = incomingData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
         if (fileSpec != null && !fileSpec.isEmpty()) {
             //noinspection OverlyBroadCatchBlock
             try {
                 ServiceLocator.getInstance().getCoverStorage()
-                              .persist(new File(fileSpec), localBook.getUuid(), cIdx);
+                              .persist(new File(fileSpec), currentData.getUuid(), cIdx);
 
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 LoggerFactory.getLogger()
                              .e(TAG, e, "processCover|uuid="
-                                        + localBook.getString(DBKey.BOOK_UUID, null)
+                                        + currentData.getString(DBKey.BOOK_UUID, null)
                                         + "|cIdx=" + cIdx);
                 // except disk-full!
                 if (FileUtils.isDiskFull(e)) {
@@ -388,102 +408,103 @@ public class SyncReaderProcessor {
                 }
             }
         }
-        remoteBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+        incomingData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
     }
 
     /**
      * Handle the {@link SyncAction#Append}.
      * <p>
      * {@link SyncField.Type#LIST}: Combines two {@code ParcelableArrayList}s.
-     * The result in 'remoteBook' MAY contain duplicates.
+     * The result in 'incomingData' MAY contain duplicates.
      * These will be pruned during the save to the database.
      * <p>
      * {@link SyncField.Type#APPENDABLE_STRING}: concatenates two {@code String}s.
      *
-     * @param context    Current context
-     * @param localBook  to check; will NOT be modified.
-     * @param remoteBook the data to merge with the book;
-     *                   after returning, this will contain the new data AND the data we merged
-     *                   from the #localBook
-     * @param key        into the incoming data
+     * @param context      Current context
+     * @param currentData  the book with the base data for the sync; will NOT be modified.
+     * @param incomingData the data to merge with #currentData
+     *                     after returning, this will contain the new data AND the data we merged
+     *                     from #currentData
+     * @param key          into the #incomingData
      *
      * @throws IllegalArgumentException if the key is not an appendable type
      */
     @WorkerThread
     private void processAppend(@NonNull final Context context,
-                               @NonNull final Book localBook,
-                               @NonNull final Book remoteBook,
+                               @NonNull final Book currentData,
+                               @NonNull final Book incomingData,
                                @NonNull final String key) {
         // NEWTHINGS: adding SyncField.Type#APPENDABLE_STRING or SyncField.Type#LIST}
         //  to a SyncProcessor.
 
-        // Add the localBook data to the remoteBook list!
-        // and not the other way around! We want to collect a delta in remoteBook.
-        // Note the local data/list must be inserted BEFORE the remote data/list,
+        // Add the currentData data to the incomingData lists!
+        // and not the other way around!
+        // We want to collect a delta in incomingData.
+        // Note the current data/list must be inserted BEFORE the incomingData fields/lists,
         // so we properly 'append' the new data.
         switch (key) {
             case Author.BKEY_LIST: {
-                final List<Author> list = remoteBook.getAuthors();
+                final List<Author> list = incomingData.getAuthors();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getAuthors());
-                    remoteBook.pruneAuthors(context);
+                    list.addAll(0, currentData.getAuthors());
+                    incomingData.pruneAuthors(context);
                 }
                 break;
             }
             case Bookshelf.BKEY_LIST: {
-                final List<Bookshelf> list = remoteBook.getBookshelves();
+                final List<Bookshelf> list = incomingData.getBookshelves();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getBookshelves());
-                    remoteBook.pruneBookshelves(context);
+                    list.addAll(0, currentData.getBookshelves());
+                    incomingData.pruneBookshelves(context);
                 }
                 break;
             }
             case Identifier.Value.BKEY_LIST: {
-                final List<Identifier.Value> list = remoteBook.getIdentifiers();
+                final List<Identifier.Value> list = incomingData.getIdentifiers();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getIdentifiers());
-                    remoteBook.pruneIdentifiers(context);
+                    list.addAll(0, currentData.getIdentifiers());
+                    incomingData.pruneIdentifiers(context);
                 }
                 break;
             }
             case Publisher.BKEY_LIST: {
-                final List<Publisher> list = remoteBook.getPublishers();
+                final List<Publisher> list = incomingData.getPublishers();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getPublishers());
-                    remoteBook.prunePublishers(context);
+                    list.addAll(0, currentData.getPublishers());
+                    incomingData.prunePublishers(context);
                 }
                 break;
             }
             case Series.BKEY_LIST: {
-                final List<Series> list = remoteBook.getSeries();
+                final List<Series> list = incomingData.getSeries();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getSeries());
-                    remoteBook.pruneSeries(context);
+                    list.addAll(0, currentData.getSeries());
+                    incomingData.pruneSeries(context);
                 }
                 break;
             }
             case Tag.BKEY_LIST: {
-                final List<Tag> list = remoteBook.getTags();
+                final List<Tag> list = incomingData.getTags();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getTags());
-                    remoteBook.pruneTags(context);
+                    list.addAll(0, currentData.getTags());
+                    incomingData.pruneTags(context);
                 }
                 break;
             }
             case TocEntry.BKEY_LIST: {
-                final List<TocEntry> list = remoteBook.getToc();
+                final List<TocEntry> list = incomingData.getToc();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localBook.getToc());
-                    remoteBook.pruneToc(context);
+                    list.addAll(0, currentData.getToc());
+                    incomingData.pruneToc(context);
                 }
                 break;
             }
             case DBKey.DESCRIPTION: {
-                final String remoteDesc = remoteBook.getDescription();
+                final String remoteDesc = incomingData.getDescription();
                 if (!remoteDesc.isEmpty()) {
-                    final String localDesc = localBook.getDescription();
+                    final String localDesc = currentData.getDescription();
                     if (!localDesc.isEmpty() && !localDesc.contains(remoteDesc)) {
-                        remoteBook.setDescription(localDesc + "<br/><br/>" + remoteDesc);
+                        incomingData.setDescription(localDesc + "<br/><br/>" + remoteDesc);
                     }
                     // else nothing to do, the remote description will be copied as normal
                 }
@@ -694,20 +715,20 @@ public class SyncReaderProcessor {
          * @return new instance
          */
         @NonNull
-        public SyncReaderProcessor build(@NonNull final Context context) {
-            return build(builder -> new SyncReaderProcessor(context, builder));
+        public SyncProcessor build(@NonNull final Context context) {
+            return build(builder -> new SyncProcessor(context, builder));
         }
 
         /**
          * Build the processor using a custom instance.
          *
-         * @param supplier custom SyncReaderProcessor instance
+         * @param supplier custom SyncProcessor instance
          *
          * @return new instance
          */
         @NonNull
-        public SyncReaderProcessor build(
-                @NonNull final Function<Builder, SyncReaderProcessor> supplier) {
+        public SyncProcessor build(
+                @NonNull final Function<Builder, SyncProcessor> supplier) {
 
             writePreferences();
 

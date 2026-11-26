@@ -49,7 +49,7 @@ public final class SyncReaderHelper
     private final Bundle extraArgs = new Bundle();
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @NonNull
-    private final SyncReaderProcessor.Builder syncProcessorBuilder;
+    private final SyncProcessor.Builder syncProcessorBuilder;
     @Nullable
     private LocalDateTime syncDate;
 

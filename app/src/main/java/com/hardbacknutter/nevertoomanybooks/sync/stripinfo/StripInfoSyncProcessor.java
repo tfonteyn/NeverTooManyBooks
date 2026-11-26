@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,20 +27,20 @@ import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 
-public class StripInfoSyncReaderProcessor
-        extends SyncReaderProcessor {
+public class StripInfoSyncProcessor
+        extends SyncProcessor {
 
-    public StripInfoSyncReaderProcessor(@NonNull final Context context,
-                                        @NonNull final Builder builder) {
+    public StripInfoSyncProcessor(@NonNull final Context context,
+                                  @NonNull final Builder builder) {
         super(context, builder);
     }
 
     @NonNull
     @Override
     protected FilterResult filter(@NonNull final SyncField field,
-                                  @NonNull final Book localBook) {
+                                  @NonNull final Book currentData) {
         if (StripInfoCollectionData.BKEY.equals(field.getKey())) {
             return FilterResult.Add;
         } else {
@@ -51,8 +51,8 @@ public class StripInfoSyncReaderProcessor
     @Override
     @WorkerThread
     protected boolean process(@NonNull final Context context,
-                              @NonNull final Book localBook,
-                              @NonNull final Book remoteBook,
+                              @NonNull final Book currentData,
+                              @NonNull final Book incomingData,
                               @NonNull final SyncField field) {
         // When present, we always/effectively do a SyncAction.Overwrite
         return StripInfoCollectionData.BKEY.equals(field.getKey());

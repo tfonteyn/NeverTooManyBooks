@@ -65,8 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.coders.CalibreBookJsonKey;
 import com.hardbacknutter.org.json.JSONArray;
@@ -128,7 +128,7 @@ public class CalibreContentServerReader
 
     /** Which fields and how to process them for existing books. */
     @NonNull
-    private final SyncReaderProcessor syncProcessor;
+    private final SyncProcessor syncProcessor;
 
     private final DateParser<LocalDateTime> dateParser;
     private final RealNumberParser realNumberParser;
@@ -153,7 +153,7 @@ public class CalibreContentServerReader
      */
     CalibreContentServerReader(@NonNull final Context context,
                                @NonNull final Set<RecordType> recordTypes,
-                               @NonNull final SyncReaderProcessor syncProcessor,
+                               @NonNull final SyncProcessor syncProcessor,
                                @Nullable final LocalDateTime syncDate,
                                @NonNull final Updates updateOption,
                                @NonNull final Bundle extraArgs)
