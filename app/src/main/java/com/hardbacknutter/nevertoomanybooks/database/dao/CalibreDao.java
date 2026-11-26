@@ -79,16 +79,6 @@ public interface CalibreDao {
     void delete(@NonNull Book book);
 
     /**
-     * Get the Calibre data for the given local book id.
-     *
-     * @param bookId the local book id
-     *
-     * @return data
-     */
-    @NonNull
-    Optional<CalibreBookData> findByLocalBookId(@IntRange(from = 1) long bookId);
-
-    /**
      * Check that a book with the passed Calibre UUID exists and return the id of the book, or zero.
      *
      * @param uuid Calibre UUID

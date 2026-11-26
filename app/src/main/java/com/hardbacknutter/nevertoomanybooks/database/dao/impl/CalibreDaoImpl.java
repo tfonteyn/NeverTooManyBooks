@@ -65,7 +65,13 @@ public class CalibreDaoImpl
         calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
     }
 
-    @Override
+    /**
+     * Get the Calibre data for the given local book id.
+     *
+     * @param bookId the local book id
+     *
+     * @return data
+     */
     @NonNull
     public Optional<CalibreBookData> findByLocalBookId(@IntRange(from = 1) final long bookId) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_LOCAL_BOOK_ID,
