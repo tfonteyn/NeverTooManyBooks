@@ -54,7 +54,7 @@ class CalibreMigration {
     private boolean isPresent(@NonNull final String value) {
         try (SQLiteStatement stmt = db.compileStatement(
                 SELECT_1_FROM_ + DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS.getName()
-                + _WHERE_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + "=?")) {
+                + _WHERE_ + DBKey.CALIBRE.CUSTOM_FIELD.NAME + "=?")) {
             stmt.bindString(1, value);
             return 1 == stmt.simpleQueryForLong();
         } catch (@NonNull final SQLiteDoneException ignore) {

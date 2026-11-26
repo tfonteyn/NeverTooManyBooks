@@ -1023,9 +1023,9 @@ public class BookDaoImpl
                         DBKey.AUTO_UPDATE);
 
         private static final String CALIBRE_COLUMNS =
-                TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE.BOOK_ID,
-                                        DBKey.CALIBRE.BOOK_UUID,
-                                        DBKey.CALIBRE.BOOK_MAIN_FORMAT,
+                TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE.BOOK.ID,
+                                        DBKey.CALIBRE.BOOK.UUID,
+                                        DBKey.CALIBRE.BOOK.MAIN_FORMAT,
                                         DBKey.FK_CALIBRE_LIBRARY);
 
         private static final String STRIPINFO_COLUMNS =

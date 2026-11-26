@@ -336,7 +336,7 @@ public class BookRepository {
         }
 
         // Handle synchronisation field.
-        if (book.contains(DBKey.CALIBRE.BOOK_UUID)) {
+        if (book.contains(DBKey.CALIBRE.BOOK.UUID)) {
             // Calibre libraries will be inserted if new, but not updated
             changesMade = sl.getCalibreDao().insertOrUpdate(context, book)
                           || changesMade;

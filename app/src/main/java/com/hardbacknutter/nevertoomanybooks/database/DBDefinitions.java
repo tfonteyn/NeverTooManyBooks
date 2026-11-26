@@ -1216,32 +1216,32 @@ public final class DBDefinitions {
          *  Calibre bridge table domains
          * ====================================================================================== */
         DOM_CALIBRE_BOOK_UUID =
-                new Domain.Builder(DBKey.CALIBRE.BOOK_UUID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.BOOK.UUID, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_BOOK_ID =
-                new Domain.Builder(DBKey.CALIBRE.BOOK_ID, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.CALIBRE.BOOK.ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_CALIBRE_BOOK_MAIN_FORMAT =
-                new Domain.Builder(DBKey.CALIBRE.BOOK_MAIN_FORMAT, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.BOOK.MAIN_FORMAT, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_NAME =
-                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD.NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_TYPE =
-                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD.TYPE, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_MAPPING =
-                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD.MAPPING, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
@@ -2040,7 +2040,7 @@ public final class DBDefinitions {
                           DOM_CALIBRE_BOOK_UUID,
                           DOM_CALIBRE_BOOK_MAIN_FORMAT,
                           DOM_FK_CALIBRE_LIBRARY)
-                .addIndex(DBKey.CALIBRE.BOOK_UUID, true,
+                .addIndex(DBKey.CALIBRE.BOOK.UUID, true,
                           DOM_CALIBRE_BOOK_UUID);
         ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 

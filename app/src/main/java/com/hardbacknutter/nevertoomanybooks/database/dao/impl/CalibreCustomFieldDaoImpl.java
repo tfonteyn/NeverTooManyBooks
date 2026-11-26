@@ -203,16 +203,16 @@ public class CalibreCustomFieldDaoImpl
         /** Insert a {@link CalibreCustomField}. */
         public static final String INSERT =
                 INSERT_INTO_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
-                + '(' + DBKey.CALIBRE.CUSTOM_FIELD_NAME
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING
+                + '(' + DBKey.CALIBRE.CUSTOM_FIELD.NAME
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.TYPE
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.MAPPING
                 + ") VALUES(?,?,?)";
 
         static final String UPDATE =
                 UPDATE_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
-                + _SET_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + "=?"
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE + "=?"
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING + "=?"
+                + _SET_ + DBKey.CALIBRE.CUSTOM_FIELD.NAME + "=?"
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.TYPE + "=?"
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.MAPPING + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link CalibreCustomField}. */
@@ -223,21 +223,21 @@ public class CalibreCustomFieldDaoImpl
 
         static final String BASE_SELECT =
                 SELECT_ + DBKey.PK_ID
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_NAME
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE
-                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.NAME
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.TYPE
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD.MAPPING
                 + _FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName();
 
         /** A list of all {@link CalibreCustomField}s, ordered by name. */
         static final String SELECT_ALL =
-                BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + _COLLATION;
+                BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE.CUSTOM_FIELD.NAME + _COLLATION;
 
         /**
          * Find a {@link CalibreCustomField} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          */
         static final String FIND_BY_NAME =
-                BASE_SELECT + _WHERE_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + "=?";
+                BASE_SELECT + _WHERE_ + DBKey.CALIBRE.CUSTOM_FIELD.NAME + "=?";
 
         private Sql() {
         }

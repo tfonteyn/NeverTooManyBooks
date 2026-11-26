@@ -28,6 +28,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 
 /**
  * Keys used as domain names / Bundle keys.
@@ -72,7 +73,7 @@ public final class DBKey {
     /** Foreign key. */
     public static final String FK_TAG = "tag_id";
 
-    // Adding new FK's...  make sure to name them "xxx_id" to avoid duplicate use of "xxx"
+    // NEWTHINGS: Adding new FK's: make sure to name them "xxx_id" to avoid duplicate use of "xxx"
 
     /** Suffix added to a price column name to create a joined currency column. */
     public static final String CURRENCY_SUFFIX = "_currency";
@@ -423,10 +424,12 @@ public final class DBKey {
 
     /**
      * {@link DBDefinitions#TBL_SERIES_PUBLICATION_FREQUENCY}.
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency
      */
     @SuppressWarnings("CheckStyle")
     public static final class PUBLICATION_FREQUENCY {
-        /** {@link com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency} id.*/
+
         public static final String TYPE = "pub_freq_type";
         public static final String CADENCE = "pub_freq_cadence";
         public static final String IS_ORDINAL = "pub_freq_is_ordinal";
@@ -538,8 +541,12 @@ public final class DBKey {
         }
     }
 
+    /**
+     * {@link DBDefinitions#TBL_LANG_MAPPINGS}.
+     */
     @SuppressWarnings("CheckStyle")
     public static final class LANG_MAPPING {
+
         public static final String ISO3_USER = "iso3_user";
         public static final String ISO3 = "iso3";
         public static final String DISPLAY_NAME = "dname";
@@ -641,37 +648,73 @@ public final class DBKey {
     @SuppressWarnings("CheckStyle")
     public static final class CALIBRE {
 
-        /** {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}. */
-        public static final String CUSTOM_FIELD_NAME = "clb_cf_name";
-        public static final String CUSTOM_FIELD_TYPE = "clb_cf_type";
-        public static final String CUSTOM_FIELD_MAPPING = "clb_cf_mapping";
-
         /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
         public static final String LIBRARY_LAST_SYNC_DATE__UTC = "clb_lib_last_sync";
         /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
         public static final String LIBRARY_STRING_ID = "clb_lib_id";
         /**
+         * The Calibre assigned UUID.
          * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}.
-         * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
          */
         public static final String LIBRARY_UUID = "clb_lib_uuid";
         /**
-         * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}
-         * {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}.
+         * The Calibre name for the Library / Virtual Library.
+         * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES},
+         * {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}
          */
         public static final String LIBRARY_NAME = "clb_lib_name";
-        /** {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
-        public static final String VIRT_LIB_EXPR = "clb_vlib_expr";
         /**
-         * External to this app, but NOT an "external Site id"
-         * as it comes from a user importing their Calibre libraries.
-         * {@link DBDefinitions#TBL_CALIBRE_BOOKS}.
+         * The Calibre 'expression' for the virtual library.
+         * {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}.
          */
-        public static final String BOOK_ID = "clb_book_id";
-        public static final String BOOK_UUID = "clb_book_uuid";
-        public static final String BOOK_MAIN_FORMAT = "clb_book_main_format";
+        public static final String VIRT_LIB_EXPR = "clb_vlib_expr";
 
         private CALIBRE() {
+        }
+
+        /**
+         * {@link DBDefinitions#TBL_CALIBRE_BOOKS}.
+         */
+        public static final class BOOK {
+
+            /**
+             * External to this app, but NOT an "external Site id"
+             * as it comes from a user importing their Calibre libraries.
+             */
+            public static final String ID = "clb_book_id";
+            /**
+             * The Calibre assigned UUID.
+             */
+            public static final String UUID = "clb_book_uuid";
+            /**
+             * The first/main file format of the ebook.
+             */
+            public static final String MAIN_FORMAT = "clb_book_main_format";
+
+            private BOOK() {
+            }
+        }
+
+        /**
+         * {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}.
+         */
+        public static final class CUSTOM_FIELD {
+
+            /**
+             * The Calibre field name.
+             */
+            public static final String NAME = "clb_cf_name";
+            /**
+             * {@link CalibreCustomField.Type}.
+             */
+            public static final String TYPE = "clb_cf_type";
+            /**
+             * The local {@link DBKey} to which the field is to be mapped.
+             */
+            public static final String MAPPING = "clb_cf_mapping";
+
+            private CUSTOM_FIELD() {
+            }
         }
     }
 

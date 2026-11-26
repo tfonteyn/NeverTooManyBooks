@@ -367,8 +367,8 @@ public final class BookCoder {
 
         // NEWTHINGS: Calibre adding a field, or a custom field
 
-        book.putInt(DBKey.CALIBRE.BOOK_ID, calibreBookId);
-        book.putString(DBKey.CALIBRE.BOOK_UUID, calibreBook.getString(CalibreBookJsonKey.UUID));
+        book.putInt(DBKey.CALIBRE.BOOK.ID, calibreBookId);
+        book.putString(DBKey.CALIBRE.BOOK.UUID, calibreBook.getString(CalibreBookJsonKey.UUID));
 
         // Always add the current library; i.e. the library the book came from.
         book.setCalibreLibrary(library);
@@ -774,7 +774,7 @@ public final class BookCoder {
         if (it.hasNext()) {
             final String format = it.next();
             if (format != null && !format.isEmpty()) {
-                book.putString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, format);
+                book.putString(DBKey.CALIBRE.BOOK.MAIN_FORMAT, format);
             }
         }
     }

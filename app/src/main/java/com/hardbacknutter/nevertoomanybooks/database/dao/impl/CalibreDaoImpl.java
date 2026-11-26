@@ -163,9 +163,9 @@ public class CalibreDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindLong(1, book.getId());
-            stmt.bindLong(2, book.getInt(DBKey.CALIBRE.BOOK_ID));
-            stmt.bindString(3, book.getString(DBKey.CALIBRE.BOOK_UUID));
-            stmt.bindString(4, book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
+            stmt.bindLong(2, book.getInt(DBKey.CALIBRE.BOOK.ID));
+            stmt.bindString(3, book.getString(DBKey.CALIBRE.BOOK.UUID));
+            stmt.bindString(4, book.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT));
             stmt.bindLong(5, library.getId());
 
             stmt.executeInsert(() -> ERROR_INSERT_FROM + book);
@@ -190,9 +190,9 @@ public class CalibreDaoImpl
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindLong(1, book.getInt(DBKey.CALIBRE.BOOK_ID));
-            stmt.bindString(2, book.getString(DBKey.CALIBRE.BOOK_UUID));
-            stmt.bindString(3, book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
+            stmt.bindLong(1, book.getInt(DBKey.CALIBRE.BOOK.ID));
+            stmt.bindString(2, book.getString(DBKey.CALIBRE.BOOK.UUID));
+            stmt.bindString(3, book.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT));
             stmt.bindLong(4, library.getId());
 
             stmt.bindLong(5, book.getId());
@@ -215,24 +215,24 @@ public class CalibreDaoImpl
         static final String INSERT =
                 INSERT_INTO_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
                 + '(' + DBKey.FK_BOOK
-                + ',' + DBKey.CALIBRE.BOOK_ID
-                + ',' + DBKey.CALIBRE.BOOK_UUID
-                + ',' + DBKey.CALIBRE.BOOK_MAIN_FORMAT
+                + ',' + DBKey.CALIBRE.BOOK.ID
+                + ',' + DBKey.CALIBRE.BOOK.UUID
+                + ',' + DBKey.CALIBRE.BOOK.MAIN_FORMAT
                 + ',' + DBKey.FK_CALIBRE_LIBRARY
                 + ") VALUES (?,?,?,?,?)";
 
         static final String UPDATE =
                 UPDATE_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName() + _SET_
-                + DBKey.CALIBRE.BOOK_ID + "=?"
-                + DBKey.CALIBRE.BOOK_UUID + "=?"
-                + DBKey.CALIBRE.BOOK_MAIN_FORMAT + "=?"
+                + DBKey.CALIBRE.BOOK.ID + "=?"
+                + DBKey.CALIBRE.BOOK.UUID + "=?"
+                + DBKey.CALIBRE.BOOK.MAIN_FORMAT + "=?"
                 + DBKey.FK_CALIBRE_LIBRARY + "=?"
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         static final String FIND_BY_LOCAL_BOOK_ID =
-                SELECT_ + DBKey.CALIBRE.BOOK_ID
-                + ',' + DBKey.CALIBRE.BOOK_UUID
-                + ',' + DBKey.CALIBRE.BOOK_MAIN_FORMAT
+                SELECT_ + DBKey.CALIBRE.BOOK.ID
+                + ',' + DBKey.CALIBRE.BOOK.UUID
+                + ',' + DBKey.CALIBRE.BOOK.MAIN_FORMAT
                 + ',' + DBKey.FK_CALIBRE_LIBRARY
                 + _FROM_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
                 + _WHERE_ + DBKey.FK_BOOK + "=?";

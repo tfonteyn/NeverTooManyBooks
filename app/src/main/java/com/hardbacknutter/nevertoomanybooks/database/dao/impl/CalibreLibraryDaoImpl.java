@@ -464,6 +464,6 @@ public class CalibreLibraryDaoImpl
         /** Get the id of a {@link Book} by its Calibre-book UUID. */
         static final String FIND_BOOK_ID_BY_CALIBRE_UUID =
                 SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_CALIBRE_BOOKS.getName()
-                + _WHERE_ + DBKey.CALIBRE.BOOK_UUID + "=?";
+                + _WHERE_ + DBKey.CALIBRE.BOOK.UUID + "=?";
     }
 }

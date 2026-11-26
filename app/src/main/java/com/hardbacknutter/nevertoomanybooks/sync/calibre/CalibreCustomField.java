@@ -108,9 +108,9 @@ public class CalibreCustomField
     public CalibreCustomField(final long id,
                               @NonNull final DataHolder rowData) {
         this.id = id;
-        calibreKey = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD_NAME);
-        type = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD_TYPE);
-        dbKey = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING);
+        calibreKey = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD.NAME);
+        type = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD.TYPE);
+        dbKey = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD.MAPPING);
     }
 
     /**

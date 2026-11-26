@@ -184,9 +184,9 @@ public class CalibreSyncServer
 
         // FIXME: this should really be "Calibre book id"
         map.put(context.getString(R.string.site_calibre),
-                new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_ID));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK.ID));
         map.put(context.getString(R.string.lbl_ebook_file_type),
-                new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK_MAIN_FORMAT));
+                new SyncFieldDef(SyncField.Type.OTHER, DBKey.CALIBRE.BOOK.MAIN_FORMAT));
 
         // The site specific CustomFields
         ServiceLocator.getInstance()
@@ -210,7 +210,7 @@ public class CalibreSyncServer
                 label, def.type, def.fieldKey, def.enabledKey));
 
         builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-               .addRelatedField(DBKey.CALIBRE.BOOK_ID, DBKey.CALIBRE.BOOK_UUID);
+               .addRelatedField(DBKey.CALIBRE.BOOK.ID, DBKey.CALIBRE.BOOK.UUID);
 
         return builder;
     }

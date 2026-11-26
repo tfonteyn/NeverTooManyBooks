@@ -1637,8 +1637,8 @@ public class Book
     public boolean isCalibreBook() {
         // DBKey.CALIBRE.BOOK_MAIN_FORMAT is considered optional
         return contains(DBKey.FK_CALIBRE_LIBRARY)
-               && contains(DBKey.CALIBRE.BOOK_ID)
-               && !getString(DBKey.CALIBRE.BOOK_UUID).isEmpty();
+               && contains(DBKey.CALIBRE.BOOK.ID)
+               && !getString(DBKey.CALIBRE.BOOK.UUID).isEmpty();
     }
 
     /**
@@ -1672,14 +1672,14 @@ public class Book
     public void setCalibreBookData(@Nullable final CalibreBookData data) {
         if (data != null) {
             putLong(DBKey.FK_CALIBRE_LIBRARY, data.getLibraryId());
-            putInt(DBKey.CALIBRE.BOOK_ID, data.getCalibreBookId());
-            putString(DBKey.CALIBRE.BOOK_UUID, data.getCalibreBookUuid());
+            putInt(DBKey.CALIBRE.BOOK.ID, data.getCalibreBookId());
+            putString(DBKey.CALIBRE.BOOK.UUID, data.getCalibreBookUuid());
 
             final String fileFormat = data.getFileFormat();
             if (fileFormat != null && !fileFormat.isBlank()) {
-                putString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, fileFormat);
+                putString(DBKey.CALIBRE.BOOK.MAIN_FORMAT, fileFormat);
             } else {
-                remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+                remove(DBKey.CALIBRE.BOOK.MAIN_FORMAT);
             }
         } else {
             removeCalibreData();
@@ -1692,9 +1692,9 @@ public class Book
 
         // Remove the CalibreBookData keys
         remove(DBKey.FK_CALIBRE_LIBRARY);
-        remove(DBKey.CALIBRE.BOOK_ID);
-        remove(DBKey.CALIBRE.BOOK_UUID);
-        remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+        remove(DBKey.CALIBRE.BOOK.ID);
+        remove(DBKey.CALIBRE.BOOK.UUID);
+        remove(DBKey.CALIBRE.BOOK.MAIN_FORMAT);
     }
 
     /**

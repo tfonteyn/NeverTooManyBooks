@@ -415,7 +415,7 @@ public class CalibreContentServerReader
                             @NonNull final Book calibreBook)
             throws IOException {
         try {
-            final String calibreBookUuid = calibreBook.getString(DBKey.CALIBRE.BOOK_UUID);
+            final String calibreBookUuid = calibreBook.getString(DBKey.CALIBRE.BOOK.UUID);
             // check if we already have the calibre book in the local database
             final long localBookId = calibreLibraryDao.getBookIdFromCalibreUuid(calibreBookUuid);
             if (localBookId == 0) {
@@ -440,7 +440,7 @@ public class CalibreContentServerReader
                                 LoggerFactory.getLogger().d(
                                         TAG, "importBook", updateOption, "Skip",
                                         "calibreBookUuid="
-                                        + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                                        + calibreBook.getString(DBKey.CALIBRE.BOOK.UUID, null),
                                         "book=" + book.getId(),
                                         book.getString(DBKey.TITLE, null));
                             }
@@ -453,7 +453,7 @@ public class CalibreContentServerReader
                             LoggerFactory.getLogger().d(
                                     TAG, "importBook", updateOption,
                                     "calibreBookUuid="
-                                    + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                                    + calibreBook.getString(DBKey.CALIBRE.BOOK.UUID, null),
                                     calibreBook.getString(CalibreBookJsonKey.TITLE, null));
                         }
                         break;
@@ -525,7 +525,7 @@ public class CalibreContentServerReader
             LoggerFactory.getLogger().d(
                     TAG, "updateBook", updateOption,
                     "calibreBookUuid="
-                    + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                    + calibreBook.getString(DBKey.CALIBRE.BOOK.UUID, null),
                     "book=" + book.getId(),
                     book.getString(DBKey.TITLE, null));
         }
@@ -548,7 +548,7 @@ public class CalibreContentServerReader
             LoggerFactory.getLogger().d(
                     TAG, "insertBook", updateOption,
                     "calibreBookUuid="
-                    + book.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                    + book.getString(DBKey.CALIBRE.BOOK.UUID, null),
                     "book=" + book.getId(),
                     book.getString(DBKey.TITLE, null));
         }

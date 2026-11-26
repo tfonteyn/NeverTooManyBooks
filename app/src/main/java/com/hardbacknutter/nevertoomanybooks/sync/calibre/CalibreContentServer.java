@@ -1358,8 +1358,8 @@ public final class CalibreContentServer
 
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
 
-        final int id = book.getInt(DBKey.CALIBRE.BOOK_ID);
-        final String fileFormat = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+        final int id = book.getInt(DBKey.CALIBRE.BOOK.ID);
+        final String fileFormat = book.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT);
         final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
         final CalibreLibrary calibreLibrary = libraries
@@ -1440,7 +1440,7 @@ public final class CalibreContentServer
         final DocumentFile authorFolder = getAuthorFolder(context, root, book, createIfMissing);
 
         final String fileName = createFilename(context, book);
-        final String fileFormat = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
+        final String fileFormat = book.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT);
 
         DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileFormat);
 

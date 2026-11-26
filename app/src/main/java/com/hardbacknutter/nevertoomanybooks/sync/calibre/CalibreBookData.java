@@ -103,9 +103,9 @@ public class CalibreBookData
      */
     public CalibreBookData(@NonNull final DataHolder rowData) {
         libraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
-        calibreBookId = rowData.getInt(DBKey.CALIBRE.BOOK_ID);
-        calibreBookUuid = rowData.getString(DBKey.CALIBRE.BOOK_UUID);
-        fileFormat = rowData.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null);
+        calibreBookId = rowData.getInt(DBKey.CALIBRE.BOOK.ID);
+        calibreBookUuid = rowData.getString(DBKey.CALIBRE.BOOK.UUID);
+        fileFormat = rowData.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT, null);
     }
 
     private CalibreBookData(@NonNull final Parcel in) {
@@ -202,11 +202,11 @@ public class CalibreBookData
             return false;
         }
         return libraryId == dataHolder.getLong(DBKey.FK_CALIBRE_LIBRARY)
-               && calibreBookId == dataHolder.getInt(DBKey.CALIBRE.BOOK_ID)
+               && calibreBookId == dataHolder.getInt(DBKey.CALIBRE.BOOK.ID)
                && Objects.equals(calibreBookUuid,
-                                 dataHolder.getString(DBKey.CALIBRE.BOOK_UUID, null))
+                                 dataHolder.getString(DBKey.CALIBRE.BOOK.UUID, null))
                && Objects.equals(fileFormat,
-                                 dataHolder.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null));
+                                 dataHolder.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT, null));
     }
 
     /**

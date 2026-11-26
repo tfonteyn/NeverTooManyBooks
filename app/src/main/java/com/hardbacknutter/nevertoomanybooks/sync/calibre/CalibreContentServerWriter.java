@@ -217,7 +217,7 @@ public class CalibreContentServerWriter
                 final Map<Integer, Book> books = new HashMap<>(batchSize);
                 for (int i = 0; i < batchSize && cursor.moveToNext(); i++) {
                     final Book localBook = Book.from(cursor);
-                    final int calibreBookId = localBook.getInt(DBKey.CALIBRE.BOOK_ID);
+                    final int calibreBookId = localBook.getInt(DBKey.CALIBRE.BOOK.ID);
                     books.put(calibreBookId, localBook);
                 }
 
@@ -239,7 +239,7 @@ public class CalibreContentServerWriter
                     final Book localBook = books.get(calBookId);
                     // Sanity check, the book might have been deleted from the server
                     if (localBook != null) {
-                        final int calibreBookId = localBook.getInt(DBKey.CALIBRE.BOOK_ID);
+                        final int calibreBookId = localBook.getInt(DBKey.CALIBRE.BOOK.ID);
                         // Don't decode the full calibreBook!
                         // We only have/need the last-modified and the identifier fields.
                         final JSONObject calibreBook = calibreBookData
@@ -340,7 +340,7 @@ public class CalibreContentServerWriter
             throws IOException {
 
         final long bookId = book.getId();
-        final int calibreBookId = book.getInt(DBKey.CALIBRE.BOOK_ID);
+        final int calibreBookId = book.getInt(DBKey.CALIBRE.BOOK.ID);
 
         try {
             server.pushChanges(library.getLibraryStringId(), calibreBookId, delta);

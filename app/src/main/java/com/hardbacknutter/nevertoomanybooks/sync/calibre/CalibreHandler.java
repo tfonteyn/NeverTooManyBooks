@@ -175,7 +175,7 @@ public class CalibreHandler {
                     .setVisible(vm.existsLocally(context, book));
 
                 final MenuItem item = menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD);
-                final String fileFormat = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null);
+                final String fileFormat = book.getString(DBKey.CALIBRE.BOOK.MAIN_FORMAT, null);
                 if (fileFormat != null && !fileFormat.isBlank()) {
                     item.setTitle(context.getString(
                             R.string.option_download_ebook_format, fileFormat));
