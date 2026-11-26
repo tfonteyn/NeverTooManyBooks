@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -349,16 +348,6 @@ public class CalibreLibraryDaoImpl
         }
     }
 
-
-    @Override
-    @IntRange(from = 0)
-    public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BOOK_ID_BY_CALIBRE_UUID)) {
-            stmt.bindString(1, uuid);
-            return stmt.simpleQueryForLongOrZero();
-        }
-    }
-
     private static final class Sql {
 
         /** Insert a {@link CalibreLibrary}. */
@@ -459,11 +448,5 @@ public class CalibreLibraryDaoImpl
                 BASE_SELECT_VIRTUAL_LIBRARY
                 + _WHERE_ + DBKey.FK_CALIBRE_LIBRARY + "=?"
                 + _AND_ + DBKey.CALIBRE.LIBRARY_NAME + "=?";
-
-
-        /** Get the id of a {@link Book} by its Calibre-book UUID. */
-        static final String FIND_BOOK_ID_BY_CALIBRE_UUID =
-                SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_CALIBRE_BOOKS.getName()
-                + _WHERE_ + DBKey.CALIBRE.BOOK.UUID + "=?";
     }
 }

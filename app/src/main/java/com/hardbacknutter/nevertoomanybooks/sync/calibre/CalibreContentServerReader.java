@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookRepository;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -120,7 +121,9 @@ public class CalibreContentServerReader
     private final String eBookString;
 
     private final BookRepository bookRepository;
+    private final BookDao bookDao;
 
+    private final CalibreDao calibreDao;
     private final CalibreLibraryDao calibreLibraryDao;
 
     @NonNull
@@ -132,7 +135,6 @@ public class CalibreContentServerReader
 
     private final DateParser<LocalDateTime> dateParser;
     private final RealNumberParser realNumberParser;
-    private final BookDao bookDao;
 
     /** The physical library from which we'll be importing. */
     @Nullable
@@ -170,6 +172,7 @@ public class CalibreContentServerReader
         server = new CalibreContentServer.Builder(context).build();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        calibreDao = serviceLocator.getCalibreDao();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
         bookDao = serviceLocator.getBookDao();
 
@@ -417,7 +420,7 @@ public class CalibreContentServerReader
         try {
             final String calibreBookUuid = calibreBook.getString(DBKey.CALIBRE.BOOK.UUID);
             // check if we already have the calibre book in the local database
-            final long localBookId = calibreLibraryDao.getBookIdFromCalibreUuid(calibreBookUuid);
+            final long localBookId = calibreDao.getBookIdFromCalibreUuid(calibreBookUuid);
             if (localBookId == 0) {
                 // We don't have it yet
                 insertBook(context, calibreBook);

@@ -79,6 +79,15 @@ public class CalibreDaoImpl
     }
 
     @Override
+    @IntRange(from = 0)
+    public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BOOK_ID_BY_CALIBRE_UUID)) {
+            stmt.bindString(1, uuid);
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
     public boolean insertOrUpdate(@NonNull final Context context,
                                @NonNull final Book book) {
 
@@ -228,6 +237,12 @@ public class CalibreDaoImpl
                 + DBKey.CALIBRE.BOOK.MAIN_FORMAT + "=?"
                 + DBKey.FK_CALIBRE_LIBRARY + "=?"
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        /** Get the id of a {@link Book} by its Calibre-book UUID. */
+        static final String FIND_BOOK_ID_BY_CALIBRE_UUID =
+                SELECT_ + DBKey.FK_BOOK
+                + _FROM_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
+                + _WHERE_ + DBKey.CALIBRE.BOOK.UUID + "=?";
 
         static final String FIND_BY_LOCAL_BOOK_ID =
                 SELECT_ + DBKey.CALIBRE.BOOK.ID

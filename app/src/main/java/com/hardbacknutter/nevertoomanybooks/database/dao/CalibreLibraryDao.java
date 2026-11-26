@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,14 +126,4 @@ public interface CalibreLibraryDao {
      * @param library to update
      */
     void update(@NonNull CalibreVirtualLibrary library);
-
-    /**
-     * Check that a book with the passed Calibre UUID exists and return the id of the book, or zero.
-     *
-     * @param uuid Calibre UUID
-     *
-     * @return id of the book, or 0 'new' if not found
-     */
-    @IntRange(from = 0)
-    long getBookIdFromCalibreUuid(@NonNull String uuid);
 }

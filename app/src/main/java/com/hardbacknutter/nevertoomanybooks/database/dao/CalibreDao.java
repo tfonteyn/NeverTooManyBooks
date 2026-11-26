@@ -87,4 +87,14 @@ public interface CalibreDao {
      */
     @NonNull
     Optional<CalibreBookData> findByLocalBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Check that a book with the passed Calibre UUID exists and return the id of the book, or zero.
+     *
+     * @param uuid Calibre UUID
+     *
+     * @return id of the book, or 0 'new' if not found
+     */
+    @IntRange(from = 0)
+    long getBookIdFromCalibreUuid(@NonNull String uuid);
 }
