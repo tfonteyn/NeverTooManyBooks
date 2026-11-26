@@ -93,6 +93,12 @@ public final class DBKey {
      * This will either be a translated title or the original title.
      */
     public static final String TITLE = "title";
+    /**
+     * The actual language of the book.
+     * This will either be the translation or the original language.
+     */
+    public static final String LANGUAGE = "language";
+
     /** The original title of a translated book. */
     public static final String TRANSLATION_ORIGINAL_TITLE = "title_original_lang";
     /** The original language of a translated book. */
@@ -122,7 +128,7 @@ public final class DBKey {
     /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_TOC_ENTRIES}. */
     public static final String FIRST_PUBLICATION_DATE = "first_publication";
     public static final String ISBN = "isbn";
-    public static final String LANGUAGE = "language";
+
     /**
      * This field value is <strong>TEXT</strong> data by design to accommodate
      * sites which provide a description of the page structure.
