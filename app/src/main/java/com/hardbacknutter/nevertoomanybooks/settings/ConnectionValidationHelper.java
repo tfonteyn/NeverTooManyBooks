@@ -224,6 +224,8 @@ public class ConnectionValidationHelper {
 
     private void onSuccess(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
+        // allow retrying
+        vm.resetValidationRunning();
 
         message.process(success -> {
             if (success) {
@@ -232,7 +234,7 @@ public class ConnectionValidationHelper {
                         .show();
                 owner.getView().postDelayed(finish, Delay.SHORT_MS);
             } else {
-                //For now, we don't get here, instead we would be in onFailure.
+                // For now, we don't get here, instead we would be in onFailure.
                 // But keeping this here to guard against future changes in the task logic
                 //noinspection DataFlowIssue
                 Snackbar.make(owner.getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
@@ -242,6 +244,8 @@ public class ConnectionValidationHelper {
 
     private void onCancelled(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
+        // allow retrying
+        vm.resetValidationRunning();
 
         message.process(ignored -> {
             //noinspection DataFlowIssue
@@ -251,6 +255,8 @@ public class ConnectionValidationHelper {
 
     private void onFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
+        // allow retrying
+        vm.resetValidationRunning();
 
         message.process(e -> {
             final Context context = owner.getContext();

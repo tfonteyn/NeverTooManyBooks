@@ -80,8 +80,6 @@ public class ConnectionValidatorViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onConnectionCancelled() {
-        // allow retries
-        validationRunning.set(false);
         //noinspection DataFlowIssue
         return validatorTask.onCancelled();
     }
@@ -93,8 +91,6 @@ public class ConnectionValidatorViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<Throwable>> onConnectionFailed() {
-        // allow retries
-        validationRunning.set(false);
         //noinspection DataFlowIssue
         return validatorTask.onFailure();
     }
@@ -139,7 +135,19 @@ public class ConnectionValidatorViewModel
         }
     }
 
+    /**
+     * Check if we're currently running the validation task.
+     *
+     * @return {@code true} if running
+     */
     public boolean isValidationRunning() {
         return validationRunning.get();
+    }
+
+    /**
+     * Reset the flag after a cancel or failure.
+     */
+    public void resetValidationRunning() {
+        validationRunning.set(false);
     }
 }
