@@ -88,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.merging.SeriesPruner;
 import com.hardbacknutter.nevertoomanybooks.entities.merging.TagPruner;
 import com.hardbacknutter.nevertoomanybooks.entities.merging.TocEntryPruner;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -1630,52 +1629,7 @@ public class Book
                && contains(DBKey.CALIBRE.BOOK.ID)
                && !getString(DBKey.CALIBRE.BOOK.UUID).isEmpty();
     }
-
-    /**
-     * Get the {@link CalibreBookData}.
-     *
-     * @return data
-     */
-    @NonNull
-    public Optional<CalibreBookData> getCalibreBookData() {
-        // build from the separate keys if we have all of them
-        if (isCalibreBook()) {
-            return Optional.of(new CalibreBookData(this));
-        }
-
-        // Otherwise try to find matching Calibre data in the database
-        final Optional<CalibreBookData> oCalibreBookData = ServiceLocator
-                .getInstance()
-                .getCalibreDao()
-                .findByLocalBookId(getId());
-
-        oCalibreBookData.ifPresent(this::setCalibreBookData);
-
-        return oCalibreBookData;
-    }
-
-    /**
-     * Set the {@link CalibreBookData}.
-     *
-     * @param data to set; use {@code null} to remove.
-     */
-    public void setCalibreBookData(@Nullable final CalibreBookData data) {
-        if (data != null) {
-            putLong(DBKey.FK_CALIBRE_LIBRARY, data.getLibraryId());
-            putInt(DBKey.CALIBRE.BOOK.ID, data.getCalibreBookId());
-            putString(DBKey.CALIBRE.BOOK.UUID, data.getCalibreBookUuid());
-
-            final String fileFormat = data.getFileFormat();
-            if (fileFormat != null && !fileFormat.isBlank()) {
-                putString(DBKey.CALIBRE.BOOK.MAIN_FORMAT, fileFormat);
-            } else {
-                remove(DBKey.CALIBRE.BOOK.MAIN_FORMAT);
-            }
-        } else {
-            removeCalibreData();
-        }
-    }
-
+    
     private void removeCalibreData() {
         // Remove a potentially cached CalibreLibrary
         remove(CalibreLibrary.BKEY_LIST);
