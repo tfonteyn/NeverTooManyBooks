@@ -22,15 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,14 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 /**
  * Note: the keys for the CSV columns are not the same as the internal Book keys
  * due to backward compatibility.
- * <p>
- * <strong>LIMITATIONS:</strong> Calibre book data is handled, but Calibre library is NOT.
- * The Calibre native string-id is written out with the book.
- * <p>
- * When reading, the Calibre native string-id is checked against already existing data,
- * but if there is no match all Calibre data for the book is discarded.
- * <p>
- * In other words: this coder is NOT a full backup/restore!
  */
 @SuppressWarnings("SameParameterValue")
 public class DefaultBookCoder
@@ -121,11 +110,6 @@ public class DefaultBookCoder
     private final StringList<TocEntry> tocCoder;
 
     private final IdentifierDao identifierDao;
-
-    // Created when needed      1+
-
-    @Nullable
-    private Map<String, Long> calibreLibraryStr2IdMap;
 
     /**
      * Constructor.
@@ -249,7 +233,6 @@ public class DefaultBookCoder
         processPublishers(book);
         processToc(book);
         processBookshelves(book);
-        processCalibreData(book);
         processRating(book);
         processPrice(book);
         processGenre(book);
@@ -544,26 +527,6 @@ public class DefaultBookCoder
                                       bs -> bs.isSameName(bookshelf)))
                               .forEach(list::add);
             }
-        }
-    }
-
-    private void processCalibreData(@NonNull final Book book) {
-        // we need to convert the string id to the row id.
-        final String stringId = book.getString(DBKey.CALIBRE.LIBRARY_STRING_ID, null);
-        if (stringId != null && !stringId.isEmpty()) {
-            if (calibreLibraryStr2IdMap == null) {
-                calibreLibraryStr2IdMap = new HashMap<>();
-
-                ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries().forEach(
-                        library -> calibreLibraryStr2IdMap.put(
-                                      library.getLibraryStringId(), library.getId()));
-            }
-            @SuppressWarnings("DataFlowIssue")
-            final long id = calibreLibraryStr2IdMap.getOrDefault(stringId, 0L);
-            book.setCalibreLibrary(id);
-
-            // and discard the string-id
-            book.remove(DBKey.CALIBRE.LIBRARY_STRING_ID);
         }
     }
 
