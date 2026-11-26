@@ -335,14 +335,17 @@ public class Book
         // but let's play this safe.
 
         // Do not copy any identifiers:
-        // PK_ID
-        // BOOK_UUID
-        // Identifier.*
-        // sync related fields (Calibre, StripInfo,...)
-        // ...
-        // Do not copy these specific dates.
-        // BOOK_DATE_ADDED
-        // DATE_LAST_UPDATED
+        //     PK_ID
+        //     BOOK_UUID
+        //     Identifier.*
+        //
+        // Do not copy any sync related fields
+        //     Calibre
+        //     StripInfo
+        //
+        // Do not copy these date fields:
+        //     BOOK_DATE_ADDED
+        //     DATE_LAST_UPDATED
         //
         // //NEWTHINGS: new fields
         final Book duplicate = new Book();
