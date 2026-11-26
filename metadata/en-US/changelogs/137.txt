@@ -1,0 +1,3 @@
+FIXES:
+
+GitHub #265: Unable to exit the Calibre Content Server page if the Sync test is cancelled or fails
