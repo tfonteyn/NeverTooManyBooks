@@ -229,7 +229,7 @@ public final class SyncField
         )),
         /**
          * Any other type, inc. {@code String}, but excl. {@code List},
-         * which does not support {@link SyncAction#Append}.
+         * which does <strong>not</strong> support {@link SyncAction#Append}.
          */
         OTHER(SyncAction.CopyIfBlank, List.of(
                 SyncAction.Skip,
