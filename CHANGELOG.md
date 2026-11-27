@@ -1,3 +1,10 @@
+### 8.2.1
+
+FIXES:
+
+GitHub #265: Unable to exit the Calibre Content Server page if the connection-test is cancelled or fails
+
+---
 ### 8.2.0
 
 NEW:
